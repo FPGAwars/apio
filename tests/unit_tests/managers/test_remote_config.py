@@ -37,8 +37,8 @@ def get_test_data(
             "packages": {
                 "drivers": {
                     "repository": {
-                        "organization": "fpgawars",
                         "name": "tools-drivers",
+                        "organization": "fpgawars",
                     },
                     "release": {
                         "tag": "2026-08-07",
@@ -47,8 +47,8 @@ def get_test_data(
                 },
                 "examples": {
                     "repository": {
-                        "organization": "fpgawars",
                         "name": "apio-examples",
+                        "organization": "fpgawars",
                     },
                     "release": {
                         "tag": "2026-08-06",

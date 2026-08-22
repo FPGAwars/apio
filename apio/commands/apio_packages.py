@@ -16,7 +16,12 @@ from rich import box
 from apio.common.apio_console import cout, ctable, cerror
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.commands import options
-from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
+from apio.utils.cmd_util import (
+    ApioGroup,
+    ApioSubgroup,
+    ApioCommand,
+    ApioOption,
+)
 from apio.apio_context import (
     ApioContext,
     ProjectPolicy,
@@ -264,9 +269,22 @@ The command 'apio packages list' lists the available and installed Apio \
 packages. The list of available packages depends on the operating system \
 you are using and may vary between operating systems.
 
+The option '--check' causes the command to fail and exit with an error \
+status code if the packages are not installed properly.
+
 Examples:[code]
-  apio packages list[/code]
+  apio packages list          # Just report
+  apio packages list --check  # Also fail if packages unhealthy[/code]
 """
+
+check_option = click.option(
+    "check",  # Var name.
+    "-c",
+    "--check",
+    is_flag=True,
+    help="Error on unhealthy packages.",
+    cls=ApioOption,
+)
 
 
 @click.command(
@@ -275,8 +293,8 @@ Examples:[code]
     short_help="List apio packages.",
     help=APIO_PACKAGES_LIST_HELP,
 )
-# @options.verbose_option
-def _list_cli():
+@check_option
+def _list_cli(check: bool):
     """Implements the 'apio packages list' command."""
 
     # -- It's important that will command will use IGNORE_PACKAGES so we
@@ -289,7 +307,14 @@ def _list_cli():
 
     # -- Print packages report.
     packages_ok = print_packages_report(apio_ctx)
-    sys.exit(0 if packages_ok else 1)
+
+    # -- Handle check failure
+    if check and not packages_ok:
+        cerror("Packages are unhealthy. (--check failed)")
+        sys.exit(1)
+
+    # Exit with OK status code.
+    sys.exit(0)
 
 
 # ------ apio packages (group)

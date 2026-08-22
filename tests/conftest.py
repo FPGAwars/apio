@@ -20,7 +20,6 @@ from apio.common import apio_console
 from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
 from apio.utils import jsonc
 
-
 # -- Debug mode on/off
 DEBUG = True
 
@@ -501,7 +500,13 @@ class ApioRunner:
         print(f"Local config url: {local_config_url}")
 
         # Sanity check to detect conflicts from prior URL settings.
-        assert os.environ.get("APIO_REMOTE_CONFIG_URL") is None
+        assert (
+            os.environ.get("APIO_REMOTE_CONFIG_URL") is None
+            or os.environ.get("APIO_REMOTE_CONFIG_URL") == local_config_url
+        ), (
+            "A predefined env var APIO_REMOTE_CONFIG_URL conflicts with "
+            "test settings. Update or unset it."
+        )
 
         # Set the URL in the environment
         os.environ["APIO_REMOTE_CONFIG_URL"] = local_config_url

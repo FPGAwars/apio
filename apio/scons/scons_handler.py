@@ -239,7 +239,6 @@ class SconsHandler:
         PNR generated .pnr file."""
         apio_env = self.apio_env
         params = apio_env.params
-        report_params = params.target.report
 
         # -- Sanity check
         assert apio_env.targeting_one_of("report")
@@ -251,9 +250,7 @@ class SconsHandler:
         apio_env.alias(
             "report",
             source=apio_env.target + ".pnr",
-            action=report_action(
-                report_params.report_all, params.verbosity.pnr
-            ),
+            action=report_action(params.verbosity.pnr),
             always_build=True,
         )
 

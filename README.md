@@ -10,7 +10,7 @@ This README page is optimized for its appearance in the github repo rather than 
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://pypi.org/project/apio)
 
 <!-- Platforms badges -->
-![linux](https://raw.githubusercontent.com/zapta/apio/main/media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](https://raw.githubusercontent.com/zapta/apio/main/media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](https://raw.githubusercontent.com/zapta/apio/main/media/windows-logo.png)&nbsp;&nbsp;&nbsp;![raspberry-pi](https://raw.githubusercontent.com/zapta/apio/main/media/raspbian-logo.png)
+![linux](https://raw.githubusercontent.com/zapta/apio/main/media/linux-logo.png)&nbsp;&nbsp;&nbsp;![macos](https://raw.githubusercontent.com/zapta/apio/main/media/macosx-logo.png)&nbsp;&nbsp;&nbsp;![windows](https://raw.githubusercontent.com/zapta/apio/main/media/windows-logo.png)
 
 <!-- Status badges -->
 [![cli-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/test.yaml?label=cli-test)](https://github.com/fpgawars/apio/actions/workflows/test.yaml)
@@ -53,7 +53,7 @@ Apio CLI is a powerful yet easy-to-use command line tool for FPGA development us
 
 Apio CLI supports every stage of the FPGA workflow, from simulating and testing, to building and programming the FPGA, using simple commands such as `apio test`, `apio build`, and `apio upload` that do what you expect them to do.
 
-Apio CLI currently supports over 80 FPGA boards, custom boards can be easily added, and it includes over 60 ready-to-use example projects. Apio CLI currently supports the ICE40, ECP5, and Gowin FPGA and Xilinx architectures.
+Apio CLI currently supports over 80 FPGA boards, custom boards can be easily added, and it includes over 60 ready-to-use example projects. Apio CLI currently supports the ICE40, ECP5, and Gowin FPGA and AMD/Xilinx 7 Series architectures.
 
 ## Sample Apio CLI session
 

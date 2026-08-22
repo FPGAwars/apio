@@ -14,11 +14,11 @@ Apio uses GitHub repositories under the `FPGAwars` organization for its source c
 | Repository                                                                      | Package name    | Comments       |
 | :------------------------------------------------------------------------------ | :-------------- | :------------- |
 | [fpgawars/apio-definitions](https://github.com/fpgawars/apio-definitions)       | `definitions`   |                |
-| [fpgawars/tools-drivers](https://github.com/fpgawars/tools-drivers)             | `drivers`       | Windows only   |
 | [fpgawars/apio-examples](https://github.com/fpgawars/apio-examples)             | `examples`      |                |
+| [fpgawars/tools-drivers](https://github.com/fpgawars/tools-drivers)             | `drivers`       | Windows only   |
 | [fpgawars/tools-graphviz](https://github.com/fpgawars/tools-graphviz)           | `graphviz`      | Windows only   |
-| [fpgawars/tools-oss-cad-suite](https://github.com/fpgawars/tools-oss-cad-suite) | `oss-cad-suite` |                |
 | [fpgawars/tools-openxc7](https://github.com/fpgawars/tools-openxc7)             | `openxc7`       | Xilinx support |
+| [fpgawars/tools-oss-cad-suite](https://github.com/fpgawars/tools-oss-cad-suite) | `oss-cad-suite` |                |
 | [fpgawars/tools-verible](https://github.com/fpgawars/tools-verible)             | `verible`       |                |
 
 **Utilities**

@@ -18,8 +18,8 @@
     // -- Definitions package
     "definitions": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "apio-definitions"
+        "name": "apio-definitions",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
@@ -29,67 +29,67 @@
     // -- Examples package
     "examples": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "apio-examples"
+        "name": "apio-examples",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
         "package": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
-    // -- OSS Cad Suite package (Yosys)
-    "oss-cad-suite": {
+    // -- Drivers package
+    "drivers": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-oss-cad-suite"
+        "name": "tools-drivers",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
-        "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
-      }
-    },
-    // -- Openxc7 toolchain (nextpnr-xilinx)
-    "openxc7": {
-      "repository": {
-        "organization": "fpgawars",
-        "name": "tools-openxc7"
-      },
-      "release": {
-        "tag": "2026-08-20",
-        "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
+        "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
     // -- Graphviz package
     "graphviz": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-graphviz"
+        "name": "tools-graphviz",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
         "package": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
+    // -- Openxc7 toolchain (nextpnr-xilinx)
+    "openxc7": {
+      "repository": {
+        "name": "tools-openxc7",
+        "organization": "fpgawars"
+      },
+      "release": {
+        "tag": "2026-08-20",
+        "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- OSS Cad Suite package (Yosys)
+    "oss-cad-suite": {
+      "repository": {
+        "name": "tools-oss-cad-suite",
+        "organization": "fpgawars"
+      },
+      "release": {
+        "tag": "2026-08-19",
+        "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
     // -- Verible package
     "verible": {
       "repository": {
-        "organization": "fpgawars",
-        "name": "tools-verible"
+        "name": "tools-verible",
+        "organization": "fpgawars"
       },
       "release": {
         "tag": "2026-08-19",
         "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
-      }
-    },
-    // -- Drivers package
-    "drivers": {
-      "repository": {
-        "organization": "fpgawars",
-        "name": "tools-drivers"
-      },
-      "release": {
-        "tag": "2026-08-19",
-        "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     }
   }

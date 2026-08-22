@@ -60,15 +60,19 @@ apio packages install --verbose  # Provide additional info
 
 The `apio packages list` command displays the available and installed Apio packages. The list may vary depending on your operating system.
 
+The option `--check` causes the command to fail and exit with an error
+status code if the packages are not installed properly.
+
 <h3>Examples</h3>
 
 ```
-apio packages list
+apio packages list          # Just report
+apio packages list --check  # Also fail if packages unhealthy
 ```
 
 <h3>Options</h3>
 
 ```
--v, --verbose  Show detailed output.
--h, --help     Show this message and exit.
+-c, --check  Error on unhealthy packages.
+-h, --help   Show this message and exit.
 ```

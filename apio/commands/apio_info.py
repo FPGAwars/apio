@@ -156,11 +156,11 @@ def _system_cli():
         "Remote config status", construct_remote_config_status_str(apio_ctx)
     )
     table.add_row(
-        "Veriable formatter",
+        "Verible formatter",
         str(apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-format"),
     )
     table.add_row(
-        "Veriable language server",
+        "Verible language server",
         str(apio_ctx.apio_packages_dir / "verible/bin/verible-verilog-ls"),
     )
 

@@ -38,12 +38,12 @@ REMOTE_CONFIG_SCHEMA = {
                         # -- Repository
                         "repository": {
                             "type": "object",
-                            "required": ["organization", "name"],
+                            "required": ["name", "organization"],
                             "properties": {
-                                # -- Repo organization. e.g. "fpgawars"
-                                "organization": {"type": "string"},
                                 # -- Repo name, e.g. 'examples'
                                 "name": {"type": "string"},
+                                # -- Repo organization. e.g. "fpgawars"
+                                "organization": {"type": "string"},
                             },
                             "additionalProperties": False,
                         },
