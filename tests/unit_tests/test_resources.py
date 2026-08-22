@@ -2,7 +2,6 @@
 Tests of apio_context.py
 """
 
-import re
 from tests.conftest import ApioRunner
 from apio.apio_context import (
     ApioContext,
@@ -11,11 +10,6 @@ from apio.apio_context import (
     RemoteConfigPolicy,
 )
 from apio.utils.resource_util import validate_config, validate_packages
-
-
-def lc_part_num(part_num: str) -> str:
-    """Convert an fpga part number to a lower-case id."""
-    return part_num.lower().replace("/", "-")
 
 
 def test_resources_references(apio_runner: ApioRunner):
@@ -59,50 +53,6 @@ def test_resources_references(apio_runner: ApioRunner):
 
         # -- We should end up with an empty set of unused programmers.
         assert not unused_programmers, unused_programmers
-
-
-def test_resources_ids_and_order(apio_runner: ApioRunner):
-    """Tests the formats of boards, fpgas, and programmers names."""
-
-    # -- For boards we allow lower-case-0-9.
-    board_id_regex = re.compile(r"^[a-z][a-z0-9-]*$")
-
-    # -- For fpga ids we allow lower-case-0-9.
-    fpga_id_regex = re.compile(r"^[a-z][a-z0-9-/]*$")
-
-    # -- For programmer ids we allow lower-case-0-9.
-    programmer_id_regex = re.compile(r"^[a-z][a-z0-9-]*$")
-
-    with apio_runner.in_sandbox():
-
-        # -- Create an apio context so we can access the resources.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-        )
-
-        # -- Test the format of the board ids.
-        for board_id in apio_ctx.definitions.boards.keys():
-            assert board_id_regex.match(board_id), f"{board_id=}"
-
-        # -- Test the format of the fpgas ids and part numbers.
-        for fpga_id, fgpa_info in apio_ctx.definitions.fpgas.items():
-            assert fpga_id_regex.match(fpga_id), f"{fpga_id=}"
-            # Fpga id is either the fpga part num converted to lower-case
-            # or its the lower-case part num with a suffix that starts with
-            # '-'. E.g, for part num 'PART-NUM', the fpga id can be 'part-num'
-            # or 'part-num-somethings'
-            lc_part = lc_part_num(fgpa_info["part-num"])
-            assert fpga_id == lc_part or fpga_id.startswith(
-                lc_part + "-"
-            ), f"{fpga_id=}"
-
-        # -- Test the format of the programmers ids.
-        for programmer_id in apio_ctx.definitions.programmers.keys():
-            assert programmer_id_regex.match(
-                programmer_id
-            ), f"{programmer_id=}"
 
 
 def test_resources_are_valid(apio_runner: ApioRunner):

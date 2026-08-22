@@ -5,7 +5,7 @@ from apio.commands.apio import apio_top_cli as apio
 
 CUSTOM_BOARDS = """
 {
-  "my_custom_board": {
+  "my-custom-board": {
     "description": "My description",
     "fpga-id": "ice40up5k-sg48",
     "programmer": {
@@ -60,7 +60,7 @@ def test_boards_custom_board(apio_runner: ApioRunner):
         sb.write_apio_ini(
             {
                 "[env:default]": {
-                    "board": "my_custom_board",
+                    "board": "my-custom-board",
                     "top-module": "main",
                 }
             }
@@ -74,7 +74,7 @@ def test_boards_custom_board(apio_runner: ApioRunner):
         assert "Loading custom 'boards.jsonc'" in result.output
         assert "alhambra-ii" in result.output
         assert "icebreaker" in result.output
-        assert "my_custom_board" in result.output
+        assert "my-custom-board" in result.output
         assert "CUSTOM-FPGA" in result.output
 
         # -- Execute "apio boards --docs"
@@ -98,7 +98,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA-ID" not in result.output
         assert "alhambra-ii" in result.output
-        assert "my_custom_board" not in result.output
+        assert "my-custom-board" not in result.output
         assert "Total of 1 board" not in result.output
 
         # -- Run 'apio boards -v'
@@ -107,7 +107,7 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA-ID" in result.output
         assert "alhambra-ii" in result.output
-        assert "my_custom_board" not in result.output
+        assert "my-custom-board" not in result.output
         assert "Total of 1 board" not in result.output
 
         # -- Run 'apio boards --docs'
@@ -116,5 +116,5 @@ def test_boards_list_ok(apio_runner: ApioRunner):
         assert "Loading custom 'boards.jsonc'" not in result.output
         assert "FPGA" in result.output
         assert "alhambra-ii" in result.output
-        assert "my_custom_board" not in result.output
+        assert "my-custom-board" not in result.output
         assert "Total of 1 board" not in result.output

@@ -18,7 +18,6 @@ from jsonschema.exceptions import ValidationError
 from apio.common.apio_console import cout, cerror
 from apio.utils import jsonc
 
-
 # -- Boards definitions file name.
 BOARDS_JSONC = "boards.jsonc"
 
@@ -27,6 +26,10 @@ FPGAS_JSONC = "fpgas.jsonc"
 
 # -- Programmers definitions file name.
 PROGRAMMERS_JSONC = "programmers.jsonc"
+
+# -- A regex for validating boards, fpgas, and programmers ids.
+ID_FORMAT = re.compile(r"^[a-z][a-z0-9-]*$")
+
 
 # -- JSON schema for validating a single board definition in boards.jsonc.
 # -- The field 'description' is for information only.
@@ -166,6 +169,9 @@ class ApioDefinitions:
         # -- Validate boards definitions. Optional project custom definition
         # -- supersede apio standard definitions.
         for board_id, board_info in self.boards.items():
+            if not ID_FORMAT.match(board_id):
+                cerror(f"Board id has an invalid format: {board_id}")
+                sys.exit(1)
             try:
                 validate(instance=board_info, schema=BOARD_SCHEMA)
             except ValidationError as e:
@@ -182,6 +188,9 @@ class ApioDefinitions:
         # -- Validate fpgas definitions. Optional project custom definition
         # -- supersede apio standard definitions.
         for fpga_id, fpga_info in self.fpgas.items():
+            if not ID_FORMAT.match(fpga_id):
+                cerror(f"FPGA id has an invalid format: {fpga_id}")
+                sys.exit(1)
             try:
                 validate(instance=fpga_info, schema=FPGA_SCHEMA)
             except ValidationError as e:
@@ -197,6 +206,15 @@ class ApioDefinitions:
             if actual_params != expected_params:
                 cerror(f"Unexpected params {actual_params} in fpga {fpga_id}")
                 sys.exit(1)
+            part_num = fpga_info["part-num"]
+            lc_part_num = part_num.lower().replace("/", "-")
+            if fpga_id != lc_part_num and not fpga_id.startswith(
+                lc_part_num + "-"
+            ):
+                cerror(
+                    f"FPGA id [{fpga_id}] does not match part-num [{part_num}]"
+                )
+                sys.exit(1)
 
         # -- Load programmers definitions. Optional project custom definition
         # -- supersede apio standard definitions.
@@ -208,6 +226,9 @@ class ApioDefinitions:
 
         # -- Validate programmers definitions.
         for programmer_id, programmer_info in self.programmers.items():
+            if not ID_FORMAT.match(programmer_id):
+                cerror(f"Programmer id has an invalid format: {programmer_id}")
+                sys.exit(1)
             try:
                 validate(instance=programmer_info, schema=PROGRAMMER_SCHEMA)
             except ValidationError as e:

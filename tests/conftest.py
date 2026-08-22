@@ -297,6 +297,24 @@ class ApioSandbox:
         # -- All done
         return text
 
+    def write_json_file(
+        self,
+        file: Union[str, Path],
+        json_data: Dict[str, Dict],
+        exists_ok=False,
+    ):
+        """Write a dict to given json file. 'file' can be a string or a
+        Path."""
+        self.write_file(
+            file, json.dumps(json_data, indent=2), exists_ok=exists_ok
+        )
+
+    def read_json_file(self, file: Union[str, Path]) -> Dict[str, Any]:
+        """Read a json file. 'file' can be a string or a Path."""
+        json_text = self.read_file(file)
+        json_data = json.loads(json_text)
+        return json_data
+
     def write_apio_ini(
         self,
         sections: Dict[str, Dict[str, str]] | None = None,
