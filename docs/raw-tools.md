@@ -113,10 +113,10 @@ was generated with this command.
 
 ---
 
-## Xilinx 7-series PLL generator
+## AMD/Xilinx 7 Series PLL generator
 
-The Xilinx 7-series PLL Generator is a command-line tool that creates a
-Xilinx 7-series PLL module (`PLLE2_BASE`) from specified flags. It is used
+The AMD/Xilinx 7 Series PLL Generator is a command-line tool that creates a
+AMD/Xilinx 7 Series PLL module (`PLLE2_BASE`) from specified flags. It is used
 to run the design at a different, typically higher, frequency than that of
 the external clock. The tool is included in the `openxc7` package.
 
