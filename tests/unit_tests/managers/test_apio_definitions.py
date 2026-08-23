@@ -2,7 +2,7 @@
 Tests of apio_definitions.py
 """
 
-from pytest import LogCaptureFixture, raises
+from pytest import raises
 from tests.conftest import ApioRunner
 from apio.apio_context import (
     ApioContext,
@@ -221,9 +221,7 @@ def test_loading_with_custom_programmer(apio_runner: ApioRunner):
         assert not definitions.is_custom_programmer("openfpgaloader")
 
 
-def test_loading_invalid_custom_board(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_loading_invalid_custom_board(apio_runner: ApioRunner):
     """Tests loading attempt of an invalid board custom definition."""
 
     with apio_runner.in_sandbox() as sb:
@@ -250,23 +248,20 @@ def test_loading_invalid_custom_board(
         )
 
         # -- Test
-        capsys.readouterr()  # Reset capture
-        with raises(SystemExit) as e:
-            _ = ApioContext(
-                project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            )
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _ = ApioContext(
+                    project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
 
         # -- Verify
         assert e.value.code == 1
-        log = capsys.readouterr().out
-        assert "'description' is a required property" in log
+        assert "'description' is a required property" in log.out
 
 
-def test_loading_invalid_custom_fpga(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_loading_invalid_custom_fpga(apio_runner: ApioRunner):
     """Tests loading attempt of an invalid board custom definition."""
 
     with apio_runner.in_sandbox() as sb:
@@ -288,23 +283,20 @@ def test_loading_invalid_custom_fpga(
         )
 
         # -- Test
-        capsys.readouterr()  # Reset capture
-        with raises(SystemExit) as e:
-            _ = ApioContext(
-                project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            )
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _ = ApioContext(
+                    project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
 
         # -- Verify
         assert e.value.code == 1
-        log = capsys.readouterr().out
-        assert "'part-num' is a required property" in log
+        assert "'part-num' is a required property" in log.out
 
 
-def test_loading_invalid_custom_programmer(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_loading_invalid_custom_programmer(apio_runner: ApioRunner):
     """Tests loading attempt of an invalid programmer custom definition."""
 
     with apio_runner.in_sandbox() as sb:
@@ -324,23 +316,20 @@ def test_loading_invalid_custom_programmer(
         )
 
         # -- Test
-        capsys.readouterr()  # Reset capture
-        with raises(SystemExit) as e:
-            _ = ApioContext(
-                project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            )
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _ = ApioContext(
+                    project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
 
         # -- Verify
         assert e.value.code == 1
-        log = capsys.readouterr().out
-        assert "'command' is a required property" in log
+        assert "'command' is a required property" in log.out
 
 
-def test_loading_invalid_custom_board_id(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_loading_invalid_custom_board_id(apio_runner: ApioRunner):
     """Tests loading attempt of an invalid board id."""
 
     with apio_runner.in_sandbox() as sb:
@@ -363,23 +352,20 @@ def test_loading_invalid_custom_board_id(
         )
 
         # -- Test
-        capsys.readouterr()  # Reset capture
-        with raises(SystemExit) as e:
-            _ = ApioContext(
-                project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            )
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _ = ApioContext(
+                    project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
 
         # -- Verify
         assert e.value.code == 1
-        log = capsys.readouterr().out
-        assert "Board id has an invalid format: invalid-ID" in log
+        assert "Board id has an invalid format: invalid-ID" in log.out
 
 
-def test_loading_invalid_custom_fpga_id(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_loading_invalid_custom_fpga_id(apio_runner: ApioRunner):
     """Tests loading attempt of an invalid fpga id."""
 
     with apio_runner.in_sandbox() as sb:
@@ -402,23 +388,21 @@ def test_loading_invalid_custom_fpga_id(
         )
 
         # -- Test
-        capsys.readouterr()  # Reset capture
-        with raises(SystemExit) as e:
-            _ = ApioContext(
-                project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            )
+        with apio_runner.with_logger() as log:
+
+            with raises(SystemExit) as e:
+                _ = ApioContext(
+                    project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
 
         # -- Verify
         assert e.value.code == 1
-        log = capsys.readouterr().out
-        assert "FPGA id has an invalid format: invalid-ID" in log
+        assert "FPGA id has an invalid format: invalid-ID" in log.out
 
 
-def test_loading_invalid_custom_programmer_id(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_loading_invalid_custom_programmer_id(apio_runner: ApioRunner):
     """Tests loading attempt of an invalid programmer id."""
 
     with apio_runner.in_sandbox() as sb:
@@ -439,15 +423,14 @@ def test_loading_invalid_custom_programmer_id(
         )
 
         # -- Test
-        capsys.readouterr()  # Reset capture
-        with raises(SystemExit) as e:
-            _ = ApioContext(
-                project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            )
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _ = ApioContext(
+                    project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
 
         # -- Verify
         assert e.value.code == 1
-        log = capsys.readouterr().out
-        assert "Programmer id has an invalid format: invalid-ID" in log
+        assert "Programmer id has an invalid format: invalid-ID" in log.out

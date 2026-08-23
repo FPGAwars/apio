@@ -6,7 +6,6 @@ Tests of remote_config.py and it's integration with ApioContext.
 
 import json
 from datetime import datetime, timedelta
-from pytest import LogCaptureFixture
 from tests.conftest import ApioRunner
 from apio.managers.remote_config import (
     get_datetime_stamp,
@@ -131,19 +130,19 @@ def test_datetime_stamp_diff_days():
     )
 
 
-def test_cached_config_ok(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_cached_config_ok(apio_runner: ApioRunner):
     """Tests remote config resolution when the cached config is ok."""
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Get an actual fresh remote config.
-        capsys.readouterr()  # Reset log.
-        base_apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        assert "Fetching" in capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            base_apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Fetching" in log.out
         remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
 
         # -- Write a test cached remote config.
@@ -162,34 +161,31 @@ def test_cached_config_ok(apio_runner: ApioRunner, capsys: LogCaptureFixture):
 
         # -- Init an apio context that should return the test cached
         # -- remote config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        log = capsys.readouterr().out
-        assert "Cached remote config is unsuitable" not in log
-        assert "Fetching" not in log
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Cached remote config is unsuitable" not in log.out
+        assert "Fetching" not in log.out
         assert apio_ctx.remote_config.data == test_data["remote-config"]
 
 
-def test_cached_config_different_apio_version(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_cached_config_different_apio_version(apio_runner: ApioRunner):
     """Tests remote config resolution when the cached config is from a
     different apio version."""
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Get an actual fresh remote config.
-        capsys.readouterr()  # Reset log.
-        base_apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        assert "Fetching" in capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            base_apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Fetching" in log.out
         remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
 
         # -- Write a test cached remote config. Using a fake apio version.
@@ -206,23 +202,22 @@ def test_cached_config_different_apio_version(
 
         # -- Init an apio context that should return the test cached
         # -- remote config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-
-        log = capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
         assert (
-            "Cached remote config is unsuitable (Apio version mismatch)" in log
+            "Cached remote config is unsuitable (Apio version mismatch)"
+            in log.out
         )
-        assert "Fetching" in log
+        assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
 
 def test_cached_config_different_apio_src_url(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
+    apio_runner: ApioRunner,
 ):
     """Tests remote config resolution when the cached config is from a
     different URL."""
@@ -230,13 +225,13 @@ def test_cached_config_different_apio_src_url(
     with apio_runner.in_sandbox() as sb:
 
         # -- Get an actual fresh remote config.
-        capsys.readouterr()  # Reset log.
-        base_apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        assert "Fetching" in capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            base_apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Fetching" in log.out
 
         # -- Write a test cached remote config. Using a fake loaded-from url.
         path = sb.home_dir / "cached-remote-config.json"
@@ -254,36 +249,33 @@ def test_cached_config_different_apio_src_url(
 
         # -- Init an apio context that should return the test cached
         # -- remote config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-
-        log = capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
         assert (
-            "Cached remote config is unsuitable (source URL mismatch)" in log
+            "Cached remote config is unsuitable (source URL mismatch)"
+            in log.out
         )
-        assert "Fetching" in log
+        assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
 
-def test_cached_remote_config_too_old(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_cached_remote_config_too_old(apio_runner: ApioRunner):
     """Tests remote config resolution when the cached config is too old."""
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Get an actual fresh remote config.
-        capsys.readouterr()  # Reset log.
-        base_apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        assert "Fetching" in capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            base_apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Fetching" in log.out
         remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
 
         # -- Write a test cached remote config that is 10 days old.
@@ -301,34 +293,31 @@ def test_cached_remote_config_too_old(
         )
 
         # -- Init an apio context that should return a fresh remote config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        log = capsys.readouterr().out
-        assert "Cached remote config is unsuitable (stale)" in log
-        assert "Fetching" in log
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Cached remote config is unsuitable (stale)" in log.out
+        assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
 
-def test_cached_remote_config_too_new(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_cached_remote_config_too_new(apio_runner: ApioRunner):
     """Tests remote config resolution when the cached config is
     from the future."""
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Get an actual fresh remote config.
-        capsys.readouterr()  # Reset log.
-        base_apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        assert "Fetching" in capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            base_apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Fetching" in log.out
         remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
 
         # -- Write a test cached remote config that was downloaded 10 days
@@ -347,34 +336,31 @@ def test_cached_remote_config_too_new(
         )
 
         # -- Init an apio context that should return a fresh remote config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        log = capsys.readouterr().out
-        assert "Cached remote config is unsuitable (stale)" in log
-        assert "Fetching" in log
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Cached remote config is unsuitable (stale)" in log.out
+        assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
 
-def test_corrupt_cached_remote_config(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_corrupt_cached_remote_config(apio_runner: ApioRunner):
     """Tests remote config resolution when the cached config file is
     corrupt."""
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Get an actual fresh remote config.
-        capsys.readouterr()  # Reset log.
-        base_apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        assert "Fetching" in capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            base_apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Fetching" in log.out
 
         # -- Write a test cached remote config that is corrupt.
         path = sb.home_dir / "cached-remote-config.json"
@@ -389,21 +375,18 @@ def test_corrupt_cached_remote_config(
         )
 
         # -- Init an apio context that should return a fresh remote config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        log = capsys.readouterr().out
-        assert "Cached remote config is unsuitable (could'nt parse)" in log
-        assert "Fetching" in log
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Cached remote config is unsuitable (could'nt parse)" in log.out
+        assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
 
-def test_no_cached_remote_config(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_no_cached_remote_config(apio_runner: ApioRunner):
     """Tests remote config resolution when there is no cached remote
     config file."""
 
@@ -414,34 +397,31 @@ def test_no_cached_remote_config(
         assert not path.exists()
 
         # -- Init an apio context that should return a fresh remote config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        log = capsys.readouterr().out
-        assert "Cached remote config is unsuitable (no cache file)" in log
-        assert "Fetching" in log
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Cached remote config is unsuitable (no cache file)" in log.out
+        assert "Fetching" in log.out
         assert "oss-cad-suite" in apio_ctx.remote_config.data["packages"]
 
 
-def test_forced_fresh_remote_config_ok(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_forced_fresh_remote_config_ok(apio_runner: ApioRunner):
     """Tests remote config resolution when the cached config is ignored
     because a fresh config was requested."""
 
     with apio_runner.in_sandbox() as sb:
 
         # -- Get an actual fresh remote config.
-        capsys.readouterr()  # Reset log.
-        base_apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        assert "Fetching" in capsys.readouterr().out
+        with apio_runner.with_logger() as log:
+            base_apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Fetching" in log.out
         remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
 
         # -- Write a test cached remote config.
@@ -459,13 +439,12 @@ def test_forced_fresh_remote_config_ok(
         )
 
         # -- Init an apio context that should fetch a fresh config.
-        capsys.readouterr()  # Reset log.
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.NO_PROJECT,
-            remote_config_policy=RemoteConfigPolicy.GET_FRESH,
-            packages_policy=PackagesPolicy.IGNORE_PACKAGES,
-        )
-        log = capsys.readouterr().out
-        assert "Cached remote config is unsuitable" not in log
-        assert "Fetching" in log
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.NO_PROJECT,
+                remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+                packages_policy=PackagesPolicy.IGNORE_PACKAGES,
+            )
+        assert "Cached remote config is unsuitable" not in log.out
+        assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data

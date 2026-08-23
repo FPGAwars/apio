@@ -3,7 +3,7 @@ Tests of profile.py
 """
 
 import json
-from pytest import LogCaptureFixture, raises
+from pytest import raises
 from tests.conftest import ApioRunner
 from apio.managers.profile import (
     Profile,
@@ -38,9 +38,7 @@ def test_profile_loading(apio_runner: ApioRunner):
         assert profile.preferences == TEST_DATA["preferences"]
 
 
-def test_profile_with_corrupt_profile_file(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_profile_with_corrupt_profile_file(apio_runner: ApioRunner):
     """Tests that a corrupt profile.json results in a clean error message
     instead of an unhandled JSONDecodeError on every command."""
 
@@ -63,10 +61,11 @@ def test_profile_with_corrupt_profile_file(
             assert Profile.read_preferences_theme(default="dark") == "dark"
 
             # -- Loading the profile should exit with a clean error message.
-            with raises(SystemExit) as e:
-                Profile(sb.home_dir)
+            with apio_runner.with_logger() as log:
+                with raises(SystemExit) as e:
+                    Profile(sb.home_dir)
             assert e.value.code == 1, bad_content
-            assert "Invalid profile file" in capsys.readouterr().out
+            assert "Invalid profile file" in log.out
 
 
 def test_profile_with_unknown_theme(apio_runner: ApioRunner):

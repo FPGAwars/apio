@@ -5,6 +5,7 @@ import json
 import subprocess
 from subprocess import CompletedProcess
 from dataclasses import dataclass
+from io import StringIO
 import shutil
 import tempfile
 import contextlib
@@ -15,16 +16,46 @@ from urllib.parse import urlparse
 from pprint import pprint
 import pytest
 from click.testing import CliRunner, Result
+from rich.ansi import AnsiDecoder
 from apio import __main__
 from apio.common import apio_console
 from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
 from apio.utils import jsonc
+
 
 # -- Debug mode on/off
 DEBUG = True
 
 # -- This is the marker we use to identify the sandbox directories.
 SANDBOX_MARKER = "apio-sandbox"
+
+
+# -- Decoder for removing ansi styles and colors.
+ANSI_DECODER = AnsiDecoder()
+
+
+class CapturedLog:
+    """Holds the captured stdout + stderr."""
+
+    def __init__(self):
+        self._buf = StringIO()
+
+    @property
+    def buf(self) -> StringIO:
+        """Getter to the capture buffer."""
+        return self._buf
+
+    @property
+    def out(self) -> str:
+        """Return the full captured text with ansi styles and colors
+        removed."""
+        text_obj = ANSI_DECODER.decode_line(self._buf.getvalue())
+        return text_obj.plain
+
+    @property
+    def out_styled(self) -> str:
+        """The original output, without the style and color stripping."""
+        return self.out
 
 
 @dataclass(frozen=True)
@@ -453,6 +484,16 @@ class ApioRunner:
         local_config_url = "file://" + str(local_config_file)
 
         return local_config_url
+
+    @contextlib.contextmanager
+    def with_logger(self):
+        """Capture stdout + stderr and yield a CapturedLog object."""
+        log = CapturedLog()
+        with (
+            contextlib.redirect_stdout(log.buf),
+            contextlib.redirect_stderr(log.buf),
+        ):
+            yield log
 
     @property
     def sandbox(self) -> Optional[ApioSandbox]:
