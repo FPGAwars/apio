@@ -88,7 +88,7 @@ def cli(
     )
 
     # -- Make sure the board exist.
-    if board not in apio_ctx.boards:
+    if board not in apio_ctx.definitions.boards:
         cerror(f"Unknown board id '{board}'.")
         sys.exit(1)
 
