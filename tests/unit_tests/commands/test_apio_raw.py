@@ -28,7 +28,7 @@ def test_raw(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
         assert "Environment settings:" in result.output
         assert "PATH" in result.output
-        assert "YOSYS_LIB" in result.output
+        assert "VERILATOR_ROOT" in result.output
 
         # -- Run 'apio raw -- echo hello'.
         result = sb.invoke_apio_cmd(
@@ -53,7 +53,7 @@ def test_raw(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["raw", "-v"], in_subprocess=True)
         sb.assert_result_ok(result)
         assert "Environment settings:" in result.output
-        assert "YOSYS_LIB" in result.output
+        assert "VERILATOR_ROOT" in result.output
 
 
 def test_raw_preserves_argv_and_cwd(apio_runner: ApioRunner):

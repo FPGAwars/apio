@@ -54,12 +54,19 @@ PACKAGES_SCHEMA = {
                 "env": {
                     "type": "object",
                     "properties": {
-                        "path": {"type": "array", "items": {"type": "string"}},
-                        "unset-vars": {
+                        "add-to-path": {
                             "type": "array",
                             "items": {"type": "string"},
                         },
-                        "set-vars": {
+                        "delete-env-vars": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                        },
+                        "add-env-vars": {
+                            "type": "object",
+                            "additionalProperties": {"type": "string"},
+                        },
+                        "define-consts": {
                             "type": "object",
                             "additionalProperties": {"type": "string"},
                         },

@@ -15,44 +15,16 @@
     "description": "Apio project examples",
     "env": {}
   },
-  // "oss-cad-suite" package
-  "oss-cad-suite": {
-    "description": "Yosys HQ oss-cad-suite",
+  // "drivers" package
+  "drivers": {
+    "restricted-to-platforms": [
+      "windows-amd64"
+    ],
+    "description": "Drivers tools for Windows",
     "env": {
-      "unset-vars": [
-        // Delete this var, if exists, o isolate the oss-cad-suite
-        // embedded python from the local python.
-        "PYTHONPATH"
-      ],
-      "path": [
-        "%p/bin",
-        "%p/lib"
-      ],
-      "set-vars": {
-        "VERILATOR_ROOT": "%p/share/verilator",
-        "ICEBOX": "%p/share/icebox",
-        "TRELLIS": "%p/share/trellis",
-        "YOSYS_LIB": "%p/share/yosys"
-        // TODO: Delete after testing. Was used for the --gui option
-        // but may impacted other functionalities.
-        //
-        // For 'apio build -g' on windows.
-        // "QT_PLUGIN_PATH": "%p/lib/qt5/plugins"
-      }
-    }
-  },
-  // "openxc7" package
-  "openxc7": {
-    "description": "Openxc7 toolchain (Xilinx FPGAs)",
-    "env": {
-      "path": [
-        "%p/bin",
-        "%p/lib"
-      ],
-      "set-vars": {
-        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
-        "CHIPDB_DIR": "%p/chipdb"
-      }
+      "add-to-path": [
+        "%p/bin"
+      ]
     }
   },
   // "graphviz" package
@@ -62,28 +34,55 @@
     ],
     "description": "Graphviz tool for Windows",
     "env": {
-      "path": [
+      "add-to-path": [
         "%p/bin"
       ]
+    }
+  },
+  // "openxc7" package
+  "openxc7": {
+    "description": "Openxc7 toolchain (Xilinx FPGAs)",
+    "env": {
+      "add-to-path": [
+        "%p/bin",
+        "%p/lib"
+      ],
+      // These are internal values that are used by Apio and they are not
+      // exported as env vars.
+      "define-consts": {
+        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
+        "CHIPDB_DIR": "%p/chipdb"
+      }
+    }
+  },
+  // "oss-cad-suite" package
+  "oss-cad-suite": {
+    "description": "Yosys HQ oss-cad-suite",
+    "env": {
+      "delete-env-vars": [
+        // Delete this var, if exists. This isolate the oss-cad-suite
+        // embedded python from the local python.
+        "PYTHONPATH"
+      ],
+      "add-to-path": [
+        "%p/bin",
+        "%p/lib"
+      ],
+      "add-env-vars": {
+        "VERILATOR_ROOT": "%p/share/verilator"
+        // "ICEBOX": "%p/share/icebox"
+      },
+      "define-consts": {
+          "TRELLIS": "%p/share/trellis",
+          "YOSYS_LIB": "%p/share/yosys"
+      }
     }
   },
   // "verible" package
   "verible": {
-    "description": "Chips Aliance Verible toolset",
+    "description": "Chips Alliance Verible toolset",
     "env": {
-      "path": [
-        "%p/bin"
-      ]
-    }
-  },
-  // "drivers" package
-  "drivers": {
-    "restricted-to-platforms": [
-      "windows-amd64"
-    ],
-    "description": "Drivers tools for Windows",
-    "env": {
-      "path": [
+      "add-to-path": [
         "%p/bin"
       ]
     }

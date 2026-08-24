@@ -305,15 +305,17 @@ class SConsManager:
 
         # -- Populate the Environment params.
         assert apio_ctx.platform_id, "Missing platform_id in apio context"
-        oss_set_vars = apio_ctx.all_packages["oss-cad-suite"]["env"][
-            "set-vars"
+        oss_define_consts = apio_ctx.all_packages["oss-cad-suite"]["env"][
+            "define-consts"
         ]
-        assert "YOSYS_LIB" in oss_set_vars, oss_set_vars
-        assert "TRELLIS" in oss_set_vars, oss_set_vars
+        assert "YOSYS_LIB" in oss_define_consts, oss_define_consts
+        assert "TRELLIS" in oss_define_consts, oss_define_consts
 
-        openxc7_set_vars = apio_ctx.all_packages["openxc7"]["env"]["set-vars"]
-        assert "PRJXRAY_DB_DIR" in openxc7_set_vars, open
-        assert "CHIPDB_DIR" in openxc7_set_vars, open
+        openxc7_define_consts = apio_ctx.all_packages["openxc7"]["env"][
+            "define-consts"
+        ]
+        assert "PRJXRAY_DB_DIR" in openxc7_define_consts, openxc7_define_consts
+        assert "CHIPDB_DIR" in openxc7_define_consts, openxc7_define_consts
 
         result.environment.MergeFrom(
             Environment(
@@ -326,11 +328,11 @@ class SConsManager:
                 ),
                 theme_name=apio_console.current_theme_name(),
                 debug_level=util.debug_level(),
-                yosys_path=oss_set_vars["YOSYS_LIB"],
-                trellis_path=oss_set_vars["TRELLIS"],
+                yosys_path=oss_define_consts["YOSYS_LIB"],
+                trellis_path=oss_define_consts["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
-                xilinx_prjxray_db_path=openxc7_set_vars["PRJXRAY_DB_DIR"],
-                xilinx_chipdb_path=openxc7_set_vars["CHIPDB_DIR"],
+                xilinx_prjxray_db_path=openxc7_define_consts["PRJXRAY_DB_DIR"],
+                xilinx_chipdb_path=openxc7_define_consts["CHIPDB_DIR"],
             )
         )
         assert result.environment.IsInitialized(), result
