@@ -6,7 +6,7 @@ import os
 import sys
 import subprocess
 from pathlib import Path
-from pytest import LogCaptureFixture, raises
+from pytest import raises
 from tests.conftest import ApioRunner
 from apio import __main__ as apio_main
 from apio.apio_context import (
@@ -50,7 +50,7 @@ def test_init(apio_runner: ApioRunner):
 
 
 def test_home_dir_with_a_bad_character(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
+    apio_runner: ApioRunner,
 ):
     """Tests the initialization of the apio context with home dirs that
     contain invalid chars."""
@@ -63,19 +63,17 @@ def test_home_dir_with_a_bad_character(
             os.environ["APIO_HOME"] = str(invalid_home_dir)
 
             # -- Initialize an apio context. It should exit with an error.
-            with raises(SystemExit) as e:
-                ApioContext(
-                    project_policy=ProjectPolicy.NO_PROJECT,
-                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-                )
+            with apio_runner.with_logger() as log:
+                with raises(SystemExit) as e:
+                    ApioContext(
+                        project_policy=ProjectPolicy.NO_PROJECT,
+                        remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                        packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                    )
             assert e.value.code == 1
             # -- The space char is reported by its name, for visibility.
             char_name = "space" if invalid_char == " " else invalid_char
-            assert (
-                f"Unsupported character [{char_name}]"
-                in capsys.readouterr().out
-            )
+            assert f"Unsupported character [{char_name}]" in log.out
 
 
 def test_home_dir_with_a_space_in_subprocess(apio_runner: ApioRunner):
@@ -106,9 +104,7 @@ def test_home_dir_with_a_space_in_subprocess(apio_runner: ApioRunner):
         assert "AssertionError" not in output, output
 
 
-def test_home_dir_with_relative_path(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_home_dir_with_relative_path(apio_runner: ApioRunner):
     """Apio context should fail if the apio home dir is a relative path"""
 
     with apio_runner.in_sandbox():
@@ -118,14 +114,12 @@ def test_home_dir_with_relative_path(
         os.environ["APIO_HOME"] = str(invalid_home_dir)
 
         # -- Initialize an apio context. It should exit with an error.
-        with raises(SystemExit) as e:
-            ApioContext(
-                project_policy=ProjectPolicy.NO_PROJECT,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            )
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                ApioContext(
+                    project_policy=ProjectPolicy.NO_PROJECT,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
         assert e.value.code == 1
-        assert (
-            "Error: Apio home dir should be an absolute path"
-            in capsys.readouterr().out
-        )
+        assert "Error: Apio home dir should be an absolute path" in log.out

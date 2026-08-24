@@ -3,11 +3,9 @@ Tests of project.py
 """
 
 from typing import Dict, Optional, Tuple
-from _pytest.capture import CaptureFixture
 import pytest
 from tests.conftest import ApioRunner
 from apio.managers.project import Project, ENV_OPTIONS_SPEC
-from apio.common.apio_console import cunstyle
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -22,28 +20,25 @@ def load_apio_ini(
     apio_ini: Dict[str, Dict[str, str]],
     env_arg: Optional[str],
     apio_runner: ApioRunner,
-    capsys: CaptureFixture[str],
 ) -> Tuple[Project, str]:
-    """A helper function load apio.ini.  Returns (project, stdout)"""
+    """A helper function load apio.ini.  Returns (project, log-text)"""
 
     with apio_runner.in_sandbox() as sb:
         # -- Create the apio.ini file
         sb.write_apio_ini(apio_ini)
 
-        # -- Try to create the context with the project info.
-        capsys.readouterr()  # Reset capture
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.PROJECT_REQUIRED,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-            env_arg=env_arg,
-        )
+        # -- Try to create the context with the project info while
+        # -- capturing log.
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                env_arg=env_arg,
+            )
 
         # -- Return the values.
-        return (
-            apio_ctx.project,
-            cunstyle(capsys.readouterr().out),
-        )
+        return (apio_ctx.project, log.out)
 
 
 def test_env_options_specs():
@@ -53,7 +48,7 @@ def test_env_options_specs():
         assert name == env_options_spec.name
 
 
-def test_all_options_env(apio_runner: ApioRunner, capsys: CaptureFixture[str]):
+def test_all_options_env(apio_runner: ApioRunner):
     """Tests an apio.ini with all options"""
 
     apio_ini = {
@@ -79,7 +74,6 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: CaptureFixture[str]):
         apio_ini=apio_ini,
         env_arg=None,
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.env_name == "default"
@@ -103,9 +97,7 @@ def test_all_options_env(apio_runner: ApioRunner, capsys: CaptureFixture[str]):
     assert project.get_str_option("constraint-file") == "pinout.lpf"
 
 
-def test_required_options_only_env(
-    apio_runner: ApioRunner, capsys: CaptureFixture
-):
+def test_required_options_only_env(apio_runner: ApioRunner):
     """Tests a minimal apio.ini with required only options."""
 
     project, _ = load_apio_ini(
@@ -117,7 +109,6 @@ def test_required_options_only_env(
         },
         env_arg=None,
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.env_name == "default"
@@ -127,7 +118,7 @@ def test_required_options_only_env(
     }
 
 
-def test_list_options(apio_runner: ApioRunner, capsys: CaptureFixture):
+def test_list_options(apio_runner: ApioRunner):
     """Tests list options."""
 
     project, _ = load_apio_ini(
@@ -141,7 +132,6 @@ def test_list_options(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         env_arg=None,
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.get_list_option("yosys-extra-options") == [
@@ -155,7 +145,7 @@ def test_list_options(apio_runner: ApioRunner, capsys: CaptureFixture):
     ]
 
 
-def test_macro_expansion(apio_runner: ApioRunner, capsys: CaptureFixture):
+def test_macro_expansion(apio_runner: ApioRunner):
     """Tests the expansion of macros within values."""
 
     project, _ = load_apio_ini(
@@ -170,7 +160,6 @@ def test_macro_expansion(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         env_arg=None,
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.get_str_option("constraint-file") == "; value"
@@ -181,34 +170,7 @@ def test_macro_expansion(apio_runner: ApioRunner, capsys: CaptureFixture):
     ]
 
 
-# def test_legacy_board_id(apio_runner: ApioRunner, capsys: CaptureFixture):
-#     """Tests with 'board' option having a legacy board id. It should
-#     be converted to the canonical board id"""
-
-#     project, stdout = load_apio_ini(
-#         apio_ini={
-#             "[env:default]": {
-#                 "board": "iCE40-HX8K",
-#                 "top-module": "my_top_module",
-#             }
-#         },
-#         env_arg=None,
-#         apio_runner=apio_runner,
-#         capsys=capsys,
-#     )
-
-#     assert project.env_name == "default"
-#     assert project.env_options == {
-#         "board": "ice40-hx8k",
-#         "top-module": "my_top_module",
-#     }
-#     assert (
-#         "Warning: 'Board iCE40-HX8K' was renamed to 'ice40-hx8k'. "
-#         "Please update apio.ini" in stdout
-#     )
-
-
-def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: CaptureFixture):
+def test_legacy_apio_ini(apio_runner: ApioRunner):
     """Tests with an old style apio.ini that has a single [env] section."""
 
     project, stdout = load_apio_ini(
@@ -220,7 +182,6 @@ def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         env_arg=None,
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.env_name == "default"
@@ -234,7 +195,7 @@ def test_legacy_apio_ini(apio_runner: ApioRunner, capsys: CaptureFixture):
     )
 
 
-def test_first_env_is_default(apio_runner: ApioRunner, capsys: CaptureFixture):
+def test_first_env_is_default(apio_runner: ApioRunner):
     """Tests that with no --env and no default-env, the first env in
     apio.ini is selected"""
 
@@ -254,7 +215,6 @@ def test_first_env_is_default(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         env_arg=None,
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.env_name == "env1"
@@ -265,9 +225,7 @@ def test_first_env_is_default(apio_runner: ApioRunner, capsys: CaptureFixture):
     }
 
 
-def test_env_selection_from_apio_ini(
-    apio_runner: ApioRunner, capsys: CaptureFixture
-):
+def test_env_selection_from_apio_ini(apio_runner: ApioRunner):
     """Tests that with no --env, and with default env defined in apio.ini
     using default-env option."""
 
@@ -290,7 +248,6 @@ def test_env_selection_from_apio_ini(
         },
         env_arg=None,
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.env_name == "env2"
@@ -301,9 +258,7 @@ def test_env_selection_from_apio_ini(
     }
 
 
-def test_env_selection_from_env_arg(
-    apio_runner: ApioRunner, capsys: CaptureFixture
-):
+def test_env_selection_from_env_arg(apio_runner: ApioRunner):
     """Tests that with --env overriding default-env in apio.ini."""
 
     project, _ = load_apio_ini(
@@ -325,7 +280,6 @@ def test_env_selection_from_env_arg(
         },
         env_arg="env2",  # --env env2
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     assert project.env_name == "env2"
@@ -341,7 +295,6 @@ def error_tester(
     apio_ini: Dict[str, Dict[str, str]],
     expected_error: str,
     apio_runner: ApioRunner,
-    capsys: CaptureFixture,
 ):
     """A helper function to tests apio.ini content that is expected to
     exit with an error."""
@@ -351,22 +304,21 @@ def error_tester(
         sb.write_apio_ini(apio_ini)
 
         # -- Try to create the context with the project info.
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            ApioContext(
-                project_policy=ProjectPolicy.PROJECT_REQUIRED,
-                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-                env_arg=env_arg,
-            )
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                ApioContext(
+                    project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                    env_arg=env_arg,
+                )
 
         # -- Check the errors.
-        capture = cunstyle(capsys.readouterr().out)
         assert e.value.code == 1
-        assert expected_error in capture
+        assert expected_error in log.out
 
 
-def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
+def test_validation_errors(apio_runner: ApioRunner):
     """Tests the validation of apio.ini errors."""
 
     # -- No [env:name] section.
@@ -383,7 +335,6 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
             "least one [env:name] section."
         ),
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     # -- Unknown board id.
@@ -396,7 +347,6 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         expected_error="Error: Unknown board id 'no-such-board' in apio.ini",
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     # -- Env name has an invalid char (Uppercase).
@@ -410,7 +360,6 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         expected_error="Error: Invalid env name 'Default'",
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     # -- Env name has an extra space.
@@ -424,7 +373,6 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         expected_error="Error: Invalid env name ' default'",
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     # -- default-env points to a non existing env.
@@ -441,7 +389,6 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         expected_error="Error: Env 'no-such-env' not found in apio.ini",
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     # -- Missing required option.
@@ -453,7 +400,6 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
         expected_error="Error: Missing required option 'board' for "
         "env 'default'.",
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     # -- env_arg has a non existing env name.
@@ -467,7 +413,6 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         expected_error="Error: Env 'no-such-env' not found in apio.ini",
         apio_runner=apio_runner,
-        capsys=capsys,
     )
 
     # -- env_arg has an env name with an invalid char (upper case).
@@ -481,5 +426,4 @@ def test_validation_errors(apio_runner: ApioRunner, capsys: CaptureFixture):
         },
         expected_error="Error: Invalid --env value 'Default'",
         apio_runner=apio_runner,
-        capsys=capsys,
     )

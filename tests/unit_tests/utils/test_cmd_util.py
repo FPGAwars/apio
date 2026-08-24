@@ -5,6 +5,7 @@ Tests of cmd_util.py
 import sys
 import pytest
 import click
+from tests.conftest import ApioRunner
 from apio.utils.cmd_util import (
     ApioOption,
     ApioCmdContext,
@@ -25,7 +26,7 @@ def fake_cmd(*, _opt1, _opt2, _opt3, _opt4):
     sys.exit(0)
 
 
-def test_check_at_most_one_param(capsys):
+def test_check_at_most_one_param(apio_runner: ApioRunner):
     """Tests the check_at_most_one_param() function."""
 
     # -- No option is specified. Should be ok.
@@ -51,9 +52,8 @@ def test_check_at_most_one_param(capsys):
     # -- Two options are specifies. Should fail.
     cmd_ctx = ApioCmdContext(fake_cmd)
     fake_cmd.parse_args(cmd_ctx, ["--opt1", "--opt2"])
-    capsys.readouterr()  # Reset capture.
-    with pytest.raises(SystemExit) as e:
-        check_at_most_one_param(cmd_ctx, ["_opt1", "_opt2", "_opt3"])
-    captured = capsys.readouterr()
+    with apio_runner.with_logger() as log:
+        with pytest.raises(SystemExit) as e:
+            check_at_most_one_param(cmd_ctx, ["_opt1", "_opt2", "_opt3"])
     assert e.value.code == 1
-    assert "--opt1 and --opt2 cannot be combined together" in captured.out
+    assert "--opt1 and --opt2 cannot be combined together" in log.out

@@ -8,10 +8,8 @@ from os.path import isfile, exists, join
 import pytest
 from SCons.Node.FS import FS
 from SCons.Action import FunctionAction
-from pytest import LogCaptureFixture
 from tests.unit_tests.scons.testing import make_test_apio_env
 from tests.conftest import ApioRunner
-from apio.common.apio_console import cunstyle
 from apio.common import apio_console
 from apio.common.proto.apio_pb2 import (
     TargetParams,
@@ -29,9 +27,7 @@ from apio.scons.plugin_util import (
 )
 
 
-def test_get_constraint_file(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_get_constraint_file(apio_runner: ApioRunner):
     """Test the get_constraint_file() method."""
 
     with apio_runner.in_sandbox() as sb:
@@ -39,77 +35,69 @@ def test_get_constraint_file(
         apio_env = make_test_apio_env()
 
         # -- If not .pcf files, should print an error and exit.
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            result = get_constraint_file(apio_env, ".pcf")
-        captured = capsys.readouterr()
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                result = get_constraint_file(apio_env, ".pcf")
         assert e.value.code == 1
-        assert "No constraint file '*.pcf' found" in cunstyle(captured.out)
+        assert "No constraint file '*.pcf' found" in log.out
 
         # -- If a single .pcf file, return it. Constraint file can also be
         # -- in subdirectories as we test here
         file1 = os.path.join("lib", "pinout.pcf")
         sb.write_file(file1, "content1")
-        result = get_constraint_file(apio_env, ".pcf")
-        captured = capsys.readouterr()
-        assert captured.out == ""
+        with apio_runner.with_logger() as log:
+            result = get_constraint_file(apio_env, ".pcf")
+        assert log.out == ""
         assert result == file1
 
         # -- If there is more than one, exit with an error message.
         file2 = "other.pcf"
         sb.write_file(file2, "content2")
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            result = get_constraint_file(apio_env, ".pcf")
-        captured = capsys.readouterr()
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                result = get_constraint_file(apio_env, ".pcf")
         assert e.value.code == 1
-        assert "Error: Found 2 constraint files '*.pcf'" in cunstyle(
-            captured.out
-        )
+        assert "Error: Found 2 constraint files '*.pcf'" in log.out
 
         # -- If the user specified a valid file then return it, regardless
         # -- if it exists or not.
         apio_env.params.apio_env_params.constraint_file = "xyz.pcf"
-        capsys.readouterr()  # Reset capture
-        result = get_constraint_file(apio_env, ".pcf")
-        captured = capsys.readouterr()
-        assert captured.out == ""
+        with apio_runner.with_logger() as log:
+            result = get_constraint_file(apio_env, ".pcf")
+        assert log.out == ""
         assert result == "xyz.pcf"
 
         # -- File extension should match the architecture.
         apio_env.params.apio_env_params.constraint_file = "xyz.bad"
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            result = get_constraint_file(apio_env, ".pcf")
-        captured = capsys.readouterr()
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                result = get_constraint_file(apio_env, ".pcf")
         assert e.value.code == 1
         assert (
             "Constraint file should have the extension '.pcf': xyz.bad"
-            in cunstyle(captured.out)
+            in log.out
         )
 
         # -- Path under _build is not allowed.
         apio_env.params.apio_env_params.constraint_file = "_build/xyz.pcf"
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            result = get_constraint_file(apio_env, ".pcf")
-        captured = capsys.readouterr()
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                result = get_constraint_file(apio_env, ".pcf")
         assert e.value.code == 1
         assert (
             "Error: Constraint file should not be under _build: _build/xyz.pcf"
-            in cunstyle(captured.out)
+            in log.out
         )
 
         # -- Path should not contain '../
         apio_env.params.apio_env_params.constraint_file = "a/../xyz.pcf"
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            result = get_constraint_file(apio_env, ".pcf")
-        captured = capsys.readouterr()
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                result = get_constraint_file(apio_env, ".pcf")
         assert e.value.code == 1
         assert (
             "Error: Constraint file path should not contain '..': a/../xyz.pcf"
-            in cunstyle(captured.out)
+            in log.out
         )
 
 

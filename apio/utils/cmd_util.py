@@ -18,11 +18,11 @@ from apio.common import apio_console
 from apio.managers.profile import Profile
 from apio.common.apio_styles import CMD_NAME
 from apio.common.apio_console import (
-    ConsoleCapture,
+    # ConsoleCapture,
     cout,
     cerror,
     cstyle,
-    docs_text,
+    docs_text_to_str,
 )
 from apio.utils import util
 
@@ -237,10 +237,7 @@ def _format_apio_rich_text_help_text(
     click formatter."""
 
     # -- Style the metadata text.
-    styled_text = None
-    with ConsoleCapture() as capture:
-        docs_text(rich_text.rstrip("\n"), end="")
-        styled_text = capture.value
+    styled_text = docs_text_to_str(rich_text.rstrip("\n"), end="")
 
     # -- Raw write to the output, with indent.
     lines = styled_text.split("\n")

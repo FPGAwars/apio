@@ -2,9 +2,7 @@
 
 from pathlib import Path
 import pytest
-from pytest import LogCaptureFixture
 from tests.conftest import ApioRunner
-from apio.common.apio_console import cunstyle
 from apio.common.build_report import (
     ResourceReport,
     ClockReport,
@@ -104,9 +102,7 @@ def test_ecp5_read_build_report(apio_runner):
         )
 
 
-def test_non_ecp5_read_build_report(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_non_ecp5_read_build_report(apio_runner: ApioRunner):
     """Tests the read_build_report() function for non ECP 5 hardware.pnr."""
 
     with apio_runner.in_sandbox() as sb:
@@ -136,32 +132,26 @@ def test_non_ecp5_read_build_report(
         )
 
 
-def test_hardware_pnr_reading_failure(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_hardware_pnr_reading_failure(apio_runner: ApioRunner):
     """Tests the case where reading hardware.pne fails."""
     with apio_runner.in_sandbox():
         file_path = Path("_build/default/hardware.pnr")
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            # -- Since we didn't create hardware.pnr, reading should fail.
-            read_build_report(file_path)
-        captured = capsys.readouterr()
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                # -- Since we didn't create hardware.pnr, reading should fail.
+                read_build_report(file_path)
         assert e.value.code == 1
-        assert "Error: Failed to read" in cunstyle(captured.out)
+        assert "Error: Failed to read" in log.out
 
 
-def test_hardware_pnr_parsing_failure(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_hardware_pnr_parsing_failure(apio_runner: ApioRunner):
     """Tests the case where reading hardware.pne fails."""
     with apio_runner.in_sandbox() as sb:
         file_path = Path("_build/default/hardware.pnr")
         sb.write_file(file_path, "Broken JSON file")
-        capsys.readouterr()  # Reset capture
-        with pytest.raises(SystemExit) as e:
-            # -- Since we didn't create hardware.pnr, reading should fail.
-            read_build_report(file_path)
-        captured = capsys.readouterr()
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                # -- Since we didn't create hardware.pnr, reading should fail.
+                read_build_report(file_path)
         assert e.value.code == 1
-        assert "Error: Failed parsing json file" in cunstyle(captured.out)
+        assert "Error: Failed parsing json file" in log.out

@@ -3,7 +3,7 @@ Tests of the apio.managers.programmers.py module.
 """
 
 from typing import List
-from pytest import LogCaptureFixture, raises
+from pytest import raises
 from tests.conftest import ApioRunner
 from apio.apio_context import (
     ApioContext,
@@ -97,9 +97,7 @@ def fake_serial_device(
     )
 
 
-def test_default_cmd_template(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_default_cmd_template(apio_runner: ApioRunner):
     """Tests _construct_cmd_template() with the default board template."""
 
     with apio_runner.in_sandbox() as sb:
@@ -114,12 +112,14 @@ def test_default_cmd_template(
             }
         )
 
-        apio_ctx = ApioContext(
-            project_policy=ProjectPolicy.PROJECT_REQUIRED,
-            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
-            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
-        )
-        programmer_cmd = _construct_cmd_template(apio_ctx)
+        # -- Run while capturing log.
+        with apio_runner.with_logger() as log:
+            apio_ctx = ApioContext(
+                project_policy=ProjectPolicy.PROJECT_REQUIRED,
+                remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+            )
+            programmer_cmd = _construct_cmd_template(apio_ctx)
 
         # -- Check result.
         assert (
@@ -131,12 +131,10 @@ def test_default_cmd_template(
         )
 
         # -- Check no 'custom' warning.
-        assert "Using custom programmer cmd" not in capsys.readouterr().out
+        assert "Using custom programmer cmd" not in log.out
 
 
-def test_custom_cmd_template(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_custom_cmd_template(apio_runner: ApioRunner):
     """Tests _construct_cmd_template() with custom command template."""
 
     with apio_runner.in_sandbox() as sb:
@@ -157,16 +155,18 @@ def test_custom_cmd_template(
             remote_config_policy=RemoteConfigPolicy.CACHED_OK,
             packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
-        programmer_cmd = _construct_cmd_template(apio_ctx)
+
+        with apio_runner.with_logger() as log:
+            programmer_cmd = _construct_cmd_template(apio_ctx)
 
         # -- Check the result.
         assert programmer_cmd == "my template ${VID} ${PID}"
 
         # -- Check the 'custom' warning.
-        assert "Using custom programmer cmd" in capsys.readouterr().out
+        assert "Using custom programmer cmd" in log.out
 
 
-def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_get_cmd_usb(apio_runner: ApioRunner):
     """Test generation of a programmer command for a usb device."""
     with apio_runner.in_sandbox() as sb:
 
@@ -201,10 +201,11 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             ],
         )
 
-        # -- Call the tested function
-        cmd = _construct_programmer_cmd(
-            apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-        )
+        # -- Call the tested function while capturing log.
+        with apio_runner.with_logger() as log:
+            cmd = _construct_programmer_cmd(
+                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+            )
 
         # -- Test the result programmer command.
         assert cmd == (
@@ -213,18 +214,15 @@ def test_get_cmd_usb(apio_runner: ApioRunner, capsys: LogCaptureFixture):
         )
 
         # -- Check the log.
-        log = capsys.readouterr().out
-        assert "Scanning for a USB device:" in log
-        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
+        assert "Scanning for a USB device:" in log.out
+        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log.out
         assert (
             "DEVICE [0403:6010] [0:1] [AlhambraBits] "
             "[Alhambra II v1.0A] [SNXXXX]"
-        ) in log
+        ) in log.out
 
 
-def test_get_cmd_usb_no_match(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_get_cmd_usb_no_match(apio_runner: ApioRunner):
     """Test command generation error when the usb device is not found."""
     with apio_runner.in_sandbox() as sb:
 
@@ -254,24 +252,25 @@ def test_get_cmd_usb_no_match(
             ],
         )
 
-        # -- Call the tested function
+        # -- Call the tested function while capturing log
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _construct_programmer_cmd(
+                    apio_ctx,
+                    scanner,
+                    serial_port_flag=None,
+                    serial_num_flag=None,
+                )
 
-        with raises(SystemExit) as e:
-            _construct_programmer_cmd(
-                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-            )
-
+        # -- Verify.
         assert e.value.code == 1
 
-        log = capsys.readouterr().out
-        assert "Scanning for a USB device:" in log
-        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
-        assert "No matching USB device" in log
+        assert "Scanning for a USB device:" in log.out
+        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log.out
+        assert "No matching USB device" in log.out
 
 
-def test_get_cmd_usb_multiple_matches(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_get_cmd_usb_multiple_matches(apio_runner: ApioRunner):
     """Test command generation error when multiple usb devices match the
     filter."""
     with apio_runner.in_sandbox() as sb:
@@ -303,29 +302,33 @@ def test_get_cmd_usb_multiple_matches(
             ],
         )
 
-        # -- Call the tested function
-        with raises(SystemExit) as e:
-            _construct_programmer_cmd(
-                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-            )
+        # -- Call the tested function while capturing log.
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _construct_programmer_cmd(
+                    apio_ctx,
+                    scanner,
+                    serial_port_flag=None,
+                    serial_num_flag=None,
+                )
 
+        # -- Verify.
         assert e.value.code == 1
 
-        log = capsys.readouterr().out
-        assert "Scanning for a USB device:" in log
-        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
+        assert "Scanning for a USB device:" in log.out
+        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log.out
         assert (
             "DEVICE [0403:6010] [0:0] [AlhambraBits] "
             "[Alhambra II v1.0A] [SN001]"
-        ) in log
+        ) in log.out
         assert (
             "DEVICE [0403:6010] [0:2] [AlhambraBits] "
             "[Alhambra II v1.0A] [SN002]"
-        ) in log
-        assert "Error: Found multiple matching usb devices" in log
+        ) in log.out
+        assert "Error: Found multiple matching usb devices" in log.out
 
 
-def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
+def test_get_cmd_serial(apio_runner: ApioRunner):
     """Test generation of a programmer command for a serial device."""
     with apio_runner.in_sandbox() as sb:
 
@@ -356,26 +359,26 @@ def test_get_cmd_serial(apio_runner: ApioRunner, capsys: LogCaptureFixture):
             ],
         )
 
-        # -- Call the tested function
-        cmd = _construct_programmer_cmd(
-            apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-        )
+        # -- Call the tested function while capturing log.
+        with apio_runner.with_logger() as log:
+            cmd = _construct_programmer_cmd(
+                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+            )
 
         # -- Test the result programmer command.
         assert cmd == "my-programmer --port /dev/port2"
 
         # -- Check the log.
-        log = capsys.readouterr().out
-        assert "Scanning for a serial device:" in log
-        assert "FILTER [VID=04D8, PID=FFEE]" in log
+        assert "Scanning for a serial device:" in log.out
+        assert "FILTER [VID=04D8, PID=FFEE]" in log.out
         assert (
             "DEVICE [/dev/port2] [04D8:FFEE] [IceFUN] [Ice Fun] [SNXXXX]"
-            in log
+            in log.out
         )
 
 
 def test_get_cmd_serial_no_match(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
+    apio_runner: ApioRunner,
 ):
     """Test command generation error when the serial device is not found."""
     with apio_runner.in_sandbox() as sb:
@@ -406,23 +409,25 @@ def test_get_cmd_serial_no_match(
             ],
         )
 
-        # -- Call the tested function
-        with raises(SystemExit) as e:
-            _construct_programmer_cmd(
-                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-            )
+        # -- Call the tested function while capturing log
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _construct_programmer_cmd(
+                    apio_ctx,
+                    scanner,
+                    serial_port_flag=None,
+                    serial_num_flag=None,
+                )
 
+        # -- Verify
         assert e.value.code == 1
 
-        log = capsys.readouterr().out
-        assert "Scanning for a serial device:" in log
-        assert "FILTER [VID=04D8, PID=FFEE]" in log
-        assert "No matching serial device" in log
+        assert "Scanning for a serial device:" in log.out
+        assert "FILTER [VID=04D8, PID=FFEE]" in log.out
+        assert "No matching serial device" in log.out
 
 
-def test_get_cmd_serial_multiple_matches(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_get_cmd_serial_multiple_matches(apio_runner: ApioRunner):
     """Test command generation error when multiple serial devices match the
     filter."""
     with apio_runner.in_sandbox() as sb:
@@ -454,29 +459,31 @@ def test_get_cmd_serial_multiple_matches(
             ],
         )
 
-        # -- Call the tested function
-        with raises(SystemExit) as e:
-            _construct_programmer_cmd(
-                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-            )
+        # -- Call the tested function while capturing log
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _construct_programmer_cmd(
+                    apio_ctx,
+                    scanner,
+                    serial_port_flag=None,
+                    serial_num_flag=None,
+                )
 
+        # -- Verify.
         assert e.value.code == 1
 
-        log = capsys.readouterr().out
-        assert "Scanning for a serial device:" in log
-        assert "FILTER [VID=04D8, PID=FFEE]" in log
+        assert "Scanning for a serial device:" in log.out
+        assert "FILTER [VID=04D8, PID=FFEE]" in log.out
         assert (
             "DEVICE [/dev/port1] [04D8:FFEE] [IceFUN] [Ice Fun] [SNXXXX]"
-        ) in log
+        ) in log.out
         assert (
             "DEVICE [/dev/port3] [04D8:FFEE] [IceFUN] [Ice Fun] [SNXXXX]"
-        ) in log
-        assert "Error: Found multiple matching serial devices" in log
+        ) in log.out
+        assert "Error: Found multiple matching serial devices" in log.out
 
 
-def test_device_presence_ok(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_device_presence_ok(apio_runner: ApioRunner):
     """Test generation of a presence check only device."""
     with apio_runner.in_sandbox() as sb:
 
@@ -508,32 +515,29 @@ def test_device_presence_ok(
             ],
         )
 
-        # -- Call the tested function
-        cmd = _construct_programmer_cmd(
-            apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-        )
+        # -- Call the tested function while capturing log.
+        with apio_runner.with_logger() as log:
+            cmd = _construct_programmer_cmd(
+                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
+            )
 
         # -- Test the result programmer command.
         assert cmd == "my programmer command $SOURCE"
 
         # -- Check the log.
-        log = capsys.readouterr().out
-        assert "Checking device presence" in log
-        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
+        assert "Checking device presence" in log.out
+        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log.out
         assert (
             "DEVICE [0403:6010] [0:0] [AlhambraBits] "
             "[Alhambra II v1.0A] [SNXXXX]"
-        ) in log
-
+        ) in log.out
         assert (
             "DEVICE [0403:6010] [0:2] [AlhambraBits] "
             "[Alhambra II v1.0A] [SNXXXX]"
-        ) in log
+        ) in log.out
 
 
-def test_device_presence_not_found(
-    apio_runner: ApioRunner, capsys: LogCaptureFixture
-):
+def test_device_presence_not_found(apio_runner: ApioRunner):
     """Test generation of a presence only device, with no device."""
     with apio_runner.in_sandbox() as sb:
 
@@ -564,16 +568,19 @@ def test_device_presence_not_found(
             ],
         )
 
-        # -- Call the tested function
-        with raises(SystemExit) as e:
-            _construct_programmer_cmd(
-                apio_ctx, scanner, serial_port_flag=None, serial_num_flag=None
-            )
+        # -- Call the tested function while capturing log.
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _construct_programmer_cmd(
+                    apio_ctx,
+                    scanner,
+                    serial_port_flag=None,
+                    serial_num_flag=None,
+                )
 
+        # -- Verify
         assert e.value.code == 1
 
-        # -- Check the log.
-        log = capsys.readouterr().out
-        assert "Checking device presence" in log
-        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log
-        assert "Error: No matching device." in log
+        assert "Checking device presence" in log.out
+        assert 'FILTER [VID=0403, PID=6010, REGEX="^Alhambra II.*"]' in log.out
+        assert "Error: No matching device." in log.out

@@ -9,9 +9,8 @@
 # ---- License Apache v2
 """A module with functions  to manages the apio console output."""
 
-from io import StringIO
 from dataclasses import dataclass
-from typing import Optional, IO
+from typing import Optional
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
@@ -26,7 +25,6 @@ from apio.common.proto.apio_pb2 import (
     FORCE_TERMINAL,
     AUTO_TERMINAL,
 )
-
 
 # -- The Rich library colors names are listed at:
 # -- https://rich.readthedocs.io/en/stable/appendix/colors.html
@@ -293,38 +291,14 @@ def cwarning(*text_lines: str) -> None:
     cflush()
 
 
-class ConsoleCapture:
-    """A context manager to output into a string."""
-
-    def __init__(self):
-        self._saved_file: Optional[IO[str]] = None
-        self._buffer: Optional[StringIO] = None
-
-    def __enter__(self):
-        cflush()
-        self._saved_file = console().file
-        self._buffer = StringIO()
-        console().file = self._buffer
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        if self._saved_file is not None:
-            console().file = self._saved_file
-        # console().file = self._saved_file
-
-    @property
-    def value(self):
-        """Returns the captured text."""
-        if self._buffer is not None:
-            return self._buffer.getvalue()
-        return ""
-
-
 def cstyle(text: str, style: Optional[str] = None) -> str:
     """Render the text to a string using an optional style."""
-    with ConsoleCapture() as capture:
+
+    # -- Render into a string buffer.
+    with console().capture() as capture:
         console().out(text, style=style, highlight=False, end="")
-        return capture.value
+
+    return capture.get()
 
 
 def docs_text(
@@ -333,6 +307,18 @@ def docs_text(
     """A wrapper around Console.print that is specialized for rendering
     help and docs."""
     console().print(rich_text, highlight=True, width=width, end=end)
+
+
+def docs_text_to_str(
+    rich_text: str, width: int = DOCS_WIDTH, end: str = "\n"
+) -> str:
+    """Same as docs_text() but renders to a string instead of
+    stdout."""
+    # -- Render into a string.
+    with console().capture() as capture:
+        docs_text(rich_text=rich_text, width=width, end=end)
+
+    return capture.get()
 
 
 def is_terminal():
