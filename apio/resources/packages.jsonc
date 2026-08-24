@@ -15,6 +15,44 @@
     "description": "Apio project examples",
     "env": {}
   },
+  // "drivers" package
+  "drivers": {
+    "restricted-to-platforms": [
+      "windows-amd64"
+    ],
+    "description": "Drivers tools for Windows",
+    "env": {
+      "path": [
+        "%p/bin"
+      ]
+    }
+  },
+  // "graphviz" package
+  "graphviz": {
+    "restricted-to-platforms": [
+      "windows-amd64"
+    ],
+    "description": "Graphviz tool for Windows",
+    "env": {
+      "path": [
+        "%p/bin"
+      ]
+    }
+  },
+  // "openxc7" package
+  "openxc7": {
+    "description": "Openxc7 toolchain (Xilinx FPGAs)",
+    "env": {
+      "path": [
+        "%p/bin",
+        "%p/lib"
+      ],
+      "set-vars": {
+        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
+        "CHIPDB_DIR": "%p/chipdb"
+      }
+    }
+  },
   // "oss-cad-suite" package
   "oss-cad-suite": {
     "description": "Yosys HQ oss-cad-suite",
@@ -41,47 +79,9 @@
       }
     }
   },
-  // "openxc7" package
-  "openxc7": {
-    "description": "Openxc7 toolchain (Xilinx FPGAs)",
-    "env": {
-      "path": [
-        "%p/bin",
-        "%p/lib"
-      ],
-      "set-vars": {
-        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
-        "CHIPDB_DIR": "%p/chipdb"
-      }
-    }
-  },
-  // "graphviz" package
-  "graphviz": {
-    "restricted-to-platforms": [
-      "windows-amd64"
-    ],
-    "description": "Graphviz tool for Windows",
-    "env": {
-      "path": [
-        "%p/bin"
-      ]
-    }
-  },
   // "verible" package
   "verible": {
-    "description": "Chips Aliance Verible toolset",
-    "env": {
-      "path": [
-        "%p/bin"
-      ]
-    }
-  },
-  // "drivers" package
-  "drivers": {
-    "restricted-to-platforms": [
-      "windows-amd64"
-    ],
-    "description": "Drivers tools for Windows",
+    "description": "Chips Alliance Verible toolset",
     "env": {
       "path": [
         "%p/bin"
