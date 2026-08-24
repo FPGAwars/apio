@@ -47,7 +47,9 @@
         "%p/bin",
         "%p/lib"
       ],
-      "set-env-vars": {
+      // These are internal values that are used by Apio and they are not
+      // exported as env vars.
+      "define-consts": {
         "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
         "CHIPDB_DIR": "%p/chipdb"
       }
@@ -57,7 +59,7 @@
   "oss-cad-suite": {
     "description": "Yosys HQ oss-cad-suite",
     "env": {
-      "unset-env-vars": [
+      "delete-env-vars": [
         // Delete this var, if exists. This isolate the oss-cad-suite
         // embedded python from the local python.
         "PYTHONPATH"
@@ -66,11 +68,13 @@
         "%p/bin",
         "%p/lib"
       ],
-      "set-env-vars": {
-        "VERILATOR_ROOT": "%p/share/verilator",
-        "ICEBOX": "%p/share/icebox",
-        "TRELLIS": "%p/share/trellis",
-        "YOSYS_LIB": "%p/share/yosys"
+      "add-env-vars": {
+        "VERILATOR_ROOT": "%p/share/verilator"
+        // "ICEBOX": "%p/share/icebox"
+      },
+      "define-consts": {
+          "TRELLIS": "%p/share/trellis",
+          "YOSYS_LIB": "%p/share/yosys"
       }
     }
   },

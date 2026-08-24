@@ -874,10 +874,13 @@ def _get_packages_cli(
 
     for package_name in package_manager.required_packages:
         metadata = package_manager.installed_packages[package_name]
+        config = apio_ctx.all_packages[package_name]
         build_info = package_manager.read_package_build_info(package_name)
         section_dict[package_name] = {
-            **metadata,
+            "description": config["description"],
+            "installation": metadata,
             "build-info": build_info,
+            "env": config["env"],
         }
 
     # -- Write out
