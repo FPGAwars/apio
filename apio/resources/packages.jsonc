@@ -22,7 +22,7 @@
     ],
     "description": "Drivers tools for Windows",
     "env": {
-      "path": [
+      "add-to-path": [
         "%p/bin"
       ]
     }
@@ -34,7 +34,7 @@
     ],
     "description": "Graphviz tool for Windows",
     "env": {
-      "path": [
+      "add-to-path": [
         "%p/bin"
       ]
     }
@@ -43,11 +43,11 @@
   "openxc7": {
     "description": "Openxc7 toolchain (Xilinx FPGAs)",
     "env": {
-      "path": [
+      "add-to-path": [
         "%p/bin",
         "%p/lib"
       ],
-      "set-vars": {
+      "set-env-vars": {
         "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
         "CHIPDB_DIR": "%p/chipdb"
       }
@@ -57,16 +57,16 @@
   "oss-cad-suite": {
     "description": "Yosys HQ oss-cad-suite",
     "env": {
-      "unset-vars": [
+      "unset-env-vars": [
         // Delete this var, if exists. This isolate the oss-cad-suite
         // embedded python from the local python.
         "PYTHONPATH"
       ],
-      "path": [
+      "add-to-path": [
         "%p/bin",
         "%p/lib"
       ],
-      "set-vars": {
+      "set-env-vars": {
         "VERILATOR_ROOT": "%p/share/verilator",
         "ICEBOX": "%p/share/icebox",
         "TRELLIS": "%p/share/trellis",
@@ -78,7 +78,7 @@
   "verible": {
     "description": "Chips Alliance Verible toolset",
     "env": {
-      "path": [
+      "add-to-path": [
         "%p/bin"
       ]
     }

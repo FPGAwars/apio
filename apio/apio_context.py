@@ -471,18 +471,18 @@ class ApioContext:
             # -- NOTE: There is no need to expand values in the "unset-env"
             # -- section since it contains env names only.
 
-            # -- Expand the values in the "path" section, if any.
-            path_section = package_env.get("path", [])
-            for i, path_template in enumerate(path_section):
-                path_section[i] = ApioContext._expand_env_values(
+            # -- Expand the values in the "add-to-path" section, if any.
+            add_to_path_section = package_env.get("add-to-path", [])
+            for i, path_template in enumerate(add_to_path_section):
+                add_to_path_section[i] = ApioContext._expand_env_values(
                     path_template, package_path
                 )
 
-            # -- Expand the values in the "set-vars" section, if any.
-            set_vars_section = package_env.get("set-vars", {})
-            for var_name, var_value in set_vars_section.items():
-                set_vars_section[var_name] = ApioContext._expand_env_values(
-                    var_value, package_path
+            # -- Expand the values in the "set-env-vars" section, if any.
+            set_env_vars_section = package_env.get("set-env-vars", {})
+            for var_name, var_value in set_env_vars_section.items():
+                set_env_vars_section[var_name] = (
+                    ApioContext._expand_env_values(var_value, package_path)
                 )
 
     def get_package_dir(self, package_name: str) -> Path:
@@ -606,19 +606,19 @@ class ApioContext:
             package_env = package_config["env"]
 
             # -- Collect the env vars to unset.
-            unset_vars_section = package_env.get("unset-vars", [])
-            for var_name in unset_vars_section:
+            unset_env_vars_section = package_env.get("unset-env-vars", [])
+            for var_name in unset_env_vars_section:
                 # -- Detect duplicates.
                 assert var_name not in unset_vars, var_name
                 unset_vars.append(var_name)
 
             # -- Collect the path values.
-            package_paths = package_env.get("path", [])
+            package_paths = package_env.get("add-to-path", [])
             paths.extend(package_paths)
 
             # -- Collect the env vars to set (name, value) pairs.
-            set_vars_section = package_env.get("set-vars", {})
-            for var_name, var_value in set_vars_section.items():
+            set_env_vars_section = package_env.get("set-env-vars", {})
+            for var_name, var_value in set_env_vars_section.items():
                 # -- Detect duplicates.
                 assert var_name not in set_vars, var_name
                 set_vars[var_name] = var_value
