@@ -58,7 +58,7 @@
     "description": "Yosys HQ oss-cad-suite",
     "env": {
       "unset-vars": [
-        // Delete this var, if exists, o isolate the oss-cad-suite
+        // Delete this var, if exists. This isolate the oss-cad-suite
         // embedded python from the local python.
         "PYTHONPATH"
       ],
@@ -71,11 +71,6 @@
         "ICEBOX": "%p/share/icebox",
         "TRELLIS": "%p/share/trellis",
         "YOSYS_LIB": "%p/share/yosys"
-        // TODO: Delete after testing. Was used for the --gui option
-        // but may impacted other functionalities.
-        //
-        // For 'apio build -g' on windows.
-        // "QT_PLUGIN_PATH": "%p/lib/qt5/plugins"
       }
     }
   },
