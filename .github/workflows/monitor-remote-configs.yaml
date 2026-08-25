@@ -34,4 +34,4 @@ jobs:
       - name: Run scripts/check_remote_configs.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python ./scripts/checks_remote_configs.py
+        run: python ./scripts/check-remote_configs.py
