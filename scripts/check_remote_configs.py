@@ -173,7 +173,7 @@ def main():
     # -- Sanity check
     assert files_checked >= 3, files_checked
 
-    print(f"\nDone ({files_checked} remote configs).")
+    print(f"\nDone (Check OK {files_checked} remote configs).")
 
 
 if __name__ == "__main__":
