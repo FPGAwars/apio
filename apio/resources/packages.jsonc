@@ -10,11 +10,6 @@
     "description": "Apio definitions",
     "env": {}
   },
-  // "examples" package
-  "examples": {
-    "description": "Apio project examples",
-    "env": {}
-  },
   // "drivers" package
   "drivers": {
     "restricted-to-platforms": [

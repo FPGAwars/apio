@@ -14,7 +14,6 @@ Apio uses GitHub repositories under the `FPGAwars` organization for its source c
 | Repository                                                                      | Package name    | Comments       |
 | :------------------------------------------------------------------------------ | :-------------- | :------------- |
 | [fpgawars/apio-definitions](https://github.com/fpgawars/apio-definitions)       | `definitions`   |                |
-| [fpgawars/apio-examples](https://github.com/fpgawars/apio-examples)             | `examples`      |                |
 | [fpgawars/tools-drivers](https://github.com/fpgawars/tools-drivers)             | `drivers`       | Windows only   |
 | [fpgawars/tools-graphviz](https://github.com/fpgawars/tools-graphviz)           | `graphviz`      | Windows only   |
 | [fpgawars/tools-openxc7](https://github.com/fpgawars/tools-openxc7)             | `openxc7`       | Xilinx support |
@@ -26,6 +25,12 @@ Apio uses GitHub repositories under the `FPGAwars` organization for its source c
 | Repository                                                            | Description                                           |
 | :-------------------------------------------------------------------- | :---------------------------------------------------- |
 | [fpgawars/apio-workflows](https://github.com/fpgawars/apio-workflows) | Provides common functionalities for Apio's workflows. |
+
+**Deprecated**
+
+| Repository                                                          | Description |
+| :------------------------------------------------------------------ | :---------- |
+| [fpgawars/apio-examples](https://github.com/fpgawars/apio-examples) | Deprecated `examples` package. Since Apio 1.6.x, the examples resides in the `definitions` package.  This frozen repo still serves Apio 1.5.x and below. |
 
 For easier tracking and maintenance, all bug reports and discussions are consolidated in the main Apio repository: [fpgawars/apio](https://github.com/fpgawars/apio), which also serves as the project’s homepage.
 
