@@ -120,7 +120,7 @@ def _construct_programmer_cmd(
         )
 
     elif has_usb_vars:
-        _report_unused_flag("--serial-port", str(serial_port_flag))
+        _report_unused_flag("--serial-port", serial_port_flag)
         cmd = _resolve_usb_cmd_template(
             apio_ctx, scanner, serial_num_flag, cmd_template
         )
@@ -130,8 +130,8 @@ def _construct_programmer_cmd(
         # -- specific usb or serial device but just to check that if the board
         # -- has 'usb' section, there is at least one device that matchs the
         # -- constraints in that section.
-        _report_unused_flag("--serial-port", str(serial_port_flag))
-        _report_unused_flag("--serial-num", str(serial_num_flag))
+        _report_unused_flag("--serial-port", serial_port_flag)
+        _report_unused_flag("--serial-num", serial_num_flag)
         _check_device_presence(apio_ctx, scanner)
 
         # -- Template has no vars, we just use it as is.
