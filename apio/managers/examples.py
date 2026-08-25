@@ -45,7 +45,9 @@ class Examples:
         self.apio_ctx = apio_ctx
 
         # -- Folder where the example packages was installed
-        self.examples_dir = apio_ctx.get_package_dir("examples")
+        self.examples_dir = (
+            apio_ctx.get_package_dir("definitions") / "examples"
+        )
 
     def check_dst_dir_is_empty(self, path: Path):
         """Check that the destination directory at the path is empty. If not,

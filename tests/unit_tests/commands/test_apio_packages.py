@@ -33,22 +33,22 @@ def test_packages_slow(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
         sb.assert_result_ok(result)
         assert "definitions" in result.output
-        assert "examples" in result.output
         assert "oss-cad-suite" in result.output
 
         # -- Run 'apio packages install'.
-        # -- Both 'examples' and 'oss-cad-suite' should exist, and
+        # -- Both 'definitions' and 'oss-cad-suite' should exist, and
         # -- possibly others, depending on the platform.
         result = sb.invoke_apio_cmd(apio, ["packages", "install"])
         sb.assert_result_ok(result)
         assert "All Apio packages are installed OK" in result.output
-        assert listdir(sb.packages_dir / "definitions")
-        assert listdir(sb.packages_dir / "examples/alhambra-ii")
+        assert listdir(sb.packages_dir / "definitions/examples/alhambra-ii")
         assert listdir(sb.packages_dir / "oss-cad-suite/bin")
 
-        # -- Delete a file from the examples package, we will use it as an
+        # -- Delete a file from the definitions package, we will use it as an
         # -- indicator for the reinstallation of the package.
-        marker_file = sb.packages_dir / "examples/alhambra-ii/ledon/ledon.v"
+        marker_file = (
+            sb.packages_dir / "definitions/examples/alhambra-ii/ledon/ledon.v"
+        )
         assert marker_file.is_file()
         marker_file.unlink()
         assert not marker_file.exists()
@@ -57,32 +57,32 @@ def test_packages_slow(apio_runner: ApioRunner):
         # -- This should not do anything since it's considered to be installed.
         result = sb.invoke_apio_cmd(apio, ["packages", "install"])
         sb.assert_result_ok(result)
-        assert "Package 'examples' installed" not in result.output
+        assert "Package 'definitions' installed" not in result.output
         assert not marker_file.exists()
 
         # -- Run 'apio packages install --force'
         # -- This should recover the file.
         result = sb.invoke_apio_cmd(apio, ["packages", "install", "--force"])
         sb.assert_result_ok(result)
-        assert "Package 'examples' installed" in result.output
+        assert "Package 'definitions' installed" in result.output
         assert marker_file.is_file()
 
-        # -- Break the examples package by renaming it. This also creates an
+        # -- Break the definitions package by renaming it. This also creates an
         # -- orphan dir.
-        example_package_dir = sb.packages_dir / "examples"
+        definitions_package_dir = sb.packages_dir / "definitions"
         bad_package_dir = sb.packages_dir / "unknown-package"
-        rename(example_package_dir, bad_package_dir)
-        assert not example_package_dir.exists()
+        rename(definitions_package_dir, bad_package_dir)
+        assert not definitions_package_dir.exists()
         assert bad_package_dir.is_dir()
 
         # -- Run 'apio packages install'. This should fix everything.
         result = sb.invoke_apio_cmd(apio, ["packages", "install"])
         sb.assert_result_ok(result)
-        assert "Uninstalling broken package 'examples'" in result.output
+        assert "Uninstalling broken package 'definitions'" in result.output
         assert (
             "Deleting unknown package dir 'unknown-package'" in result.output
         )
-        assert "Package 'examples' installed successfully" in result.output
-        assert example_package_dir.is_dir()
+        assert "Package 'definitions' installed successfully" in result.output
+        assert definitions_package_dir.is_dir()
         assert marker_file.exists()
         assert not bad_package_dir.exists()

@@ -22,19 +22,8 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-08-19",
+        "tag": "2026-08-25",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
-      }
-    },
-    // -- Examples package
-    "examples": {
-      "repository": {
-        "name": "apio-examples",
-        "organization": "fpgawars"
-      },
-      "release": {
-        "tag": "2026-08-19",
-        "package": "apio-examples-${YYYYMMDD}.tgz"
       }
     },
     // -- Drivers package
