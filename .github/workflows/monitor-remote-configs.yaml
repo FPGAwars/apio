@@ -1,0 +1,37 @@
+# A periodic workflow to test that the latest dev version is functional.
+# It's not a through test by any means, more like a sanity test.
+
+name: monitor-remote-configs
+
+on:
+  # Run on commit.
+  push:
+
+  # Run every 6 hours
+  schedule:
+    - cron: "0 */6 * * *"
+
+  # Allow manual launch
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Set up latest Python
+        uses: actions/setup-python@v6
+
+      - name: Checkout Apio's main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Run scripts/check_remote_configs.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python ./scripts/checks_remote_configs.py
