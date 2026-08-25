@@ -23,15 +23,25 @@ jobs:
         shell: bash
 
     steps:
-      - name: Set up latest Python
-        uses: actions/setup-python@v6
+
 
       - name: Checkout Apio's main branch
         uses: actions/checkout@v4
         with:
           ref: main
 
+      - name: Set up latest Python
+        uses: actions/setup-python@v6
+
+      # -- This provides the check_remote_configs.py script the module
+      # -- apio.utils.jsonc.
+      - name: Install Apio
+        run: |
+          pip install invoke
+          invoke install-apio
+
       - name: Run scripts/check_remote_configs.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python ./scripts/check-remote_configs.py
+        run: |
+          python ./scripts/check-remote_configs.py
