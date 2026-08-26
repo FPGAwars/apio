@@ -17,11 +17,10 @@ from pprint import pprint
 import pytest
 from click.testing import CliRunner, Result
 from rich.ansi import AnsiDecoder
+import json5
 from apio import __main__
 from apio.common import apio_console
 from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
-from apio.utils import jsonc
-
 
 # -- Debug mode on/off
 DEBUG = True
@@ -449,15 +448,8 @@ class ApioRunner:
             this_file_path.parent.parent / "apio/resources/config.jsonc"
         )
 
-        with config_file_path.open(encoding="utf8") as file:
-            # -- Read the json with comments file
-            jsonc_text: str = file.read()
-
-        # -- Convert the jsonc to json by removing '//' comments.
-        json_text: str = jsonc.to_json(jsonc_text)
-
-        # -- Parse the json format!
-        json_data: dict = json.loads(json_text)
+        jsonc_text: str = config_file_path.read_text(encoding="utf-8")
+        json_data: dict = json5.loads(jsonc_text)
 
         # -- Get the original remote config url.
         url_str: str = json_data["remote-config-url"]

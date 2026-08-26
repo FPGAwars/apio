@@ -8,18 +8,18 @@
 
 import os
 import sys
-import json
 import platform
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional, Dict
+import json5
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
 from apio.managers.profile import Profile
 from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
-from apio.utils import jsonc, util, env_options, apio_platforms
+from apio.utils import util, env_options, apio_platforms
 from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
 from apio.managers.package_manager import PackageManager
@@ -376,51 +376,24 @@ class ApioContext:
         """Load a .jsonc resource file and return its content as a
         json dict."""
 
+        # pylint: disable=broad-exception-caught
+
         # -- Construct file path.
         filepath = resources_dir / name
 
-        # -- Read the jsonc file
+        # -- Read the and parse the jsonc file
         try:
-            with filepath.open(encoding="utf8") as file:
-
-                # -- Read the json with comments file
-                data_jsonc = file.read()
-
-        # -- The jsonc file NOT FOUND! This is an apio system error
-        # -- It should never occur unless there is a bug in the
-        # -- apio system files, or a bug when calling this function
-        # -- passing a wrong file
-        except FileNotFoundError as exc:
-
-            # -- Display error information
+            jsonc_text = filepath.read_text(encoding="utf-8")
+            json_dict = json5.loads(jsonc_text)
+        except Exception as e:
             cerror(
-                f"[Internal] couldn't not read resource file file {name}",
-                f"{exc}",
+                f"Failed to read and parse resource file {name}",
+                f"{e}",
             )
-
-            # -- Abort!
-            sys.exit(1)
-
-        # -- Convert the jsonc to json by removing '//' comments.
-        data_json = jsonc.to_json(data_jsonc)
-
-        # -- Parse the json format!
-        try:
-            data = json.loads(data_json)
-
-        # -- Invalid json format! This is an apio system error
-        # -- It should never occur unless a developer has
-        # -- made a mistake when changing the jsonc file
-        except json.decoder.JSONDecodeError as exc:
-            cerror(
-                f"[Internal] couldn't not parse resource file file {name}",
-                f"{exc}",
-            )
-
             sys.exit(1)
 
         # -- Return the object for the resource
-        return data
+        return json_dict
 
     @staticmethod
     def _expand_env_values(template: str, package_path: Path) -> str:

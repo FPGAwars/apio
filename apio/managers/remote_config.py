@@ -17,9 +17,10 @@ from pathlib import Path
 import requests
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
+import json5
 from apio.common.apio_console import cout
 from apio.common.apio_styles import INFO, EMPH3, ERROR
-from apio.utils import util, jsonc
+from apio.utils import util
 
 # -- JSON schema for validating the downloaded remote config files.
 REMOTE_CONFIG_SCHEMA = {
@@ -440,6 +441,8 @@ class RemoteConfig:
     def _fetch_and_update_remote_config(self, *, error_is_fatal: bool) -> None:
         """Returns the apio remote config JSON dict."""
 
+        # pylint: disable=broad-exception-caught
+
         # -- Fetch the config text. Returns None if error_is_fatal=False and
         # -- fetch failed.
         config_text: Optional[str] = self._fetch_remote_config_text(
@@ -456,19 +459,13 @@ class RemoteConfig:
         if util.is_debug(1):
             cout(config_text)
 
-        # -- Convert the jsonc to json by removing '//' comments.
-        config_text = jsonc.to_json(config_text)
-
-        # -- Parse the remote JSON config file into a dict.
         try:
-            remote_config = json.loads(config_text)
-
-        # -- Handle parsing error.
-        except json.decoder.JSONDecodeError as exc:
+            remote_config = json5.loads(config_text)
+        except Exception as e:
             self._handle_config_refresh_failure(
                 msg=[
                     "Failed to parse the latest Apio remote config file.",
-                    f"{exc}",
+                    f"{e}",
                 ],
                 error_is_fatal=error_is_fatal,
             )

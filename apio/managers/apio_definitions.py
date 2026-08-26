@@ -12,11 +12,10 @@ import sys
 import re
 from pathlib import Path
 from typing import Dict, Set, Tuple, Optional
-import json
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
+import json5
 from apio.common.apio_console import cout, cerror
-from apio.utils import jsonc
 
 # -- Boards definitions file name.
 BOARDS_JSONC = "boards.jsonc"
@@ -299,37 +298,17 @@ class ApioDefinitions:
           In case of error it raises an exception and finish
         """
 
+        # pylint: disable=broad-exception-caught
+
         # -- Read the jsonc file
         try:
-            with filepath.open(encoding="utf8") as file:
-
-                # -- Read the json with comments file
-                data_jsonc = file.read()
-
-        # -- The jsonc file NOT FOUND! This is an apio system error
-        # -- It should never occur unless there is a bug in the
-        # -- apio system files, or a bug when calling this function
-        # -- passing a wrong file
-        except FileNotFoundError as exc:
-
-            # -- Display error information
-            cerror("[Internal] .jsonc file not found", f"{exc}")
-
-            # -- Abort!
-            sys.exit(1)
-
-        # -- Convert the jsonc to json by removing '//' comments.
-        data_json = jsonc.to_json(data_jsonc)
-
-        # -- Parse the json format!
-        try:
-            json_dict = json.loads(data_json)
-
-        # -- Invalid json format! This is an apio system error
-        # -- It should never occur unless a developer has
-        # -- made a mistake when changing the jsonc file
-        except json.decoder.JSONDecodeError as exc:
-            cerror(f"'{filepath}' has bad format", f"{exc}")
+            jsonc_text = filepath.read_text(encoding="utf-8")
+            json_dict = json5.loads(jsonc_text)
+        except Exception as e:
+            cerror(
+                f"Failed to read and parse definition file {filepath.name}",
+                f"{e}",
+            )
             sys.exit(1)
 
         # -- Return the object for the resource
