@@ -33,9 +33,9 @@ jobs:
         with:
           python-version: "3.14"
 
-      - name: Install json5
+      - name: Install python dependencies
         run: |
-          pip install json5
+          pip install json5 requests
 
       - name: Run scripts/check_remote_configs.py
         env:

@@ -4,16 +4,17 @@ the 'remote-config' directory of the apio repository and for each remote
 config file it verified all the packages versions referred by it do exist
 and are stable.
 
-Requires installation of json5.
-
 The program exists with an error status upon any error.
 """
 
+# -- Standard python
 import os
 import sys
 from typing import Dict
-import requests
+
+# -- Third party
 import json5
+import requests
 
 # -- The github repo that contains the remote configs in its 'main' branch.
 REMOTE_CONFIG_REPO = "fpgawars/apio"
