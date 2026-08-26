@@ -23,8 +23,6 @@ jobs:
         shell: bash
 
     steps:
-
-
       - name: Checkout Apio's main branch
         uses: actions/checkout@v4
         with:
@@ -33,12 +31,9 @@ jobs:
       - name: Set up latest Python
         uses: actions/setup-python@v6
 
-      # -- This provides the check_remote_configs.py script the module
-      # -- apio.utils.jsonc.
-      - name: Install Apio
+      - name: Install json5
         run: |
-          pip install invoke
-          invoke install-apio
+          pip install json5
 
       - name: Run scripts/check_remote_configs.py
         env:
