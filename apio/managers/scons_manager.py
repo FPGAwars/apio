@@ -11,6 +11,7 @@ import os
 import sys
 import time
 import shutil
+from pathlib import Path
 from functools import wraps
 from datetime import datetime
 from typing import Optional
@@ -42,6 +43,8 @@ from apio.common.proto.apio_pb2 import (
     ApioTestParams,
     UploadParams,
 )
+from apio.managers.downloader import FileDownloader
+from apio.managers.unpacker import FileUnpacker
 
 # from apio.common import rich_lib_windows
 
@@ -109,7 +112,43 @@ class SConsManager:
         if scons_params.arch != XILINX:
             return
 
-        # -- TODO: Implement the xilinx on-demand chipdb file download.
+        # -- TODO: This is a proof of concept code. Clean up.
+
+        # print(scons_params)
+        xilinx_chip = scons_params.fpga_info.xilinx_params.package
+        # print(f"Xilinx chip: [{xilinx_chip}]")
+        chipdb_dir = Path(scons_params.environment.xilinx_chipdb_path)
+        # print(f"{chipdb_dir=}")
+        chipdb_file_name = xilinx_chip + ".bin"
+        chipdb_file = chipdb_dir / chipdb_file_name
+        # print(f"{chipdb_file=}")
+        if chipdb_file.exists():
+            cout(f"Chipdb file found: {str(chipdb_file)}")
+            return
+        package_install_info = (
+            self.apio_ctx.package_manager.installed_packages["openxc7"]
+        )
+        # print(f"{package_install_info=}")
+        package_url = package_install_info["loaded-from"]
+        # print(f"{package_url=}")
+        release_tag = package_install_info["version"].replace(".", "")
+        chipdb_tgz = (
+            "apio-xilinx-chipdb-"
+            + xilinx_chip
+            + "-"
+            + release_tag
+            + ".bin.tgz"
+        )
+        # print(f"{chipdb_tgz=}")
+        chipdb_url = package_url.rsplit("/", 1)[0] + "/" + chipdb_tgz
+        # print(f"{chipdb_url=}")
+        cout(f"Fetching {chipdb_tgz}")
+        downloader = FileDownloader(chipdb_url, chipdb_dir)
+        downloader.start()
+        unpacker = FileUnpacker(chipdb_dir / chipdb_tgz, chipdb_dir)
+        ok = unpacker.start()
+        assert ok
+        assert chipdb_file.exists(), chipdb_file
 
     @on_exception(exit_code=1)
     def graph(
