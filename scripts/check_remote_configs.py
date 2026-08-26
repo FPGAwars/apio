@@ -7,12 +7,14 @@ and are stable.
 The program exists with an error status upon any error.
 """
 
+# -- Standard python
 import os
 import sys
-import json
 from typing import Dict
+
+# -- Third party
+import json5
 import requests
-from apio.utils import jsonc
 
 # -- The github repo that contains the remote configs in its 'main' branch.
 REMOTE_CONFIG_REPO = "fpgawars/apio"
@@ -101,11 +103,13 @@ def check_package(package_name: str, package_config: Dict):
     print("Release exists and is stable")
 
 
-def check_remote_config(jsonc_text: Dict):
+def check_remote_config(jsonc_text: str):
     """Check a given remote config file given its content as a parsed json
     dict."""
-    json_text = jsonc.to_json(jsonc_text)
-    json_data = json.loads(json_text)
+
+    # -- Since the remote config files are .jsonc files with comments,
+    # -- we use a json5 parser.
+    json_data = json5.loads(jsonc_text)
 
     # -- Sanity check the package count
     assert 5 <= len(json_data["packages"]) <= 15
@@ -150,6 +154,9 @@ def main():
         if file_name in SKIP_FILES:
             print(f"Skipping {file_name}")
             continue
+
+        # if file_name != "apio-1.6.x.jsonc":
+        #     continue
 
         # -- Announce remote config file name.
         print(f"\n\n===== Remote Config {file_name} =====\n")
