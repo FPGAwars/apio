@@ -60,17 +60,11 @@ def check_package(package_name: str, package_config: Dict):
 
     # -- Check http status.
     if resp.status_code == 404:
-        print(
-            f"Error: release '{tag}' not found in {org}/{repo}",
-            file=sys.stderr,
-        )
+        print(f"Error: release '{tag}' not found in {org}/{repo}")
         sys.exit(1)
 
     if resp.status_code != 200:
-        print(
-            f"Error: GitHub API returned {resp.status_code} for {api_url}",
-            file=sys.stderr,
-        )
+        print(f"Error: GitHub API returned {resp.status_code} for {api_url}")
         sys.exit(1)
 
     # -- Check release metadata.
@@ -79,19 +73,13 @@ def check_package(package_name: str, package_config: Dict):
     data = resp.json()
 
     if data.get("draft", False):
-        print(
-            f"Error: release '{tag}' exists but is still a draft",
-            file=sys.stderr,
-        )
+        print(f"Error: release '{tag}' exists but is still a draft")
         sys.exit(1)
     else:
         print("Release is not a draft")
 
     if data.get("prerelease", False):
-        print(
-            f"Error: release '{tag}' exists but is a pre-release",
-            file=sys.stderr,
-        )
+        print(f"Error: release '{tag}' exists but is a pre-release")
         sys.exit(1)
     else:
         print("Release is not a pre-release")
