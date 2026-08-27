@@ -22,6 +22,7 @@ from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
 from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
+from apio.managers import xilinx_chipdb
 from apio.common.proto.apio_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
@@ -43,8 +44,6 @@ from apio.common.proto.apio_pb2 import (
     ApioTestParams,
     UploadParams,
 )
-from apio.managers.downloader import FileDownloader
-from apio.managers.unpacker import FileUnpacker
 
 # from apio.common import rich_lib_windows
 
@@ -96,59 +95,27 @@ class SConsManager:
         # -- Change to the project's folder.
         os.chdir(apio_ctx.project_dir)
 
-    def _fetch_support_files_on_demand(
-        self, scons_target, scons_params: SconsParams
-    ):
-        """Called before invoking scons to optionally fetch missing support
-        files on the file."""
+    def _prepare_for_scons_run(self, scons_target, scons_params: SconsParams):
+        """Called before invoking scons to optionally perform last minute
+        preparations for the scons run. Currently the only operation is
+        downloading on the fly the openxc7 chipdb file if it's not
+        already cached locally."""
 
-        # -- Only these targets may require support files. For all the rest
-        # -- we don't need to do anything.
-        if scons_target not in ["build", "report", "upload"]:
-            return
+        # -- If needed, make sure the Xilinx chipdb file exists and download it
+        # -- if not.
 
-        # -- Only xilinx architecture may requires support files. For all the
-        # -- rest we don't need to do anything.
-        if scons_params.arch != XILINX:
-            return
-
-        # -- TODO: This is a proof of concept code. Clean up.
-
-        # print(scons_params)
-        xilinx_chip = scons_params.fpga_info.xilinx_params.package
-        # print(f"Xilinx chip: [{xilinx_chip}]")
-        chipdb_dir = Path(scons_params.environment.xilinx_chipdb_path)
-        # print(f"{chipdb_dir=}")
-        chipdb_file_name = xilinx_chip + ".bin"
-        chipdb_file = chipdb_dir / chipdb_file_name
-        # print(f"{chipdb_file=}")
-        if chipdb_file.exists():
-            cout(f"Chipdb file found: {str(chipdb_file)}")
-            return
-        package_install_info = (
-            self.apio_ctx.package_manager.installed_packages["openxc7"]
-        )
-        # print(f"{package_install_info=}")
-        package_url = package_install_info["loaded-from"]
-        # print(f"{package_url=}")
-        release_tag = package_install_info["version"].replace(".", "")
-        chipdb_tgz = (
-            "apio-xilinx-chipdb-"
-            + xilinx_chip
-            + "-"
-            + release_tag
-            + ".bin.tgz"
-        )
-        # print(f"{chipdb_tgz=}")
-        chipdb_url = package_url.rsplit("/", 1)[0] + "/" + chipdb_tgz
-        # print(f"{chipdb_url=}")
-        cout(f"Fetching {chipdb_tgz}")
-        downloader = FileDownloader(chipdb_url, chipdb_dir)
-        downloader.start()
-        unpacker = FileUnpacker(chipdb_dir / chipdb_tgz, chipdb_dir)
-        ok = unpacker.start()
-        assert ok
-        assert chipdb_file.exists(), chipdb_file
+        if scons_params.arch == XILINX and scons_target in [
+            "build",
+            "report",
+            "upload",
+        ]:
+            xilinx_chip = scons_params.fpga_info.xilinx_params.package
+            xilinx_chipdb_dir = Path(
+                scons_params.environment.xilinx_chipdb_path
+            )
+            xilinx_chipdb.chipdb_file_on_demand(
+                self.apio_ctx, xilinx_chip, xilinx_chipdb_dir
+            )
 
     @on_exception(exit_code=1)
     def graph(
@@ -424,7 +391,7 @@ class SConsManager:
         apio_ctx = self.apio_ctx
 
         # -- Fetch missing files on demand.
-        self._fetch_support_files_on_demand(scons_target, scons_params)
+        self._prepare_for_scons_run(scons_target, scons_params)
 
         # -- Pass to the scons process the name of the sconstruct file it
         # -- should use.
