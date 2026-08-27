@@ -231,6 +231,10 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
         text = sb.read_file(path)
         data = json.loads(text)
 
+        print("\nActual data:")
+        print(json.dumps(data, indent=2))
+        print()
+
         assert data == {
             "timestamp": "xyz",
             "project": {
@@ -255,37 +259,42 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                 ],
                 "board": {
                     "id": "alhambra-ii",
-                    "custom-definition": False,
-                    "description": "Alhambra II",
-                    "fpga-id": "ice40hx4k-tq144-8k",
-                    "programmer": {
-                        "extra-args": "-b ice40_generic"
-                        + " --vid ${VID} --pid ${PID} "
-                        "--busdev-num ${BUS}:${DEV}",
-                        "id": "openfpgaloader",
-                    },
-                    "usb": {
-                        "pid": "6010",
-                        "product-regex": "^Alhambra II.*",
-                        "vid": "0403",
+                    "is-custom": False,
+                    "definition": {
+                        "description": "Alhambra II",
+                        "fpga-id": "ice40hx4k-tq144-8k",
+                        "programmer": {
+                            "id": "openfpgaloader",
+                            "extra-args": "-b ice40_generic --vid ${VID} "
+                            + "--pid ${PID} --busdev-num ${BUS}:${DEV}",
+                        },
+                        "usb": {
+                            "vid": "0403",
+                            "pid": "6010",
+                            "product-regex": "^Alhambra II.*",
+                        },
                     },
                 },
                 "fpga": {
                     "id": "ice40hx4k-tq144-8k",
-                    "custom-definition": False,
-                    "arch": "ice40",
-                    "part-num": "ICE40HX4K-TQ144",
-                    "size": "8k",
-                    "ice40-params": {
-                        "package": "tq144:4k",
-                        "type": "hx8k",
+                    "is-custom": False,
+                    "definition": {
+                        "part-num": "ICE40HX4K-TQ144",
+                        "arch": "ice40",
+                        "size": "8k",
+                        "ice40-params": {
+                            "type": "hx8k",
+                            "package": "tq144:4k",
+                        },
                     },
                 },
                 "programmer": {
                     "id": "openfpgaloader",
-                    "custom-definition": False,
-                    "args": "--force-terminal-mode --verify",
-                    "command": "openFPGALoader",
+                    "is-custom": False,
+                    "definition": {
+                        "command": "openFPGALoader",
+                        "args": "--force-terminal-mode --verify",
+                    },
                 },
             },
         }

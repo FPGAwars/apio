@@ -22,7 +22,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-08-25",
+        "tag": "2026-08-27",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
