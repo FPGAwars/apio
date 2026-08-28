@@ -1,0 +1,28 @@
+// Protocol buffers definitions used by apio.  Currently we use them just
+// for passing parameters from the apio process to the scons process.
+
+// IMPORTANT: After making changes in this file, run the command 'update-proto.sh'
+// to propagate them to the python stubs. Otherwise they do not take affect.
+
+// Online proto formatter at https://formatter.org/protobuf-formatter
+
+// NOTE: Since we use the the serialized proto data within a single invocation
+// of apio, protocol buffers text mode and binary mode backward compatibility
+// considerations do not apply.
+
+// Using proto2 for features such as 'has' and 'required'.
+syntax = "proto2";
+
+
+package apio.common.proto;
+
+// The supported FPGA architectures, each with its own handler.
+enum ApioArch {
+  ARCH_UNSPECIFIED = 0;
+  ICE40 = 1;
+  ECP5 = 2;
+  GOWIN = 3;
+  XILINX = 4;
+}
+
+
