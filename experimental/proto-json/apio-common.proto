@@ -16,13 +16,15 @@ syntax = "proto2";
 
 package apio.common.proto;
 
-// The supported FPGA architectures, each with its own handler.
+// The supported FPGA architectures. We use lower case name for compatibility
+// with with json since proto enum values don't support [json_name=] 
+// override.
 enum ApioArch {
-  ARCH_UNSPECIFIED = 0;
-  ICE40 = 1;
-  ECP5 = 2;
-  GOWIN = 3;
-  XILINX = 4;
+  arch_unspecified = 0;
+  ice40 = 1;
+  ecp5 = 2;
+  gowin = 3;
+  xilinx = 4;
 }
 
 

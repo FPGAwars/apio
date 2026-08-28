@@ -24,6 +24,9 @@ patch="
 
 tmp_file="_tmp"
 
+# Patch a generated python stub to have a pylint directive
+# to supress warnings. Otherwise linting apio would result
+# in many warnings we don't care about.
 patch_proto () {
   f=$1
   echo "Patching $f"
@@ -34,18 +37,27 @@ patch_proto () {
 }
 
 # Clean old output files.
-rm -f apio_definitions_pb2.py
-rm -f apio_definitions_pb2.pyi
+rm -f *_pb2.py
 rm -f $tmp_file
 
-# Generate new
+# Compile
+echo "Compiling apio-common.proto"
+python -m grpc_tools.protoc \
+  -I. \
+  --python_out=.  \
+  --pyi_out=. \
+  apio-common.proto
+
+patch_proto apio_common_pb2.py
+patch_proto apio_common_pb2.pyi
+
 echo "Compiling apio-definitions.proto"
 python -m grpc_tools.protoc \
   -I. \
   --python_out=.  \
-  --pyi_out=. apio-definitions.proto
+  --pyi_out=. \
+  apio-definitions.proto
 
-# Inject the pylint directive to supress warnings.
 patch_proto apio_definitions_pb2.py
 patch_proto apio_definitions_pb2.pyi
 

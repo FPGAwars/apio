@@ -25,9 +25,10 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+import apio_common_pb2 as apio__common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x61pio-definitions.proto\x12\x11\x61pio.common.proto\"=\n\x0f\x42oardProgrammer\x12\n\n\x02id\x18\x01 \x02(\t\x12\x1e\n\nextra_args\x18\x02 \x01(\tR\nextra-args\"J\n\x08\x42oardUsb\x12\x0b\n\x03vid\x18\x01 \x02(\t\x12\x0b\n\x03pid\x18\x02 \x02(\t\x12$\n\rproduct_regex\x18\x03 \x01(\tR\rproduct-regex\"/\n\rBoardTinyprog\x12\x1e\n\nname_regex\x18\x01 \x02(\tR\nname-regex\"\xd6\x01\n\x0f\x42oardDefinition\x12\x13\n\x0b\x64\x65scription\x18\x01 \x02(\t\x12\x18\n\x07\x66pga_id\x18\x02 \x02(\tR\x07\x66pga-id\x12\x36\n\nprogrammer\x18\x03 \x02(\x0b\x32\".apio.common.proto.BoardProgrammer\x12(\n\x03usb\x18\x04 \x02(\x0b\x32\x1b.apio.common.proto.BoardUsb\x12\x32\n\x08tinyprog\x18\x05 \x01(\x0b\x32 .apio.common.proto.BoardTinyprog\"\x9c\x01\n\x0b\x44\x65\x66initions\x12:\n\x06\x62oards\x18\x01 \x03(\x0b\x32*.apio.common.proto.Definitions.BoardsEntry\x1aQ\n\x0b\x42oardsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x31\n\x05value\x18\x02 \x01(\x0b\x32\".apio.common.proto.BoardDefinition:\x02\x38\x01')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x61pio-definitions.proto\x12\x11\x61pio.common.proto\x1a\x11\x61pio-common.proto\"D\n\x16\x42oardProgrammerSection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x1e\n\nextra_args\x18\x02 \x01(\tR\nextra-args\"Q\n\x0f\x42oardUsbSection\x12\x0b\n\x03vid\x18\x01 \x02(\t\x12\x0b\n\x03pid\x18\x02 \x02(\t\x12$\n\rproduct_regex\x18\x03 \x01(\tR\rproduct-regex\"6\n\x14\x42oardTinyprogSection\x12\x1e\n\nname_regex\x18\x01 \x02(\tR\nname-regex\"\xeb\x01\n\x0f\x42oardDefinition\x12\x13\n\x0b\x64\x65scription\x18\x01 \x02(\t\x12\x18\n\x07\x66pga_id\x18\x02 \x02(\tR\x07\x66pga-id\x12=\n\nprogrammer\x18\x03 \x02(\x0b\x32).apio.common.proto.BoardProgrammerSection\x12/\n\x03usb\x18\x04 \x01(\x0b\x32\".apio.common.proto.BoardUsbSection\x12\x39\n\x08tinyprog\x18\x05 \x01(\x0b\x32\'.apio.common.proto.BoardTinyprogSection\"0\n\x0f\x46pgaIce40Params\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0f\n\x07package\x18\x02 \x02(\t\">\n\x0e\x46pgaEcp5Params\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0f\n\x07package\x18\x02 \x02(\t\x12\r\n\x05speed\x18\x03 \x02(\t\"\x83\x01\n\x0f\x46pgaGowinParams\x12\"\n\x0cyosys_family\x18\x01 \x02(\tR\x0cyosys-family\x12&\n\x0enextpnr_family\x18\x02 \x02(\tR\x0enextpnr-family\x12$\n\rpacker_device\x18\x03 \x02(\tR\rpacker-device\"b\n\x10\x46pgaXilinxParams\x12\x0e\n\x06\x66\x61mily\x18\x01 \x02(\t\x12\x1e\n\nyosys_arch\x18\x02 \x02(\tR\nyosys-arch\x12\x0f\n\x07package\x18\x03 \x02(\t\x12\r\n\x05speed\x18\x04 \x02(\t\"\x9c\x03\n\x0e\x46pgaDefinition\x12\x1a\n\x08part_num\x18\x01 \x02(\tR\x08part-num\x12)\n\x04\x61rch\x18\x02 \x02(\x0e\x32\x1b.apio.common.proto.ApioArch\x12\x0c\n\x04size\x18\x03 \x02(\t\x12H\n\x0cice40_params\x18\n \x01(\x0b\x32\".apio.common.proto.FpgaIce40ParamsH\x00R\x0cice40-params\x12\x45\n\x0b\x65\x63p5_params\x18\x0b \x01(\x0b\x32!.apio.common.proto.FpgaEcp5ParamsH\x00R\x0b\x65\x63p5-params\x12H\n\x0cgowin_params\x18\x0c \x01(\x0b\x32\".apio.common.proto.FpgaGowinParamsH\x00R\x0cgowin-params\x12K\n\rxilinx_params\x18\r \x01(\x0b\x32#.apio.common.proto.FpgaXilinxParamsH\x00R\rxilinx-paramsB\r\n\x0b\x61rch_params\"5\n\x14ProgrammerDefinition\x12\x0f\n\x07\x63ommand\x18\x01 \x02(\t\x12\x0c\n\x04\x61rgs\x18\x02 \x02(\t\"\xca\x03\n\x0b\x44\x65\x66initions\x12:\n\x06\x62oards\x18\x01 \x03(\x0b\x32*.apio.common.proto.Definitions.BoardsEntry\x12\x38\n\x05\x66pgas\x18\x02 \x03(\x0b\x32).apio.common.proto.Definitions.FpgasEntry\x12\x44\n\x0bprogrammers\x18\x03 \x03(\x0b\x32/.apio.common.proto.Definitions.ProgrammersEntry\x1aQ\n\x0b\x42oardsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x31\n\x05value\x18\x02 \x01(\x0b\x32\".apio.common.proto.BoardDefinition:\x02\x38\x01\x1aO\n\nFpgasEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x30\n\x05value\x18\x02 \x01(\x0b\x32!.apio.common.proto.FpgaDefinition:\x02\x38\x01\x1a[\n\x10ProgrammersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x36\n\x05value\x18\x02 \x01(\x0b\x32\'.apio.common.proto.ProgrammerDefinition:\x02\x38\x01')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,16 +37,36 @@ if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_DEFINITIONS_BOARDSENTRY']._loaded_options = None
   _globals['_DEFINITIONS_BOARDSENTRY']._serialized_options = b'8\001'
-  _globals['_BOARDPROGRAMMER']._serialized_start=45
-  _globals['_BOARDPROGRAMMER']._serialized_end=106
-  _globals['_BOARDUSB']._serialized_start=108
-  _globals['_BOARDUSB']._serialized_end=182
-  _globals['_BOARDTINYPROG']._serialized_start=184
-  _globals['_BOARDTINYPROG']._serialized_end=231
-  _globals['_BOARDDEFINITION']._serialized_start=234
-  _globals['_BOARDDEFINITION']._serialized_end=448
-  _globals['_DEFINITIONS']._serialized_start=451
-  _globals['_DEFINITIONS']._serialized_end=607
-  _globals['_DEFINITIONS_BOARDSENTRY']._serialized_start=526
-  _globals['_DEFINITIONS_BOARDSENTRY']._serialized_end=607
+  _globals['_DEFINITIONS_FPGASENTRY']._loaded_options = None
+  _globals['_DEFINITIONS_FPGASENTRY']._serialized_options = b'8\001'
+  _globals['_DEFINITIONS_PROGRAMMERSENTRY']._loaded_options = None
+  _globals['_DEFINITIONS_PROGRAMMERSENTRY']._serialized_options = b'8\001'
+  _globals['_BOARDPROGRAMMERSECTION']._serialized_start=64
+  _globals['_BOARDPROGRAMMERSECTION']._serialized_end=132
+  _globals['_BOARDUSBSECTION']._serialized_start=134
+  _globals['_BOARDUSBSECTION']._serialized_end=215
+  _globals['_BOARDTINYPROGSECTION']._serialized_start=217
+  _globals['_BOARDTINYPROGSECTION']._serialized_end=271
+  _globals['_BOARDDEFINITION']._serialized_start=274
+  _globals['_BOARDDEFINITION']._serialized_end=509
+  _globals['_FPGAICE40PARAMS']._serialized_start=511
+  _globals['_FPGAICE40PARAMS']._serialized_end=559
+  _globals['_FPGAECP5PARAMS']._serialized_start=561
+  _globals['_FPGAECP5PARAMS']._serialized_end=623
+  _globals['_FPGAGOWINPARAMS']._serialized_start=626
+  _globals['_FPGAGOWINPARAMS']._serialized_end=757
+  _globals['_FPGAXILINXPARAMS']._serialized_start=759
+  _globals['_FPGAXILINXPARAMS']._serialized_end=857
+  _globals['_FPGADEFINITION']._serialized_start=860
+  _globals['_FPGADEFINITION']._serialized_end=1272
+  _globals['_PROGRAMMERDEFINITION']._serialized_start=1274
+  _globals['_PROGRAMMERDEFINITION']._serialized_end=1327
+  _globals['_DEFINITIONS']._serialized_start=1330
+  _globals['_DEFINITIONS']._serialized_end=1788
+  _globals['_DEFINITIONS_BOARDSENTRY']._serialized_start=1533
+  _globals['_DEFINITIONS_BOARDSENTRY']._serialized_end=1614
+  _globals['_DEFINITIONS_FPGASENTRY']._serialized_start=1616
+  _globals['_DEFINITIONS_FPGASENTRY']._serialized_end=1695
+  _globals['_DEFINITIONS_PROGRAMMERSENTRY']._serialized_start=1697
+  _globals['_DEFINITIONS_PROGRAMMERSENTRY']._serialized_end=1788
 # @@protoc_insertion_point(module_scope)
