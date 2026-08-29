@@ -1,8 +1,8 @@
 // Common protcol buffers definitions that are imported by other
 // protocol buffer files.
 
-// IMPORTANT: After making changes in this file, run the repo task 
-// 'invoke update-protos' to propagate them to the python stubs. 
+// IMPORTANT: After making changes in this file, run the repo task
+// 'invoke update-protos' to propagate them to the python stubs.
 //  Otherwise they do not take affect.
 
 // Online proto formatter at https://formatter.org/protobuf-formatter

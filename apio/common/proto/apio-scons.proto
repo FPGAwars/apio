@@ -57,8 +57,6 @@ message XilinxFpgaParams {
   required string speed = 4;
 }
 
-
-
 // General fpga info.
 // Matches definition file fpgas.jsonc.
 message FpgaInfo {
@@ -142,13 +140,10 @@ message LintParams {
   optional string top_module = 1 [default = ""];
   optional bool nosynth = 2 [default = false];
   optional bool novlt = 3 [default = false];
-  repeated string file_names = 4;  // Is specified, lint only these files.
+  repeated string file_names = 4; // Is specified, lint only these files.
 }
 
-
-
-// Graph target specific params.
-
+// ======Graph target specific params.
 enum GraphOutputType {
   SVG = 1;
   PNG = 2;
@@ -183,7 +178,7 @@ message SimParams {
 // confused pytest.
 message ApioTestParams {
   // If not specified, all the testbenches in the project are tested.
-  optional string testbench_path = 1 [ default = ""];
+  optional string testbench_path = 1 [default = ""];
 
   // If true, user specified the 'default' option.
   required bool default_option = 2;
@@ -204,8 +199,6 @@ message TargetParams {
     UploadParams upload = 5;
   }
 }
-
-
 
 // The top level messages that is passed from the apio process to
 // the scons process.
@@ -232,6 +225,4 @@ message SconsParams {
 
   // Additional params for for scons targets that need it.
   optional TargetParams target = 7;
-
-
 }
