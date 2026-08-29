@@ -16,7 +16,7 @@
 set -e
 
 # This is the proto compiler
-echo "- Installing the proto compiler"
+echo "Installing the proto compiler"
 pip install --quiet grpcio-tools==1.76.0
 
 tmp_file="_tmp"
@@ -38,7 +38,7 @@ done
 
 # Patch generated stubs to disable pylint checks
 for f in *_pb2.py *_pb2.pyi; do
-  echo "- Patching $f"
+  echo "- Patching   $f"
   mv $f $tmp_file
   echo "# pylint: disable=all" > $f
   echo >> $f

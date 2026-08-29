@@ -19,7 +19,7 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
-from apio.common.proto.apio_pb2 import LintParams
+from apio.common.proto.apio_scons_pb2 import LintParams
 
 
 # ------- apio lint

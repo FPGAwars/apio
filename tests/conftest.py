@@ -20,7 +20,7 @@ from rich.ansi import AnsiDecoder
 import json5
 from apio import __main__
 from apio.common import apio_console
-from apio.common.proto.apio_pb2 import FORCE_PIPE, FORCE_TERMINAL
+from apio.common.proto.apio_scons_pb2 import FORCE_PIPE, FORCE_TERMINAL
 
 # -- Debug mode on/off
 DEBUG = True

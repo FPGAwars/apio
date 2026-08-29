@@ -26,8 +26,8 @@
         "--line-length=79"
     ],
     "cSpell.ignorePaths": [
-        "apio/common/proto/apio_pb2.py",
-        "apio/common/proto/apio_pb2.pyi"
+        "apio/common/proto/*_pb2.py",
+        "apio/common/proto/*_pb2.pyi"
     ],
     "cSpell.words": [
         "aaatb",

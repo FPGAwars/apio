@@ -23,7 +23,7 @@ from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import xilinx_chipdb
-from apio.common.proto.apio_pb2 import (
+from apio.common.proto.apio_scons_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
     XILINX,
