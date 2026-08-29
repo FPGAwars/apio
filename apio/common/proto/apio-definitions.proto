@@ -50,29 +50,28 @@ message BoardDefinition {
 
 // ====================== FPGA definition ===========================
 
-
 message FpgaIce40Params {
-  required string type    = 1;
+  required string type = 1;
   required string package = 2;
 }
 
 message FpgaEcp5Params {
-  required string type    = 1;
+  required string type = 1;
   required string package = 2;
-  required string speed   = 3;
+  required string speed = 3;
 }
 
 message FpgaGowinParams {
-  required string yosys_family   = 1 [json_name = "yosys-family"];
+  required string yosys_family = 1 [json_name = "yosys-family"];
   required string nextpnr_family = 2 [json_name = "nextpnr-family"];
-  required string packer_device  = 3 [json_name = "packer-device"];
+  required string packer_device = 3 [json_name = "packer-device"];
 }
 
 message FpgaXilinxParams {
-  required string family     = 1 ;
+  required string family = 1;
   required string yosys_arch = 2 [json_name = "yosys-arch"];
-  required string package    = 3 ;
-  required string speed      = 4;
+  required string package = 3;
+  required string speed = 4;
 }
 
 message FpgaDefinition {
@@ -88,8 +87,8 @@ message FpgaDefinition {
   }
 }
 
-// ====================== Board definition ===========================
 
+// ====================== Board definition ===========================
 
 message ProgrammerDefinition {
   required string command = 1;
