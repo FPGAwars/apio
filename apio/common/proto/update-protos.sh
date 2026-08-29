@@ -1,13 +1,14 @@
 #!/bin/bash
 
-# Run this script each time apio.proto is modified.
+# Run this script each time a .proto file in this directory
+# is modified.
 
 # Input:
-#    apio.proto   - proto messages definitions.
+#    *.proto   - proto messages definitions.
 #
 # Outputs:
-#    apio_pb2.py  - python binding.
-#    apio_pb2.pyi - symbols for visual studio code.
+#    *_pb2.py  - python binding.
+#    *_pb2.pyi - symbols for visual studio code.
 
 
 
@@ -15,39 +16,35 @@
 set -e
 
 # This is the proto compiler
-echo "Installing the proto compiler"
+echo "- Installing the proto compiler"
 pip install --quiet grpcio-tools==1.76.0
-
-patch="
-# pylint: disable=all
-"
 
 tmp_file="_tmp"
 
-patch_proto () {
-  f=$1
-  echo "Patching $f"
-  mv $1 $tmp_file
-  echo "$patch" > $1
-  cat $tmp_file >> $1
-  rm $tmp_file
-}
-
 # Clean old output files.
-rm -f apio_pb2.py
-rm -f apio_pb2.pyi
+rm -f *_pb2.py
+rm -f *_pb2.pyi
 rm -f $tmp_file
 
-# Generate new
-echo "Compiling apio.proto"
-python -m grpc_tools.protoc \
-  -I. \
-  --python_out=.  \
-  --pyi_out=. apio.proto
+# Compile
+for f in *.proto; do
+  echo "- Compilling $f"
+  python -m grpc_tools.protoc \
+    -I. \
+    --python_out=.  \
+    --pyi_out=. \
+    $f
+done
 
-# Inject the pylint directive to supress warnings.
-patch_proto apio_pb2.py
-patch_proto apio_pb2.pyi
+# Patch generated stubs to disable pylint checks
+for f in *_pb2.py *_pb2.pyi; do
+  echo "- Patching $f"
+  mv $f $tmp_file
+  echo "# pylint: disable=all" > $f
+  echo >> $f
+  cat $tmp_file >> $f
+  rm $tmp_file
+done
 
 # All done OK
 echo "All done"
