@@ -1,5 +1,6 @@
 # pylint: disable=all
 
+from apio.common.proto import apio_common_pb2 as _apio_common_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -8,14 +9,6 @@ from collections.abc import Iterable as _Iterable, Mapping as _Mapping
 from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
-
-class ApioArch(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
-    __slots__ = ()
-    ARCH_UNSPECIFIED: _ClassVar[ApioArch]
-    ICE40: _ClassVar[ApioArch]
-    ECP5: _ClassVar[ApioArch]
-    GOWIN: _ClassVar[ApioArch]
-    XILINX: _ClassVar[ApioArch]
 
 class TerminalMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -30,11 +23,6 @@ class GraphOutputType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     SVG: _ClassVar[GraphOutputType]
     PNG: _ClassVar[GraphOutputType]
     PDF: _ClassVar[GraphOutputType]
-ARCH_UNSPECIFIED: ApioArch
-ICE40: ApioArch
-ECP5: ApioArch
-GOWIN: ApioArch
-XILINX: ApioArch
 TERMINAL_UNSPECIFIED: TerminalMode
 AUTO_TERMINAL: TerminalMode
 FORCE_TERMINAL: TerminalMode
@@ -230,10 +218,10 @@ class SconsParams(_message.Message):
     APIO_ENV_PARAMS_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     timestamp: str
-    arch: ApioArch
+    arch: _apio_common_pb2.ApioArch
     fpga_info: FpgaInfo
     verbosity: Verbosity
     environment: Environment
     apio_env_params: ApioEnvParams
     target: TargetParams
-    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[_apio_common_pb2.ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...
