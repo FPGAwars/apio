@@ -23,10 +23,10 @@ from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import xilinx_chipdb
+from apio.common.proto.apio_common_pb2 import ApioArch, XILINX
 from apio.common.proto.apio_scons_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
-    XILINX,
     Verbosity,
     Environment,
     SconsParams,
@@ -37,15 +37,12 @@ from apio.common.proto.apio_scons_pb2 import (
     Ecp5FpgaParams,
     GowinFpgaParams,
     XilinxFpgaParams,
-    ApioArch,
     GraphParams,
     LintParams,
     SimParams,
     ApioTestParams,
     UploadParams,
 )
-
-# from apio.common import rich_lib_windows
 
 
 # W0703: Catching too general exception Exception (broad-except)

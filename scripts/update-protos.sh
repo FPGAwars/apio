@@ -15,20 +15,26 @@
 # Exit on any error.
 set -e
 
-# This is the proto compiler
+# This should be the repo root.
+echo "Current directory is $PWD"
+
+# Install the proto compiler
 echo "Installing the proto compiler"
 pip install --quiet grpcio-tools==1.76.0
 
-tmp_file="_tmp"
+proto_dir="apio/common/proto"
+
+tmp_file="$proto_dir/_tmp"
 
 # Clean old output files.
-rm -f *_pb2.py
-rm -f *_pb2.pyi
+rm -f $proto_dir/*_pb2.py
+rm -f $proto_dir/*_pb2.pyi
 rm -f $tmp_file
 
 # Compile
-for f in *.proto; do
-  echo "- Compilling $f"
+echo "Compiling:"
+for f in $proto_dir/*.proto; do
+  echo "- $f"
   python -m grpc_tools.protoc \
     -I. \
     --python_out=.  \
@@ -37,8 +43,9 @@ for f in *.proto; do
 done
 
 # Patch generated stubs to disable pylint checks
-for f in *_pb2.py *_pb2.pyi; do
-  echo "- Patching   $f"
+echo "Patching:"
+for f in $proto_dir/*_pb2.py*; do
+  echo "- $f"
   mv $f $tmp_file
   echo "# pylint: disable=all" > $f
   echo >> $f

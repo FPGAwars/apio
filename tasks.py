@@ -6,18 +6,20 @@
 # https://fpgawars.github.io/apio/docs/development-environment/
 #
 # A few useful Invoke tasks
-#   invoke --list        # Show available tasks
-#   invoke -l            # Show available tasks
-#   invoke lint          # Lint the python code
-#   invoke test       .  # Run lint and all the tests
-#   invoke install-apio  # Install to run 'apio' from the source code here.
-#   invoke docs-viewer   # Run a local http server to view the Apio docs.
-#   invoke test-coverage # Collect and show test coverage.
-#   invoke clean         # Clean project.
+#   invoke --list         # Show available tasks
+#   invoke -l             # Show available tasks
+#   invoke lint           # Lint the python code
+#   invoke test       .   # Run lint and all the tests
+#   invoke install-apio   # Install to run 'apio' from the source code here.
+#   invoke docs-viewer    # Run a local http server to view the Apio docs.
+#   invoke test-coverage  # Collect and show test coverage.
+#   invoke clean          # Clean project.
+#   invoke update-protos  # Recompiled protos
 
 #  NOTE: The shortcut 'inv' can be used instead of 'invoke'.
 
 import sys
+import os
 import webbrowser
 from pathlib import Path
 import shutil
@@ -306,8 +308,9 @@ def uninstall_apio_task(ctx: Context):
 
 @task(name="install-deps", aliases=["id"])
 def install_deps_task(_: Context):
-    """Install development tools. Since we do at at the top of this file
-    for every task, there is nothing to do here."""
+    """Install development tools."""
+    # -- Since we do at at the top of this file for every task,
+    # -- there is nothing to do here.
     announce_task("install-deps")
     cout(f"{'':17} {'required':9s} {'installed'}")
     for name, ver in DEPENDENCIES:
@@ -319,3 +322,12 @@ def install_docs_viewer_task(ctx: Context):
     """Run a local http server to view the Apio docs."""
     announce_task("docs-viewer")
     run(ctx, ["mkdocs", "serve"])
+
+
+@task(name="update-protos", aliases=["up"])
+def update_protos_task(ctx: Context):
+    """Recompile the protocol buffers definitions."""
+    announce_task("update-protos")
+    os.chdir(get_repo_root())
+    run(ctx, ["pwd"])
+    run(ctx, ["./scripts/update-protos.sh"])

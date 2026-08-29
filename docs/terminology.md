@@ -64,8 +64,8 @@
 
 - **Protocol Buffers** - A Google-developed open-source language/tool for serializing structured data.
   Apio CLI uses it to communicate with the SCons subprocess. Definitions are in
-  `apio/common/proto/apio.proto` and should be recompiled via
-  `update-protos.sh` when modified.
+  `apio/common/proto/apio.proto` and should be recompiled by running the task
+  `invoke update-protos` when modified.
 
 - **Remote config** - A `.jsonc` configuration file stored in the Apio CLI GitHub repository under
   `remote-config`. Apio CLI occasionally fetches this file to check for updated
