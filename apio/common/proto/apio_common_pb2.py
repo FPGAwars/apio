@@ -26,7 +26,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#apio/common/proto/apio-common.proto\x12\x11\x61pio.common.proto*L\n\x08\x41pioArch\x12\x14\n\x10\x41RCH_UNSPECIFIED\x10\x00\x12\t\n\x05ICE40\x10\x01\x12\x08\n\x04\x45\x43P5\x10\x02\x12\t\n\x05GOWIN\x10\x03\x12\n\n\x06XILINX\x10\x04')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#apio/common/proto/apio-common.proto\x12\x11\x61pio.common.proto*6\n\x08\x41pioArch\x12\t\n\x05ICE40\x10\x01\x12\x08\n\x04\x45\x43P5\x10\x02\x12\t\n\x05GOWIN\x10\x03\x12\n\n\x06XILINX\x10\x04')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,5 +34,5 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'apio.common.proto.apio_comm
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_APIOARCH']._serialized_start=58
-  _globals['_APIOARCH']._serialized_end=134
+  _globals['_APIOARCH']._serialized_end=112
 # @@protoc_insertion_point(module_scope)

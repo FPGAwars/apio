@@ -20,7 +20,6 @@ import "apio/common/proto/apio-common.proto";
 
 
 enum TerminalMode {
-  TERMINAL_UNSPECIFIED = 0;
   AUTO_TERMINAL = 1;
   FORCE_TERMINAL = 2;
   FORCE_PIPE = 3;
@@ -151,7 +150,6 @@ message LintParams {
 // Graph target specific params.
 
 enum GraphOutputType {
-  TYPE_UNSPECIFIED = 0;
   SVG = 1;
   PNG = 2;
   PDF = 3;
