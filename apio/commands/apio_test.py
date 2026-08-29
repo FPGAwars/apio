@@ -15,7 +15,7 @@ from apio.common.apio_console import cout
 from apio.common.apio_styles import EMPH1
 from apio.managers.scons_manager import SConsManager
 from apio.commands import options
-from apio.common.proto.apio_pb2 import ApioTestParams
+from apio.common.proto.apio_scons_pb2 import ApioTestParams
 from apio.utils import cmd_util
 from apio.apio_context import (
     ApioContext,

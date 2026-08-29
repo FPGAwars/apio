@@ -27,7 +27,7 @@ from SCons.Script.SConscript import SConsEnvironment
 from SCons.Node import NodeList
 from SCons.Node.Alias import Alias
 from apio.scons.apio_env import ApioEnv
-from apio.common.proto.apio_pb2 import SimParams, ApioTestParams
+from apio.common.proto.apio_scons_pb2 import SimParams, ApioTestParams
 from apio.common.common_util import (
     PROJECT_BUILD_PATH,
     has_testbench_name,

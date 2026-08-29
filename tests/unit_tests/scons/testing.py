@@ -8,7 +8,11 @@ import SCons.Environment
 import SCons.Script.Main
 from google.protobuf import text_format
 from apio.scons.apio_env import ApioEnv
-from apio.common.proto.apio_pb2 import SconsParams, TargetParams, ApioEnvParams
+from apio.common.proto.apio_scons_pb2 import (
+    SconsParams,
+    TargetParams,
+    ApioEnvParams,
+)
 
 
 TEST_PARAMS = """

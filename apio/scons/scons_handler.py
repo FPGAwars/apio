@@ -19,7 +19,7 @@ from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
 from apio.scons.plugin_xilinx import PluginXilinx
-from apio.common.proto.apio_pb2 import (
+from apio.common.proto.apio_scons_pb2 import (
     SimParams,
     SconsParams,
     ICE40,

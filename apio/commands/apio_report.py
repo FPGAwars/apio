@@ -19,7 +19,7 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
-from apio.common.proto.apio_pb2 import Verbosity
+from apio.common.proto.apio_scons_pb2 import Verbosity
 from apio.utils import cmd_util
 
 # ---------- apio report

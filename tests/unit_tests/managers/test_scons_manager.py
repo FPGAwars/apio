@@ -4,7 +4,7 @@ Tests of the scons manager scons.py
 
 from google.protobuf import text_format
 from tests.conftest import ApioRunner
-from apio.common.proto.apio_pb2 import (
+from apio.common.proto.apio_scons_pb2 import (
     SconsParams,
     Verbosity,
     TargetParams,

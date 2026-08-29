@@ -21,7 +21,7 @@ def chipdb_file_on_demand(
     xilinx_chip: str,
     chipdb_dir: Path,
 ):
-    """Called to insured that the chipdb file for the given xlinx chip id
+    """Called to insure that the chipdb file for the given xilinx chip id
     exists. If not, it is being downloaded on the fly."""
 
     # -- TODO: This is a proof of concept code. Clean up.

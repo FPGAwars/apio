@@ -11,7 +11,7 @@ from SCons.Action import FunctionAction
 from tests.unit_tests.scons.testing import make_test_apio_env
 from tests.conftest import ApioRunner
 from apio.common import apio_console
-from apio.common.proto.apio_pb2 import (
+from apio.common.proto.apio_scons_pb2 import (
     TargetParams,
     UploadParams,
     LintParams,

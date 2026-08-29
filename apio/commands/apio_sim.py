@@ -21,7 +21,7 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
-from apio.common.proto.apio_pb2 import SimParams
+from apio.common.proto.apio_scons_pb2 import SimParams
 from apio.utils import cmd_util
 
 
