@@ -19,7 +19,6 @@ package apio.common.proto;
 
 // The supported FPGA architectures.
 enum ApioArch {
-  ARCH_UNSPECIFIED = 0;
   ICE40 = 1;
   ECP5 = 2;
   GOWIN = 3;

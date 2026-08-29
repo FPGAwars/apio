@@ -12,22 +12,18 @@ DESCRIPTOR: _descriptor.FileDescriptor
 
 class TerminalMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
-    TERMINAL_UNSPECIFIED: _ClassVar[TerminalMode]
     AUTO_TERMINAL: _ClassVar[TerminalMode]
     FORCE_TERMINAL: _ClassVar[TerminalMode]
     FORCE_PIPE: _ClassVar[TerminalMode]
 
 class GraphOutputType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
-    TYPE_UNSPECIFIED: _ClassVar[GraphOutputType]
     SVG: _ClassVar[GraphOutputType]
     PNG: _ClassVar[GraphOutputType]
     PDF: _ClassVar[GraphOutputType]
-TERMINAL_UNSPECIFIED: TerminalMode
 AUTO_TERMINAL: TerminalMode
 FORCE_TERMINAL: TerminalMode
 FORCE_PIPE: TerminalMode
-TYPE_UNSPECIFIED: GraphOutputType
 SVG: GraphOutputType
 PNG: GraphOutputType
 PDF: GraphOutputType

@@ -20,7 +20,6 @@ package apio.common.proto;
 // with with json since proto enum values don't support [json_name=] 
 // override.
 enum ApioArch {
-  arch_unspecified = 0;
   ice40 = 1;
   ecp5 = 2;
   gowin = 3;
