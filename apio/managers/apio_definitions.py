@@ -12,14 +12,13 @@ import sys
 import re
 from pathlib import Path
 from typing import Dict, Set, Tuple, Optional
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
 import json5
 from apio.utils import proto_util
 from apio.common.apio_console import cout, cerror
 from apio.common.proto.apio_definitions_pb2 import (
     BoardDefinition,
     FpgaDefinition,
+    ProgrammerDefinition,
 )
 
 # -- Boards definitions file name.
@@ -32,83 +31,13 @@ FPGAS_JSONC = "fpgas.jsonc"
 PROGRAMMERS_JSONC = "programmers.jsonc"
 
 # -- A regex for validating boards, fpgas, and programmers ids.
-ID_FORMAT = re.compile(r"^[a-z][a-z0-9-]*$")
-
-
-# -- JSON schema for validating a single fpga definition in fpga.jsonc.
-# -- The fields 'part-num' and 'size' are for information only.
-FPGA_SCHEMA = schema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "properties": {
-        "part-num": {"type": "string"},
-        "arch": {
-            "type": "string",
-            "enum": ["ice40", "ecp5", "gowin", "xilinx"],
-        },
-        "size": {"type": "string"},
-        "ice40-params": {
-            "type": "object",
-            "properties": {
-                "type": {"type": "string"},
-                "package": {"type": "string"},
-            },
-            "required": ["type", "package"],
-            "additionalProperties": False,
-        },
-        "ecp5-params": {
-            "type": "object",
-            "properties": {
-                "type": {"type": "string"},
-                "package": {"type": "string"},
-                "speed": {"type": "string"},
-            },
-            "required": ["type", "package", "speed"],
-            "additionalProperties": False,
-        },
-        "gowin-params": {
-            "type": "object",
-            "properties": {
-                "yosys-family": {"type": "string"},
-                "nextpnr-family": {"type": "string"},
-                "packer-device": {"type": "string"},
-            },
-            "required": ["yosys-family", "nextpnr-family", "packer-device"],
-            "additionalProperties": False,
-        },
-        "xilinx-params": {
-            "type": "object",
-            "properties": {
-                "family": {"type": "string"},
-                "yosys-arch": {"type": "string"},
-                "package": {"type": "string"},
-                "speed": {"type": "string"},
-            },
-            "required": ["family", "yosys-arch", "package", "speed"],
-            "additionalProperties": False,
-        },
-    },
-    "required": ["part-num", "arch", "size"],
-    "additionalProperties": False,
-}
-
-
-# -- JSON schema for validating a single programmer definition in
-# -- programmers.jsonc.
-PROGRAMMER_SCHEMA = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "required": ["command", "args"],
-    "properties": {"command": {"type": "string"}, "args": {"type": "string"}},
-    "additionalProperties": False,
-}
+DEFINITION_ID_FORMAT = re.compile(r"^[a-z][a-z0-9-]*$")
 
 
 class ApioDefinitions:
     """Contains the apio definitions in the form of json dictionaries."""
 
     # pylint: disable=too-many-instance-attributes
-    # pylint: disable=too-many-locals
 
     def __init__(
         self,
@@ -146,7 +75,7 @@ class ApioDefinitions:
         # -- Validate boards definitions. Optional project custom definition
         # -- supersede apio standard definitions.
         for board_id in self.boards:
-            if not ID_FORMAT.match(board_id):
+            if not DEFINITION_ID_FORMAT.match(board_id):
                 cerror(f"Board id has an invalid format: {board_id}")
                 sys.exit(1)
 
@@ -169,7 +98,7 @@ class ApioDefinitions:
 
         # -- Validate fpgas definitions.
         for fpga_id, fpga_definition in self.fpgas.items():
-            if not ID_FORMAT.match(fpga_id):
+            if not DEFINITION_ID_FORMAT.match(fpga_id):
                 cerror(f"FPGA id has an invalid format: {fpga_id}")
                 sys.exit(1)
             proto_util.check_is_required(fpga_definition, "part_num")
@@ -185,24 +114,26 @@ class ApioDefinitions:
 
         # -- Load programmers definitions. Optional project custom definition
         # -- supersede apio standard definitions.
-        self.programmers, self.custom_programmers_ids = self._load_definitions(
+        programmers_json, self.custom_programmers_ids = self._load_definitions(
             PROGRAMMERS_JSONC,
             self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
+        # -- Convert the programmers definition dicts to FpgaDefinition protos.
+        self.programmers: Dict[str, ProgrammerDefinition] = {}
+        for programmer_id, definition_dict in programmers_json.items():
+            definition = proto_util.proto_from_json_dict(
+                definition_dict,
+                ProgrammerDefinition,
+                f"Failed to parse programmer definition '{programmer_id}",
+            )
+            self.programmers[programmer_id] = definition
+
         # -- Validate programmers definitions.
-        for programmer_id, programmer_info in self.programmers.items():
-            if not ID_FORMAT.match(programmer_id):
+        for programmer_id in self.programmers:
+            if not DEFINITION_ID_FORMAT.match(programmer_id):
                 cerror(f"Programmer id has an invalid format: {programmer_id}")
-                sys.exit(1)
-            try:
-                validate(instance=programmer_info, schema=PROGRAMMER_SCHEMA)
-            except ValidationError as e:
-                cerror(
-                    f"Invalid programmer definition [{programmer_id}]: "
-                    f"{e.message}"
-                )
                 sys.exit(1)
 
         # -- Check references from boards to fpga and programmers

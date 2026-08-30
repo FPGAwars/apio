@@ -228,9 +228,18 @@ def test_loading_with_custom_programmer(apio_runner: ApioRunner):
         assert "alhambra-ii" in definitions.boards
         assert "ice40hx4k-tq144-8k" in definitions.fpgas
 
-        assert definitions.programmers["iceprog"] == programmer_info1
+        programmer_definition1 = definitions.programmers["iceprog"]
         assert (
-            definitions.programmers["my-custom-programmer"] == programmer_info2
+            proto_util.proto_to_json_dict(programmer_definition1)
+            == programmer_info1
+        )
+
+        programmer_definition2 = definitions.programmers[
+            "my-custom-programmer"
+        ]
+        assert (
+            proto_util.proto_to_json_dict(programmer_definition2)
+            == programmer_info2
         )
 
         assert definitions.is_custom_programmer("iceprog")
@@ -343,7 +352,7 @@ def test_loading_invalid_custom_programmer(apio_runner: ApioRunner):
 
         # -- Verify
         assert e.value.code == 1
-        assert "'command' is a required property" in log.out
+        assert "Missing required field 'command'" in log.out
 
 
 def test_loading_invalid_custom_board_id(apio_runner: ApioRunner):

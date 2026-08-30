@@ -171,16 +171,19 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
 
     pr = apio_ctx.project_resources
     board_definition = pr.board_definition
-    programmer_info = pr.programmer_info
+    programmer_definition = pr.programmer_definition
 
     # -- Here when using the standard command.
 
     # -- Start building the template with the programmer binary name.
     # -- E.g. "openFPGAloader". "command" is a validated required field.
-    cmd_template = programmer_info["command"]
+    proto_util.check_is_required(programmer_definition, "command")
+    cmd_template = programmer_definition.command
 
-    # -- Append the optional args template from the programmer.
-    args = pr.programmer_info.get("args", "")
+    # -- Append the optional args template from the programmer. The 'args'
+    # -- field is required but may be empty.
+    proto_util.check_is_required(programmer_definition, "args")
+    args = programmer_definition.args
     if args:
         cmd_template += " "
         cmd_template += args
