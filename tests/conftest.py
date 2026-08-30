@@ -5,7 +5,7 @@ import json
 import subprocess
 from subprocess import CompletedProcess
 from dataclasses import dataclass
-from io import StringIO
+from io import StringIO, TextIOBase
 import shutil
 import tempfile
 import contextlib
@@ -33,11 +33,42 @@ SANDBOX_MARKER = "apio-sandbox"
 ANSI_DECODER = AnsiDecoder()
 
 
+class _LogTee(TextIOBase):
+    """Output stream that writes both to a buffer and to the real
+    std/err stream. Used by the 'with_log' operation."""
+
+    def __init__(self, log_buffer: StringIO, live_stream: TextIOBase):
+        self._buf = log_buffer
+        self._live = live_stream
+
+    # @overrides
+    def write(self, s: str) -> int:
+        # -- Write to the log buffer
+        self._buf.write(s)
+        # -- Write to live output.
+        self._live.write(s)
+        self._live.flush()
+        # -- All done.
+        return len(s)
+
+    # @overrides
+    def flush(self) -> None:
+        self._buf.flush()
+        self._live.flush()
+
+
 class CapturedLog:
     """Holds the captured stdout + stderr."""
 
     def __init__(self):
         self._buf = StringIO()
+        self._output_stream = _LogTee(self._buf, sys.__stdout__)
+
+    @property
+    def output_stream(self) -> TextIOBase:
+        """Getter to the output stream that sends the output to the logger
+        buffer and to live output."""
+        return self._output_stream
 
     @property
     def buf(self) -> StringIO:
@@ -480,12 +511,14 @@ class ApioRunner:
     @contextlib.contextmanager
     def with_logger(self):
         """Capture stdout + stderr and yield a CapturedLog object."""
+        print("----- Begin log")
         log = CapturedLog()
         with (
-            contextlib.redirect_stdout(log.buf),
-            contextlib.redirect_stderr(log.buf),
+            contextlib.redirect_stdout(log.output_stream),
+            contextlib.redirect_stderr(log.output_stream),
         ):
             yield log
+        print("----- End log")
 
     @property
     def sandbox(self) -> Optional[ApioSandbox]:
