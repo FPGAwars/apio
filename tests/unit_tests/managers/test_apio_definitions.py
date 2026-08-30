@@ -5,6 +5,8 @@ Tests of apio_definitions.py
 from pytest import raises
 from google.protobuf.json_format import MessageToDict
 from tests.conftest import ApioRunner
+from apio.utils import proto_util
+from apio.common.proto.apio_definitions_pb2 import FpgaDefinition
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -131,14 +133,14 @@ def test_loading_with_custom_fpgas(apio_runner: ApioRunner):
         sb.write_default_apio_ini()
 
         # -- Write fake custom boards
-        fpga_info1 = {
+        fpga_json1 = {
             "part-num": "ICE40HX4K-TQ144",
             "arch": "ice40",
             "size": "99k",  # Overriding 8k
             "ice40-params": {"type": "hx8k", "package": "tq144:4k"},
         }
 
-        fpga_info2 = {
+        fpga_json2 = {
             "part-num": "MY-CUSTOM-FPGA",
             "arch": "ice40",
             "size": "4k",
@@ -149,9 +151,9 @@ def test_loading_with_custom_fpgas(apio_runner: ApioRunner):
             "fpgas.jsonc",
             {
                 # -- Overrides a standard definition
-                "ice40hx4k-tq144-8k": fpga_info1,
+                "ice40hx4k-tq144-8k": fpga_json1,
                 # -- Adds a new definition
-                "my-custom-fpga": fpga_info2,
+                "my-custom-fpga": fpga_json2,
             },
         )
 
@@ -169,8 +171,16 @@ def test_loading_with_custom_fpgas(apio_runner: ApioRunner):
         assert "alhambra-ii" in definitions.boards
         assert "openfpgaloader" in definitions.programmers
 
-        assert definitions.fpgas["ice40hx4k-tq144-8k"] == fpga_info1
-        assert definitions.fpgas["my-custom-fpga"] == fpga_info2
+        # TODO: Use proto ascii literals instead of converting from json
+        fpga_proto1 = proto_util.proto_from_json_dict(
+            fpga_json1, FpgaDefinition, "Failed to parse fpga_json1"
+        )
+        fpga_proto2 = proto_util.proto_from_json_dict(
+            fpga_json2, FpgaDefinition, "Failed to parse fpga_json2"
+        )
+
+        assert definitions.fpgas["ice40hx4k-tq144-8k"] == fpga_proto1
+        assert definitions.fpgas["my-custom-fpga"] == fpga_proto2
 
         assert definitions.is_custom_fpga("ice40hx4k-tq144-8k")
         assert definitions.is_custom_fpga("my-custom-fpga")
@@ -300,7 +310,7 @@ def test_loading_invalid_custom_fpga(apio_runner: ApioRunner):
 
         # -- Verify
         assert e.value.code == 1
-        assert "'part-num' is a required property" in log.out
+        assert "Missing required field 'part-num'" in log.out
 
 
 def test_loading_invalid_custom_programmer(apio_runner: ApioRunner):

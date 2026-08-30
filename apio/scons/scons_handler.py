@@ -19,12 +19,7 @@ from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
 from apio.scons.plugin_xilinx import PluginXilinx
-from apio.common.proto.apio_common_pb2 import (
-    ICE40,
-    ECP5,
-    GOWIN,
-    XILINX,
-)
+from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.common.proto.apio_scons_pb2 import SimParams, SconsParams
 from apio.common import apio_console
 from apio.scons.apio_env import ApioEnv
@@ -92,19 +87,21 @@ class SconsHandler:
         apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
 
         # -- Select the plugin.
-        if params.arch == ICE40:
-            plugin = PluginIce40(apio_env)
-        elif params.arch == ECP5:
-            plugin = PluginEcp5(apio_env)
-        elif params.arch == GOWIN:
-            plugin = PluginGowin(apio_env)
-        elif params.arch == XILINX:
-            plugin = PluginXilinx(apio_env)
-        else:
-            cout(
-                f"Apio SConstruct dispatch error: unknown arch [{params.arch}]"
-            )
-            sys.exit(1)
+        match params.arch:
+            case ApioArch.ice40:
+                plugin = PluginIce40(apio_env)
+            case ApioArch.ecp5:
+                plugin = PluginEcp5(apio_env)
+            case ApioArch.gowin:
+                plugin = PluginGowin(apio_env)
+            case ApioArch.xilinx:
+                plugin = PluginXilinx(apio_env)
+            case _:
+                cout(
+                    "Apio SConstruct dispatch error: unknown "
+                    f"arch [{ApioArch.Name(params.arch)}]"
+                )
+                sys.exit(1)
 
         # -- Create the handler.
         scons_handler = SconsHandler(apio_env, plugin)
@@ -144,9 +141,11 @@ class SconsHandler:
             always_build=(params.verbosity.all or params.verbosity.pnr),
         )
 
-        # -- DEBUG
+        # -- TODO: abstract the special case for xilinx in the xilinx plugin
+        # -- bitstream_builder() method.
+        # --
         # -- Special case for xilinx
-        if apio_env.params.arch == XILINX:
+        if apio_env.params.arch == ApioArch.xilinx:
 
             # -- Access to plugin.pre_builder()
             # -- But using getattr pylance does not complain

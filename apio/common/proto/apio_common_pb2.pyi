@@ -8,11 +8,11 @@ DESCRIPTOR: _descriptor.FileDescriptor
 
 class ApioArch(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
-    ICE40: _ClassVar[ApioArch]
-    ECP5: _ClassVar[ApioArch]
-    GOWIN: _ClassVar[ApioArch]
-    XILINX: _ClassVar[ApioArch]
-ICE40: ApioArch
-ECP5: ApioArch
-GOWIN: ApioArch
-XILINX: ApioArch
+    ice40: _ClassVar[ApioArch]
+    ecp5: _ClassVar[ApioArch]
+    gowin: _ClassVar[ApioArch]
+    xilinx: _ClassVar[ApioArch]
+ice40: ApioArch
+ecp5: ApioArch
+gowin: ApioArch
+xilinx: ApioArch

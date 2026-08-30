@@ -12,10 +12,11 @@ syntax = "proto2";
 package apio.common.proto;
 
 // The supported FPGA architectures.
+// Using lower case names to be json friendly.
 enum ApioArch {
-  ICE40 = 1;
-  ECP5 = 2;
-  GOWIN = 3;
-  XILINX = 4;
+  ice40 = 1;
+  ecp5 = 2;
+  gowin = 3;
+  xilinx = 4;
 }
 

@@ -26,6 +26,7 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
+from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
 from apio.managers.remote_config import (
@@ -265,9 +266,9 @@ def _project_cli(
     table.add_row("Board definition", board_definition)
     table.add_row("FPGA id", fpga_id)
     table.add_row("FPGA definition", fpga_definition)
-    table.add_row("FPGA part num", res.fpga_info.get("part-num", ""))
-    table.add_row("FPGA Architecture", res.fpga_info.get("arch", ""))
-    table.add_row("FPGA size", res.fpga_info.get("size", ""))
+    table.add_row("FPGA part num", res.fpga_definition.part_num)
+    table.add_row("FPGA Architecture", ApioArch.Name(res.fpga_definition.arch))
+    table.add_row("FPGA size", res.fpga_definition.size)
     table.add_row("Programmer id", programmer_id)
     table.add_row("Programmer definition", programmer_definition)
 

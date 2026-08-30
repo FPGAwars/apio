@@ -11,20 +11,23 @@ import sys
 from datetime import date
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import click
 from rich.table import Table
 from rich import box
 from apio.common import apio_console
 from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO, BORDER, EMPH1
+from apio.common.proto.apio_common_pb2 import ApioArch
+from apio.common.proto.apio_definitions_pb2 import FpgaDefinition
+from apio.utils import proto_util
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
     ProjectPolicy,
     RemoteConfigPolicy,
 )
-from apio.utils import util, cmd_util, resource_util
+from apio.utils import util, cmd_util
 from apio.commands import options
 
 
@@ -44,6 +47,16 @@ class Entry:
         return (util.fpga_arch_sort_key(self.fpga_arch), self.fpga.lower())
 
 
+def _get_fpga_arch_params(fpga_definition: FpgaDefinition) -> Tuple[str, Dict]:
+    """Extracts the arch specific params of an fpga, Returns a tuple
+    with the field name and the field value."""
+    fpga_dict = proto_util.proto_to_json_dict(fpga_definition)
+    arch = fpga_dict["arch"]
+    field_name = arch + "-params"
+    field_value = fpga_dict[field_name]
+    return (field_name, field_value)
+
+
 def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
     """Returns a sorted list of supported fpgas entries."""
 
@@ -56,15 +69,15 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
 
     # -- Collect all entries.
     result: List[Entry] = []
-    for fpga_id, fpga_info in apio_ctx.definitions.fpgas.items():
+    for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
         # -- Construct the Entry for this fpga.
         board_count = boards_counts.get(fpga_id, 0)
-        fpga_arch = fpga_info.get("arch", "")
-        fpga_part_num = fpga_info.get("part-num", "")
-        fpga_size = fpga_info.get("size", "")
+        fpga_arch = fpga_definition.arch
+        fpga_part_num = fpga_definition.part_num
+        fpga_size = fpga_definition.size
 
         # -- Arch specific params summary string.
-        _, params = resource_util.get_fpga_arch_params(fpga_info)
+        _, params = _get_fpga_arch_params(fpga_definition)
         values = [f"\\[{v}]" for v in params.values()]
         fpga_params = " ".join(values)
 
@@ -73,7 +86,7 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
             Entry(
                 fpga=fpga_id,
                 board_count=board_count,
-                fpga_arch=fpga_arch,
+                fpga_arch=ApioArch.Name(fpga_arch),
                 fpga_part_num=fpga_part_num,
                 fpga_size=fpga_size,
                 fpga_params=fpga_params,
