@@ -15,7 +15,9 @@ from typing import Dict, Set, Tuple, Optional
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 import json5
+from apio.utils import proto_util
 from apio.common.apio_console import cout, cerror
+from apio.common.proto.apio_definitions_pb2 import BoardDefinition
 
 # -- Boards definitions file name.
 BOARDS_JSONC = "boards.jsonc"
@@ -29,46 +31,6 @@ PROGRAMMERS_JSONC = "programmers.jsonc"
 # -- A regex for validating boards, fpgas, and programmers ids.
 ID_FORMAT = re.compile(r"^[a-z][a-z0-9-]*$")
 
-
-# -- JSON schema for validating a single board definition in boards.jsonc.
-# -- The field 'description' is for information only.
-BOARD_SCHEMA = schema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "required": ["description", "fpga-id", "programmer"],
-    "properties": {
-        "description": {"type": "string"},
-        "fpga-id": {"type": "string"},
-        "programmer": {
-            "type": "object",
-            "required": ["id"],
-            "properties": {
-                "id": {"type": "string"},
-                "extra-args": {"type": "string"},
-            },
-            "additionalProperties": False,
-        },
-        "usb": {
-            "type": "object",
-            "required": ["vid", "pid"],
-            "properties": {
-                "vid": {"type": "string", "pattern": "^[0-9a-f]{4}$"},
-                "pid": {"type": "string", "pattern": "^[0-9a-f]{4}$"},
-                "product-regex": {"type": "string", "pattern": "^.*$"},
-            },
-            "additionalProperties": False,
-        },
-        "tinyprog": {
-            "type": "object",
-            "required": ["name-regex"],
-            "properties": {
-                "name-regex": {"type": "string", "pattern": "^.*$"},
-            },
-            "additionalProperties": False,
-        },
-    },
-    "additionalProperties": False,
-}
 
 # -- JSON schema for validating a single fpga definition in fpga.jsonc.
 # -- The fields 'part-num' and 'size' are for information only.
@@ -143,12 +105,15 @@ class ApioDefinitions:
     """Contains the apio definitions in the form of json dictionaries."""
 
     # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-locals
 
     def __init__(
         self,
         package_definitions_dir: Path,
         project_definitions_dir: Optional[Path],
     ):
+
+        # pylint: disable=too-many-branches
 
         assert isinstance(package_definitions_dir, Path)
         assert project_definitions_dir is None or isinstance(
@@ -159,22 +124,28 @@ class ApioDefinitions:
         self._project_definitions_dir = project_definitions_dir
 
         # -- Read boards definitions.
-        self.boards, self.custom_boards_ids = self._load_definitions(
+        boards_json, self.custom_boards_ids = self._load_definitions(
             BOARDS_JSONC,
             self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
+        # -- Convert the board definition to BoardDefinition protos we keep
+        # -- in this object.
+        self.boards: Dict[str, BoardDefinition] = {}
+        for board_id, definition_dict in boards_json.items():
+            definition = proto_util.proto_from_json_dict(
+                definition_dict,
+                BoardDefinition,
+                f"Failed to parse board definition '{board_id}",
+            )
+            self.boards[board_id] = definition
+
         # -- Validate boards definitions. Optional project custom definition
         # -- supersede apio standard definitions.
-        for board_id, board_info in self.boards.items():
+        for board_id in self.boards:
             if not ID_FORMAT.match(board_id):
                 cerror(f"Board id has an invalid format: {board_id}")
-                sys.exit(1)
-            try:
-                validate(instance=board_info, schema=BOARD_SCHEMA)
-            except ValidationError as e:
-                cerror(f"Invalid board definition [{board_id}]: {e.message}")
                 sys.exit(1)
 
         # -- Read fpgas definitions.
@@ -234,6 +205,24 @@ class ApioDefinitions:
                 cerror(
                     f"Invalid programmer definition [{programmer_id}]: "
                     f"{e.message}"
+                )
+                sys.exit(1)
+
+        # -- Check references from boards to fpga and programmers
+        for board_id, board_definition in self.boards.items():
+            fpga_id = board_definition.fpga_id
+            if fpga_id not in self.fpgas:
+                cerror(
+                    f"Board '{board_id}' refers to  non existing "
+                    f"fpga '{fpga_id}'"
+                )
+                sys.exit(1)
+
+            programmer_id = board_definition.programmer.id
+            if programmer_id not in self.programmers:
+                cerror(
+                    f"Board '{board_id}' refers to a non existing "
+                    f"programmer '{programmer_id}'"
                 )
                 sys.exit(1)
 

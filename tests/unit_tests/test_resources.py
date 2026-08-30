@@ -27,21 +27,16 @@ def test_resources_references(apio_runner: ApioRunner):
 
         unused_programmers = set(apio_ctx.definitions.programmers.keys())
 
-        for board_id, board_info in apio_ctx.definitions.boards.items():
+        for board_id, board_definition in apio_ctx.definitions.boards.items():
             # -- Prepare a context message for failing assertions.
             board_msg = f"While testing board {board_id}"
 
-            # -- Assert that required fields exist.
-            assert "fpga-id" in board_info, board_msg
-            assert "programmer" in board_info, board_msg
-            assert "id" in board_info["programmer"], board_msg
-
             # -- Check that the fpga exists.
-            board_fpga_id = board_info["fpga-id"]
+            board_fpga_id = board_definition.fpga_id
             assert apio_ctx.definitions.fpgas[board_fpga_id], board_msg
 
             # -- Check that the programmer exists.
-            board_programmer_id = board_info["programmer"]["id"]
+            board_programmer_id = board_definition.programmer.id
             assert apio_ctx.definitions.programmers[
                 board_programmer_id
             ], board_msg

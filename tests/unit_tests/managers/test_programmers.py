@@ -60,8 +60,8 @@ def fake_usb_device(
     """Create a fake usb device for resting."""
     # pylint: disable=too-many-arguments
     return UsbDevice(
-        vendor_id=vid,
-        product_id=pid,
+        vid=vid,
+        pid=pid,
         bus=bus,
         device=dev,
         manufacturer=manuf,
@@ -87,8 +87,8 @@ def fake_serial_device(
     return SerialDevice(
         port="/dev/" + port_name,
         port_name=port_name,
-        vendor_id=vid,
-        product_id=pid,
+        vid=vid,
+        pid=pid,
         manufacturer=manuf,
         product=prod,
         serial_number=sn,

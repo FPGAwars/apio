@@ -58,16 +58,16 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
 
     # -- Collect the boards info into a list of entires, one per board.
     result: List[Entry] = []
-    for board, board_info in apio_ctx.definitions.boards.items():
-        fpga_id = board_info.get("fpga-id", "")
+    for board, board_definition in apio_ctx.definitions.boards.items():
+        fpga_id = board_definition.fpga_id
         fpga_info = apio_ctx.definitions.fpgas.get(fpga_id, {})
 
         examples_count = "   " + str(examples_counts.get(board, ""))
-        board_description = board_info.get("description", "")
+        board_description = board_definition.description
         fpga_arch = fpga_info.get("arch", "")
         fpga_size = fpga_info.get("size", "")
         fpga_part_num = fpga_info.get("part-num", "")
-        programmer_id = board_info.get("programmer", {}).get("id", "")
+        programmer_id = board_definition.programmer.id
 
         result.append(
             Entry(

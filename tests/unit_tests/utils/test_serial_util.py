@@ -72,20 +72,20 @@ def test_filtering():
     assert filt.filter(devs) == devs
 
     # -- Filter by VID
-    filt = SerialDeviceFilter().set_vendor_id("9999")
+    filt = SerialDeviceFilter().set_vid("9999")
     assert filt.summary() == "[VID=9999]"
     assert filt.filter(devs) == []
 
-    filt = SerialDeviceFilter().set_vendor_id("0405")
+    filt = SerialDeviceFilter().set_vid("0405")
     assert filt.summary() == "[VID=0405]"
     assert filt.filter(devs) == [devs[1], devs[3]]
 
     # -- Filter by PID
-    filt = SerialDeviceFilter().set_product_id("9999")
+    filt = SerialDeviceFilter().set_pid("9999")
     assert filt.summary() == "[PID=9999]"
     assert filt.filter(devs) == []
 
-    filt = SerialDeviceFilter().set_product_id("6020")
+    filt = SerialDeviceFilter().set_pid("6020")
     assert filt.summary() == "[PID=6020]"
     assert filt.filter(devs) == [devs[0], devs[3]]
 
@@ -130,19 +130,13 @@ def test_filtering():
 
     # -- Filter by VID, PID
     filt = (
-        SerialDeviceFilter()
-        .set_vendor_id("0405")
-        .set_product_id("6020")
-        .set_port("port3")
+        SerialDeviceFilter().set_vid("0405").set_pid("6020").set_port("port3")
     )
     assert filt.summary() == "[VID=0405, PID=6020, PORT=port3]"
     assert filt.filter(devs) == [devs[3]]
 
     filt = (
-        SerialDeviceFilter()
-        .set_vendor_id("0405")
-        .set_product_id("6020")
-        .set_port("name3")
+        SerialDeviceFilter().set_vid("0405").set_pid("6020").set_port("name3")
     )
     assert filt.summary() == "[VID=0405, PID=6020, PORT=name3]"
     assert filt.filter(devs) == [devs[3]]

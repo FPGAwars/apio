@@ -4,15 +4,8 @@
 // 'invoke update-protos' to propagate them to the python stubs.
 //  Otherwise they do not take affect.
 
-// Online proto formatter at https://formatter.org/protobuf-formatter
-
-// NOTE: Since we use the the serialized proto data within a single invocation
-// of apio, protocol buffers text mode and binary mode backward compatibility
-// considerations do not apply.
-
 // Using proto2 for features such as 'has' and 'required'.
 syntax = "proto2";
-
 
 package apio.common.proto;
 

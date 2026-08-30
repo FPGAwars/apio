@@ -3,6 +3,7 @@ Tests of apio_definitions.py
 """
 
 from pytest import raises
+from google.protobuf.json_format import MessageToDict
 from tests.conftest import ApioRunner
 from apio.apio_context import (
     ApioContext,
@@ -61,7 +62,7 @@ def test_loading_with_custom_boards(apio_runner: ApioRunner):
         sb.write_default_apio_ini()
 
         # -- Write fake custom boards
-        board_info1 = {
+        board_definition1 = {
             "description": "My Custom Alhambra II",
             "fpga-id": "ice40hx4k-tq144-8k",
             "programmer": {
@@ -73,7 +74,7 @@ def test_loading_with_custom_boards(apio_runner: ApioRunner):
             },
         }
 
-        board_info2 = {
+        board_definition2 = {
             "description": "My new board",
             "fpga-id": "lfe5u-45f-6bg381c",
             "programmer": {
@@ -85,9 +86,9 @@ def test_loading_with_custom_boards(apio_runner: ApioRunner):
             "boards.jsonc",
             {
                 # -- Overrides a standard definition
-                "alhambra-ii": board_info1,
+                "alhambra-ii": board_definition1,
                 # -- Adds a new definition
-                "my-custom-board": board_info2,
+                "my-custom-board": board_definition2,
             },
         )
 
@@ -105,8 +106,14 @@ def test_loading_with_custom_boards(apio_runner: ApioRunner):
         assert "ice40hx4k-tq144-8k" in definitions.fpgas
         assert "openfpgaloader" in definitions.programmers
 
-        assert definitions.boards["alhambra-ii"] == board_info1
-        assert definitions.boards["my-custom-board"] == board_info2
+        assert (
+            MessageToDict(definitions.boards["alhambra-ii"])
+            == board_definition1
+        )
+        assert (
+            MessageToDict(definitions.boards["my-custom-board"])
+            == board_definition2
+        )
 
         assert definitions.is_custom_board("alhambra-ii")
         assert definitions.is_custom_board("my-custom-board")
@@ -258,7 +265,7 @@ def test_loading_invalid_custom_board(apio_runner: ApioRunner):
 
         # -- Verify
         assert e.value.code == 1
-        assert "'description' is a required property" in log.out
+        assert "Missing required field 'description'" in log.out
 
 
 def test_loading_invalid_custom_fpga(apio_runner: ApioRunner):

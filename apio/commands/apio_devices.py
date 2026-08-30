@@ -57,7 +57,7 @@ def _list_usb_devices(apio_ctx: ApioContext) -> None:
     # -- Add a raw per device
     for device in devices:
         values = []
-        values.append(f"{device.vendor_id}:{device.product_id}")
+        values.append(f"{device.vid}:{device.pid}")
         values.append(f"{device.bus}:{device.device}")
         values.append(device.manufacturer)
         values.append(device.product)
@@ -141,7 +141,7 @@ def _list_serial_devices(apio_ctx: ApioContext) -> None:
     for device in devices:
         values = []
         values.append(device.port)
-        values.append(f"{device.vendor_id}:{device.product_id}")
+        values.append(f"{device.vid}:{device.pid}")
         values.append(device.manufacturer)
         values.append(device.product)
         values.append(device.serial_number)

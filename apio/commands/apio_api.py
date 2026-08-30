@@ -25,6 +25,7 @@ from apio.utils import (
     usb_util,
     serial_util,
     util,
+    proto_util,
     apio_platforms,
     env_options,
 )
@@ -387,7 +388,9 @@ def _get_project_cli(
         "id": pr.board_id,
         "is-custom": apio_ctx.definitions.is_custom_board(pr.board_id),
     }
-    board_dict["definition"] = pr.board_info
+    board_dict["definition"] = proto_util.proto_to_json_dict(
+        pr.board_definition
+    )
     section_dict["board"] = board_dict
 
     fpga_dict = {
@@ -466,15 +469,15 @@ def _get_boards_cli(
 
     # -- Generate the boards section.
     section = {}
-    for board_id, board_info in apio_ctx.definitions.boards.items():
+    for board_id, board_definition in apio_ctx.definitions.boards.items():
         # -- The board output dict.
         board_dict = {}
 
         # -- Add board description
-        board_dict["description"] = board_info.get("description", None)
+        board_dict["description"] = board_definition.description
 
         # -- Add board's fpga information.
-        fpga_id = board_info.get("fpga-id", None)
+        fpga_id = board_definition.fpga_id
         fpga_info = apio_ctx.definitions.fpgas.get(fpga_id, {})
         assert "id" not in fpga_info
         fpga_dict = {"id": fpga_id}
@@ -483,7 +486,7 @@ def _get_boards_cli(
 
         # -- Add board's programmer information.
         programmer_dict = {}
-        programmer_id = board_info.get("programmer", {}).get("id", None)
+        programmer_id = board_definition.programmer.id
         programmer_dict["id"] = programmer_id
         board_dict["programmer"] = programmer_dict
 
@@ -944,8 +947,8 @@ def _scan_devices_cli(
     section = []
     for device in usb_devices:
         dev = {}
-        dev["vid"] = device.vendor_id
-        dev["pid"] = device.product_id
+        dev["vid"] = device.vid
+        dev["pid"] = device.pid
         dev["bus"] = device.bus
         dev["device"] = device.device
         dev["manufacturer"] = device.manufacturer
@@ -967,8 +970,8 @@ def _scan_devices_cli(
         dev = {}
         dev["port"] = device.port
         dev["port-name"] = device.port_name
-        dev["vendor-id"] = device.vendor_id
-        dev["product-id"] = device.product_id
+        dev["vendor-id"] = device.vid
+        dev["product-id"] = device.pid
         dev["manufacturer"] = device.manufacturer
         dev["product"] = device.product
         dev["serial-number"] = device.serial_number

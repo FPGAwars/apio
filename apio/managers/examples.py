@@ -76,6 +76,8 @@ class Examples:
         """Scans the examples and returns a list of ExampleInfos.
         Returns null if an error."""
 
+        # pylint: disable=too-many-locals
+
         # -- Collect the examples home dir each board.
         boards_dirs: List[Path] = []
 
@@ -86,6 +88,21 @@ class Examples:
         # -- Collect the examples of each boards.
         examples: List[ExampleInfo] = []
         for board_dir in boards_dirs:
+            # -- Convert board dir to board id
+            board_id = board_dir.name
+
+            # -- Verify that the board id exists.
+            definitions = self.apio_ctx.definitions
+            boards_definitions = definitions.boards
+            if board_id not in boards_definitions:
+                cerror(
+                    "Apio examples contain an invalid board "
+                    f"id '{board_id}'"
+                )
+                sys.exit(1)
+
+            # -- Get board definitions
+            board_definition = boards_definitions[board_id]
 
             # -- Iterate board's example subdirectories.
             for example_dir in board_dir.iterdir():
@@ -104,18 +121,15 @@ class Examples:
 
                 # -- Extract the fpga arch and part number, with "" as
                 # -- default value if not found.
-                board_info = self.apio_ctx.definitions.boards.get(
-                    board_dir.name, {}
-                )
-                fpga_id = board_info.get("fpga-id", "")
-                fpga_info = self.apio_ctx.definitions.fpgas.get(fpga_id, {})
+                fpga_id = board_definition.fpga_id
+                fpga_info = definitions.fpgas[fpga_id]
                 fpga_arch = fpga_info.get("arch", "")
                 fpga_part_num = fpga_info.get("part-num", "")
                 fpga_size = fpga_info.get("size", "")
 
                 # -- Append this example to the list.
                 example_info = ExampleInfo(
-                    board_id=board_dir.name,
+                    board_id=board_id,
                     example_name=example_dir.name,
                     path=example_dir,
                     description=description,

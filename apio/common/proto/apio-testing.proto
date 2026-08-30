@@ -1,0 +1,22 @@
+// Protocol buffers definitions used by apio tests only. The are not 
+// used by Apio runtime.
+//
+// IMPORTANT: After making changes in this file, run the repo task
+// 'invoke update-protos' to propagate them to the python stubs.
+//  Otherwise they do not take affect.
+
+// Using proto2 for features such as 'has' and 'required'.
+syntax = "proto2";
+
+package apio.common.proto;
+
+
+message MessageA {
+  required string field_a1 = 1 [json_name = "field-a1"];
+  optional string field_a2 = 2 [json_name = "field-a2"];
+}
+
+message MessageB {
+  required MessageA field_b1 = 1 [json_name = "field-b1"];
+  optional MessageA field_b2 = 2 [json_name = "field-b2"];
+}
