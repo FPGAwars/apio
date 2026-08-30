@@ -18,8 +18,8 @@ class SerialDevice:
 
     port: str
     port_name: str
-    vendor_id: str
-    product_id: str
+    vid: str
+    pid: str
     manufacturer: str
     product: str
     serial_number: str
@@ -28,14 +28,14 @@ class SerialDevice:
 
     def __post_init__(self):
         """Check that vid, pid, has the format %04X."""
-        usb_util.check_usb_id_format(self.vendor_id)
-        usb_util.check_usb_id_format(self.product_id)
+        usb_util.check_usb_id_format(self.vid)
+        usb_util.check_usb_id_format(self.pid)
 
     def summary(self) -> str:
         """Returns a user friendly short description of this device."""
         return (
             f"[{self.port}] "
-            f"[{self.vendor_id}:{self.product_id}] "
+            f"[{self.vid}:{self.pid}] "
             f"[{self.manufacturer}] [{self.product}] "
             f"[{self.serial_number}]"
         )
@@ -89,8 +89,8 @@ def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
             SerialDevice(
                 port=port.device,
                 port_name=port.name,
-                vendor_id=f"{port.vid:04X}",
-                product_id=f"{port.pid:04X}",
+                vid=f"{port.vid:04X}",
+                pid=f"{port.pid:04X}",
                 manufacturer=port.manufacturer or "",
                 product=port.product or "",
                 serial_number=serial_number,
@@ -118,8 +118,8 @@ class SerialDeviceFilter:
     the caller passes as filters are not unintentionally None or empty
     unintentionally."""
 
-    _vendor_id: str | None = None
-    _product_id: str | None = None
+    _vid: str | None = None
+    _pid: str | None = None
     _product_regex: str | None = None
     _serial_port: str | None = None
     _serial_num: str | None = None
@@ -127,10 +127,10 @@ class SerialDeviceFilter:
     def summary(self) -> str:
         """User friendly representation of the filter"""
         terms = []
-        if self._vendor_id:
-            terms.append(f"VID={self._vendor_id}")
-        if self._product_id:
-            terms.append(f"PID={self._product_id}")
+        if self._vid:
+            terms.append(f"VID={self._vid}")
+        if self._pid:
+            terms.append(f"PID={self._pid}")
         if self._product_regex:
             terms.append(f'REGEX="{self._product_regex}"')
         if self._serial_port:
@@ -141,16 +141,16 @@ class SerialDeviceFilter:
             return "[" + ", ".join(terms) + "]"
         return "[all]"
 
-    def set_vendor_id(self, vendor_id: str) -> "SerialDeviceFilter":
+    def set_vid(self, vid: str) -> "SerialDeviceFilter":
         """Pass only devices with given vendor id."""
-        usb_util.check_usb_id_format(vendor_id)
-        self._vendor_id = vendor_id
+        usb_util.check_usb_id_format(vid)
+        self._vid = vid
         return self
 
-    def set_product_id(self, product_id: str) -> "SerialDeviceFilter":
+    def set_pid(self, pid: str) -> "SerialDeviceFilter":
         """Pass only devices given product id."""
-        usb_util.check_usb_id_format(product_id)
-        self._product_id = product_id
+        usb_util.check_usb_id_format(pid)
+        self._pid = pid
         return self
 
     def set_product_regex(self, product_regex: str) -> "SerialDeviceFilter":
@@ -173,14 +173,10 @@ class SerialDeviceFilter:
 
     def _eval(self, device: SerialDevice) -> bool:
         """Test if the devices passes this field."""
-        if (self._vendor_id is not None) and (
-            self._vendor_id != device.vendor_id
-        ):
+        if (self._vid is not None) and (self._vid != device.vid):
             return False
 
-        if (self._product_id is not None) and (
-            self._product_id != device.product_id
-        ):
+        if (self._pid is not None) and (self._pid != device.pid):
             return False
 
         if (self._product_regex is not None) and not re.search(

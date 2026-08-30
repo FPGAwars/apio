@@ -7,6 +7,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from apio.common.apio_console import cerror
 from apio.managers.apio_definitions import ApioDefinitions
+from apio.common.proto.apio_definitions_pb2 import BoardDefinition
 
 
 @dataclass(frozen=True)
@@ -14,7 +15,7 @@ class ProjectResources:
     """Contains the resources of the current project."""
 
     board_id: str
-    board_info: Dict[str, Any]
+    board_definition: BoardDefinition
     fpga_id: str
     fpga_info: Dict[str, Any]
     programmer_id: str
@@ -108,26 +109,20 @@ def collect_project_resources(
     have a user friendly error handling and reporting."""
 
     # -- Get the info.
-    board_info = definitions.boards.get(board_id, None)
-    if board_info is None:
+    board_definition = definitions.boards.get(board_id, None)
+    if board_definition is None:
         cerror(f"Unknown board id '{board_id}'.")
         sys.exit(1)
 
     # -- Get fpga id and info.
-    fpga_id = board_info.get("fpga-id", None)
-    if fpga_id is None:
-        cerror(f"Board '{board_id}' has no 'fpga-id' field.")
-        sys.exit(1)
+    fpga_id = board_definition.fpga_id
     fpga_info = definitions.fpgas.get(fpga_id, None)
     if fpga_info is None:
         cerror(f"Unknown fpga id '{fpga_id}'.")
         sys.exit(1)
 
     # -- Get programmer id and info.
-    programmer_id = board_info.get("programmer", {}).get("id", None)
-    if programmer_id is None:
-        cerror(f"Board '{board_id}' has no 'programmer.id'.")
-        sys.exit(1)
+    programmer_id = board_definition.programmer.id
     programmer_info = definitions.programmers.get(programmer_id, None)
     if programmer_info is None:
         cerror(f"Unknown programmer id '{programmer_id}'.")
@@ -136,7 +131,7 @@ def collect_project_resources(
     # -- Create the project resources bundle.
     project_resources = ProjectResources(
         board_id,
-        board_info,
+        board_definition,
         fpga_id,
         fpga_info,
         programmer_id,

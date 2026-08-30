@@ -52,8 +52,8 @@ class UsbDevice:
 
     # pylint: disable=too-many-instance-attributes
 
-    vendor_id: str
-    product_id: str
+    vid: str
+    pid: str
     bus: int
     device: int
     manufacturer: str
@@ -63,13 +63,13 @@ class UsbDevice:
 
     def __post_init__(self):
         """Check that vid, pid, has the format %04X."""
-        check_usb_id_format(self.vendor_id)
-        check_usb_id_format(self.product_id)
+        check_usb_id_format(self.vid)
+        check_usb_id_format(self.pid)
 
     def summary(self) -> str:
         """Returns a user friendly short description of this device."""
         return (
-            f"[{self.vendor_id}:{self.product_id}] "
+            f"[{self.vid}:{self.pid}] "
             f"[{self.bus}:{self.device}] "
             f"[{self.manufacturer}] "
             f"[{self.product}] [{self.serial_number}]"
@@ -170,8 +170,8 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         man = d.iManufacturer  # pyright: ignore[reportAttributeAccessIssue]
         iser = d.iSerialNumber  # pyright: ignore[reportAttributeAccessIssue]
         item = UsbDevice(
-            vendor_id=f"{vid:04X}",
-            product_id=f"{pid:04X}",
+            vid=f"{vid:04X}",
+            pid=f"{pid:04X}",
             bus=device.bus,  # pyright: ignore[reportArgumentType]
             device=device.address or 0,
             manufacturer=_get_usb_str(
@@ -197,8 +197,8 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     result = sorted(
         result,
         key=lambda d: (
-            d.vendor_id.lower(),
-            d.product_id.lower(),
+            d.vid.lower(),
+            d.pid.lower(),
             d.bus,
             d.device,
         ),
@@ -220,8 +220,8 @@ class UsbDeviceFilter:
     the caller passes as filters are not unintentionally None or empty
     unintentionally."""
 
-    _vendor_id: str | None = None
-    _product_id: str | None = None
+    _vid: str | None = None
+    _pid: str | None = None
     product_regex: str | None = None
     _serial_num: str | None = None
 
@@ -229,10 +229,10 @@ class UsbDeviceFilter:
         """User friendly representation of the filter"""
         terms = []
 
-        if self._vendor_id:
-            terms.append(f"VID={self._vendor_id}")
-        if self._product_id:
-            terms.append(f"PID={self._product_id}")
+        if self._vid:
+            terms.append(f"VID={self._vid}")
+        if self._pid:
+            terms.append(f"PID={self._pid}")
         if self.product_regex:
             terms.append(f'REGEX="{self.product_regex}"')
         if self._serial_num:
@@ -241,16 +241,16 @@ class UsbDeviceFilter:
             return "[" + ", ".join(terms) + "]"
         return "[all]"
 
-    def set_vendor_id(self, vendor_id: str) -> "UsbDeviceFilter":
+    def set_vid(self, vid: str) -> "UsbDeviceFilter":
         """Pass only devices with given vendor id."""
-        check_usb_id_format(vendor_id)
-        self._vendor_id = vendor_id
+        check_usb_id_format(vid)
+        self._vid = vid
         return self
 
-    def set_product_id(self, product_id: str) -> "UsbDeviceFilter":
+    def set_pid(self, pid: str) -> "UsbDeviceFilter":
         """Pass only devices with given product id."""
-        check_usb_id_format(product_id)
-        self._product_id = product_id
+        check_usb_id_format(pid)
+        self._pid = pid
         return self
 
     def set_product_regex(self, product_regex: str) -> "UsbDeviceFilter":
@@ -267,14 +267,10 @@ class UsbDeviceFilter:
 
     def _eval(self, device: UsbDevice) -> bool:
         """Test if the devices passes this field."""
-        if (self._vendor_id is not None) and (
-            self._vendor_id != device.vendor_id
-        ):
+        if (self._vid is not None) and (self._vid != device.vid):
             return False
 
-        if (self._product_id is not None) and (
-            self._product_id != device.product_id
-        ):
+        if (self._pid is not None) and (self._pid != device.pid):
             return False
 
         if (self.product_regex is not None) and not re.search(
