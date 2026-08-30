@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Optional, List, Dict
 from apio.common.apio_console import cout, cstyle, cerror
 from apio.common.apio_styles import INFO, SUCCESS, EMPH3
+from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.apio_context import ApioContext
 from apio.utils import util
 
@@ -122,10 +123,10 @@ class Examples:
                 # -- Extract the fpga arch and part number, with "" as
                 # -- default value if not found.
                 fpga_id = board_definition.fpga_id
-                fpga_info = definitions.fpgas[fpga_id]
-                fpga_arch = fpga_info.get("arch", "")
-                fpga_part_num = fpga_info.get("part-num", "")
-                fpga_size = fpga_info.get("size", "")
+                fpga_definition = definitions.fpgas[fpga_id]
+                fpga_arch = ApioArch.Name(fpga_definition.arch)
+                fpga_part_num = fpga_definition.part_num
+                fpga_size = fpga_definition.size
 
                 # -- Append this example to the list.
                 example_info = ExampleInfo(

@@ -397,7 +397,7 @@ def _get_project_cli(
         "id": pr.fpga_id,
         "is-custom": apio_ctx.definitions.is_custom_fpga(pr.fpga_id),
     }
-    fpga_dict["definition"] = pr.fpga_info
+    fpga_dict["definition"] = proto_util.proto_to_json_dict(pr.fpga_definition)
     section_dict["fpga"] = fpga_dict
 
     programmer_dict = {
@@ -478,10 +478,9 @@ def _get_boards_cli(
 
         # -- Add board's fpga information.
         fpga_id = board_definition.fpga_id
-        fpga_info = apio_ctx.definitions.fpgas.get(fpga_id, {})
-        assert "id" not in fpga_info
+        fpga_definition = apio_ctx.definitions.fpgas[fpga_id]
         fpga_dict = {"id": fpga_id}
-        fpga_dict.update(fpga_info)
+        fpga_dict.update(proto_util.proto_to_json_dict(fpga_definition))
         board_dict["fpga"] = fpga_dict
 
         # -- Add board's programmer information.
@@ -552,8 +551,8 @@ def _get_fpgas_cli(
 
     # -- Generate the fpgas section
     section = {}
-    for fpga_id, fpga_info in apio_ctx.definitions.fpgas.items():
-        section[fpga_id] = fpga_info
+    for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
+        section[fpga_id] = proto_util.proto_to_json_dict(fpga_definition)
 
     top_dict["fpgas"] = section
 

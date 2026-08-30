@@ -17,7 +17,10 @@ from jsonschema.exceptions import ValidationError
 import json5
 from apio.utils import proto_util
 from apio.common.apio_console import cout, cerror
-from apio.common.proto.apio_definitions_pb2 import BoardDefinition
+from apio.common.proto.apio_definitions_pb2 import (
+    BoardDefinition,
+    FpgaDefinition,
+)
 
 # -- Boards definitions file name.
 BOARDS_JSONC = "boards.jsonc"
@@ -130,8 +133,7 @@ class ApioDefinitions:
             self._project_definitions_dir,
         )
 
-        # -- Convert the board definition to BoardDefinition protos we keep
-        # -- in this object.
+        # -- Convert the board definition dicts to BoardDefinition protos.
         self.boards: Dict[str, BoardDefinition] = {}
         for board_id, definition_dict in boards_json.items():
             definition = proto_util.proto_from_json_dict(
@@ -149,34 +151,28 @@ class ApioDefinitions:
                 sys.exit(1)
 
         # -- Read fpgas definitions.
-        self.fpgas, self.custom_fpgas_ids = self._load_definitions(
+        fpgas_json, self.custom_fpgas_ids = self._load_definitions(
             FPGAS_JSONC,
             self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
-        # -- Validate fpgas definitions. Optional project custom definition
-        # -- supersede apio standard definitions.
-        for fpga_id, fpga_info in self.fpgas.items():
+        # -- Convert the fpgas definition dicts to FpgasDefinition protos.
+        self.fpgas: Dict[str, FpgaDefinition] = {}
+        for fpga_id, definition_dict in fpgas_json.items():
+            definition = proto_util.proto_from_json_dict(
+                definition_dict,
+                FpgaDefinition,
+                f"Failed to parse fpga definition '{fpga_id}",
+            )
+            self.fpgas[fpga_id] = definition
+
+        # -- Validate fpgas definitions.
+        for fpga_id, fpga_definition in self.fpgas.items():
             if not ID_FORMAT.match(fpga_id):
                 cerror(f"FPGA id has an invalid format: {fpga_id}")
                 sys.exit(1)
-            try:
-                validate(instance=fpga_info, schema=FPGA_SCHEMA)
-            except ValidationError as e:
-                cerror(f"Invalid fpga definition [{fpga_id}]: {e.message}")
-                sys.exit(1)
-
-            # -- Expecting a params field for the specified architecture.
-            params_pattern = re.compile(r".*-params$")
-            actual_params = [
-                key for key in fpga_info if params_pattern.match(key)
-            ]
-            expected_params = [fpga_info["arch"] + "-params"]
-            if actual_params != expected_params:
-                cerror(f"Unexpected params {actual_params} in fpga {fpga_id}")
-                sys.exit(1)
-            part_num = fpga_info["part-num"]
+            part_num = fpga_definition.part_num
             lc_part_num = part_num.lower().replace("/", "-")
             if fpga_id != lc_part_num and not fpga_id.startswith(
                 lc_part_num + "-"

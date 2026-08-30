@@ -92,7 +92,7 @@ Sample `scons.params` file
 
 ```proto
 timestamp: "07174143800"
-arch: ICE40
+arch: ice40
 fpga_info {
   fpga_id: "ice40hx4k-tq144-8k"
   part_num: "ICE40HX4K-TQ144"

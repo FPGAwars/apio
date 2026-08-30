@@ -23,7 +23,7 @@ from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import xilinx_chipdb
-from apio.common.proto.apio_common_pb2 import ApioArch, XILINX
+from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.common.proto.apio_scons_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
@@ -101,7 +101,7 @@ class SConsManager:
         # -- If needed, make sure the Xilinx chipdb file exists and download it
         # -- if not.
 
-        if scons_params.arch == XILINX and scons_target in [
+        if scons_params.arch == ApioArch.xilinx and scons_target in [
             "build",
             "report",
             "upload",
@@ -240,58 +240,58 @@ class SConsManager:
 
         # -- Get the project resources.
         pr = apio_ctx.project_resources
-        fpga_info = pr.fpga_info
+        fpga_definition = pr.fpga_definition
 
         # -- Populate the common values of FpgaInfo.
         result.fpga_info.MergeFrom(
             FpgaInfo(
                 fpga_id=pr.fpga_id,
-                part_num=fpga_info["part-num"],
-                size=fpga_info["size"],
+                part_num=fpga_definition.part_num,
+                size=fpga_definition.size,
             )
         )
 
         # - Populate the architecture specific values of result.fpga_info.
-        fpga_arch = fpga_info["arch"]
+        fpga_arch = fpga_definition.arch
         match fpga_arch:
-            case "ice40":
-                params = fpga_info["ice40-params"]
-                result.arch = ApioArch.ICE40
+            case ApioArch.ice40:
+                params = fpga_definition.ice40_params
+                result.arch = ApioArch.ice40
                 result.fpga_info.ice40_params.MergeFrom(
                     Ice40FpgaParams(
-                        type=params["type"],
-                        package=params["package"],
+                        type=params.type,
+                        package=params.package,
                     )
                 )
-            case "ecp5":
-                params = fpga_info["ecp5-params"]
-                result.arch = ApioArch.ECP5
+            case ApioArch.ecp5:
+                params = fpga_definition.ecp5_params
+                result.arch = ApioArch.ecp5
                 result.fpga_info.ecp5_params.MergeFrom(
                     Ecp5FpgaParams(
-                        type=params["type"],
-                        package=params["package"],
-                        speed=params["speed"],
+                        type=params.type,
+                        package=params.package,
+                        speed=params.speed,
                     )
                 )
-            case "gowin":
-                params = fpga_info["gowin-params"]
-                result.arch = ApioArch.GOWIN
+            case ApioArch.gowin:
+                params = fpga_definition.gowin_params
+                result.arch = ApioArch.gowin
                 result.fpga_info.gowin_params.MergeFrom(
                     GowinFpgaParams(
-                        yosys_family=params["yosys-family"],
-                        nextpnr_family=params["nextpnr-family"],
-                        packer_device=params["packer-device"],
+                        yosys_family=params.yosys_family,
+                        nextpnr_family=params.nextpnr_family,
+                        packer_device=params.packer_device,
                     )
                 )
-            case "xilinx":
-                params = fpga_info["xilinx-params"]
-                result.arch = ApioArch.XILINX
+            case ApioArch.xilinx:
+                params = fpga_definition.xilinx_params
+                result.arch = ApioArch.xilinx
                 result.fpga_info.xilinx_params.MergeFrom(
                     XilinxFpgaParams(
-                        family=params["family"],
-                        yosys_arch=params["yosys-arch"],
-                        package=params["package"],
-                        speed=params["speed"],
+                        family=params.family,
+                        yosys_arch=params.yosys_arch,
+                        package=params.package,
+                        speed=params.speed,
                     )
                 )
             case _:

@@ -17,7 +17,7 @@ from apio.common.proto.apio_scons_pb2 import (
 
 TEST_PARAMS = """
 timestamp: "20123412052"
-arch: ICE40
+arch: ice40
 fpga_info {
   fpga_id: "ice40hx4k-tq144-8k"
   part_num: "ICE40HX4K-TQ144"

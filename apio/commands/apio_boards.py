@@ -22,6 +22,7 @@ from apio.common.apio_styles import BORDER, EMPH1
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
+from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -36,7 +37,7 @@ class Entry:
 
     # pylint: disable=too-many-instance-attributes
 
-    board: str
+    board_id: str
     examples_count: str
     board_description: str
     fpga_arch: str
@@ -47,10 +48,10 @@ class Entry:
 
     def sort_key(self):
         """A key for sorting the fpga entries in our preferred order."""
-        return (util.fpga_arch_sort_key(self.fpga_arch), self.board.lower())
+        return (util.fpga_arch_sort_key(self.fpga_arch), self.board_id.lower())
 
 
-def _collect_board_entries(apio_ctx) -> List[Entry]:
+def _collect_board_entries(apio_ctx: ApioContext) -> List[Entry]:
 
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)
@@ -58,20 +59,19 @@ def _collect_board_entries(apio_ctx) -> List[Entry]:
 
     # -- Collect the boards info into a list of entires, one per board.
     result: List[Entry] = []
-    for board, board_definition in apio_ctx.definitions.boards.items():
+    for board_id, board_definition in apio_ctx.definitions.boards.items():
         fpga_id = board_definition.fpga_id
-        fpga_info = apio_ctx.definitions.fpgas.get(fpga_id, {})
-
-        examples_count = "   " + str(examples_counts.get(board, ""))
+        fpga_definition = apio_ctx.definitions.fpgas[fpga_id]
+        examples_count = "   " + str(examples_counts.get(board_id, ""))
         board_description = board_definition.description
-        fpga_arch = fpga_info.get("arch", "")
-        fpga_size = fpga_info.get("size", "")
-        fpga_part_num = fpga_info.get("part-num", "")
+        fpga_arch = ApioArch.Name(fpga_definition.arch)
+        fpga_size = fpga_definition.size
+        fpga_part_num = fpga_definition.part_num
         programmer_id = board_definition.programmer.id
 
         result.append(
             Entry(
-                board=board,
+                board_id=board_id,
                 examples_count=examples_count,
                 board_description=board_description,
                 fpga_arch=fpga_arch,
@@ -127,12 +127,12 @@ def _list_boards(apio_ctx: ApioContext, verbose: bool):
 
         # -- Collect row values.
         values = []
-        values.append(entry.board)
+        values.append(entry.board_id)
         values.append(str(entry.examples_count))
         if verbose:
             values.append(entry.board_description)
         values.append(entry.fpga_arch)
-        values.append(str(entry.fpga_size))
+        values.append(entry.fpga_size)
         if verbose:
             values.append(entry.fpga_id)
         values.append(entry.fpga_part_num)
@@ -169,7 +169,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     entries: List[Entry] = _collect_board_entries(apio_ctx)
 
     # -- Determine column sizes
-    w1 = max(len("BOARD"), *(len(entry.board) for entry in entries))
+    w1 = max(len("BOARD"), *(len(entry.board_id) for entry in entries))
     w2 = max(len("SIZE"), *(len(entry.fpga_size) for entry in entries))
     w3 = max(
         len("DESCRIPTION"),
@@ -222,7 +222,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
 
         cwrite(
             "| {0} | {1} | {2} | {3} |\n".format(
-                entry.board.ljust(w1),
+                entry.board_id.ljust(w1),
                 entry.fpga_size.ljust(w2),
                 entry.board_description.ljust(w3),
                 entry.fpga_part_num.ljust(w4),

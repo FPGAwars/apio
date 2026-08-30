@@ -37,7 +37,7 @@ TEST_APIO_INI_DICT = {
 # -- at runtime.
 EXPECTED1 = """
 timestamp: "TBD"
-arch: ICE40
+arch: ice40
 fpga_info {
   fpga_id: "ice40hx4k-tq144-8k"
   part_num: "ICE40HX4K-TQ144"
@@ -72,7 +72,7 @@ apio_env_params {
 
 EXPECTED2 = """
 timestamp: "TBD"
-arch: ICE40
+arch: ice40
 fpga_info {
   fpga_id: "ice40hx4k-tq144-8k"
   part_num: "ICE40HX4K-TQ144"

@@ -1,13 +1,16 @@
 """Utilities related to the Apio resource files."""
 
 import sys
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 from dataclasses import dataclass
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from apio.common.apio_console import cerror
 from apio.managers.apio_definitions import ApioDefinitions
-from apio.common.proto.apio_definitions_pb2 import BoardDefinition
+from apio.common.proto.apio_definitions_pb2 import (
+    BoardDefinition,
+    FpgaDefinition,
+)
 
 
 @dataclass(frozen=True)
@@ -17,7 +20,7 @@ class ProjectResources:
     board_id: str
     board_definition: BoardDefinition
     fpga_id: str
-    fpga_info: Dict[str, Any]
+    fpga_definition: FpgaDefinition
     programmer_id: str
     programmer_info: Dict[str, Any]
 
@@ -108,18 +111,15 @@ def collect_project_resources(
     resources may be custom resources defined by the user, we need to
     have a user friendly error handling and reporting."""
 
-    # -- Get the info.
+    # -- Get the board definition.
     board_definition = definitions.boards.get(board_id, None)
     if board_definition is None:
         cerror(f"Unknown board id '{board_id}'.")
         sys.exit(1)
 
-    # -- Get fpga id and info.
+    # -- Get fpga id and definition.
     fpga_id = board_definition.fpga_id
-    fpga_info = definitions.fpgas.get(fpga_id, None)
-    if fpga_info is None:
-        cerror(f"Unknown fpga id '{fpga_id}'.")
-        sys.exit(1)
+    fpga_definition = definitions.fpgas[fpga_id]
 
     # -- Get programmer id and info.
     programmer_id = board_definition.programmer.id
@@ -133,19 +133,10 @@ def collect_project_resources(
         board_id,
         board_definition,
         fpga_id,
-        fpga_info,
+        fpga_definition,
         programmer_id,
         programmer_info,
     )
 
     # -- All done
     return project_resources
-
-
-def get_fpga_arch_params(fpga_info: Dict) -> Tuple[str, Dict]:
-    """Extracts the arch specific params of an fpga, Returns a tuple
-    with the field name and the field value."""
-    arch = fpga_info["arch"]
-    field_name = arch + "-params"
-    field_value = fpga_info[field_name]
-    return (field_name, field_value)
