@@ -31,7 +31,7 @@
             "args": [
                 "-s",
                 "-vv",
-                "tests/unit_tests/test_conftest.py::test_logger_with_console_capture"
+                "tests/unit_tests/utils/test_proto_util.py::test_check_not_required"
             ],
             "console": "integratedTerminal",
             "justMyCode": false,

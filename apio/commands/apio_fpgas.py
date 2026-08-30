@@ -63,6 +63,7 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
     # -- Collect a sparse dict with fpga ids to board count.
     boards_counts: Dict[str, int] = {}
     for board_definition in apio_ctx.definitions.boards.values():
+        proto_util.check_is_required(board_definition, "fpga_id")
         fpga_id = board_definition.fpga_id
         old_count = boards_counts.get(fpga_id, 0)
         boards_counts[fpga_id] = old_count + 1
@@ -70,7 +71,9 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
     # -- Collect all entries.
     result: List[Entry] = []
     for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
-        # -- Construct the Entry for this fpga.
+        proto_util.check_is_required(
+            fpga_definition, "arch", "part_num", "size"
+        )
         board_count = boards_counts.get(fpga_id, 0)
         fpga_arch = fpga_definition.arch
         fpga_part_num = fpga_definition.part_num

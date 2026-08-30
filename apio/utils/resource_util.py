@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from apio.common.apio_console import cerror
+from apio.utils import proto_util
 from apio.managers.apio_definitions import ApioDefinitions
 from apio.common.proto.apio_definitions_pb2 import (
     BoardDefinition,
@@ -116,6 +117,9 @@ def collect_project_resources(
     if board_definition is None:
         cerror(f"Unknown board id '{board_id}'.")
         sys.exit(1)
+
+    # -- We assume below that these fields are required.
+    proto_util.check_is_required(board_definition, "fpga_id", "programmer.id")
 
     # -- Get fpga id and definition.
     fpga_id = board_definition.fpga_id

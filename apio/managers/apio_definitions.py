@@ -172,6 +172,7 @@ class ApioDefinitions:
             if not ID_FORMAT.match(fpga_id):
                 cerror(f"FPGA id has an invalid format: {fpga_id}")
                 sys.exit(1)
+            proto_util.check_is_required(fpga_definition, "part_num")
             part_num = fpga_definition.part_num
             lc_part_num = part_num.lower().replace("/", "-")
             if fpga_id != lc_part_num and not fpga_id.startswith(
@@ -206,6 +207,7 @@ class ApioDefinitions:
 
         # -- Check references from boards to fpga and programmers
         for board_id, board_definition in self.boards.items():
+            proto_util.check_is_required(board_definition, "fpga_id")
             fpga_id = board_definition.fpga_id
             if fpga_id not in self.fpgas:
                 cerror(
@@ -214,6 +216,7 @@ class ApioDefinitions:
                 )
                 sys.exit(1)
 
+            proto_util.check_is_required(board_definition, "programmer.id")
             programmer_id = board_definition.programmer.id
             if programmer_id not in self.programmers:
                 cerror(
