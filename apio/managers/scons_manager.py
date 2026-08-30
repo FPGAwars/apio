@@ -19,7 +19,7 @@ from google.protobuf import text_format
 from apio.common import apio_console
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
-from apio.utils import util
+from apio.utils import util, proto_util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import xilinx_chipdb
@@ -222,6 +222,8 @@ class SConsManager:
         """Populate and return the SconsParam proto to pass to the scons
         process."""
 
+        # pylint: disable=too-many-statements
+
         # -- Create a shortcut.
         apio_ctx = self.apio_ctx
 
@@ -243,6 +245,7 @@ class SConsManager:
         fpga_definition = pr.fpga_definition
 
         # -- Populate the common values of FpgaInfo.
+        proto_util.check_is_required(fpga_definition, "part_num", "size")
         result.fpga_info.MergeFrom(
             FpgaInfo(
                 fpga_id=pr.fpga_id,
@@ -252,11 +255,14 @@ class SConsManager:
         )
 
         # - Populate the architecture specific values of result.fpga_info.
+        proto_util.check_is_required(fpga_definition, "arch")
         fpga_arch = fpga_definition.arch
         match fpga_arch:
             case ApioArch.ice40:
+                assert fpga_definition.HasField("ice40_params")
                 params = fpga_definition.ice40_params
                 result.arch = ApioArch.ice40
+                proto_util.check_is_required(params, "type", "package")
                 result.fpga_info.ice40_params.MergeFrom(
                     Ice40FpgaParams(
                         type=params.type,
@@ -264,8 +270,12 @@ class SConsManager:
                     )
                 )
             case ApioArch.ecp5:
+                assert fpga_definition.HasField("ecp5_params")
                 params = fpga_definition.ecp5_params
                 result.arch = ApioArch.ecp5
+                proto_util.check_is_required(
+                    params, "type", "package", "speed"
+                )
                 result.fpga_info.ecp5_params.MergeFrom(
                     Ecp5FpgaParams(
                         type=params.type,
@@ -274,8 +284,12 @@ class SConsManager:
                     )
                 )
             case ApioArch.gowin:
+                assert fpga_definition.HasField("gowin_params")
                 params = fpga_definition.gowin_params
                 result.arch = ApioArch.gowin
+                proto_util.check_is_required(
+                    params, "yosys_family", "nextpnr_family", "packer_device"
+                )
                 result.fpga_info.gowin_params.MergeFrom(
                     GowinFpgaParams(
                         yosys_family=params.yosys_family,
@@ -284,8 +298,12 @@ class SConsManager:
                     )
                 )
             case ApioArch.xilinx:
+                assert fpga_definition.HasField("xilinx_params")
                 params = fpga_definition.xilinx_params
                 result.arch = ApioArch.xilinx
+                proto_util.check_is_required(
+                    params, "family", "yosys_arch", "package", "speed"
+                )
                 result.fpga_info.xilinx_params.MergeFrom(
                     XilinxFpgaParams(
                         family=params.family,

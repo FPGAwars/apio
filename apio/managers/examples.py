@@ -16,7 +16,7 @@ from apio.common.apio_console import cout, cstyle, cerror
 from apio.common.apio_styles import INFO, SUCCESS, EMPH3
 from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.apio_context import ApioContext
-from apio.utils import util
+from apio.utils import util, proto_util
 
 
 @dataclass
@@ -122,8 +122,12 @@ class Examples:
 
                 # -- Extract the fpga arch and part number, with "" as
                 # -- default value if not found.
+                proto_util.check_is_required(board_definition, "fpga_id")
                 fpga_id = board_definition.fpga_id
                 fpga_definition = definitions.fpgas[fpga_id]
+                proto_util.check_is_required(
+                    fpga_definition, "arch", "part_num", "size"
+                )
                 fpga_arch = ApioArch.Name(fpga_definition.arch)
                 fpga_part_num = fpga_definition.part_num
                 fpga_size = fpga_definition.size

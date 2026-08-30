@@ -18,7 +18,7 @@ from rich import box
 from rich import markup
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
-from apio.utils import util, apio_platforms, env_options
+from apio.utils import util, apio_platforms, env_options, proto_util
 from apio.commands import options
 from apio.apio_context import (
     ApioContext,
@@ -247,30 +247,33 @@ def _project_cli(
 
     defs = apio_ctx.definitions
 
-    board_definition = (
+    board_definition_src = (
         "User custom" if defs.is_custom_board(board_id) else "Apio standard"
     )
-    fpga_definition = (
+    fpga_definition_src = (
         "User custom" if defs.is_custom_fpga(fpga_id) else "Apio standard"
     )
-    programmer_definition = (
+    programmer_definition_src = (
         "User custom"
         if defs.is_custom_programmer(programmer_id)
         else "Apio standard"
     )
 
+    fpga_definition = res.fpga_definition
+    proto_util.check_is_required(fpga_definition, "arch", "part_num", "size")
+
     table.add_row("Total project envs", str(len(project.env_names)))
     table.add_row("Active project env", project.env_name)
     table.add_row("Top module name", project.env_options.get("top-module", ""))
     table.add_row("Board id", board_id)
-    table.add_row("Board definition", board_definition)
+    table.add_row("Board definition", board_definition_src)
     table.add_row("FPGA id", fpga_id)
-    table.add_row("FPGA definition", fpga_definition)
-    table.add_row("FPGA part num", res.fpga_definition.part_num)
-    table.add_row("FPGA Architecture", ApioArch.Name(res.fpga_definition.arch))
-    table.add_row("FPGA size", res.fpga_definition.size)
+    table.add_row("FPGA definition", fpga_definition_src)
+    table.add_row("FPGA part num", fpga_definition.part_num)
+    table.add_row("FPGA Architecture", ApioArch.Name(fpga_definition.arch))
+    table.add_row("FPGA size", fpga_definition.size)
     table.add_row("Programmer id", programmer_id)
-    table.add_row("Programmer definition", programmer_definition)
+    table.add_row("Programmer definition", programmer_definition_src)
 
     # -- Render the table.
     cout()

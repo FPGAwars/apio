@@ -473,6 +473,16 @@ def _get_boards_cli(
         # -- The board output dict.
         board_dict = {}
 
+        # -- We assume that these proto fields are requires and therefore
+        # -- must exist.
+        proto_util.check_is_required(
+            board_definition,
+            "description",
+            "fpga_id",
+            "programmer",
+            "programmer.id",
+        )
+
         # -- Add board description
         board_dict["description"] = board_definition.description
 

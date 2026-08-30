@@ -19,7 +19,7 @@ from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO
 from apio.common import apio_console
 from apio.common.apio_styles import BORDER, EMPH1
-from apio.utils import util, cmd_util
+from apio.utils import util, cmd_util, proto_util
 from apio.commands import options
 from apio.managers.examples import Examples
 from apio.common.proto.apio_common_pb2 import ApioArch
@@ -60,8 +60,14 @@ def _collect_board_entries(apio_ctx: ApioContext) -> List[Entry]:
     # -- Collect the boards info into a list of entires, one per board.
     result: List[Entry] = []
     for board_id, board_definition in apio_ctx.definitions.boards.items():
+        proto_util.check_is_required(
+            board_definition, "fpga_id", "description", "programmer.id"
+        )
         fpga_id = board_definition.fpga_id
         fpga_definition = apio_ctx.definitions.fpgas[fpga_id]
+        proto_util.check_is_required(
+            fpga_definition, "arch", "size", "part_num"
+        )
         examples_count = "   " + str(examples_counts.get(board_id, ""))
         board_description = board_definition.description
         fpga_arch = ApioArch.Name(fpga_definition.arch)

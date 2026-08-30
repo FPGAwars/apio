@@ -10,7 +10,7 @@ import sys
 from typing import Optional, List
 from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
-from apio.utils import util, serial_util, usb_util
+from apio.utils import util, serial_util, usb_util, proto_util
 from apio.utils.serial_util import SerialDevice, SerialDeviceFilter
 from apio.utils.usb_util import UsbDevice, UsbDeviceFilter
 from apio.apio_context import ApioContext
@@ -170,11 +170,14 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
         return custom_template
 
     pr = apio_ctx.project_resources
+    board_definition = pr.board_definition
+    programmer_info = pr.programmer_info
+
     # -- Here when using the standard command.
 
     # -- Start building the template with the programmer binary name.
     # -- E.g. "openFPGAloader". "command" is a validated required field.
-    cmd_template = pr.programmer_info["command"]
+    cmd_template = programmer_info["command"]
 
     # -- Append the optional args template from the programmer.
     args = pr.programmer_info.get("args", "")
@@ -183,7 +186,8 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
         cmd_template += args
 
     # -- Append the optional extra args template from the board.
-    extra_args = pr.board_definition.programmer.extra_args
+    proto_util.check_not_required(board_definition, "programmer.extra_args")
+    extra_args = board_definition.programmer.extra_args
     if extra_args:
         cmd_template += " "
         cmd_template += extra_args
@@ -259,19 +263,20 @@ def _match_serial_device(
 
     # -- Get project resources
     pr = apio_ctx.project_resources
+    board_definition = pr.board_definition
 
     # -- Scan for all serial devices.
     all_devices: List[SerialDevice] = scanner.get_serial_devices()
 
     # -- Get board optional usb constraints
+    proto_util.check_not_required(board_definition, "usb")
     usb_info = (
-        pr.board_definition.usb
-        if pr.board_definition.HasField("usb")
-        else None
+        board_definition.usb if board_definition.HasField("usb") else None
     )
 
     # -- Construct a device filter.
     serial_filter = SerialDeviceFilter()
+    proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
     if usb_info and usb_info.vid:
         serial_filter.set_vid(usb_info.vid.upper())
     if usb_info and usb_info.pid:
@@ -331,11 +336,13 @@ def _match_usb_device(
 
     # -- Get project resources.
     pr = apio_ctx.project_resources
+    board_definition = pr.board_definition
 
     # -- Scan for all serial devices.
     all_devices: List[UsbDevice] = scanner.get_usb_devices()
 
     # -- Get board optional usb constraints
+    proto_util.check_not_required(board_definition, "usb")
     usb_info = (
         pr.board_definition.usb
         if pr.board_definition.HasField("usb")
@@ -344,6 +351,7 @@ def _match_usb_device(
 
     # -- Construct a device filter.
     usb_filter = UsbDeviceFilter()
+    proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
     if usb_info and usb_info.vid:
         usb_filter.set_vid(usb_info.vid.upper())
     if usb_info and usb_info.pid:
@@ -400,23 +408,28 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
 
     # -- Get project resources.
     pr = apio_ctx.project_resources
+    board_definition = pr.board_definition
 
     # -- If board has no usb constrains than nothing to do.
-    if not pr.board_definition.HasField("usb"):
+    proto_util.check_not_required(board_definition, "usb")
+    if not board_definition.HasField("usb"):
         return
 
     # -- Get board optional usb constraints
-    usb_info = pr.board_definition.usb
+    usb_info = (
+        board_definition.usb if board_definition.HasField("usb") else None
+    )
 
     # -- Create a device filter with the constraints. Note that the "usb"
     # -- section may contain no constrained which will result in a pass-all
     # -- filter.
     usb_filter = UsbDeviceFilter()
-    if usb_info.vid:
+    proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
+    if usb_info and usb_info.vid:
         usb_filter.set_vid(usb_info.vid.upper())
-    if usb_info.pid:
+    if usb_info and usb_info.pid:
         usb_filter.set_pid(usb_info.pid.upper())
-    if usb_info.product_regex:
+    if usb_info and usb_info.product_regex:
         usb_filter.set_product_regex(usb_info.product_regex)
 
     cout("Checking device presence...")
