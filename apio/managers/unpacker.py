@@ -47,17 +47,21 @@ class ArchiveBase:
         """DOC: TODO"""
 
 
-class TARArchive(ArchiveBase):
+class TarArchive(ArchiveBase):
     """DOC: TODO"""
 
     def __init__(self, archpath):
-        # R1732: Consider using 'with' for resource-allocating operations
-        # (consider-using-with)
-        # pylint: disable=R1732
-        ArchiveBase.__init__(self, tarfile_open(archpath), is_tar_file=True)
+        # pylint: disable=consider-using-with
+        self._tar_file = tarfile_open(archpath)
+        ArchiveBase.__init__(self, self._tar_file, is_tar_file=True)
 
     def get_items(self):
         return self._afo.getmembers()
+
+    def close(self) -> None:
+        """Close the underlying tar file."""
+        self._tar_file.close()
+        self._tar_file = None
 
 
 # class ZIPArchive(ArchiveBase):
@@ -69,7 +73,7 @@ class TARArchive(ArchiveBase):
 #         ArchiveBase.__init__(self, ZipFile(archpath), is_tar_file=False)
 
 #     @staticmethod
-#     def preserve_permissions(item, dest_dir):
+
 #         """DOC: TODO"""
 
 #         # -- Build the filename
@@ -93,50 +97,75 @@ class TARArchive(ArchiveBase):
 class FileUnpacker:
     """Class for unpacking compressed files"""
 
-    def __init__(self, archpath: Path, dest_dir=Path(".")):
+    def __init__(self, archive_file_path: Path, dest_dir=Path(".")):
         """Initialize the unpacker object
         * INPUT:
           - archpath: filename with path to uncompress
           - des_dir: Destination folder
         """
 
-        self._archpath = archpath
+        self._archive_file_path = archive_file_path
         self._dest_dir = dest_dir
         self._unpacker = None
 
         # -- Get the file extension
-        arch_ext = archpath.suffix
+        # archive_ext = archive_file_path.suffix
 
         # -- Select the unpacker... according to the file extension
         # -- tar zip file
-        if arch_ext in (".tgz"):
-            self._unpacker = TARArchive(archpath)
+        # if archive_ext in (".tgz"):
+        #     self._unpacker = TarArchive(archive_file_path)
 
         # -- Zip file
         # elif arch_ext == ".zip":
         #     self._unpacker = ZIPArchive(archpath)
 
         # -- Fatal error. Unknown extension.
-        if not self._unpacker:
-            cerror(f"Can not unpack file '{archpath}'")
-            raise util.ApioException()
+        # if not self._unpacker:
+        #     cerror(f"Can not unpack file '{archive_file_path}'")
+        #     raise util.ApioException()
 
-    def start(self) -> bool:
+    def unpack(self) -> bool:
         """Start unpacking the file"""
 
-        # -- Build an array with all the files inside the tarball
-        if self._unpacker is not None:
-            items = self._unpacker.get_items()
-        else:
-            items = []
+        # -- Get the file extension
+        archive_ext = self._archive_file_path.suffix
 
-        # -- Unpack while displaying a progress bar.
-        for i in track(
-            range(len(items)),
-            description="Unpacking  ",
-            console=console(),
-        ):
-            if self._unpacker is not None:
-                self._unpacker.extract_item(items[i], self._dest_dir)
+        # -- Select the unpacker... according to the file extension
+        # -- tar zip file
+        if archive_ext in (".tgz"):
+            unpacker = TarArchive(self._archive_file_path)
+        else:
+            cerror(f"Can not unpack file '{self._archive_file_path}'")
+            raise util.ApioException()
+
+        try:
+            # -- Zip file
+            # elif arch_ext == ".zip":
+            #     self._unpacker = ZIPArchive(archpath)
+
+            # -- Fatal error. Unknown extension.
+            # if not self._unpacker:
+            #     cerror(f"Can not unpack file '{archive_file_path}'")
+            #     raise util.ApioException()
+
+            # -- Build an array with all the files inside the tarball
+            # if self._unpacker is not None:
+            items = unpacker.get_items()
+            # else:
+            #     items = []
+
+            # -- Unpack while displaying a progress bar.
+            for i in track(
+                range(len(items)),
+                description="Unpacking  ",
+                console=console(),
+            ):
+                # if self._unpacker is not None:
+                unpacker.extract_item(items[i], self._dest_dir)
+
+        finally:
+            unpacker.close()
+        # unpacker = None
 
         return True

@@ -252,7 +252,7 @@ class PackageManager:
         operation = FileUnpacker(package_file, package_dir)
 
         # -- Perform the operation.
-        ok = operation.start()
+        ok = operation.unpack()
 
         # -- Exit if error.
         if not ok:
