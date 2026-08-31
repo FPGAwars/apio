@@ -113,7 +113,8 @@ def chipdb_file_on_demand(
     downloader = FileDownloader(asset_url, chipdb_dir)
     downloader.start()
 
-    # -- Check the asset size and checksum
+    # -- Check the downloaded release asset checksum
+    print("*** Checking asset's checksum")
     local_asset = chipdb_dir / asset_name
     actual_sha256 = util.compute_file_sha256(local_asset)
     expected_sha256 = part_info["asset-sha256"]
@@ -127,10 +128,12 @@ def chipdb_file_on_demand(
         sys.exit(1)
 
     # -- Unpack the asset
+    print("*** Unpacking asset")
     unpacker = FileUnpacker(local_asset, chipdb_dir)
     ok = unpacker.start()
     assert ok
 
+    print("*** Computing chipdb checksum")
     actual_sha256 = util.compute_file_sha256(chipdb_file_path)
     expected_sha256 = part_info["chipdb-sha256"]
     if actual_sha256 != expected_sha256:
@@ -141,6 +144,7 @@ def chipdb_file_on_demand(
     cout("Chipdb checksum verified.")
 
     # -- Delete the asset
+    print("*** Deleting asset")
     local_asset.unlink()
 
     # -- All done, return with the file path.
