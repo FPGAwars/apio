@@ -62,9 +62,9 @@ message FpgaGowinParams {
 }
 
 message FpgaXilinxParams {
-  required string family = 1;
+  required string yosys_family = 1 [json_name = "yosys-family"];
   required string yosys_arch = 2 [json_name = "yosys-arch"];
-  required string package = 3;
+  required string yosys_part = 3 [json_name = "yosys-part"];
   required string speed = 4;
 }
 

@@ -28,7 +28,7 @@ SVG: GraphOutputType
 PNG: GraphOutputType
 PDF: GraphOutputType
 
-class Ice40FpgaParams(_message.Message):
+class Ice40Params(_message.Message):
     __slots__ = ("type", "package")
     TYPE_FIELD_NUMBER: _ClassVar[int]
     PACKAGE_FIELD_NUMBER: _ClassVar[int]
@@ -46,7 +46,7 @@ class Ecp5FpgaParams(_message.Message):
     speed: str
     def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
 
-class GowinFpgaParams(_message.Message):
+class GowinParams(_message.Message):
     __slots__ = ("yosys_family", "nextpnr_family", "packer_device")
     YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
     NEXTPNR_FAMILY_FIELD_NUMBER: _ClassVar[int]
@@ -56,17 +56,17 @@ class GowinFpgaParams(_message.Message):
     packer_device: str
     def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packer_device: _Optional[str] = ...) -> None: ...
 
-class XilinxFpgaParams(_message.Message):
-    __slots__ = ("family", "yosys_arch", "package", "speed")
-    FAMILY_FIELD_NUMBER: _ClassVar[int]
+class XilinxParams(_message.Message):
+    __slots__ = ("yosys_family", "yosys_arch", "yosys_part", "chipdb_file_path")
+    YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
     YOSYS_ARCH_FIELD_NUMBER: _ClassVar[int]
-    PACKAGE_FIELD_NUMBER: _ClassVar[int]
-    SPEED_FIELD_NUMBER: _ClassVar[int]
-    family: str
+    YOSYS_PART_FIELD_NUMBER: _ClassVar[int]
+    CHIPDB_FILE_PATH_FIELD_NUMBER: _ClassVar[int]
+    yosys_family: str
     yosys_arch: str
-    package: str
-    speed: str
-    def __init__(self, family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
+    yosys_part: str
+    chipdb_file_path: str
+    def __init__(self, yosys_family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., yosys_part: _Optional[str] = ..., chipdb_file_path: _Optional[str] = ...) -> None: ...
 
 class FpgaInfo(_message.Message):
     __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params")
@@ -80,11 +80,11 @@ class FpgaInfo(_message.Message):
     fpga_id: str
     part_num: str
     size: str
-    ice40_params: Ice40FpgaParams
+    ice40_params: Ice40Params
     ecp5_params: Ecp5FpgaParams
-    gowin_params: GowinFpgaParams
-    xilinx_params: XilinxFpgaParams
-    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40FpgaParams, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinFpgaParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[XilinxFpgaParams, _Mapping]] = ...) -> None: ...
+    gowin_params: GowinParams
+    xilinx_params: XilinxParams
+    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40Params, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[XilinxParams, _Mapping]] = ...) -> None: ...
 
 class Verbosity(_message.Message):
     __slots__ = ("all", "synth", "pnr")
@@ -97,7 +97,7 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path", "scons_shell_id", "xilinx_prjxray_db_path", "xilinx_chipdb_path")
+    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "debug_level", "yosys_path", "trellis_path", "scons_shell_id", "xilinx_prjxray_db_path")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
     IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
@@ -107,7 +107,6 @@ class Environment(_message.Message):
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
     SCONS_SHELL_ID_FIELD_NUMBER: _ClassVar[int]
     XILINX_PRJXRAY_DB_PATH_FIELD_NUMBER: _ClassVar[int]
-    XILINX_CHIPDB_PATH_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
     is_windows: bool
     terminal_mode: TerminalMode
@@ -117,8 +116,7 @@ class Environment(_message.Message):
     trellis_path: str
     scons_shell_id: str
     xilinx_prjxray_db_path: str
-    xilinx_chipdb_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ..., xilinx_prjxray_db_path: _Optional[str] = ..., xilinx_chipdb_path: _Optional[str] = ...) -> None: ...
+    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., debug_level: _Optional[int] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ..., xilinx_prjxray_db_path: _Optional[str] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
     __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "verilator_extra_options", "constraint_file")

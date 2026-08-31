@@ -103,20 +103,13 @@ class PluginXilinx(PluginBase):
             target.append(apio_env.target + ".pnr")
             return target, source
 
-        # -- Get params.
-        chipdb_dir = Path(apio_env.params.environment.xilinx_chipdb_path)
-        package_name = xilinx_params.package
-
-        # -- The chipdb is one to one with the package name.
-        chipdb_file_path = chipdb_dir / f"{package_name}.bin"
-
         # -- Create the builder
         return Builder(
             action=(
                 "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
                 "--fasm $TARGET --report {2} {3} {4}"
             ).format(
-                chipdb_file_path,
+                xilinx_params.chipdb_file_path,
                 self.constrain_file(),
                 apio_env.target + ".pnr",
                 ("" if params.verbosity.all or params.verbosity.pnr else "-q"),
@@ -136,14 +129,13 @@ class PluginXilinx(PluginBase):
         params = apio_env.params
         xilinx_params = params.fpga_info.xilinx_params
 
-        part1 = f"{xilinx_params.package}-{xilinx_params.speed}"
         prjxray_db = Path(apio_env.params.environment.xilinx_prjxray_db_path)
-        prjxray_db = prjxray_db / xilinx_params.family
+        prjxray_db = prjxray_db / xilinx_params.yosys_family
 
         return Builder(
             action="fasm2frames --part {0} --db-root {1} "
             " $SOURCE > $TARGET ".format(
-                part1,
+                xilinx_params.yosys_part,
                 prjxray_db,
             ),
             suffix=".frames",
@@ -158,18 +150,17 @@ class PluginXilinx(PluginBase):
         apio_env = self.apio_env
         params = apio_env.params
         xilinx_params = params.fpga_info.xilinx_params
-        part1 = f"{xilinx_params.package}-{xilinx_params.speed}"
 
         prjxray_db = Path(apio_env.params.environment.xilinx_prjxray_db_path)
-        prjxray_db = prjxray_db / xilinx_params.family
-        part_file = prjxray_db / part1 / "part.yaml"
+        prjxray_db = prjxray_db / xilinx_params.yosys_family
+        part_file = prjxray_db / xilinx_params.yosys_part / "part.yaml"
 
         return Builder(
             action="xc7frames2bit --part_file {0} --part_name {1} "
             "--frm_file "
             "$SOURCE --output_file $TARGET".format(
                 part_file,
-                part1,
+                xilinx_params.yosys_part,
             ),
             suffix=".bit",
             src_suffix=".frames",

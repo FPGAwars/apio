@@ -33,6 +33,9 @@ PROGRAMMERS_JSONC = "programmers.jsonc"
 # -- A regex for validating boards, fpgas, and programmers ids.
 DEFINITION_ID_FORMAT = re.compile(r"^[a-z][a-z0-9-]*$")
 
+# -- A regex for validating usb vid and pid values.
+USB_ID_FORMAT = re.compile(r"^[0-9a-f]{4}$")
+
 
 class ApioDefinitions:
     """Contains the apio definitions in the form of json dictionaries."""
@@ -45,8 +48,6 @@ class ApioDefinitions:
         project_definitions_dir: Optional[Path],
     ):
 
-        # pylint: disable=too-many-branches
-
         assert isinstance(package_definitions_dir, Path)
         assert project_definitions_dir is None or isinstance(
             project_definitions_dir, Path
@@ -55,14 +56,15 @@ class ApioDefinitions:
         self._package_definitions_dir = package_definitions_dir
         self._project_definitions_dir = project_definitions_dir
 
-        # -- Read boards definitions.
+        # -- Read boards definitions as json_dicts.
+        # -- Custom definitions overrides apio standard definitions.
         boards_json, self.custom_boards_ids = self._load_definitions(
             BOARDS_JSONC,
             self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
-        # -- Convert the board definition dicts to BoardDefinition protos.
+        # -- Convert the board definition to BoardDefinition protos and save.
         self.boards: Dict[str, BoardDefinition] = {}
         for board_id, definition_dict in boards_json.items():
             definition = proto_util.proto_from_json_dict(
@@ -72,21 +74,16 @@ class ApioDefinitions:
             )
             self.boards[board_id] = definition
 
-        # -- Validate boards definitions. Optional project custom definition
-        # -- supersede apio standard definitions.
-        for board_id in self.boards:
-            if not DEFINITION_ID_FORMAT.match(board_id):
-                cerror(f"Board id has an invalid format: {board_id}")
-                sys.exit(1)
-
-        # -- Read fpgas definitions.
+        # -- Read fpgas definitions as json dicts.
+        # -- Custom definitions overrides apio standard definitions.
         fpgas_json, self.custom_fpgas_ids = self._load_definitions(
             FPGAS_JSONC,
             self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
-        # -- Convert the fpgas definition dicts to FpgasDefinition protos.
+        # -- Convert the fpgas definition dicts to FpgasDefinition protos and
+        # -- save.
         self.fpgas: Dict[str, FpgaDefinition] = {}
         for fpga_id, definition_dict in fpgas_json.items():
             definition = proto_util.proto_from_json_dict(
@@ -96,31 +93,16 @@ class ApioDefinitions:
             )
             self.fpgas[fpga_id] = definition
 
-        # -- Validate fpgas definitions.
-        for fpga_id, fpga_definition in self.fpgas.items():
-            if not DEFINITION_ID_FORMAT.match(fpga_id):
-                cerror(f"FPGA id has an invalid format: {fpga_id}")
-                sys.exit(1)
-            proto_util.check_is_required(fpga_definition, "part_num")
-            part_num = fpga_definition.part_num
-            lc_part_num = part_num.lower().replace("/", "-")
-            if fpga_id != lc_part_num and not fpga_id.startswith(
-                lc_part_num + "-"
-            ):
-                cerror(
-                    f"FPGA id [{fpga_id}] does not match part-num [{part_num}]"
-                )
-                sys.exit(1)
-
-        # -- Load programmers definitions. Optional project custom definition
-        # -- supersede apio standard definitions.
+        # -- Load programmers definitions as json dicts.
+        # -- Custom definitions overrides apio standard definitions.
         programmers_json, self.custom_programmers_ids = self._load_definitions(
             PROGRAMMERS_JSONC,
             self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
-        # -- Convert the programmers definition dicts to FpgaDefinition protos.
+        # -- Convert the programmers definition dicts to FpgaDefinition protos
+        # -- and save.
         self.programmers: Dict[str, ProgrammerDefinition] = {}
         for programmer_id, definition_dict in programmers_json.items():
             definition = proto_util.proto_from_json_dict(
@@ -130,31 +112,97 @@ class ApioDefinitions:
             )
             self.programmers[programmer_id] = definition
 
-        # -- Validate programmers definitions.
-        for programmer_id in self.programmers:
-            if not DEFINITION_ID_FORMAT.match(programmer_id):
-                cerror(f"Programmer id has an invalid format: {programmer_id}")
+        # -- Validate the definitions we just loaded.
+        self._validate_definitions()
+
+    def _validate_definitions(self):
+        """Validate the boards, fpgas, and programmers definitions of this
+        instance."""
+
+        # pylint: disable=too-many-branches
+
+        # -- Validate boards definitions
+        for board_id, board_definition in self.boards.items():
+            # -- Check that board id has a valid format.
+            if not DEFINITION_ID_FORMAT.match(board_id):
+                cerror(f"Board id `{board_id}` has an invalid format")
                 sys.exit(1)
 
-        # -- Check references from boards to fpga and programmers
-        for board_id, board_definition in self.boards.items():
+            # -- Check that the definition proto is fully initialized.
+            proto_util.check_is_initialized(
+                board_definition,
+                f"Failed to initialized board definition '{board_id}'",
+            )
+
+            # -- Check that the fpga definition exits.
             proto_util.check_is_required(board_definition, "fpga_id")
             fpga_id = board_definition.fpga_id
             if fpga_id not in self.fpgas:
                 cerror(
-                    f"Board '{board_id}' refers to  non existing "
-                    f"fpga '{fpga_id}'"
+                    f"Board `{board_id}` refers to non existing "
+                    f"fpga `{fpga_id}`"
                 )
                 sys.exit(1)
 
+            # -- Check that the programmer definition exits.
             proto_util.check_is_required(board_definition, "programmer.id")
             programmer_id = board_definition.programmer.id
             if programmer_id not in self.programmers:
                 cerror(
-                    f"Board '{board_id}' refers to a non existing "
-                    f"programmer '{programmer_id}'"
+                    f"Board `{board_id}` refers to non existing "
+                    f"programmer `{programmer_id}`"
                 )
                 sys.exit(1)
+
+            # -- Validate the format of the optional usb.vid and usb.pid
+            # -- fields.
+            proto_util.check_not_required(board_definition, "usb")
+            if board_definition.HasField("usb"):
+                usb = board_definition.usb
+                # -- Check vid
+                proto_util.check_not_required(usb, "vid")
+                if usb.HasField("vid"):
+                    if not USB_ID_FORMAT.match(usb.vid):
+                        cerror(
+                            "The usb.vid field of the board "
+                            f"'{board_id}' has invalid value `{usb.vid}`"
+                        )
+                        sys.exit(1)
+                # -- check pid
+                proto_util.check_not_required(usb, "pid")
+                if usb.HasField("pid"):
+                    if not USB_ID_FORMAT.match(usb.pid):
+                        cerror(
+                            "The usb.pid field of the board "
+                            f"'{board_id}' has invalid value `{usb.vip}`"
+                        )
+                        sys.exit(1)
+
+        # -- Validate fpgas definitions.
+        for fpga_id, fpga_definition in self.fpgas.items():
+            # -- Check id format.
+            if not DEFINITION_ID_FORMAT.match(fpga_id):
+                cerror(f"FPGA id has an invalid format: {fpga_id}")
+                sys.exit(1)
+
+            # -- Check that the definition proto is fully initialized.
+            proto_util.check_is_initialized(
+                fpga_definition,
+                f"Failed to initialize fpga definition '{fpga_id}'",
+            )
+
+        # -- Validate programmers definitions.
+        for programmer_id, programmer_definition in self.programmers.items():
+            # -- Check id format.
+            if not DEFINITION_ID_FORMAT.match(programmer_id):
+                cerror(f"Programmer id has an invalid format: {programmer_id}")
+                sys.exit(1)
+
+            # -- Check that the definition proto is fully initialized.
+            proto_util.check_is_initialized(
+                programmer_definition,
+                f"Failed to initialize programmer definition '{fpga_id}'",
+            )
 
     def is_custom_board(self, board_id: str) -> bool:
         """Returns true if the board's definition was loaded from a

@@ -8,9 +8,11 @@
 
 # TODO: Add test coverage.
 
-
+import sys
+import json
 from pathlib import Path
-from apio.common.apio_console import cout
+from apio.common.apio_console import cout, cerror
+from apio.common.apio_styles import INFO
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -18,33 +20,76 @@ from apio.managers.unpacker import FileUnpacker
 
 def chipdb_file_on_demand(
     apio_ctx: ApioContext,
-    xilinx_chip: str,
-    chipdb_dir: Path,
-):
-    """Called to insure that the chipdb file for the given xilinx chip id
-    exists. If not, it is being downloaded on the fly."""
+    yosys_part: str,
+    # chipdb_dir: Path,
+) -> Path:
+    """Given a xilinx yosys-part, it fetches the chipdb file on demand and
+    returns its path."""
 
-    # -- TODO: This is a proof of concept code. Clean up.
+    # pylint: disable=too-many-locals
 
-    chipdb_file_name = xilinx_chip + ".bin"
-    chipdb_file = chipdb_dir / chipdb_file_name
-    if chipdb_file.exists():
+    # -- Read the xilinx parts index at the root of the openxc7 package.
+    openxc7_dir = apio_ctx.get_package_dir("openxc7")
+    parts_index_path = openxc7_dir / "PARTS-INDEX.json"
+    with open(parts_index_path, encoding="utf-8") as f:
+        json_data = json.load(f)
+    parts_index = json_data["parts"]
+
+    # -- Lookup information for the yosys_part.
+    if yosys_part not in parts_index:
+        cerror(f"No such xilinx yosys part {yosys_part}")
+        cout(
+            f"See {str(parts_index_path)} for the list of "
+            "supported xilinx parts.",
+            style=INFO,
+        )
+        sys.exit(1)
+
+    part_info = parts_index[yosys_part]
+
+    if not part_info["generated"]:
+        cerror(f"Yosys xilinx part {yosys_part} exists but not generated")
+        cout("Ask the Apio team to generate it.", style=INFO)
+        sys.exit(1)
+
+    chipdb_file_name = part_info["chipdb"]
+    asset_name = part_info["asset"]
+
+    # -- Get the local chipdb dir in the installed openxc7 package.
+    # -- The path of this dir is defined in packages.jsonc.
+    openxc7_define_consts = apio_ctx.all_packages["openxc7"]["env"][
+        "define-consts"
+    ]
+    assert "CHIPDB_DIR" in openxc7_define_consts, openxc7_define_consts
+    chipdb_dir = Path(openxc7_define_consts["CHIPDB_DIR"])
+
+    # -- If the chipdb file already exists then we are good, return with
+    # -- the file path.
+    chipdb_file_path = chipdb_dir / chipdb_file_name
+    if chipdb_file_path.exists():
         cout(f"Chipdb file found: {chipdb_file_name}")
-        return
+        return chipdb_file_path
 
+    # -- The chipdb file doesn't exist, we need to fetch it from the
+    # -- same release of the installed openxc7 package.
     package_install_info = apio_ctx.package_manager.installed_packages[
         "openxc7"
     ]
     package_url = package_install_info["loaded-from"]
-    release_tag = package_install_info["version"].replace(".", "")
-    chipdb_tgz = (
-        "apio-xilinx-chipdb-" + xilinx_chip + "-" + release_tag + ".bin.tgz"
-    )
-    chipdb_url = package_url.rsplit("/", 1)[0] + "/" + chipdb_tgz
-    cout(f"Fetching {chipdb_tgz}")
-    downloader = FileDownloader(chipdb_url, chipdb_dir)
+    asset_url = package_url.rsplit("/", 1)[0] + "/" + asset_name
+
+    # -- Fetch the asset.
+    cout(f"Fetching {asset_name}")
+    downloader = FileDownloader(asset_url, chipdb_dir)
     downloader.start()
-    unpacker = FileUnpacker(chipdb_dir / chipdb_tgz, chipdb_dir)
+
+    # -- Unpack the asset
+    unpacker = FileUnpacker(chipdb_dir / asset_name, chipdb_dir)
     ok = unpacker.start()
     assert ok
-    assert chipdb_file.exists(), chipdb_file
+
+    # -- Verify the chipdb file now exists.
+    assert chipdb_file_path.exists(), chipdb_file_path
+
+    # -- All done, return with the file path.
+    return chipdb_file_path

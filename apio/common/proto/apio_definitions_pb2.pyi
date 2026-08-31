@@ -75,16 +75,16 @@ class FpgaGowinParams(_message.Message):
     def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packer_device: _Optional[str] = ...) -> None: ...
 
 class FpgaXilinxParams(_message.Message):
-    __slots__ = ("family", "yosys_arch", "package", "speed")
-    FAMILY_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("yosys_family", "yosys_arch", "yosys_part", "speed")
+    YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
     YOSYS_ARCH_FIELD_NUMBER: _ClassVar[int]
-    PACKAGE_FIELD_NUMBER: _ClassVar[int]
+    YOSYS_PART_FIELD_NUMBER: _ClassVar[int]
     SPEED_FIELD_NUMBER: _ClassVar[int]
-    family: str
+    yosys_family: str
     yosys_arch: str
-    package: str
+    yosys_part: str
     speed: str
-    def __init__(self, family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
+    def __init__(self, yosys_family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., yosys_part: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
 
 class FpgaDefinition(_message.Message):
     __slots__ = ("part_num", "arch", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params")
