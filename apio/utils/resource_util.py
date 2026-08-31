@@ -1,7 +1,6 @@
 """Utilities related to the Apio resource files."""
 
 import sys
-from typing import Any, Dict
 from dataclasses import dataclass
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
@@ -11,6 +10,7 @@ from apio.managers.apio_definitions import ApioDefinitions
 from apio.common.proto.apio_definitions_pb2 import (
     BoardDefinition,
     FpgaDefinition,
+    ProgrammerDefinition,
 )
 
 
@@ -23,7 +23,7 @@ class ProjectResources:
     fpga_id: str
     fpga_definition: FpgaDefinition
     programmer_id: str
-    programmer_info: Dict[str, Any]
+    programmer_definition: ProgrammerDefinition
 
 
 # -- JSON schema for validating config.jsonc.
@@ -127,10 +127,7 @@ def collect_project_resources(
 
     # -- Get programmer id and info.
     programmer_id = board_definition.programmer.id
-    programmer_info = definitions.programmers.get(programmer_id, None)
-    if programmer_info is None:
-        cerror(f"Unknown programmer id '{programmer_id}'.")
-        sys.exit(1)
+    programmer_definition = definitions.programmers[programmer_id]
 
     # -- Create the project resources bundle.
     project_resources = ProjectResources(
@@ -139,7 +136,7 @@ def collect_project_resources(
         fpga_id,
         fpga_definition,
         programmer_id,
-        programmer_info,
+        programmer_definition,
     )
 
     # -- All done

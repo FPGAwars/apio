@@ -406,7 +406,9 @@ def _get_project_cli(
             pr.programmer_id
         ),
     }
-    programmer_dict["definition"] = pr.programmer_info
+    programmer_dict["definition"] = proto_util.proto_to_json_dict(
+        pr.programmer_definition
+    )
     section_dict["programmer"] = programmer_dict
 
     # -- Add section
@@ -625,9 +627,11 @@ def _get_programmers_cli(
     section = {}
     for (
         programmer_id,
-        programmer_info,
+        programmer_definition,
     ) in apio_ctx.definitions.programmers.items():
-        section[programmer_id] = programmer_info
+        section[programmer_id] = proto_util.proto_to_json_dict(
+            programmer_definition
+        )
 
     top_dict["programmers"] = section
 
