@@ -12,7 +12,7 @@ import sys
 import json
 from pathlib import Path
 from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO
+from apio.common.apio_styles import INFO, ERROR
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
@@ -88,16 +88,13 @@ def chipdb_file_on_demand(
     chipdb_file_path = chipdb_dir / chipdb_file_name
     if chipdb_file_path.exists():
         cout(f"Chipdb file found: {chipdb_file_name}")
-        actual_size_and_sha256 = util.file_size_and_sha256(chipdb_file_path)
-        expected_size_and_sha256 = (
-            part_info["chipdb-size"],
-            part_info["chipdb-sha256"],
-        )
-        if actual_size_and_sha256 == expected_size_and_sha256:
+        actual_sha256 = util.compute_file_sha256(chipdb_file_path)
+        expected_sha256 = part_info["chipdb-sha256"]
+        if actual_sha256 == expected_sha256:
             return chipdb_file_path
         cout(
-            "Unexpected existing chipdb size and/or checksum: "
-            f"{actual_size_and_sha256}",
+            "Existing chipdb file has an unexpected checksum: "
+            f"{actual_sha256}",
             style=INFO,
         )
         cout(f"Deleting old chipdb file {chipdb_file_path.name}")
@@ -118,39 +115,30 @@ def chipdb_file_on_demand(
 
     # -- Check the asset size and checksum
     local_asset = chipdb_dir / asset_name
-    actual_size_and_sha256 = util.file_size_and_sha256(local_asset)
-    expected_size_and_sha256 = (
-        part_info["asset-size"],
-        part_info["asset-sha256"],
-    )
-    if actual_size_and_sha256 != expected_size_and_sha256:
-        cerror(
-            f"Unexpected chipdb asset size and/or checksum: "
-            f"{actual_size_and_sha256}"
-        )
-        cout(f"Expected {expected_size_and_sha256}")
-        sys.exit(1)
+    actual_sha256 = util.compute_file_sha256(local_asset)
+    expected_sha256 = part_info["asset-sha256"]
 
-    # cout("Asset size and checksum verified.")
+    if actual_sha256 != expected_sha256:
+        cerror(
+            f"Downloaded chipdb asset has an unexpected checksum: "
+            f"{actual_sha256}"
+        )
+        cout(f"Expected {expected_sha256}", style=ERROR)
+        sys.exit(1)
 
     # -- Unpack the asset
     unpacker = FileUnpacker(local_asset, chipdb_dir)
     ok = unpacker.start()
     assert ok
 
-    actual_size_and_sha256 = util.file_size_and_sha256(chipdb_file_path)
-    expected_size_and_sha256 = (
-        part_info["chipdb-size"],
-        part_info["chipdb-sha256"],
-    )
-    if actual_size_and_sha256 != expected_size_and_sha256:
-        cerror(
-            f"Unexpected chipdb size and/or checksum: {actual_size_and_sha256}"
-        )
-        cout(f"Expected {expected_size_and_sha256}")
+    actual_sha256 = util.compute_file_sha256(chipdb_file_path)
+    expected_sha256 = part_info["chipdb-sha256"]
+    if actual_sha256 != expected_sha256:
+        cerror(f"Chipdb file has an expected checksum {actual_sha256}")
+        cout(f"Expected {expected_sha256}", style=ERROR)
         sys.exit(1)
 
-    cout("Chipdb size and checksum verified.")
+    cout("Chipdb checksum verified.")
 
     # -- Delete the asset
     local_asset.unlink()

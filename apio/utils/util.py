@@ -605,14 +605,10 @@ def is_under_vscode_debugger() -> bool:
     return False
 
 
-def file_size_and_sha256(path: Path) -> Tuple[int, str]:
-    """Given a file path, compute and return its size in bytes and its
-    sha256 string."""
+def compute_file_sha256(path: Path) -> str:
+    """Given a file path, compute and return sha256 string."""
     # -- Sanity check
     assert path.is_file, path
-
-    # -- Get size in bytes
-    size = path.stat().st_size
 
     # -- Compute sha256. We perform it in chunks to limit the memory
     # -- requirements.
@@ -623,4 +619,4 @@ def file_size_and_sha256(path: Path) -> Tuple[int, str]:
     sha256 = h.hexdigest()
 
     # -- All done OK.
-    return (size, sha256)
+    return sha256
