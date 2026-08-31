@@ -25,6 +25,17 @@ SKIP_FILES = ["README.md"]
 # -- Connect and read timeouts in secs
 TIMEOUT = (10, 60)
 
+# -- Prefix of the parts index asset published by packages whose device
+# -- databases are fetched on demand (openxc7). The rest of the asset name
+# -- is the release tag's date, the same rule apio uses for every asset.
+PARTS_INDEX_PREFIX = "apio-xilinx-parts-index-"
+
+# -- The parts index schema that apio's loader
+# -- (apio/managers/xilinx_chipdb.py) knows how to read. A release with a
+# -- different schema renamed or reshaped the fields the loader uses, so
+# -- bump this together with the loader.
+PARTS_INDEX_SCHEMA = 5
+
 
 def github_api_headers() -> dict[str, str]:
     """Construct HTTP headers to pass to the github API. If the env
@@ -84,11 +95,125 @@ def check_package(package_name: str, package_config: Dict):
     else:
         print("Release is not a pre-release")
 
-    asset_names = [asset["name"] for asset in data["assets"]]
-    for asset_name in asset_names:
+    assets = {asset["name"]: asset for asset in data["assets"]}
+    for asset_name in assets:
         print(f"- {asset_name}")
 
     print("Release exists and is stable")
+
+    # -- If this package fetches its device databases on demand, check that
+    # -- the databases its index promises are actually published.
+    check_parts_index(tag, assets)
+
+
+def check_parts_index_content(index_name: str, index: Dict, assets: Dict):
+    """Check the content of a parts index against the release that
+    publishes it. 'assets' maps the release's asset names to their github
+    metadata."""
+
+    # -- The document counts what it contains. A mismatch means the index
+    # -- was built from a different set of parts than it describes.
+    parts = index["parts"]
+    generated = {n: p for n, p in parts.items() if p["generated"]}
+    databases = {p["chipdb"] for p in generated.values()}
+    for key, actual in [
+        ("part-count", len(parts)),
+        ("generated-count", len(generated)),
+        ("chipdb-count", len(databases)),
+    ]:
+        if index.get(key) != actual:
+            print(
+                f"Error: {index_name}: {key} is {index.get(key)}, "
+                f"but the document describes {actual}"
+            )
+            sys.exit(1)
+
+    # -- Every part that has a database must have it published, at the size
+    # -- the index promises. Apio is dead in the water for a part whose
+    # -- asset is missing or truncated, and nothing else would notice.
+    # -- One check per FILE: the speed grades of a part share one asset.
+    checked = {}
+    for part_name, part in generated.items():
+        asset_name = part["asset"]
+        if asset_name in checked:
+            continue
+        checked[asset_name] = part_name
+        asset = assets.get(asset_name)
+        if asset is None:
+            print(
+                f"Error: part '{part_name}' needs asset "
+                f"'{asset_name}', which this release does not publish"
+            )
+            sys.exit(1)
+        if asset["size"] != part["asset-size"]:
+            print(
+                f"Error: asset '{asset_name}' is {asset['size']} "
+                f"bytes, but the index says {part['asset-size']}"
+            )
+            sys.exit(1)
+
+    print(
+        f"Parts index OK ({len(parts)} parts, {len(generated)} of them "
+        f"with a database, in {len(checked)} assets)"
+    )
+
+
+def check_parts_index(tag: str, assets: Dict):
+    """Check the on-demand device databases of a release, if it has any.
+
+    Packages whose device databases are fetched on demand (openxc7)
+    publish an index asset that tells apio which database file to download
+    for a given part. 'assets' maps the release's asset names to their
+    github metadata."""
+
+    # -- Packages without on-demand databases publish no index.
+    index_names = [n for n in assets if n.startswith(PARTS_INDEX_PREFIX)]
+    if not index_names:
+        return
+    assert len(index_names) == 1, index_names
+    index_name = index_names[0]
+
+    print()
+    print(f"Checking parts index [{index_name}]")
+
+    # -- Asset names are derived from the tag's date, so the index of this
+    # -- release must be the one named after this tag.
+    expected_name = PARTS_INDEX_PREFIX + tag.replace("-", "") + ".json"
+    if index_name != expected_name:
+        print(
+            f"Error: expected index '{expected_name}', "
+            f"found '{index_name}'"
+        )
+        sys.exit(1)
+
+    # -- Fetch the index. It is a small json (tens of KB). No github token
+    # -- here: the download url redirects to blob storage, which rejects a
+    # -- forwarded Authorization header.
+    resp = requests.get(
+        assets[index_name]["browser_download_url"], timeout=TIMEOUT
+    )
+    resp.raise_for_status()
+    index = resp.json()
+
+    # -- A different schema means the fields apio's loader reads were
+    # -- renamed or reshaped.
+    if index.get("schema") != PARTS_INDEX_SCHEMA:
+        print(
+            f"Error: {index_name} has schema {index.get('schema')}, but "
+            f"apio's loader expects schema {PARTS_INDEX_SCHEMA}"
+        )
+        sys.exit(1)
+
+    # -- The index names the release it belongs to. A mismatch sends apio
+    # -- to the assets of another release.
+    if index.get("release-tag") != tag:
+        print(
+            f"Error: {index_name} belongs to release "
+            f"'{index.get('release-tag')}', not '{tag}'"
+        )
+        sys.exit(1)
+
+    check_parts_index_content(index_name, index, assets)
 
 
 def check_remote_config(jsonc_text: str):
