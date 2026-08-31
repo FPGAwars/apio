@@ -18,7 +18,6 @@ import shutil
 from apio.common.apio_console import cout, cerror, cstyle
 from apio.common.apio_styles import ERROR, SUCCESS, EMPH3, INFO
 from apio.managers.downloader import FileDownloader
-from apio.managers.unpacker import FileUnpacker
 from apio.utils import util
 from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.remote_config import RemoteConfig, PackageRemoteConfig
@@ -242,23 +241,6 @@ class PackageManager:
         # -- Return the destination path
         return filepath
 
-    def _unpack_package_file(
-        self, package_file: Path, package_dir: Path
-    ) -> None:
-        """Unpack the package_file in the package_dir directory.
-        Exit with an error message and error status if any error."""
-
-        # -- Create the unpacker.
-        operation = FileUnpacker(package_file, package_dir)
-
-        # -- Perform the operation.
-        ok = operation.start()
-
-        # -- Exit if error.
-        if not ok:
-            cerror(f"Failed to unpack package file {package_file}")
-            sys.exit(1)
-
     def _delete_package_dir(self, package_name: str, verbose: bool) -> bool:
         """Delete the directory of the package with given name.  Returns
         True if the packages existed. Exits with an error message on error."""
@@ -449,7 +431,7 @@ class PackageManager:
         self._delete_package_dir(package_name, verbose)
 
         # -- Unpack the package. This creates a new package dir.
-        self._unpack_package_file(local_package_file, package_dir)
+        util.unpack_tgz(local_package_file, package_dir)
 
         # -- Remove the package file. We don't need it anymore.
         if verbose:
