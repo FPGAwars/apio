@@ -16,6 +16,7 @@ from apio.common.apio_styles import INFO
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
+from apio.utils import util
 
 EXPECTED_SCHEMA_VERSION = 5
 
@@ -29,6 +30,20 @@ def chipdb_file_on_demand(
     returns its path."""
 
     # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
+
+    # -- Get the local chipdb dir in the installed openxc7 package.
+    # -- The path of this dir is defined in packages.jsonc.
+    openxc7_define_consts = apio_ctx.all_packages["openxc7"]["env"][
+        "define-consts"
+    ]
+    assert "CHIPDB_DIR" in openxc7_define_consts, openxc7_define_consts
+    chipdb_dir = Path(openxc7_define_consts["CHIPDB_DIR"])
+
+    # -- Delete all *.tgz files in the chipdb dir
+    for path in chipdb_dir.glob("*.tgz"):
+        cout(f"Deleting a leftover chipdb archive {path.name}", style=INFO)
+        path.unlink()
 
     # -- Read the xilinx parts index at the root of the openxc7 package.
     openxc7_dir = apio_ctx.get_package_dir("openxc7")
@@ -68,20 +83,25 @@ def chipdb_file_on_demand(
     chipdb_file_name = part_info["chipdb"]
     asset_name = part_info["asset"]
 
-    # -- Get the local chipdb dir in the installed openxc7 package.
-    # -- The path of this dir is defined in packages.jsonc.
-    openxc7_define_consts = apio_ctx.all_packages["openxc7"]["env"][
-        "define-consts"
-    ]
-    assert "CHIPDB_DIR" in openxc7_define_consts, openxc7_define_consts
-    chipdb_dir = Path(openxc7_define_consts["CHIPDB_DIR"])
-
     # -- If the chipdb file already exists then we are good, return with
     # -- the file path.
     chipdb_file_path = chipdb_dir / chipdb_file_name
     if chipdb_file_path.exists():
         cout(f"Chipdb file found: {chipdb_file_name}")
-        return chipdb_file_path
+        actual_size_and_sha256 = util.file_size_and_sha256(chipdb_file_path)
+        expected_size_and_sha256 = (
+            part_info["chipdb-size"],
+            part_info["chipdb-sha256"],
+        )
+        if actual_size_and_sha256 == expected_size_and_sha256:
+            return chipdb_file_path
+        cout(
+            "Unexpected existing chipdb size and/or checksum: "
+            f"{actual_size_and_sha256}",
+            style=INFO,
+        )
+        cout(f"Deleting old chipdb file {chipdb_file_path.name}")
+        chipdb_file_path.unlink()
 
     # -- The chipdb file doesn't exist, we need to fetch it from the
     # -- same release of the installed openxc7 package.
@@ -96,13 +116,44 @@ def chipdb_file_on_demand(
     downloader = FileDownloader(asset_url, chipdb_dir)
     downloader.start()
 
+    # -- Check the asset size and checksum
+    local_asset = chipdb_dir / asset_name
+    actual_size_and_sha256 = util.file_size_and_sha256(local_asset)
+    expected_size_and_sha256 = (
+        part_info["asset-size"],
+        part_info["asset-sha256"],
+    )
+    if actual_size_and_sha256 != expected_size_and_sha256:
+        cerror(
+            f"Unexpected chipdb asset size and/or checksum: "
+            f"{actual_size_and_sha256}"
+        )
+        cout(f"Expected {expected_size_and_sha256}")
+        sys.exit(1)
+
+    # cout("Asset size and checksum verified.")
+
     # -- Unpack the asset
-    unpacker = FileUnpacker(chipdb_dir / asset_name, chipdb_dir)
+    unpacker = FileUnpacker(local_asset, chipdb_dir)
     ok = unpacker.start()
     assert ok
 
-    # -- Verify the chipdb file now exists.
-    assert chipdb_file_path.exists(), chipdb_file_path
+    actual_size_and_sha256 = util.file_size_and_sha256(chipdb_file_path)
+    expected_size_and_sha256 = (
+        part_info["chipdb-size"],
+        part_info["chipdb-sha256"],
+    )
+    if actual_size_and_sha256 != expected_size_and_sha256:
+        cerror(
+            f"Unexpected chipdb size and/or checksum: {actual_size_and_sha256}"
+        )
+        cout(f"Expected {expected_size_and_sha256}")
+        sys.exit(1)
+
+    cout("Chipdb size and checksum verified.")
+
+    # -- Delete the asset
+    local_asset.unlink()
 
     # -- All done, return with the file path.
     return chipdb_file_path

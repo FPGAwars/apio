@@ -18,6 +18,7 @@ from typing import Optional, Any, Tuple, List
 import subprocess
 from threading import Thread
 from pathlib import Path
+import hashlib
 import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror
@@ -602,3 +603,24 @@ def is_under_vscode_debugger() -> bool:
     if os.environ.get("DEBUGPY_RUNNING"):
         return True
     return False
+
+
+def file_size_and_sha256(path: Path) -> Tuple[int, str]:
+    """Given a file path, compute and return its size in bytes and its
+    sha256 string."""
+    # -- Sanity check
+    assert path.is_file, path
+
+    # -- Get size in bytes
+    size = path.stat().st_size
+
+    # -- Compute sha256. We perform it in chunks to limit the memory
+    # -- requirements.
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    sha256 = h.hexdigest()
+
+    # -- All done OK.
+    return (size, sha256)
