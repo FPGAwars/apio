@@ -19,9 +19,11 @@ import subprocess
 from threading import Thread
 from pathlib import Path
 import hashlib
+from tarfile import open as tarfile_open
+from rich.progress import track
 import apio
 from apio.utils import env_options
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, cerror, console
 from apio.common.apio_styles import INFO
 
 
@@ -620,3 +622,43 @@ def compute_file_sha256(path: Path) -> str:
 
     # -- All done OK.
     return sha256
+
+
+def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
+    """Unpack a .tgz archive into the given dest directory."""
+
+    # -- Get the file name
+    archive_name = archive_file_path.name
+
+    # -- Check it's a ".tgz" file
+    if not archive_name.endswith(".tgz"):
+        cerror(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
+        sys.exit(1)
+
+    # -- Extract all items while animating the progress bar.
+    with tarfile_open(archive_file_path) as tar_file:
+
+        items = tar_file.getmembers()
+
+        for i in track(
+            range(len(items)),
+            description="Unpacking  ",
+            console=console(),
+        ):
+            item = items[i]
+
+            # -- Skip .gitignore files.
+            if hasattr(item, "filename") and item.filename.endswith(
+                ".gitignore"
+            ):
+                continue
+
+            # -- Extract the item
+            if get_python_ver_tuple() >= (3, 12, 0):
+                # -- Special case for avoiding the tar deprecation warning.
+                # Search
+                # -- 'extraction_filter' in the page
+                # -- https://docs.python.org/3/library/tarfile.html
+                tar_file.extract(item, dest_dir, filter="fully_trusted")
+            else:
+                tar_file.extract(item, dest_dir)
