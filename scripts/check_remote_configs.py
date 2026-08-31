@@ -25,16 +25,24 @@ SKIP_FILES = ["README.md"]
 # -- Connect and read timeouts in secs
 TIMEOUT = (10, 60)
 
-# -- Prefix of the parts index asset published by packages whose device
-# -- databases are fetched on demand (openxc7). The rest of the asset name
-# -- is the release tag's date, the same rule apio uses for every asset.
+# -- Names under which a release publishes its parts index: the name the
+# -- document has inside the package, and the dated asset name apio derives
+# -- from the tag. Both are accepted, so that renaming the asset to the
+# -- former does not need this script and the toolchain to change at once.
+PARTS_INDEX_NAME = "PARTS-INDEX.json"
 PARTS_INDEX_PREFIX = "apio-xilinx-parts-index-"
+
+# -- Packages whose device databases are fetched on demand, and the first
+# -- release tag that is. Their earlier releases carried the databases
+# -- inside the package and need no index; from these tags on, a release
+# -- without one is broken, not old.
+PARTS_INDEX_REQUIRED_FROM = {"openxc7": "2026-08-29"}
 
 # -- The parts index schema that apio's loader
 # -- (apio/managers/xilinx_chipdb.py) knows how to read. A release with a
 # -- different schema renamed or reshaped the fields the loader uses, so
 # -- bump this together with the loader.
-PARTS_INDEX_SCHEMA = 5
+PARTS_INDEX_SCHEMA_VERSION = 5
 
 
 def github_api_headers() -> dict[str, str]:
@@ -103,7 +111,7 @@ def check_package(package_name: str, package_config: Dict):
 
     # -- If this package fetches its device databases on demand, check that
     # -- the databases its index promises are actually published.
-    check_parts_index(tag, assets)
+    check_parts_index(package_name, tag, assets)
 
 
 def check_parts_index_content(index_name: str, index: Dict, assets: Dict):
@@ -158,7 +166,43 @@ def check_parts_index_content(index_name: str, index: Dict, assets: Dict):
     )
 
 
-def check_parts_index(tag: str, assets: Dict):
+def find_parts_index(package_name: str, tag: str, assets: Dict) -> str:
+    """Return the name of the release's parts index asset, or None if the
+    release has none and is not required to have one."""
+
+    # -- Preferred name, the one the document has inside the package.
+    if PARTS_INDEX_NAME in assets:
+        return PARTS_INDEX_NAME
+
+    # -- Dated name. Asset names are derived from the tag's date, so it
+    # -- must be the one named after this tag: an index from another
+    # -- release describes another release's assets.
+    dated = [n for n in assets if n.startswith(PARTS_INDEX_PREFIX)]
+    assert len(dated) <= 1, dated
+    if dated:
+        expected_name = PARTS_INDEX_PREFIX + tag.replace("-", "") + ".json"
+        if dated[0] != expected_name:
+            print(
+                f"Error: expected index '{expected_name}', "
+                f"found '{dated[0]}'"
+            )
+            sys.exit(1)
+        return dated[0]
+
+    # -- No index. For a package that fetches its databases on demand that
+    # -- is a broken release, not an old one, so do not pass it silently.
+    required_from = PARTS_INDEX_REQUIRED_FROM.get(package_name)
+    if required_from and tag >= required_from:
+        print(
+            f"Error: release '{tag}' of package '{package_name}' has no "
+            f"parts index, and releases from '{required_from}' on need one"
+        )
+        sys.exit(1)
+
+    return None
+
+
+def check_parts_index(package_name: str, tag: str, assets: Dict):
     """Check the on-demand device databases of a release, if it has any.
 
     Packages whose device databases are fetched on demand (openxc7)
@@ -166,25 +210,12 @@ def check_parts_index(tag: str, assets: Dict):
     for a given part. 'assets' maps the release's asset names to their
     github metadata."""
 
-    # -- Packages without on-demand databases publish no index.
-    index_names = [n for n in assets if n.startswith(PARTS_INDEX_PREFIX)]
-    if not index_names:
+    index_name = find_parts_index(package_name, tag, assets)
+    if index_name is None:
         return
-    assert len(index_names) == 1, index_names
-    index_name = index_names[0]
 
     print()
     print(f"Checking parts index [{index_name}]")
-
-    # -- Asset names are derived from the tag's date, so the index of this
-    # -- release must be the one named after this tag.
-    expected_name = PARTS_INDEX_PREFIX + tag.replace("-", "") + ".json"
-    if index_name != expected_name:
-        print(
-            f"Error: expected index '{expected_name}', "
-            f"found '{index_name}'"
-        )
-        sys.exit(1)
 
     # -- Fetch the index. It is a small json (tens of KB). No github token
     # -- here: the download url redirects to blob storage, which rejects a
@@ -197,10 +228,10 @@ def check_parts_index(tag: str, assets: Dict):
 
     # -- A different schema means the fields apio's loader reads were
     # -- renamed or reshaped.
-    if index.get("schema") != PARTS_INDEX_SCHEMA:
+    if index.get("schema") != PARTS_INDEX_SCHEMA_VERSION:
         print(
             f"Error: {index_name} has schema {index.get('schema')}, but "
-            f"apio's loader expects schema {PARTS_INDEX_SCHEMA}"
+            f"apio's loader expects schema {PARTS_INDEX_SCHEMA_VERSION}"
         )
         sys.exit(1)
 
