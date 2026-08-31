@@ -17,6 +17,8 @@ from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.managers.unpacker import FileUnpacker
 
+EXPECTED_SCHEMA_VERSION = 5
+
 
 def chipdb_file_on_demand(
     apio_ctx: ApioContext,
@@ -33,10 +35,21 @@ def chipdb_file_on_demand(
     parts_index_path = openxc7_dir / "PARTS-INDEX.json"
     with open(parts_index_path, encoding="utf-8") as f:
         json_data = json.load(f)
-    parts_index = json_data["parts"]
+
+    # -- Verify that the index has a schema we understand.
+    actual_schema_version = (
+        json_data["schema"] if "schema" in json_data else "Unknown"
+    )
+    if actual_schema_version != EXPECTED_SCHEMA_VERSION:
+        cerror(
+            f"Unexpected schema version {actual_schema_version}, "
+            f"expected {EXPECTED_SCHEMA_VERSION}"
+        )
+        sys.exit(1)
 
     # -- Lookup information for the yosys_part.
-    if yosys_part not in parts_index:
+    parts = json_data["parts"]
+    if yosys_part not in parts:
         cerror(f"No such xilinx yosys part {yosys_part}")
         cout(
             f"See {str(parts_index_path)} for the list of "
@@ -45,7 +58,7 @@ def chipdb_file_on_demand(
         )
         sys.exit(1)
 
-    part_info = parts_index[yosys_part]
+    part_info = parts[yosys_part]
 
     if not part_info["generated"]:
         cerror(f"Yosys xilinx part {yosys_part} exists but not generated")
