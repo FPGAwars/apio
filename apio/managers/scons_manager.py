@@ -11,7 +11,6 @@ import os
 import sys
 import time
 import shutil
-from pathlib import Path
 from functools import wraps
 from datetime import datetime
 from typing import Optional
@@ -33,10 +32,10 @@ from apio.common.proto.apio_scons_pb2 import (
     TargetParams,
     FpgaInfo,
     ApioEnvParams,
-    Ice40FpgaParams,
+    Ice40Params,
     Ecp5FpgaParams,
-    GowinFpgaParams,
-    XilinxFpgaParams,
+    GowinParams,
+    XilinxParams,
     GraphParams,
     LintParams,
     SimParams,
@@ -91,28 +90,6 @@ class SConsManager:
 
         # -- Change to the project's folder.
         os.chdir(apio_ctx.project_dir)
-
-    def _prepare_for_scons_run(self, scons_target, scons_params: SconsParams):
-        """Called before invoking scons to optionally perform last minute
-        preparations for the scons run. Currently the only operation is
-        downloading on the fly the openxc7 chipdb file if it's not
-        already cached locally."""
-
-        # -- If needed, make sure the Xilinx chipdb file exists and download it
-        # -- if not.
-
-        if scons_params.arch == ApioArch.xilinx and scons_target in [
-            "build",
-            "report",
-            "upload",
-        ]:
-            xilinx_chip = scons_params.fpga_info.xilinx_params.package
-            xilinx_chipdb_dir = Path(
-                scons_params.environment.xilinx_chipdb_path
-            )
-            xilinx_chipdb.chipdb_file_on_demand(
-                self.apio_ctx, xilinx_chip, xilinx_chipdb_dir
-            )
 
     @on_exception(exit_code=1)
     def graph(
@@ -264,7 +241,7 @@ class SConsManager:
                 result.arch = ApioArch.ice40
                 proto_util.check_is_required(params, "type", "package")
                 result.fpga_info.ice40_params.MergeFrom(
-                    Ice40FpgaParams(
+                    Ice40Params(
                         type=params.type,
                         package=params.package,
                     )
@@ -291,7 +268,7 @@ class SConsManager:
                     params, "yosys_family", "nextpnr_family", "packer_device"
                 )
                 result.fpga_info.gowin_params.MergeFrom(
-                    GowinFpgaParams(
+                    GowinParams(
                         yosys_family=params.yosys_family,
                         nextpnr_family=params.nextpnr_family,
                         packer_device=params.packer_device,
@@ -302,14 +279,20 @@ class SConsManager:
                 params = fpga_definition.xilinx_params
                 result.arch = ApioArch.xilinx
                 proto_util.check_is_required(
-                    params, "family", "yosys_arch", "package", "speed"
+                    params, "yosys_family", "yosys_arch", "yosys_part", "speed"
+                )
+                # -- Get a path to the chipdb file for this yosys part.
+                # -- If it doesn't exist, it is fetched on the fly from
+                # -- the release of the installed openxc7 package.
+                chipdb_file_path = xilinx_chipdb.chipdb_file_on_demand(
+                    apio_ctx, params.yosys_part
                 )
                 result.fpga_info.xilinx_params.MergeFrom(
-                    XilinxFpgaParams(
-                        family=params.family,
+                    XilinxParams(
+                        yosys_family=params.yosys_family,
                         yosys_arch=params.yosys_arch,
-                        package=params.package,
-                        speed=params.speed,
+                        yosys_part=params.yosys_part,
+                        chipdb_file_path=str(chipdb_file_path),
                     )
                 )
             case _:
@@ -336,7 +319,6 @@ class SConsManager:
             "define-consts"
         ]
         assert "PRJXRAY_DB_DIR" in openxc7_define_consts, openxc7_define_consts
-        assert "CHIPDB_DIR" in openxc7_define_consts, openxc7_define_consts
 
         result.environment.MergeFrom(
             Environment(
@@ -353,7 +335,6 @@ class SConsManager:
                 trellis_path=oss_define_consts["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
                 xilinx_prjxray_db_path=openxc7_define_consts["PRJXRAY_DB_DIR"],
-                xilinx_chipdb_path=openxc7_define_consts["CHIPDB_DIR"],
             )
         )
         assert result.environment.IsInitialized(), result
@@ -404,9 +385,6 @@ class SConsManager:
 
         # -- Create a shortcut.
         apio_ctx = self.apio_ctx
-
-        # -- Fetch missing files on demand.
-        self._prepare_for_scons_run(scons_target, scons_params)
 
         # -- Pass to the scons process the name of the sconstruct file it
         # -- should use.

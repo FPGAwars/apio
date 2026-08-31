@@ -18,7 +18,6 @@ from apio.apio_context import (
 )
 from apio.managers.scons_manager import SConsManager
 
-
 TEST_APIO_INI_DICT = {
     "[env:default]": {
         # -- Required.
@@ -57,7 +56,6 @@ environment {
   trellis_path: "TBD"
   scons_shell_id: ""
   xilinx_prjxray_db_path: "TBD"
-  xilinx_chipdb_path: "TBD"
 }
 apio_env_params {
   env_name: "default"
@@ -144,14 +142,8 @@ def test_default_params(apio_runner: ApioRunner):
         )
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
 
-        # -- TODO: For the missing platforms it should be the null string ""
         expected.environment.xilinx_prjxray_db_path = str(
             sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
-        )
-
-        # -- TODO: For the missing platforms it should be the null string ""
-        expected.environment.xilinx_chipdb_path = str(
-            sb.packages_dir / "openxc7/chipdb"
         )
 
         # -- Compare actual to expected values.
@@ -196,14 +188,8 @@ def test_explicit_params(apio_runner: ApioRunner):
         )
         expected.environment.scons_shell_id = apio_ctx.scons_shell_id
 
-        # -- TODO: For the missing platforms it should be the null string ""
         expected.environment.xilinx_prjxray_db_path = str(
             sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
-        )
-
-        # -- TODO: For the missing platforms it should be the null string ""
-        expected.environment.xilinx_chipdb_path = str(
-            sb.packages_dir / "openxc7/chipdb"
         )
 
         # -- Compare actual to expected values.
