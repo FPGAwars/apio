@@ -16,7 +16,7 @@ from apio.common.apio_console import cerror
 MessageClass = TypeVar("MessageClass", bound=Message)
 
 
-def check_proto_is_initialized(
+def check_is_initialized(
     proto_msg: Message, error_context: str, *, json_naming: bool = False
 ) -> None:
     """Check that a proto message is fully populated"""
@@ -129,7 +129,7 @@ def proto_from_json_dict(
         cerror(error_context, error_msg)
         sys.exit(1)
 
-    check_proto_is_initialized(proto_msg, error_context, json_naming=True)
+    check_is_initialized(proto_msg, error_context, json_naming=True)
     return proto_msg
 
 

@@ -388,7 +388,7 @@ def test_loading_invalid_custom_board_id(apio_runner: ApioRunner):
 
         # -- Verify
         assert e.value.code == 1
-        assert "Board id has an invalid format: invalid-ID" in log.out
+        assert "Board id `invalid-ID` has an invalid format" in log.out
 
 
 def test_loading_invalid_custom_fpga_id(apio_runner: ApioRunner):
