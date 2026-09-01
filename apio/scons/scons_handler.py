@@ -70,8 +70,9 @@ class SconsHandler:
         params: SconsParams = text_format.Parse(proto_text, SconsParams())
 
         # -- Compare the params timestamp to the timestamp in the command.
-        # timestamp = ARGUMENTS["timestamp"]
-        # assert params.timestamp == timestamp
+        # -- This verified that we got the intended file instance.
+        timestamp = ARGUMENTS["timestamp"]
+        assert params.timestamp == timestamp
 
         # -- If running on windows, apply the lib library workaround
         if params.environment.is_windows:
