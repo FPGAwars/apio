@@ -414,7 +414,7 @@ class RemoteConfig:
         # -- Dump for debugging.
         if util.is_debug(1):
             cout("Saved cached remote config:", style=EMPH3)
-            cout(json.dumps(self._cached_remote_config_path, indent=2))
+            cout(json.dumps(self._cached_remote_config, indent=2))
 
     def _handle_config_refresh_failure(
         self, *, msg: List[str], error_is_fatal: bool
