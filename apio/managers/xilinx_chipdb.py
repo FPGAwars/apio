@@ -9,6 +9,7 @@
 
 import json
 from pathlib import Path
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_styles import INFO, EMPH1
 from apio.apio_context import ApioContext
@@ -77,7 +78,7 @@ def chipdb_file_on_demand(
     part_info = parts[yosys_part]
 
     # -- Dump for debugging.
-    if util.is_debug(1):
+    if is_debug(1):
         cout("Part info:", style=EMPH1)
         cout(json.dumps(part_info, indent=2))
 

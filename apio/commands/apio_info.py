@@ -19,6 +19,7 @@ from rich import markup
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
 from apio.common import proto_util
+from apio.common.debug_util import is_under_vscode_debugger
 from apio.utils import util, apio_platforms, env_options
 from apio.commands import options
 from apio.apio_context import (
@@ -144,7 +145,7 @@ def _system_cli():
     table.add_row("Is Linux", str(platform.is_linux))
     table.add_row("Is Windows", str(platform.is_windows))
     table.add_row("Scons shell id", apio_ctx.scons_shell_id)
-    table.add_row("VSCode debugger", str(util.is_under_vscode_debugger()))
+    table.add_row("VSCode debugger", str(is_under_vscode_debugger()))
     table.add_row("Pyinstaller", str(util.is_pyinstaller_app()))
     table.add_row(
         "Apio Python package", str(util.get_path_in_apio_package(""))

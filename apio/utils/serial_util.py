@@ -5,8 +5,9 @@ from typing import List
 from dataclasses import dataclass
 from serial.tools.list_ports import comports
 from serial.tools.list_ports_common import ListPortInfo
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout
-from apio.utils import util, usb_util
+from apio.utils import usb_util
 from apio.apio_context import ApioContext
 
 
@@ -59,7 +60,7 @@ def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
     for port in list_port_info:
 
         # -- Dump for debugging.
-        if util.is_debug(1):
+        if is_debug(1):
             cout("Raw serial port:")
             cout(f"    Device: {port.device}")
             cout(f"    Hwid: {port.hwid}")
@@ -102,7 +103,7 @@ def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
     # -- Sort by port name, case insensitive.
     devices = sorted(devices, key=lambda d: d.port.lower())
 
-    if util.is_debug(1):
+    if is_debug(1):
         cout(f"Found {len(devices)} serial device:")
         for device in devices:
             cout(str(device))

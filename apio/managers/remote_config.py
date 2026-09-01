@@ -18,6 +18,7 @@ import requests
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 import json5
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout
 from apio.common.apio_styles import INFO, EMPH3, ERROR
 from apio.utils import util
@@ -223,7 +224,7 @@ class RemoteConfig:
         # -- Verify that we resolved all the remote config URL placeholders.
         assert "{" not in self.remote_config_url, self.remote_config_url
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"Remote config url: {self.remote_config_url}")
 
         # -- Start with no remote config.
@@ -260,7 +261,7 @@ class RemoteConfig:
         # -- config so practically it's required.
         assert self._remote_config_policy == RemoteConfigPolicy.CACHED_OK
         if not self._cached_remote_config:
-            if util.is_debug(1):
+            if is_debug(1):
                 cout("Cached remote config is not available.", style=INFO)
             self._fetch_and_update_remote_config(error_is_fatal=True)
             return
@@ -299,7 +300,7 @@ class RemoteConfig:
         )
 
         # -- Dump info for debugging.
-        if util.is_debug(1):
+        if is_debug(1):
             cout(
                 f"{days_since_last_fetch=}, {time_valid=}, {url_changed=}",
                 f"{minutes_since_refresh_failure=}, "
@@ -412,7 +413,7 @@ class RemoteConfig:
             json.dump(self._cached_remote_config, f, indent=2)
 
         # -- Dump for debugging.
-        if util.is_debug(1):
+        if is_debug(1):
             cout("Saved cached remote config:", style=EMPH3)
             cout(json.dumps(self._cached_remote_config, indent=2))
 
@@ -456,7 +457,7 @@ class RemoteConfig:
             return
 
         # -- Print the file's content for debugging
-        if util.is_debug(1):
+        if is_debug(1):
             cout(config_text)
 
         try:

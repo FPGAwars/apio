@@ -51,7 +51,6 @@ environment {
   is_windows: true  # TBD
   terminal_mode: FORCE_TERMINAL
   theme_name: "light"
-  debug_level: 0
   yosys_path: "TBD"
   trellis_path: "TBD"
   scons_shell_id: ""
@@ -90,7 +89,6 @@ environment {
   is_windows: true  # TBD
   terminal_mode: FORCE_TERMINAL
   theme_name: "light"
-  debug_level: 0
   yosys_path: "TBD"
   trellis_path: "TBD"
   scons_shell_id: ""

@@ -34,7 +34,6 @@ verbosity {
 }
 environment {
   platform_id: "darwin-arm64"
-  debug_level: 1
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
 }
@@ -88,15 +87,13 @@ def make_test_apio_env(
     targets: Optional[List[str]] = None,
     platform_id: str = None,
     is_windows: bool = None,
-    debug_level: int = 0,
+    # debug_level: int = 0,
     apio_env_params: ApioEnvParams = None,
     target_params: TargetParams = None,
 ) -> ApioEnv:
     """Creates a fresh apio env for testing. The env is created
     with the current directory as the root dir.
     """
-
-    # pylint: disable=too-many-arguments
 
     # -- Specify both or nether.
     assert (platform_id is None) == (is_windows is None)
@@ -108,7 +105,7 @@ def make_test_apio_env(
     scons_params = make_test_scons_params()
 
     # -- Set debug level
-    scons_params.environment.debug_level = debug_level
+    # scons_params.environment.debug_level = debug_level
 
     # -- Apply user overrides.
     if platform_id is not None:

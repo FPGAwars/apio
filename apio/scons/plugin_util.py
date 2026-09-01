@@ -33,6 +33,7 @@ from apio.common.common_util import (
     has_testbench_name,
     is_source_file,
 )
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cerror, ctable
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 from apio.scons import gtkwave_util
@@ -245,7 +246,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
         for dependency in candidates_set:
             if Path(dependency).exists():
                 dependencies.append(dependency)
-            elif apio_env.is_debug(1):
+            elif is_debug(1):
                 cout(
                     f"Dependency candidate {dependency} does not exist, "
                     "dropping."
@@ -255,7 +256,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
         dependencies = sorted(list(dependencies))
 
         # Debug info.
-        if apio_env.is_debug(1):
+        if is_debug(1):
             cout(f"Dependencies of {file_node}:", style=EMPH2)
             for dependency in dependencies:
                 cout(f"  {dependency}", style=EMPH2)

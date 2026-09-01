@@ -14,6 +14,7 @@ from typing import List, Optional, Any
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout
 from apio.common.apio_styles import EMPH3
 from apio.common.common_util import env_build_path
@@ -57,7 +58,7 @@ class ApioEnv:
         )
 
         # Extra info for debugging.
-        if self.is_debug(2):
+        if is_debug(2):
             cout(f"command_line_targets: {command_line_targets}")
             self.dump_env_vars()
 
@@ -76,10 +77,6 @@ class ApioEnv:
     def is_windows(self):
         """Returns True if we run on windows."""
         return self.params.environment.is_windows
-
-    def is_debug(self, level: int):
-        """Returns true if we run in debug mode."""
-        return self.params.environment.debug_level >= level
 
     @property
     def platform_id(self):

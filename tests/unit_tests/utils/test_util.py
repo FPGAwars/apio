@@ -8,11 +8,12 @@ from pathlib import Path
 import pytest
 from pytest import raises
 from tests.conftest import ApioRunner
+from apio.common.debug_util import is_debug
 from apio.utils.util import (
     get_apio_release_info,
     plurality,
     list_plurality,
-    is_debug,
+    # is_debug,
     pushd,
     subprocess_call,
 )

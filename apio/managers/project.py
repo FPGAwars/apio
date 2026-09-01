@@ -17,7 +17,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
-from apio.utils import util
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO, SUCCESS, EMPH2
 from apio.common.common_util import PROJECT_BUILD_PATH
@@ -124,7 +124,7 @@ class Project:
 
         # pylint: disable=too-many-arguments
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout()
             cout("Parsed [apio] section:", style=EMPH2)
             cout(f"  {apio_section}\n")
@@ -168,7 +168,7 @@ class Project:
                 env_sections=env_sections,
             )
         )
-        if util.is_debug(1):
+        if is_debug(1):
             cout("Selected env name:", style=EMPH2)
             cout(f"  {self.env_name}\n")
             cout("Expanded env options:", style=EMPH2)

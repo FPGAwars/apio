@@ -11,9 +11,9 @@ import re
 import threading
 from enum import Enum
 from typing import List, Optional, Tuple
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
-from apio.utils import util
 
 
 # -- A table with line coloring rules. If a line matches any regex, it gets
@@ -156,8 +156,8 @@ class SconsFilter:
         # self._iceprog_detector = IceProgRangeDetector()
 
         # -- We cache the values to avoid reevaluating sys env.
-        self._is_debug = util.is_debug(1)
-        self._is_verbose_debug = util.is_debug(5)
+        self._is_debug = is_debug(1)
+        self._is_verbose_debug = is_debug(5)
 
         # -- Accumulates string pieces until we write and flush them. This
         # -- mechanism is used to display progress bar correctly, Writing the

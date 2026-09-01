@@ -35,8 +35,7 @@ APIO_PLATFORM = "APIO_PLATFORM"
 # -- Env variable to enable printing of debug info, valid values are from
 # -- 1 to 10 with 1 for minimal debug info and 10 for maximum.
 # --
-# -- Do not access it directly. For the apio process use util.is_debug(n) and
-# -- for the scons process use scons_util.is_debug(n).
+# -- Do not access it directly, use debug_util.is_debug(n) instead.
 APIO_DEBUG = "APIO_DEBUG"
 
 # -- An env variable that if defined, contains an override url of the remote

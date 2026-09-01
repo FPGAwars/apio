@@ -3,24 +3,6 @@ Tests of the scons ApioEnv.
 """
 
 from tests.unit_tests.scons.testing import make_test_apio_env
-from tests.conftest import ApioRunner
-from apio.scons.apio_env import ApioEnv
-
-
-def test_env_is_debug(apio_runner: ApioRunner):
-    """Tests the env handling of the in_debug var."""
-
-    with apio_runner.in_sandbox():
-
-        env: ApioEnv = make_test_apio_env(debug_level=2)
-        assert env.is_debug(1)
-        assert env.is_debug(2)
-        assert not env.is_debug(3)
-
-        env: ApioEnv = make_test_apio_env(debug_level=0)
-        assert not env.is_debug(1)
-        assert not env.is_debug(2)
-        assert not env.is_debug(3)
 
 
 def test_env_platform_id():

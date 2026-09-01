@@ -17,6 +17,7 @@ from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cerror, cstyle, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH3, INFO
+from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
 from apio.utils.apio_platforms import ApioPlatform
@@ -163,7 +164,7 @@ class PackageManager:
             "${PLATFORM}": self.platform.id,
             "${YYYYMMDD}": package_remote_config.release_tag.replace("-", ""),
         }
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"Package URL vars: {url_vars}")
 
         # -- Define the url parts.
@@ -178,20 +179,20 @@ class PackageManager:
             package_remote_config.release_file,
         ]
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"package url parts = {url_parts}")
 
         # -- Concatenate the URL parts.
         url = "".join(url_parts)
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"Combined package url: {url}")
 
         # -- Replace placeholders with values.
         for name, val in url_vars.items():
             url = url.replace(name, val)
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"Resolved package url: {url}")
 
         # -- All done.
@@ -620,7 +621,7 @@ class PackageManager:
                 result.orphan_file_names.append(base_name)
 
         # -- Return results
-        if util.is_debug(1):
+        if is_debug(1):
             result.dump()
 
         return result
@@ -677,7 +678,7 @@ class PackageManager:
             json.dump(self.installed_packages, f, indent=4)
 
         # -- Dump for debugging.
-        if util.is_debug(1):
+        if is_debug(1):
             cout("Saved installed packages index:", style=EMPH3)
             cout(json.dumps(self.installed_packages, indent=2))
 

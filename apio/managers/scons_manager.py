@@ -15,6 +15,7 @@ from functools import wraps
 from datetime import datetime
 from typing import Optional
 from google.protobuf import text_format
+from apio.common.debug_util import is_debug
 from apio.common import apio_console, proto_util
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
@@ -61,13 +62,13 @@ def on_exception(*, exit_code: int):
             try:
                 return function(*args, **kwargs)
             except Exception as exc:
-                if util.is_debug(1):
+                if is_debug(1):
                     traceback.print_tb(exc.__traceback__)
 
                 if str(exc):
                     cerror(str(exc))
 
-                if not util.is_debug(1):
+                if not is_debug(1):
                     cout(
                         "Setting env var APIO_DEBUG=1 may provide "
                         "additional diagnostic information.",
@@ -330,7 +331,6 @@ class SConsManager:
                     else FORCE_PIPE
                 ),
                 theme_name=apio_console.current_theme_name(),
-                debug_level=util.debug_level(),
                 yosys_path=oss_define_consts["YOSYS_LIB"],
                 trellis_path=oss_define_consts["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
@@ -406,7 +406,7 @@ class SConsManager:
         # -- variables of the scons arg parser.
         apio_ctx.set_env_for_packages()
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
             cout(f"* target:        {scons_target}")
             cout(f"* variables:     {variables}")
@@ -432,7 +432,7 @@ class SConsManager:
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
         debug_options = (
             ["--debug=explain,prepare,stacktrace", "--tree=all"]
-            if util.is_debug(1)
+            if is_debug(1)
             else []
         )
 
@@ -466,7 +466,7 @@ class SConsManager:
         with open(params_file_path, "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"\nFull scons command: {cmd}\n\n")
 
         # -- Execute the scons builder!

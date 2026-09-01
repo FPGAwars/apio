@@ -2,33 +2,16 @@
 """Apio starting point."""
 
 import sys
-import os
 import atexit
+from apio.common.debug_util import is_debug
 
-# -- Since this module is used also as the entry point for the scons
-# -- subprocess, we don't add here dependency on util.py and use a light
-# -- weight debug env var detection.
-# -- Set APIO_DEBUG=1 to enable.
-
-
-def _is_debug_enabled() -> bool:
-    """Lightweight detection of the APIO_DEBUG env var. Malformed values
-    are treated here as 'disabled'; util.debug_level() reports them to the
-    user with a proper error message, on the commands that reach it."""
-    value = os.environ.get("APIO_DEBUG", "0")
-
-    # -- For windows benefit, remove optional quotes, same as
-    # -- env_options.get() does.
-    if value.startswith('"') and value.endswith('"'):
-        value = value[1:-1]
-
-    try:
-        return int(value) > 0
-    except ValueError:
-        return False
+# -- IMPORTANT: This module is an entry point for both the Apio
+# -- process and the Scons process (when using under pyinstaller) and
+# -- therefore can depend only on common functionality under
+# -- apio.common.
 
 
-debug_enabled = _is_debug_enabled()
+debug_enabled = is_debug(1)
 
 
 def on_exit(msg):
