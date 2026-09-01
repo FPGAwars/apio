@@ -5,7 +5,7 @@ Tests of apio_definitions.py
 from pytest import raises
 from google.protobuf.json_format import MessageToDict
 from tests.conftest import ApioRunner
-from apio.utils import proto_util
+from apio.common import proto_util
 from apio.common.proto.apio_definitions_pb2 import FpgaDefinition
 from apio.apio_context import (
     ApioContext,

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from apio.common.apio_console import cerror
-from apio.utils import proto_util
+from apio.common import proto_util
 from apio.managers.apio_definitions import ApioDefinitions
 from apio.common.proto.apio_definitions_pb2 import (
     BoardDefinition,

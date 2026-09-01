@@ -19,13 +19,13 @@ import click
 from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, fatal_error
+from apio.common import proto_util
 from apio.common.common_util import get_project_source_files
 from apio.utils import (
     cmd_util,
     usb_util,
     serial_util,
     util,
-    proto_util,
     apio_platforms,
     env_options,
 )

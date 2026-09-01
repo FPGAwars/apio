@@ -15,10 +15,10 @@ from functools import wraps
 from datetime import datetime
 from typing import Optional
 from google.protobuf import text_format
-from apio.common import apio_console
+from apio.common import apio_console, proto_util
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
-from apio.utils import util, proto_util
+from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
 from apio.managers import xilinx_chipdb
