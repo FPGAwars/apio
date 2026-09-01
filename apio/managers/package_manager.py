@@ -15,8 +15,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
 from pathlib import Path
 import shutil
-from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import ERROR, SUCCESS, EMPH3, INFO
+from apio.common.apio_console import cout, cerror, cstyle, fatal_error
+from apio.common.apio_styles import SUCCESS, EMPH3, INFO
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
 from apio.utils.apio_platforms import ApioPlatform
@@ -197,7 +197,9 @@ class PackageManager:
         # -- All done.
         return url
 
-    def _download_package_file(self, url: str, dir_path: Path) -> Path:
+    def _download_package_file(
+        self, url: str, dir_path: Path, package_name: str
+    ) -> Path:
         """Download the given file (url). Return the path of local destination
         file. Exits with a user message and error code if any error.
 
@@ -226,17 +228,12 @@ class PackageManager:
                 filepath.unlink()
 
             # -- Inform the user
-            cout("User aborted download", style=ERROR)
-            sys.exit(1)
+            fatal_error("User aborted download")
 
         except IOError as exc:
-            cout("I/O error while downloading", style=ERROR)
-            cout(str(exc), style=ERROR)
-            sys.exit(1)
-
-        except util.ApioException:
-            cerror("Package not found")
-            sys.exit(1)
+            fatal_error(
+                f"Failed to download package '{package_name}'", cause=exc
+            )
 
         # -- Return the destination path
         return filepath
@@ -421,7 +418,7 @@ class PackageManager:
 
         # -- Download the package file from the remote server.
         local_package_file = self._download_package_file(
-            download_url, self.packages_dir
+            download_url, self.packages_dir, package_name
         )
         if verbose:
             cout(f"Local package file: {local_package_file}")

@@ -32,10 +32,6 @@ from apio.common.apio_styles import INFO
 # ----------------------------------------
 
 
-class ApioException(Exception):
-    """Apio error"""
-
-
 class AsyncPipe(Thread):
     """A class that implements a pipe that calls back on each incoming line
     from an internal thread. Used to process in real time scons output to
