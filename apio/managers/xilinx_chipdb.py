@@ -19,6 +19,8 @@ from apio.utils import util
 
 EXPECTED_SCHEMA_VERSION = 5
 
+EXPECTED_SCHEMA_VERSION = 5
+
 
 def chipdb_file_on_demand(
     apio_ctx: ApioContext,
