@@ -16,7 +16,8 @@ from apio.common.apio_console import cout, cstyle, cerror
 from apio.common.apio_styles import INFO, SUCCESS, EMPH3
 from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.apio_context import ApioContext
-from apio.utils import util, proto_util
+from apio.utils import util
+from apio.common import proto_util
 
 
 @dataclass

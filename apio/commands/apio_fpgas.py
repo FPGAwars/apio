@@ -15,12 +15,11 @@ from typing import List, Dict, Optional, Tuple
 import click
 from rich.table import Table
 from rich import box
-from apio.common import apio_console
+from apio.common import apio_console, proto_util
 from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO, BORDER, EMPH1
 from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.common.proto.apio_definitions_pb2 import FpgaDefinition
-from apio.utils import proto_util
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
