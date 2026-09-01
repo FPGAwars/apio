@@ -25,24 +25,28 @@ SKIP_FILES = ["README.md"]
 # -- Connect and read timeouts in secs
 TIMEOUT = (10, 60)
 
-# -- Names under which a release publishes its parts index: the name the
-# -- document has inside the package, and the dated asset name apio derives
-# -- from the tag. Both are accepted, so that renaming the asset to the
-# -- former does not need this script and the toolchain to change at once.
-PARTS_INDEX_NAME = "PARTS-INDEX.json"
-PARTS_INDEX_PREFIX = "apio-xilinx-parts-index-"
+# -- The package whose device databases apio fetches on demand. The parts
+# -- index and everything below is specific to it; if a second package ever
+# -- adopts the pattern, this is the place to generalize from.
+OPENXC7_PACKAGE = "openxc7"
 
-# -- Packages whose device databases are fetched on demand, and the first
-# -- release tag that is. Their earlier releases carried the databases
-# -- inside the package and need no index; from these tags on, a release
-# -- without one is broken, not old.
-PARTS_INDEX_REQUIRED_FROM = {"openxc7": "2026-08-29"}
+# -- Names under which an openxc7 release publishes its parts index: the
+# -- name the document has inside the package, and the dated asset name
+# -- releases up to 2026-08-31 used. Both are accepted, so that the rename
+# -- did not need this script and the toolchain to change at once.
+OPENXC7_PARTS_INDEX_NAME = "PARTS-INDEX.json"
+OPENXC7_PARTS_INDEX_PREFIX = "apio-xilinx-parts-index-"
+
+# -- The first openxc7 release whose packages carry no device databases.
+# -- Earlier ones shipped them inside the package and need no index; from
+# -- this tag on, a release without one is broken, not old.
+OPENXC7_PARTS_INDEX_REQUIRED_FROM = "2026-08-29"
 
 # -- The parts index schema that apio's loader
 # -- (apio/managers/xilinx_chipdb.py) knows how to read. A release with a
 # -- different schema renamed or reshaped the fields the loader uses, so
 # -- bump this together with the loader.
-PARTS_INDEX_SCHEMA_VERSION = 5
+OPENXC7_PARTS_INDEX_SCHEMA_VERSION = 5
 
 
 def github_api_headers() -> dict[str, str]:
@@ -109,13 +113,17 @@ def check_package(package_name: str, package_config: Dict):
 
     print("Release exists and is stable")
 
-    # -- If this package fetches its device databases on demand, check that
-    # -- the databases its index promises are actually published.
-    check_parts_index(package_name, tag, assets)
+    # -- The on-demand device databases are an openxc7 thing: only that
+    # -- package publishes a parts index, and only it is checked.
+    is_openxc7 = package_name == OPENXC7_PACKAGE
+    if is_openxc7:
+        check_openxc7_parts_index(tag, assets)
 
 
-def check_parts_index_content(index_name: str, index: Dict, assets: Dict):
-    """Check the content of a parts index against the release that
+def check_openxc7_parts_index_content(
+    index_name: str, index: Dict, assets: Dict
+):
+    """Check the content of an openxc7 parts index against the release that
     publishes it. 'assets' maps the release's asset names to their github
     metadata."""
 
@@ -166,21 +174,23 @@ def check_parts_index_content(index_name: str, index: Dict, assets: Dict):
     )
 
 
-def find_parts_index(package_name: str, tag: str, assets: Dict) -> str:
-    """Return the name of the release's parts index asset, or None if the
-    release has none and is not required to have one."""
+def find_openxc7_parts_index(tag: str, assets: Dict) -> str:
+    """Return the name of the openxc7 release's parts index asset, or None
+    if the release has none and is not required to have one."""
 
     # -- Preferred name, the one the document has inside the package.
-    if PARTS_INDEX_NAME in assets:
-        return PARTS_INDEX_NAME
+    if OPENXC7_PARTS_INDEX_NAME in assets:
+        return OPENXC7_PARTS_INDEX_NAME
 
     # -- Dated name. Asset names are derived from the tag's date, so it
     # -- must be the one named after this tag: an index from another
     # -- release describes another release's assets.
-    dated = [n for n in assets if n.startswith(PARTS_INDEX_PREFIX)]
+    dated = [n for n in assets if n.startswith(OPENXC7_PARTS_INDEX_PREFIX)]
     assert len(dated) <= 1, dated
     if dated:
-        expected_name = PARTS_INDEX_PREFIX + tag.replace("-", "") + ".json"
+        expected_name = (
+            OPENXC7_PARTS_INDEX_PREFIX + tag.replace("-", "") + ".json"
+        )
         if dated[0] != expected_name:
             print(
                 f"Error: expected index '{expected_name}', "
@@ -191,26 +201,26 @@ def find_parts_index(package_name: str, tag: str, assets: Dict) -> str:
 
     # -- No index. For a package that fetches its databases on demand that
     # -- is a broken release, not an old one, so do not pass it silently.
-    required_from = PARTS_INDEX_REQUIRED_FROM.get(package_name)
-    if required_from and tag >= required_from:
+    packages_carry_no_databases = tag >= OPENXC7_PARTS_INDEX_REQUIRED_FROM
+    if packages_carry_no_databases:
         print(
-            f"Error: release '{tag}' of package '{package_name}' has no "
-            f"parts index, and releases from '{required_from}' on need one"
+            f"Error: {OPENXC7_PACKAGE} release '{tag}' has no parts index, "
+            f"and releases from '{OPENXC7_PARTS_INDEX_REQUIRED_FROM}' on "
+            "need one"
         )
         sys.exit(1)
 
     return None
 
 
-def check_parts_index(package_name: str, tag: str, assets: Dict):
-    """Check the on-demand device databases of a release, if it has any.
+def check_openxc7_parts_index(tag: str, assets: Dict):
+    """Check the on-demand device databases of an openxc7 release.
 
-    Packages whose device databases are fetched on demand (openxc7)
-    publish an index asset that tells apio which database file to download
-    for a given part. 'assets' maps the release's asset names to their
-    github metadata."""
+    Its packages carry no device databases: the parts index asset tells
+    apio which database file to download for a given part. 'assets' maps
+    the release's asset names to their github metadata."""
 
-    index_name = find_parts_index(package_name, tag, assets)
+    index_name = find_openxc7_parts_index(tag, assets)
     if index_name is None:
         return
 
@@ -228,10 +238,11 @@ def check_parts_index(package_name: str, tag: str, assets: Dict):
 
     # -- A different schema means the fields apio's loader reads were
     # -- renamed or reshaped.
-    if index.get("schema") != PARTS_INDEX_SCHEMA_VERSION:
+    if index.get("schema") != OPENXC7_PARTS_INDEX_SCHEMA_VERSION:
         print(
-            f"Error: {index_name} has schema {index.get('schema')}, but "
-            f"apio's loader expects schema {PARTS_INDEX_SCHEMA_VERSION}"
+            f"Error: {index_name} has schema {index.get('schema')}, "
+            "but apio's loader expects schema "
+            f"{OPENXC7_PARTS_INDEX_SCHEMA_VERSION}"
         )
         sys.exit(1)
 
@@ -244,7 +255,7 @@ def check_parts_index(package_name: str, tag: str, assets: Dict):
         )
         sys.exit(1)
 
-    check_parts_index_content(index_name, index, assets)
+    check_openxc7_parts_index_content(index_name, index, assets)
 
 
 def check_remote_config(jsonc_text: str):
