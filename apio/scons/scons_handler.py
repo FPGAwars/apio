@@ -21,7 +21,7 @@ from apio.scons.plugin_gowin import PluginGowin
 from apio.scons.plugin_xilinx import PluginXilinx
 from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.common.proto.apio_scons_pb2 import SimParams, SconsParams
-from apio.common import apio_console
+from apio.common import apio_console, proto_util
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase
 from apio.common import rich_lib_windows
@@ -68,17 +68,23 @@ class SconsHandler:
 
         # -- Parse the text into SconsParams object.
         params: SconsParams = text_format.Parse(proto_text, SconsParams())
+        proto_util.check_is_initialized(params, "Failed to parse scons params")
 
         # -- Compare the params timestamp to the timestamp in the command.
         # -- This verified that we got the intended file instance.
+        proto_util.check_is_required(params, "timestamp")
         timestamp = ARGUMENTS["timestamp"]
         assert params.timestamp == timestamp
 
         # -- If running on windows, apply the lib library workaround
+        proto_util.check_is_required(params, "environment.is_windows")
         if params.environment.is_windows:
             rich_lib_windows.apply_workaround()
 
         # -- Set terminal mode and theme to match the apio process.
+        proto_util.check_is_required(
+            params, "environment.terminal_mode", "environment.theme_name"
+        )
         apio_console.configure(
             terminal_mode=params.environment.terminal_mode,
             theme_name=params.environment.theme_name,
@@ -88,6 +94,7 @@ class SconsHandler:
         apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
 
         # -- Select the plugin.
+        proto_util.check_is_required(params, "arch")
         match params.arch:
             case ApioArch.ice40:
                 plugin = PluginIce40(apio_env)
@@ -125,6 +132,10 @@ class SconsHandler:
         # -- Synth builder and target.
         apio_env.builder(SYNTH_BUILDER, plugin.synth_builder())
 
+        # -- Yosys synthesis builder and target.
+        # -- Verbosity is an optional field so we rely on the protocol buffer
+        # -- implicit default value false for non populated boolean fields.
+        proto_util.check_not_required(params, "verbosity")
         synth_target = apio_env.builder_target(
             builder_id=SYNTH_BUILDER,
             target=apio_env.target,
@@ -135,6 +146,7 @@ class SconsHandler:
         # -- Place-and-route builder and target
         apio_env.builder(PNR_BUILDER, plugin.pnr_builder())
 
+        proto_util.check_not_required(params, "verbosity")
         pnr_target = apio_env.builder_target(
             builder_id=PNR_BUILDER,
             target=apio_env.target,
@@ -146,7 +158,7 @@ class SconsHandler:
         # -- bitstream_builder() method.
         # --
         # -- Special case for xilinx
-        if apio_env.params.arch == ApioArch.xilinx:
+        if params.arch == ApioArch.xilinx:
 
             # -- Access to plugin.pre_builder()
             # -- But using getattr pylance does not complain
