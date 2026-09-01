@@ -7,14 +7,13 @@
 # -- License GPLv2
 
 import os
-import sys
 import platform
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional, Dict
 import json5
-from apio.common.apio_console import cout, cerror, cstyle
+from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
 from apio.common.common_util import env_build_path
 from apio.managers.profile import Profile
@@ -386,11 +385,10 @@ class ApioContext:
             jsonc_text = filepath.read_text(encoding="utf-8")
             json_dict = json5.loads(jsonc_text)
         except Exception as e:
-            cerror(
-                f"Failed to read and parse resource file {name}",
-                f"{e}",
+
+            fatal_error(
+                f"Failed to read and parse resource file {name}", cause=e
             )
-            sys.exit(1)
 
         # -- Return the object for the resource
         return json_dict
