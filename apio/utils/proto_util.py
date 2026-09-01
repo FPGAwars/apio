@@ -1,13 +1,12 @@
 """Utilities related to the Apio Protocol Buffers objects."""
 
-import sys
 import re
 from typing import Any, Dict, TypeVar
 from google.protobuf.json_format import ParseDict
 from google.protobuf.message import Message
 from google.protobuf.unknown_fields import UnknownFieldSet
 from google.protobuf.json_format import MessageToDict
-from apio.common.apio_console import cerror
+from apio.common.apio_console import fatal_error
 
 # Placeholder for a concrete protobuf message *class* (e.g. MyProto),
 # not an instance. bound=Message restricts it to subclasses of
@@ -29,14 +28,14 @@ def check_is_initialized(
         missing_field: str = proto_msg.FindInitializationErrors()[0]
         if json_naming:
             missing_field = missing_field.replace("_", "-")
-        cerror(error_context, f"Missing required field '{missing_field}'")
-        sys.exit(1)
+        fatal_error(error_context, f"Missing required field '{missing_field}'")
 
     # -- Check 2: Should not carry unknown fields.
     unknown_fields = list(UnknownFieldSet(proto_msg))
     if len(unknown_fields) > 0:
-        cerror(error_context, f'Unknown fields: {", ".join(unknown_fields)}')
-        sys.exit(1)
+        fatal_error(
+            error_context, f'Unknown fields: {", ".join(unknown_fields)}'
+        )
 
 
 def check_is_required(proto_msg: Message, *fields_names: str) -> None:
@@ -50,18 +49,16 @@ def check_is_required(proto_msg: Message, *fields_names: str) -> None:
         for segment in name.split("."):
             field = descriptor.fields_by_name.get(segment)
             if field is None:
-                cerror(
+                fatal_error(
                     f"Field '{name}' is not a field of "
                     "protocol buffer message "
                     f"'{proto_msg.DESCRIPTOR.full_name}'"
                 )
-                sys.exit(1)
             if not field.is_required:
-                cerror(
+                fatal_error(
                     f"Field '{name}' of '{proto_msg.DESCRIPTOR.full_name}' "
                     f"is not required"
                 )
-                sys.exit(1)
             descriptor = field.message_type
 
 
@@ -79,29 +76,26 @@ def check_not_required(proto_msg: Message, *fields_names: str) -> None:
         all_required = True
         for segment in name.split("."):
             if descriptor is None:
-                cerror(
+                fatal_error(
                     f"Field '{name}' is not a field of "
                     "protocol buffer message "
                     f"'{proto_msg.DESCRIPTOR.full_name}'"
                 )
-                sys.exit(1)
             field = descriptor.fields_by_name.get(segment)
             if field is None:
-                cerror(
+                fatal_error(
                     f"Field '{name}' is not a field of "
                     "protocol buffer message "
                     f"'{proto_msg.DESCRIPTOR.full_name}'"
                 )
-                sys.exit(1)
             if not field.is_required:
                 all_required = False
             descriptor = field.message_type
         if all_required:
-            cerror(
+            fatal_error(
                 f"Field '{name}' of '{proto_msg.DESCRIPTOR.full_name}' "
                 f"is required"
             )
-            sys.exit(1)
 
 
 def proto_from_json_dict(
@@ -125,9 +119,7 @@ def proto_from_json_dict(
         match = pattern.search(error_msg)
         if match:
             error_msg = f"Unknown field '{match.group(1)}'"
-
-        cerror(error_context, error_msg)
-        sys.exit(1)
+        fatal_error(error_context, error_msg)
 
     check_is_initialized(proto_msg, error_context, json_naming=True)
     return proto_msg

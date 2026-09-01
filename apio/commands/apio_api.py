@@ -18,7 +18,7 @@ from pathlib import Path
 import click
 from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, fatal_error
 from apio.common.common_util import get_project_source_files
 from apio.utils import (
     cmd_util,
@@ -86,13 +86,13 @@ def write_as_json_doc(top_dict: Dict, output_flag: str, force_flag: bool):
         output_path = Path(output_flag)
 
         if output_path.is_dir():
-            cerror(f"The output path {output_path} is a directory.")
-            sys.exit(1)
+            fatal_error(f"The output path '{output_path}' is a directory.")
 
         if output_path.exists() and not force_flag:
-            cerror(f"The file already exists {output_path}.")
-            cout("Use the --force option to allow overwriting.", style=INFO)
-            sys.exit(1)
+            fatal_error(
+                f"The file already exists '{output_path}'.",
+                info="Use the --force option to allow overwriting.",
+            )
 
         # -- if there file path contains a parent dir, make
         # -- sure it exists. If output_flag is just a file name such

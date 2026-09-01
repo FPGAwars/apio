@@ -6,13 +6,13 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
+# TODO: Clean the code.
 # TODO: Add test coverage.
 
-import sys
 import json
 from pathlib import Path
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO, ERROR
+from apio.common.apio_console import cout, fatal_error
+from apio.common.apio_styles import INFO
 from apio.apio_context import ApioContext
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
@@ -57,29 +57,27 @@ def chipdb_file_on_demand(
         json_data["schema"] if "schema" in json_data else "Unknown"
     )
     if actual_schema_version != EXPECTED_SCHEMA_VERSION:
-        cerror(
+        fatal_error(
             f"Unexpected schema version {actual_schema_version}, "
             f"expected {EXPECTED_SCHEMA_VERSION}"
         )
-        sys.exit(1)
 
     # -- Lookup information for the yosys_part.
     parts = json_data["parts"]
     if yosys_part not in parts:
-        cerror(f"No such xilinx yosys part {yosys_part}")
-        cout(
-            f"See {str(parts_index_path)} for the list of "
+        fatal_error(
+            f"No such xilinx yosys part {yosys_part}",
+            info=f"See {str(parts_index_path)} for the list of "
             "supported xilinx parts.",
-            style=INFO,
         )
-        sys.exit(1)
 
     part_info = parts[yosys_part]
 
     if not part_info["generated"]:
-        cerror(f"Yosys xilinx part {yosys_part} exists but not generated")
-        cout("Ask the Apio team to generate it.", style=INFO)
-        sys.exit(1)
+        fatal_error(
+            f"Yosys xilinx part {yosys_part} exists but not generated",
+            info="Ask the Apio team to generate it.",
+        )
 
     chipdb_file_name = part_info["chipdb"]
     asset_name = part_info["asset"]
@@ -119,12 +117,11 @@ def chipdb_file_on_demand(
     actual_sha256 = util.compute_file_sha256(local_asset)
     expected_sha256 = part_info["asset-sha256"]
     if actual_sha256 != expected_sha256:
-        cerror(
+        fatal_error(
             f"Downloaded chipdb asset has an unexpected checksum: "
-            f"{actual_sha256}"
+            f"{actual_sha256}",
+            f"Expected {expected_sha256}",
         )
-        cout(f"Expected {expected_sha256}", style=ERROR)
-        sys.exit(1)
 
     # -- Unpack the asset
     util.unpack_tgz(local_asset, chipdb_dir)
@@ -132,9 +129,10 @@ def chipdb_file_on_demand(
     actual_sha256 = util.compute_file_sha256(chipdb_file_path)
     expected_sha256 = part_info["chipdb-sha256"]
     if actual_sha256 != expected_sha256:
-        cerror(f"Chipdb file has an expected checksum {actual_sha256}")
-        cout(f"Expected {expected_sha256}", style=ERROR)
-        sys.exit(1)
+        fatal_error(
+            f"Chipdb file has an expected checksum {actual_sha256}",
+            f"Expected {expected_sha256}",
+        )
 
     cout("Chipdb checksum verified.")
 

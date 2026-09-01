@@ -9,15 +9,18 @@
 # ---- License Apache v2
 """A module with functions  to manages the apio console output."""
 
+import sys
+import os
+import traceback
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List, NoReturn
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
 from rich.text import Text
 from rich.table import Table
 from apio.common import rich_lib_windows
-from apio.common.apio_styles import WARNING, ERROR
+from apio.common.apio_styles import WARNING, ERROR, INFO
 from apio.common.apio_themes import ApioTheme, THEMES_TABLE, DEFAULT_THEME
 from apio.common.proto.apio_scons_pb2 import (
     TerminalMode,
@@ -278,6 +281,54 @@ def cerror(*text_lines: str) -> None:
     for text_line in text_lines[1:]:
         console().out(text_line, highlight=False, style=ERROR)
     cflush()
+
+
+def fatal_error(
+    *error_text_lines: str,
+    info: List[str] | str = None,
+    cause: Exception = None,
+) -> NoReturn:
+    """Prints one or more error lines, then optional info lines, and then
+    exists the program with an error status."""
+
+    # -- If info is a string, convert it to a list with a single string.
+    if isinstance(info, str):
+        info = [info]
+
+    # -- We use an independent ad-hoc is_debug flag to make this function
+    # -- as stand alone as possible.
+    var = os.environ.get("APIO_DEBUG", "0")
+    if var.startswith('"') and var.endswith('"'):
+        var = var[1:-1]  # For windows
+    is_debug = var.isdigit() and int(var) > 0
+
+    # -- Print the error line(s)
+    cerror(*error_text_lines)
+
+    # -- If exception is given, print it as an error line
+    if cause:
+        cout(f"{cause}", style=ERROR)
+
+    # -- Print the optional info lines.
+    if info:
+        cout(*info, style=INFO)
+
+    # -- If debug, print current stack information and underlying cause
+    # -- exception if available.
+    if is_debug:
+        print("Stack (this thread):")
+        traceback.print_stack()
+        if cause is not None:
+            print("\nException")
+            traceback.print_exception(cause)
+    else:
+        cout(
+            "For debugging information, set env var APIO_DEBUG=1.",
+            style=INFO,
+        )
+
+    # -- Exit with error.
+    sys.exit(1)
 
 
 def cwarning(*text_lines: str) -> None:
