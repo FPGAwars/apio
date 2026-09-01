@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 from typing import Dict, Set, Tuple, Optional
 import json5
-from apio.utils import proto_util
+from apio.common import proto_util
 from apio.common.apio_console import cout, cerror
 from apio.common.proto.apio_definitions_pb2 import (
     BoardDefinition,

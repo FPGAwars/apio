@@ -17,9 +17,9 @@ from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO
-from apio.common import apio_console
+from apio.common import apio_console, proto_util
 from apio.common.apio_styles import BORDER, EMPH1
-from apio.utils import util, cmd_util, proto_util
+from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
 from apio.common.proto.apio_common_pb2 import ApioArch

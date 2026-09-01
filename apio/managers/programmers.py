@@ -10,7 +10,8 @@ import sys
 from typing import Optional, List
 from apio.common.apio_console import cout, cerror, cwarning
 from apio.common.apio_styles import INFO
-from apio.utils import util, serial_util, usb_util, proto_util
+from apio.common import proto_util
+from apio.utils import util, serial_util, usb_util
 from apio.utils.serial_util import SerialDevice, SerialDeviceFilter
 from apio.utils.usb_util import UsbDevice, UsbDeviceFilter
 from apio.apio_context import ApioContext

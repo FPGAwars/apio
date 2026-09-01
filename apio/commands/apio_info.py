@@ -18,7 +18,8 @@ from rich import box
 from rich import markup
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
-from apio.utils import util, apio_platforms, env_options, proto_util
+from apio.common import proto_util
+from apio.utils import util, apio_platforms, env_options
 from apio.commands import options
 from apio.apio_context import (
     ApioContext,
