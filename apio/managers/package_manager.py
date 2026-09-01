@@ -216,7 +216,7 @@ class PackageManager:
             # -- Get the destination path
             filepath = downloader.destination
 
-            downloader.start()
+            downloader.download()
 
         # -- If the user press Ctrl-C (Abort)
         except KeyboardInterrupt:

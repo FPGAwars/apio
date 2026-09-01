@@ -112,7 +112,7 @@ def chipdb_file_on_demand(
     # -- Fetch the asset.
     cout(f"Fetching {asset_name}")
     downloader = FileDownloader(asset_url, chipdb_dir)
-    downloader.start()
+    downloader.download()
 
     # -- Check the downloaded release asset checksum
     local_asset = chipdb_dir / asset_name
