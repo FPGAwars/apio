@@ -78,8 +78,8 @@ class FileDownloader:
 
         return int(self._request.headers["content-length"])
 
-    def start(self):
-        """Start the downloading of the file"""
+    def download(self):
+        """Download of the file while displaying a progress bar."""
 
         # -- Download iterator
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)
