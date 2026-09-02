@@ -9,7 +9,6 @@
 # ---- License Apache v2
 """Utility functionality for apio click commands."""
 
-import sys
 from dataclasses import dataclass
 from typing import List, Dict, Union
 import click
@@ -20,9 +19,9 @@ from apio.common.apio_styles import CMD_NAME
 from apio.common.apio_console import (
     # ConsoleCapture,
     cout,
-    cerror,
     cstyle,
     docs_text_to_str,
+    fatal_error,
 )
 from apio.utils import util
 
@@ -43,8 +42,7 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
         "for help."
     )
     cout("")
-    cerror(f"{msg}")
-    sys.exit(1)
+    fatal_error(f"{msg}")
 
 
 def _get_all_params_definitions(

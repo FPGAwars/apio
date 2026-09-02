@@ -9,7 +9,6 @@
 
 import os
 import shutil
-import sys
 from glob import glob
 from typing import Optional, List
 from pathlib import Path
@@ -17,8 +16,8 @@ import click
 from apio.commands import options
 from apio.utils import cmd_util
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import SUCCESS, ERROR
+from apio.common.apio_console import cout, fatal_error
+from apio.common.apio_styles import SUCCESS
 from apio.common.common_util import PROJECT_BUILD_PATH
 from apio.apio_context import (
     ApioContext,
@@ -60,14 +59,12 @@ def _delete_candidates(candidates: List[str]):
 
         # -- Handle deletion exceptions, e.g. permissions issues.
         except Exception as e:
-            cout(f"{e}", style=ERROR)
-            sys.exit(1)
+            fatal_error(cause=e)
 
         # -- Check that the item was indeed deleted (e.g if it's not a file
         # -- neither a directory).
         if os.path.exists(path):
-            cerror(f"Failed to delete '{path}'")
-            sys.exit(1)
+            fatal_error(f"Failed to delete '{path}'")
 
         # -- Report item deletion.
         if item_deleted:
@@ -137,5 +134,3 @@ def cli(
 
     # -- Clean and report.
     _delete_candidates(candidates)
-
-    sys.exit(0)

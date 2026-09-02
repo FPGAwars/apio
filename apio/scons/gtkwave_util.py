@@ -3,10 +3,9 @@
 """GTKWave related utilities for the Apio Scons sub process."""
 
 import re
-import sys
 from pathlib import Path
 from vcdvcd import VCDVCD
-from apio.common.apio_console import cerror
+from apio.common.apio_console import fatal_error
 
 GTKW_AUTO_FILE_MARKER = "THIS FILE WAS GENERATED AUTOMATICALLY BY APIO"
 
@@ -88,8 +87,4 @@ def is_user_gtkw_file(gtkw_path: str) -> bool:
         return True
 
     except Exception as e:
-        cerror(
-            f"Failed to scan existing .gtkw file {gtkw_path}",
-            f"{type(e).__name__}: {e}",
-        )
-        sys.exit(1)
+        fatal_error(f"Failed to scan existing .gtkw file {gtkw_path}", cause=e)

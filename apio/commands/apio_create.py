@@ -7,11 +7,10 @@
 # -- License GPLv2
 """Implementation of 'apio create' command"""
 
-import sys
 from typing import Optional
 from pathlib import Path
 import click
-from apio.common.apio_console import cerror
+from apio.common.apio_console import fatal_error
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.apio_context import (
@@ -89,8 +88,7 @@ def cli(
 
     # -- Make sure the board exist.
     if board not in apio_ctx.definitions.boards:
-        cerror(f"Unknown board id '{board}'.")
-        sys.exit(1)
+        fatal_error(f"Unknown board id '{board}'.")
 
     # -- Determine the new project directory. Create if needed.
     project_dir_new: Path = util.user_directory_or_cwd(

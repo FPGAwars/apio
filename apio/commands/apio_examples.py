@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio examples' command"""
 
-import sys
 import re
 from datetime import date
 from pathlib import Path
@@ -15,9 +14,8 @@ from typing import List, Any, Optional
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cerror
 from apio.common import apio_console
-from apio.common.apio_console import cout, ctable, cwrite
+from apio.common.apio_console import cout, ctable, cwrite, fatal_error
 from apio.common.apio_styles import INFO, BORDER, EMPH1
 from apio.managers.examples import Examples, ExampleInfo
 from apio.commands import options
@@ -29,7 +27,6 @@ from apio.apio_context import (
 )
 from apio.utils import util
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
-
 
 # ---- apio examples list
 
@@ -272,13 +269,13 @@ def _fetch_cli(
     pattern = r"^([a-zA-Z0-9-]+)(?:[/]([a-zA-Z0-9-]+))?$"
     match = re.match(pattern, example)
     if not match:
-        cerror(f"Invalid example specification '{example}.")
-        cout(
-            "Expecting board-id or board/example-name, e.g. "
-            "'alhambra-ii' or 'alhambra-ii/blinky.",
-            style=INFO,
+        fatal_error(
+            f"Invalid example specification '{example}.",
+            info=[
+                "Expecting board-id or board/example-name, e.g. "
+                + "'alhambra-ii' or 'alhambra-ii/blinky."
+            ],
         )
-        sys.exit(1)
     board_id: str = match.group(1)
     example_name: Optional[str] = match.group(2)
 

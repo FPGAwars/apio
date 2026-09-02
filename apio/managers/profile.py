@@ -6,13 +6,12 @@
 """Manage the apio profile file"""
 
 import json
-import sys
 from pathlib import Path
 from apio.common import apio_console
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_themes import THEMES_TABLE
-from apio.common.apio_styles import INFO, EMPH3
+from apio.common.apio_styles import EMPH3
 from apio.utils import util
 
 
@@ -127,13 +126,12 @@ class Profile:
             ), "profile.preferences is not a dict"
 
         except (OSError, ValueError, AttributeError, AssertionError) as e:
-            cerror(f"Invalid profile file {self._profile_path}", f"{e}")
-            cout(
-                "You can delete the file, "
-                "Apio will recreate it automatically.",
-                style=INFO,
+            fatal_error(
+                f"Invalid profile file {self._profile_path}",
+                cause=e,
+                info="You can delete the file, "
+                + "Apio will recreate it automatically.",
             )
-            sys.exit(1)
 
     def _save(self):
         """Save the profile file"""

@@ -10,7 +10,6 @@
 """Helper functions for apio scons plugins."""
 
 from glob import glob
-import sys
 import os
 import re
 import subprocess
@@ -34,7 +33,7 @@ from apio.common.common_util import (
     is_source_file,
 )
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, cerror, ctable
+from apio.common.apio_console import cout, ctable, fatal_error
 from apio.common.apio_styles import INFO, BORDER, EMPH1, EMPH2, EMPH3
 from apio.scons import gtkwave_util
 from apio.common.build_report import BuildReport, read_build_report
@@ -86,31 +85,29 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
         path = Path(user_specified)
         # -- Path should be relative.
         if path.is_absolute():
-            cerror(f"Constraint file path is not relative: {user_specified}")
-            sys.exit(1)
+            fatal_error(
+                f"Constraint file path is not relative: {user_specified}"
+            )
         # -- Constrain file extension should match the architecture.
         if path.suffix != file_ext:
-            cerror(
+            fatal_error(
                 f"Constraint file should have the extension '{file_ext}': "
-                f"{user_specified}."
+                + f"{user_specified}."
             )
-            sys.exit(1)
         # -- File should not be under _build
         if PROJECT_BUILD_PATH in path.parents:
-            cerror(
+            fatal_error(
                 f"Constraint file should not be under {PROJECT_BUILD_PATH}: "
-                f"{user_specified}."
+                + f"{user_specified}."
             )
-            sys.exit(1)
         # -- Path should not contain '..' to avoid traveling outside of the
         # -- project and coming back.
         for part in path.parts:
             if part == "..":
-                cerror(
-                    f"Constraint file path should not contain '..': "
-                    f"{user_specified}."
+                fatal_error(
+                    "Constraint file path should not contain '..': "
+                    + f"{user_specified}."
                 )
-                sys.exit(1)
 
         # -- Constrain file looks good.
         return user_specified
@@ -129,8 +126,7 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
 
     # -- Case 1: No matching constrain files.
     if n == 0:
-        cerror(f"No constraint file '*{file_ext}' found.")
-        sys.exit(1)
+        fatal_error(f"No constraint file '*{file_ext}' found.")
 
     # -- Case 2: Exactly one constrain file found.
     if n == 1:
@@ -138,15 +134,12 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
         return result
 
     # -- Case 3: Multiple matching constrain files.
-    cerror(
+    fatal_error(
         f"Found {n} constraint files '*{file_ext}' "
-        "in the project tree, which one to use?"
+        + "in the project tree, which one to use?",
+        info="Use the apio.ini constraint-file option to specify "
+        + "the desired file.",
     )
-    cout(
-        "Use the apio.ini constraint-file option to specify the desired file.",
-        style=INFO,
-    )
-    sys.exit(1)
 
 
 def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
@@ -199,8 +192,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
         # Sanity check. Should be called only to scan verilog files. If
         # this fails, this is a programming error rather than a user error.
         if not is_source_file(file_node.name):
-            cerror(f"'{file_node.name}' is not a source file.")
-            sys.exit(1)
+            fatal_error(f"'{file_node.name}' is not a source file.")
 
         # Get the directory of the file, relative to the project root which is
         # the current working directory. This value is equals to "." if the
@@ -524,9 +516,10 @@ def check_valid_testbench_name(testbench: str) -> None:
     """Check if a testbench name is valid. If not, print an error message
     and exit."""
     if not is_source_file(testbench) or not has_testbench_name(testbench):
-        cerror(f"'{testbench}' is not a valid testbench file name.")
-        cout(TESTBENCH_HINT, style=INFO)
-        sys.exit(1)
+        fatal_error(
+            f"'{testbench}' is not a valid testbench file name.",
+            info=TESTBENCH_HINT,
+        )
 
 
 def get_apio_sim_testbench_info(
@@ -550,9 +543,10 @@ def get_apio_sim_testbench_info(
     elif len(test_srcs) == 0:
         # -- Case 2 Testbench name was not specified and no testbench files
         # -- were found in the project.
-        cerror("No testbench files found in the project.")
-        cout(TESTBENCH_HINT, style=INFO)
-        sys.exit(1)
+        fatal_error(
+            "No testbench files found in the project.",
+            info=TESTBENCH_HINT,
+        )
     elif len(test_srcs) == 1:
         # -- Case 3 Testbench name was not specified but there is exactly
         # -- one in the project.
@@ -561,13 +555,13 @@ def get_apio_sim_testbench_info(
     else:
         # -- Case 4 Testbench name was not specified and there are multiple
         # -- testbench files in the project.
-        cerror("Multiple testbench files found in the project.")
-        cout(
-            "Please specify the testbench file name in the command ",
-            "or specify the 'default-testbench' option in apio.ini.",
-            style=INFO,
+        fatal_error(
+            "Multiple testbench files found in the project.",
+            info=[
+                "Please specify the testbench file name in the command ",
+                "or specify the 'default-testbench' option in apio.ini.",
+            ],
         )
-        sys.exit(1)
 
     # -- This should not happen. If it does, it's a programming error.
     assert testbench, "get_sim_config(): Missing testbench file name"
@@ -603,9 +597,10 @@ def get_apio_test_testbenches_infos(
     elif len(test_srcs) == 0:
         # -- Case 2 - Testbench file name was not specified and there are no
         # -- testbench files in the project.
-        cerror("No testbench files found in the project.")
-        cout(TESTBENCH_HINT, style=INFO)
-        sys.exit(1)
+        fatal_error(
+            "No testbench files found in the project.",
+            info=TESTBENCH_HINT,
+        )
     elif test_params.default_option:
         # -- Case 3: using --default option with no default testbench
         # -- specified in apio.ini. If we have exacly one testbench that
@@ -613,15 +608,15 @@ def get_apio_test_testbenches_infos(
         if len(test_srcs) == 1:
             testbenches = [test_srcs[0]]
         else:
-            cerror("Multiple testbench files found in the project.")
-            cout(
-                "To test only a single testbench, replace --default with the "
-                + "testbench",
-                "file path, or specify the 'default-testbench' "
-                + "option in apio.ini.",
-                style=INFO,
+            fatal_error(
+                "Multiple testbench files found in the project.",
+                info=[
+                    "To test only a single testbench, replace --default "
+                    + "with the testbench",
+                    "file path, or specify the 'default-testbench' "
+                    + "option in apio.ini.",
+                ],
             )
-            sys.exit(1)
     else:
         # -- Case 4 - Testbench file name was not specified but there are one
         # -- or more testbench files in the project.
@@ -702,16 +697,14 @@ def source_files_issue_scanner_action() -> FunctionAction:
             # -- if contains $dumpfile, it's a fatal error. Apio sets the
             # -- default location of the testbenches output .vcd file.
             if testbench_dumpfile_re.findall(file_text):
-                cerror(
-                    f"The testbench file '{file.name}' contains '$dumpfile'."
+                fatal_error(
+                    f"The testbench file '{file.name}' contains '$dumpfile'.",
+                    info=[
+                        "Do not use $dumpfile(...) in your Apio testbenches.",
+                        "Let Apio configure automatically the proper "
+                        + "locations of the dump files.",
+                    ],
                 )
-                cout(
-                    "Do not use $dumpfile(...) in your Apio testbenches.",
-                    "Let Apio configure automatically the proper locations of "
-                    + "the dump files.",
-                    style=INFO,
-                )
-                sys.exit(1)
 
     # -- Run the action but don't announce the action. We will print
     # -- ourselves in report_source_files_issues.

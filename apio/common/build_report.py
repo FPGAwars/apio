@@ -9,13 +9,11 @@
 # ---- License Apache v2
 """Utilities related to the build report file hardware.pnr."""
 
-import sys
 import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO
+from apio.common.apio_console import fatal_error
 
 
 @dataclass(frozen=True)
@@ -61,21 +59,19 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     try:
         json_text = pnr_json_file_path.read_text(encoding="utf-8")
     except Exception as e:
-        cerror(f"Failed to read {str(pnr_json_file_path)}")
-        cerror(str(e))
-        cout(
-            "Did you build successfully this project env?",
-            style=INFO,
+        fatal_error(
+            f"Failed to read {str(pnr_json_file_path)}",
+            cause=e,
+            info="Did you build successfully this project env?",
         )
-        sys.exit(1)
 
     # -- Parse the json text into a dict.
     try:
         json_dict = json.loads(json_text)
     except Exception as e:
-        cerror(f"Failed parsing json file: {str(pnr_json_file_path)}")
-        cerror(str(e))
-        sys.exit(1)
+        fatal_error(
+            f"Failed parsing json file: {str(pnr_json_file_path)}", cause=e
+        )
 
     # -- ECP5 (TRELLIS project) has a slightly different format of internal
     # -- net name. We detect it by the existence of "TRELLIS" in at least

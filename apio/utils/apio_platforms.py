@@ -9,14 +9,12 @@
 # ---- License Apache v2
 """Definition of underlying platforms supported by Apio."""
 
-import sys
 import re
 import platform
 from dataclasses import dataclass
 from typing import Dict
 from apio.utils import env_options
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO
+from apio.common.apio_console import fatal_error
 
 # TODO: Delete the commented out platforms and the xilinx_supported attribute.
 
@@ -126,12 +124,10 @@ def get_apio_platform() -> ApioPlatform:
     # -- Verify it's valid. This can be a user error if the override
     # -- is invalid.
     if platform_id not in _APIO_PLATFORMS.keys():
-        cerror(f"Unknown platform id: [{platform_id}]")
-        cout(
-            "See Apio's documentation for supported platforms.",
-            style=INFO,
+        fatal_error(
+            f"Unknown platform id: [{platform_id}]",
+            info="See Apio's documentation for supported platforms.",
         )
-        sys.exit(1)
 
     # -- All done ok.
     return _APIO_PLATFORMS[platform_id]

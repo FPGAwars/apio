@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio preferences' command"""
 
-import sys
 from io import StringIO
 import click
 from rich.console import Console
@@ -171,7 +170,7 @@ def cli(
             packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
         _set_theme(apio_ctx, theme_name)
-        sys.exit(0)
+        return
 
     # -- Handle preferences settings.
     if list_:
@@ -181,12 +180,11 @@ def cli(
             packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
         _list_preferences(apio_ctx)
-        sys.exit(0)
+        return
 
     if colors:
         _list_themes_colors()
-        sys.exit(0)
+        return
 
     # -- If nothing to do then print help and exit
     click.echo(cmd_ctx.get_help())
-    sys.exit(0)

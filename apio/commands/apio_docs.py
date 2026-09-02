@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio format' command"""
 
-import sys
 import webbrowser
 import click
 from apio.common.apio_console import cout
@@ -75,5 +74,3 @@ def cli(
 
     default_browser = webbrowser.get()
     default_browser.open(url)
-
-    sys.exit(0)

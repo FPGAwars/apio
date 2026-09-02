@@ -9,7 +9,6 @@
 # ---- License Apache v2
 """Utility functionality for apio click commands."""
 
-import sys
 import re
 from dataclasses import dataclass
 import configparser
@@ -18,10 +17,9 @@ from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, cerror, cwarning
-from apio.common.apio_styles import INFO, SUCCESS, EMPH2
+from apio.common.apio_console import cout, cwarning, fatal_error
+from apio.common.apio_styles import SUCCESS, EMPH2
 from apio.common.common_util import PROJECT_BUILD_PATH
-
 
 DEFAULT_TOP_MODULE = "main"
 
@@ -137,9 +135,10 @@ class Project:
         # -- Validate the format of the env_arg value.
         if env_arg is not None:
             if not ENV_NAME_REGEX.match(env_arg):
-                cerror(f"Invalid --env value '{env_arg}'.")
-                cout(ENV_NAME_HINT, style=INFO)
-                sys.exit(1)
+                fatal_error(
+                    f"Invalid --env value '{env_arg}'.",
+                    info=ENV_NAME_HINT,
+                )
 
         # -- Validate the apio.ini sections. We prefer to perform as much
         # -- validation as possible before we expand the env because the env
@@ -188,18 +187,19 @@ class Project:
 
         # -- Validate the env sections.
         if not env_sections:
-            cerror(
+            fatal_error(
                 "Project file 'apio.ini' should have at least one "
-                "[env:name] section."
+                + "[env:name] section."
             )
-            sys.exit(1)
 
         for env_name, section_options in env_sections.items():
             # -- Validate env name format.
             if not ENV_NAME_REGEX.match(env_name):
-                cerror(f"Invalid env name '{env_name}' in apio.ini.")
-                cout(ENV_NAME_HINT, style=INFO)
-                sys.exit(1)
+                fatal_error(
+                    f"Invalid env name '{env_name}' in apio.ini.",
+                    info=ENV_NAME_HINT,
+                )
+
             # -- Validate env section options.
             Project._validate_env_section(
                 f"[env:{env_name}]", section_options, boards
@@ -219,10 +219,9 @@ class Project:
         # -- Look for unknown options.
         for option in apio_section:
             if option not in APIO_OPTIONS:
-                cerror(
+                fatal_error(
                     f"Unknown option '{option} in [apio] section of apio.ini'"
                 )
-                sys.exit(1)
 
         # -- If 'default-env' option exists, verify the env name is valid and
         # -- and the name exists.
@@ -230,21 +229,18 @@ class Project:
         if default_env_name:
             # -- Validate env name format.
             if not ENV_NAME_REGEX.match(default_env_name):
-                cerror(
+                fatal_error(
                     f"Invalid default env name '{default_env_name}' "
-                    "in apio.ini."
+                    + "in apio.ini.",
+                    info=ENV_NAME_HINT,
                 )
-                cout(ENV_NAME_HINT, style=INFO)
-                sys.exit(1)
             # -- Make sure the env exists.
             if default_env_name not in env_sections:
-                cerror(f"Env '{default_env_name}' not found in apio.ini.")
-                cout(
-                    f"Expecting an env section '{default_env_name}' "
-                    "in apio.ini",
-                    style=INFO,
+                fatal_error(
+                    f"Env '{default_env_name}' not found in apio.ini.",
+                    info=f"Expecting an env section '{default_env_name}' "
+                    + "in apio.ini",
                 )
-                sys.exit(1)
 
     @staticmethod
     def _validate_env_section(
@@ -258,17 +254,15 @@ class Project:
         # -- Check that there are no unknown options.
         for option in section_options:
             if option not in ENV_OPTIONS_SPEC:
-                cerror(
+                fatal_error(
                     f"Unknown option '{option}' in {section_title} "
-                    "section of apio.ini."
+                    + "section of apio.ini."
                 )
-                sys.exit(1)
 
         # -- If 'board' option exists, verify that the board exists.
         board_id = section_options.get("board", None)
         if board_id is not None and board_id not in boards:
-            cerror(f"Unknown board id '{board_id}' in apio.ini.")
-            sys.exit(1)
+            fatal_error(f"Unknown board id '{board_id}' in apio.ini.")
 
     @staticmethod
     def _determine_default_env_name(
@@ -295,12 +289,10 @@ class Project:
 
         # -- Error if the env doesn't exist.
         if env_name not in env_sections:
-            cerror(f"Env '{env_name}' not found in apio.ini.")
-            cout(
-                f"Expecting an env section '[env:{env_name}] in apio.ini",
-                style=INFO,
+            fatal_error(
+                f"Env '{env_name}' not found in apio.ini.",
+                info=f"Expecting an env section '[env:{env_name}] in apio.ini",
             )
-            sys.exit(1)
 
         # -- All done.
         return env_name
@@ -355,11 +347,10 @@ class Project:
         # -- check that all the required options exist.
         for option_spec in ENV_OPTIONS_SPEC.values():
             if option_spec.is_required and option_spec.name not in result:
-                cerror(
+                fatal_error(
                     f"Missing required option '{option_spec.name}' "
-                    f"for env '{env_name}'."
+                    + f"for env '{env_name}'."
                 )
-                sys.exit(1)
 
         # -- Convert the list options from strings to list.
         for name, str_val in result.items():
@@ -429,11 +420,10 @@ def load_project_from_file(
 
     # -- Currently, apio.ini is still optional so we just warn.
     if not file_path.exists():
-        cerror(
+        fatal_error(
             "Missing project file apio.ini.",
             f"Expected a file at '{file_path.absolute()}'",
         )
-        sys.exit(1)
 
     # -- Read and parse the file.
     # -- By using OrderedDict we cause the parser to preserve the order of
@@ -443,8 +433,7 @@ def load_project_from_file(
     try:
         parser.read(file_path)
     except configparser.Error as e:
-        cerror(str(e))
-        sys.exit(1)
+        fatal_error(cause=e)
 
     # -- Iterate and collect the sections in the order they appear in
     # -- the apio.ini file. Section names are guaranteed to be unique with
@@ -459,16 +448,16 @@ def load_project_from_file(
         # -- Handle the [apio[ section.]]
         if section_name == "apio":
             if common_section or env_sections:
-                cerror("The [apio] section must be the first section.")
-                sys.exit(1)
+                fatal_error("The [apio] section must be the first section.")
             apio_section = dict(parser.items(section_name))
             continue
 
         # -- Handle the [common] section.
         if section_name == "common":
             if env_sections:
-                cerror("The [common] section must be before [env:] sections.")
-                sys.exit(1)
+                fatal_error(
+                    "The [common] section must be before [env:] sections."
+                )
             common_section = dict(parser.items(section_name))
             continue
 
@@ -491,12 +480,11 @@ def load_project_from_file(
             continue
 
         # -- Handle unknown section name.
-        cerror(f"Invalid section name '{section_name}' in apio.ini.")
-        cout(
-            "The valid section names are [apio], [common], and [env:env-name]",
-            style=INFO,
+        fatal_error(
+            f"Invalid section name '{section_name}' in apio.ini.",
+            info="The valid section names are [apio], [common], "
+            + "and [env:env-name]",
         )
-        sys.exit(1)
 
     # -- Construct the Project object. Its constructor validates the options.
     return Project(
@@ -522,8 +510,7 @@ def create_project_file(
 
     # -- Error if apio.ini already exists.
     if ini_path.exists():
-        cerror("The file apio.ini already exists.")
-        sys.exit(1)
+        fatal_error("The file apio.ini already exists.")
 
     # -- Construct and write the apio.ini file..
     cout(f"Creating {ini_path} file ...")

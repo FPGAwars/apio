@@ -7,14 +7,13 @@
 # -- License GPLv2
 """Implementation of 'apio format' command"""
 
-import sys
 import os
 from pathlib import Path
 from glob import glob
 from typing import Tuple, List, Optional
 import click
-from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import EMPH3, SUCCESS, INFO, ERROR
+from apio.common.apio_console import cout, cerror, cstyle, fatal_error
+from apio.common.apio_styles import EMPH3, SUCCESS
 from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
 from apio.apio_context import (
     ApioContext,
@@ -24,7 +23,6 @@ from apio.apio_context import (
 )
 from apio.commands import options
 from apio.utils import util, cmd_util
-
 
 # -------------- apio format
 
@@ -130,8 +128,7 @@ def cli(
 
         # -- Error if no file to format.
         if not _files:
-            cerror(f"No files of types {_FILE_TYPES}")
-            sys.exit(1)
+            fatal_error(f"No files of types {_FILE_TYPES}")
 
     # -- Sort files, case insensitive.
     _files = sort_files(_files)
@@ -147,14 +144,14 @@ def cli(
         # -- Check the file extension.
         _, ext = os.path.splitext(path)
         if ext not in _FILE_TYPES:
-            cerror(f"'{f}' has an unexpected extension.")
-            cout(f"Should be one of {_FILE_TYPES}", style=INFO)
-            sys.exit(1)
+            fatal_error(
+                f"'{f}' has an unexpected extension.",
+                info=f"Should be one of {_FILE_TYPES}",
+            )
 
         # -- Check that the file exists and is a file.
         if not path.is_file():
-            cerror(f"'{f}' is not a file.")
-            sys.exit(1)
+            fatal_error(f"'{f}' is not a file.")
 
         # -- Print file name.
         styled_f = cstyle(f, style=EMPH3)
@@ -177,12 +174,7 @@ def cli(
     # -- Report failures, if eny.
     if failures:
         cout()
-        cout(
-            f"Encountered {util.plurality(failures, 'failure')}.",
-            style=ERROR,
-        )
-        sys.exit(1)
+        fatal_error(f"Encountered {util.plurality(failures, 'failure')}.")
 
     # -- All done ok.
     cout(f"Processed {util.plurality(_files, 'file')}.", style=SUCCESS)
-    sys.exit(0)

@@ -1,6 +1,5 @@
 """USB devices related utilities."""
 
-import sys
 import re
 from glob import glob
 from typing import List, Optional, Any
@@ -8,10 +7,8 @@ from dataclasses import dataclass
 import usb.core
 import usb.backend.libusb1
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import INFO
+from apio.common.apio_console import cout, fatal_error
 from apio.apio_context import ApioContext
-
 
 # -- Mapping of (VID), and (VID:PID) to device type. This is presented to the
 # -- user as an information only. Add more as you like.
@@ -119,8 +116,7 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
 
         # -- We don't expect multiple matches.
         if len(files) > 1:
-            cerror(f"Found multiple backends for '{name}': {files}")
-            sys.exit(1)
+            fatal_error(f"Found multiple backends for '{name}': {files}")
 
         if files:
             return files[0]
@@ -130,9 +126,10 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
     backend = usb.backend.libusb1.get_backend(find_library=find_library)
 
     if not backend:
-        cerror("Libusb backend not found")
-        cout(f"Searched names: {searched_names}", style=INFO)
-        sys.exit(1)
+        fatal_error(
+            "Libusb backend not found",
+            info=f"Searched names: {searched_names}",
+        )
 
     # -- Find the usb devices.
     raw_devices = usb.core.find(find_all=True, backend=backend)

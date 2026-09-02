@@ -12,8 +12,8 @@ import shlex
 import subprocess
 from typing import Tuple, List
 import click
-from apio.common.apio_console import cout, cerror
-from apio.common.apio_styles import SUCCESS, ERROR, INFO
+from apio.common.apio_console import cout, fatal_error
+from apio.common.apio_styles import SUCCESS, ERROR
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -124,13 +124,14 @@ def cli(
 
         # -- If the '--' separator was not specified this is an error.
         if dd_index is None:
-            cerror("The raw command separator '--' was not found.")
-            cout(
-                "The raw command should be specified after a '--' separator.",
-                "Type 'apio raw -h' for details.",
-                style=INFO,
+            fatal_error(
+                "The raw command separator '--' was not found.",
+                info=[
+                    "The raw command should be specified after "
+                    + "a '--' separator.",
+                    "Type 'apio raw -h' for details.",
+                ],
             )
-            sys.exit(1)
 
         # -- Number of command tokens after the "--"
         n_after = len(sys.argv) - dd_index - 1
@@ -140,13 +141,13 @@ def cli(
 
         # -- Should have no command tokens before the "--"
         if tokens_before:
-            cerror(f"Invalid arguments: {tokens_before}.")
-            cout(
-                "Did you mean to have them after the '--' separator?",
-                "See 'apio raw -h' for details.",
-                style=INFO,
+            fatal_error(
+                f"Invalid arguments: {tokens_before}.",
+                info=[
+                    "Did you mean to have them after the '--' separator?",
+                    "See 'apio raw -h' for details.",
+                ],
             )
-            sys.exit(1)
 
     # -- At lease one of -v and cmd should be specified.
     cmd_util.check_at_least_one_param(cmd_ctx, ["verbose", "cmd"])
@@ -166,7 +167,7 @@ def cli(
 
     # -- If no command, we are done.
     if not cmd:
-        sys.exit(0)
+        return
 
     # -- Convert the tuple of strings to a list of strings.
     arg_list: List[str] = list(cmd)

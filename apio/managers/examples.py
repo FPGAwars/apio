@@ -7,13 +7,12 @@
 # -- License GPLv2
 
 import shutil
-import sys
 import os
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional, List, Dict
-from apio.common.apio_console import cout, cstyle, cerror
-from apio.common.apio_styles import INFO, SUCCESS, EMPH3
+from apio.common.apio_console import cout, cstyle, fatal_error
+from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.apio_context import ApioContext
 from apio.utils import util
@@ -68,11 +67,10 @@ class Examples:
 
         # -- Error if not empty.
         if dir_content:
-            cerror(
+            fatal_error(
                 f"Destination directory '{str(path)}' "
-                f"is not empty (e.g, '{dir_content[0]}')."
+                + f"is not empty (e.g, '{dir_content[0]}')."
             )
-            sys.exit(1)
 
     def get_examples_infos(self) -> List[ExampleInfo]:
         """Scans the examples and returns a list of ExampleInfos.
@@ -97,11 +95,10 @@ class Examples:
             definitions = self.apio_ctx.definitions
             boards_definitions = definitions.boards
             if board_id not in boards_definitions:
-                cerror(
+                fatal_error(
                     "Apio examples contain an invalid board "
-                    f"id '{board_id}'"
+                    + f"id '{board_id}'"
                 )
-                sys.exit(1)
 
             # -- Get board definitions
             board_definition = boards_definitions[board_id]
@@ -191,13 +188,13 @@ class Examples:
         )
 
         if not example_info:
-            cerror(f"Example '{example_name}' not found.")
-            cout(
-                "Run 'apio example list' for the list of examples.",
-                "Expecting an example name like alhambra-ii/ledon.",
-                style=INFO,
+            fatal_error(
+                f"Example '{example_name}' not found.",
+                info=[
+                    "Run 'apio example list' for the list of examples.",
+                    "Expecting an example name like alhambra-ii/ledon.",
+                ],
             )
-            sys.exit(1)
 
         # -- Get the example dir path.
         src_example_path = example_info.path
@@ -250,27 +247,27 @@ class Examples:
         board_examples: List[ExampleInfo] = self.get_board_examples(board_id)
 
         if not board_examples:
-            cerror(f"No examples for board '{board_id}.")
-            cout(
-                "Run 'apio examples list' for the list of examples.",
-                "Expecting a board id such as 'alhambra-ii.",
-                style=INFO,
+            fatal_error(
+                f"No examples for board '{board_id}.",
+                info=[
+                    "Run 'apio examples list' for the list of examples.",
+                    "Expecting a board id such as 'alhambra-ii.",
+                ],
             )
-            sys.exit(1)
 
         # -- Build the source example path (where the example was installed)
         src_board_dir = self.examples_dir / board_id
 
         # -- If the source example path is not a folder... it is an error
         if not src_board_dir.is_dir():
-            cerror(f"Examples for board [{board_id}] not found.")
-            cout(
-                "Run 'apio examples list' for the list of available "
-                "examples.",
-                "Expecting a board id such as 'alhambra-ii'.",
-                style=INFO,
+            fatal_error(
+                f"Examples for board [{board_id}] not found.",
+                info=[
+                    "Run 'apio examples list' for the list of available "
+                    + "examples.",
+                    "Expecting a board id such as 'alhambra-ii'.",
+                ],
             )
-            sys.exit(1)
 
         if dst_dir.exists():
             self.check_dst_dir_is_empty(dst_dir)
