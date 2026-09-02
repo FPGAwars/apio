@@ -32,9 +32,10 @@ def test_apio_debug_env_var_values(apio_runner: ApioRunner):
         # -- Malformed values should be tolerated (debug off).
         for value in ["x", "", "1.5", '"x"', '"']:
             result = _run_apio_version({"APIO_DEBUG": value})
-            assert result.returncode == 0, result.stderr
-            assert "Apio CLI version" in result.stdout, result.stdout
-            assert "Traceback" not in result.stderr, result.stderr
+            assert result.returncode != 0, result.stderr
+            assert (
+                "Error: env value APIO_DEBUG" in result.stdout
+            ), result.stdout
 
         # -- Valid values, including windows style quoted values, should
         # -- work as before.

@@ -18,10 +18,7 @@ from math import ceil
 from pathlib import Path
 import requests
 from rich.progress import track
-from apio.utils import util
-from apio.common.apio_console import cout, console
-from apio.common.apio_styles import ERROR
-
+from apio.common.apio_console import console, fatal_error
 
 # -- Timeout for getting a response from the server when downloading
 # -- a file (in seconds). We had github tests failing with timeout=10
@@ -63,15 +60,13 @@ class FileDownloader:
         # -- Request the file
         self._request = requests.get(url, stream=True, timeout=TIMEOUT_SECS)
 
-        # -- Raise an exception in case of download error...
+        # -- Fail in case of download error.
         if self._request.status_code != 200:
-            cout(
+            fatal_error(
                 "Got an unexpected HTTP status code: "
                 f"{self._request.status_code}",
                 f"When downloading {url}",
-                style=ERROR,
             )
-            raise util.ApioException()
 
     def get_size(self) -> int:
         """Return the size (in bytes) of the latest bytes block received"""

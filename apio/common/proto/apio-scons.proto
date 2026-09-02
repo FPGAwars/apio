@@ -83,19 +83,16 @@ message Environment {
   // The apio_console theme name.
   required string theme_name = 4;
 
-  // The apio debug level. Value of 0 indicates no debug info.
-  required int32 debug_level = 5;
-
   // Paths to oss-cad-suite libraries.
-  required string yosys_path = 6;
-  required string trellis_path = 7;
+  required string yosys_path = 5;
+  required string trellis_path = 6;
 
   // The default shell id. This is the shell that scons
   // is expected to use. See ApioContext for values.
-  required string scons_shell_id = 8;
+  required string scons_shell_id = 7;
 
   //-- Path to the xilinx prjxray_db, located in the openxc7 apio package.
-  required string xilinx_prjxray_db_path = 9;
+  required string xilinx_prjxray_db_path = 8;
 }
 
 // Information about the expanded active env from apio.ini.

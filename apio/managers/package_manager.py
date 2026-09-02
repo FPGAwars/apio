@@ -15,8 +15,9 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
 from pathlib import Path
 import shutil
-from apio.common.apio_console import cout, cerror, cstyle
-from apio.common.apio_styles import ERROR, SUCCESS, EMPH3, INFO
+from apio.common.apio_console import cout, cerror, cstyle, fatal_error
+from apio.common.apio_styles import SUCCESS, EMPH3, INFO
+from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
 from apio.utils.apio_platforms import ApioPlatform
@@ -163,7 +164,7 @@ class PackageManager:
             "${PLATFORM}": self.platform.id,
             "${YYYYMMDD}": package_remote_config.release_tag.replace("-", ""),
         }
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"Package URL vars: {url_vars}")
 
         # -- Define the url parts.
@@ -178,26 +179,28 @@ class PackageManager:
             package_remote_config.release_file,
         ]
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"package url parts = {url_parts}")
 
         # -- Concatenate the URL parts.
         url = "".join(url_parts)
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"Combined package url: {url}")
 
         # -- Replace placeholders with values.
         for name, val in url_vars.items():
             url = url.replace(name, val)
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"Resolved package url: {url}")
 
         # -- All done.
         return url
 
-    def _download_package_file(self, url: str, dir_path: Path) -> Path:
+    def _download_package_file(
+        self, url: str, dir_path: Path, package_name: str
+    ) -> Path:
         """Download the given file (url). Return the path of local destination
         file. Exits with a user message and error code if any error.
 
@@ -226,17 +229,12 @@ class PackageManager:
                 filepath.unlink()
 
             # -- Inform the user
-            cout("User aborted download", style=ERROR)
-            sys.exit(1)
+            fatal_error("User aborted download")
 
         except IOError as exc:
-            cout("I/O error while downloading", style=ERROR)
-            cout(str(exc), style=ERROR)
-            sys.exit(1)
-
-        except util.ApioException:
-            cerror("Package not found")
-            sys.exit(1)
+            fatal_error(
+                f"Failed to download package '{package_name}'", cause=exc
+            )
 
         # -- Return the destination path
         return filepath
@@ -421,7 +419,7 @@ class PackageManager:
 
         # -- Download the package file from the remote server.
         local_package_file = self._download_package_file(
-            download_url, self.packages_dir
+            download_url, self.packages_dir, package_name
         )
         if verbose:
             cout(f"Local package file: {local_package_file}")
@@ -623,7 +621,7 @@ class PackageManager:
                 result.orphan_file_names.append(base_name)
 
         # -- Return results
-        if util.is_debug(1):
+        if is_debug(1):
             result.dump()
 
         return result
@@ -680,7 +678,7 @@ class PackageManager:
             json.dump(self.installed_packages, f, indent=4)
 
         # -- Dump for debugging.
-        if util.is_debug(1):
+        if is_debug(1):
             cout("Saved installed packages index:", style=EMPH3)
             cout(json.dumps(self.installed_packages, indent=2))
 

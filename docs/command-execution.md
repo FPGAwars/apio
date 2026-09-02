@@ -112,7 +112,6 @@ environment {
   is_windows: false
   terminal_mode: FORCE_TERMINAL
   theme_name: "light"
-  debug_level: 0
   yosys_path: "/Users/user/.apio/packages/oss-cad-suite/share/yosys"
   trellis_path: "/Users/user/.apio/packages/oss-cad-suite/share/trellis"
 }

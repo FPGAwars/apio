@@ -15,7 +15,8 @@ from typing import Optional, List
 from pathlib import Path
 import click
 from apio.commands import options
-from apio.utils import cmd_util, util
+from apio.utils import cmd_util
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_styles import SUCCESS, ERROR
 from apio.common.common_util import PROJECT_BUILD_PATH
@@ -36,7 +37,7 @@ def _delete_candidates(candidates: List[str]):
     # pylint: disable=broad-exception-caught
 
     # -- Dump for debugging.
-    if util.is_debug(1):
+    if is_debug(1):
         cout(f"\nDeletion candidates: {candidates}")
 
     # -- Delete candidates that exists.

@@ -25,15 +25,11 @@ import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror, console
 from apio.common.apio_styles import INFO
-
+from apio.common.debug_util import is_debug
 
 # ----------------------------------------
 # -- Constants
 # ----------------------------------------
-
-
-class ApioException(Exception):
-    """Apio error"""
 
 
 class AsyncPipe(Thread):
@@ -345,35 +341,6 @@ def list_plurality(str_list: List[str], conjunction: str) -> str:
     return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"
 
 
-def debug_level() -> int:
-    """Returns the current debug level, with 0 as 'off'."""
-
-    # -- We get a fresh value so it can be adjusted dynamically when needed.
-    level_str = env_options.get(env_options.APIO_DEBUG, "0")
-    try:
-        level_int = int(level_str)  # pyright: ignore[reportArgumentType]
-    except ValueError:
-        cerror(f"APIO_DEBUG value '{level_str}' is not an int.")
-        sys.exit(1)
-
-    # -- All done. We don't validate the value, assuming the user knows how
-    # -- to use it.
-    return level_int
-
-
-def is_debug(level: int) -> bool:
-    """Returns True if apio is in debug mode level 'level'  or higher. Use
-    it to enable printing of debug information but not to modify the behavior
-    of the code. Also, all apio tests should be performed with debug
-    disabled. Important debug information should be at level 1 while
-    less important or spammy should be at higher levels."""
-    # -- Sanity check. A failure is indicates a programming error.
-    assert isinstance(level, int), type(level)
-    assert 1 <= level <= 10, level
-
-    return debug_level() >= level
-
-
 def get_apio_version_tuple() -> Tuple[int, int, int]:
     """Returns the version of the apio package as tuple of 3 ints."""
     # -- Apio's version is defined in the __init__.py file of the apio package.
@@ -596,15 +563,6 @@ def is_pyinstaller_app() -> bool:
     Base on https://pyinstaller.org/en/stable/runtime-information.html
     """
     return getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
-
-
-def is_under_vscode_debugger() -> bool:
-    """Returns true if running under VSCode debugger."""
-    # if os.environ.get("TERM_PROGRAM") == "vscode":
-    #     return True
-    if os.environ.get("DEBUGPY_RUNNING"):
-        return True
-    return False
 
 
 def compute_file_sha256(path: Path) -> str:

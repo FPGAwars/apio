@@ -8,13 +8,14 @@ from pathlib import Path
 import pytest
 from pytest import raises
 from tests.conftest import ApioRunner
+from apio.common.debug_util import is_debug
 from apio.utils.util import (
     get_apio_release_info,
     plurality,
     list_plurality,
-    is_debug,
     pushd,
     subprocess_call,
+    compute_file_sha256,
 )
 
 # TODO: Add more tests.
@@ -142,3 +143,29 @@ def test_subprocess_call(apio_runner: ApioRunner):
             )
             # -- Apio exits with 1, regardless of the subprocess error status.
             assert e.value.code == 1
+
+
+def test_compute_file_sha256(apio_runner: ApioRunner):
+    """Test compute_file_sha256()."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        path = Path("./my-test-file")
+
+        # -- Test with an empty file.
+        path = Path("./my-test-file1")
+        sb.write_file(path, "")
+        sha256 = compute_file_sha256(path)
+        assert (
+            sha256 == "e3b0c44298fc1c149afbf4c8996fb92427"
+            "ae41e4649b934ca495991b7852b855"
+        )
+
+        # -- Test with non empty file.
+        path = Path("./my-test-file2")
+        sb.write_file(path, "hello world")
+        sha256 = compute_file_sha256(path)
+        assert (
+            sha256 == "b94d27b9934d3e08a52e52d7da7dabfac"
+            "484efe37a5380ee9088f7ace2efcde9"
+        )

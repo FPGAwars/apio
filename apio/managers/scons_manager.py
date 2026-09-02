@@ -6,18 +6,18 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-import traceback
 import os
 import sys
 import time
 import shutil
-from functools import wraps
+
 from datetime import datetime
 from typing import Optional
 from google.protobuf import text_format
+from apio.common.debug_util import is_debug
 from apio.common import apio_console, proto_util
 from apio.common.apio_console import cout, cerror, cstyle, cunstyle
-from apio.common.apio_styles import SUCCESS, ERROR, EMPH3, INFO
+from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
 from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
@@ -44,42 +44,6 @@ from apio.common.proto.apio_scons_pb2 import (
 )
 
 
-# W0703: Catching too general exception Exception (broad-except)
-# pylint: disable=W0703
-#
-# -- Based on
-# -- https://stackoverflow.com/questions/5929107/decorators-with-parameters
-def on_exception(*, exit_code: int):
-    """Decorator for functions that return int exit code. If the function
-    throws an exception, the error message is printed, and the caller see the
-    returned value exit_code instead of the exception.
-    """
-
-    def decorator(function):
-        @wraps(function)
-        def wrapper(*args, **kwargs):
-            try:
-                return function(*args, **kwargs)
-            except Exception as exc:
-                if util.is_debug(1):
-                    traceback.print_tb(exc.__traceback__)
-
-                if str(exc):
-                    cerror(str(exc))
-
-                if not util.is_debug(1):
-                    cout(
-                        "Setting env var APIO_DEBUG=1 may provide "
-                        "additional diagnostic information.",
-                        style=INFO,
-                    )
-                return exit_code
-
-        return wrapper
-
-    return decorator
-
-
 class SConsManager:
     """Class for managing the scons tools"""
 
@@ -91,7 +55,6 @@ class SConsManager:
         # -- Change to the project's folder.
         os.chdir(apio_ctx.project_dir)
 
-    @on_exception(exit_code=1)
     def graph(
         self, graph_params: GraphParams, verbosity: Verbosity
     ) -> Optional[int]:
@@ -107,7 +70,6 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("graph", scons_params=scons_params)
 
-    @on_exception(exit_code=1)
     def lint(self, lint_params: LintParams) -> Optional[int]:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
@@ -120,7 +82,6 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("lint", scons_params=scons_params)
 
-    @on_exception(exit_code=1)
     def sim(self, sim_params: SimParams) -> Optional[int]:
         """Runs a scons subprocess with the 'sim' target. Returns process
         exit code, 0 if ok."""
@@ -133,7 +94,6 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("sim", scons_params=scons_params)
 
-    @on_exception(exit_code=1)
     def test(self, test_params: ApioTestParams) -> Optional[int]:
         """Runs a scons subprocess with the 'test' target. Returns process
         exit code, 0 if ok."""
@@ -146,7 +106,6 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("test", scons_params=scons_params)
 
-    @on_exception(exit_code=1)
     def build(self, verbosity: Verbosity) -> Optional[int]:
         """Runs a scons subprocess with the 'build' target. Returns process
         exit code, 0 if ok."""
@@ -159,7 +118,6 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("build", scons_params=scons_params)
 
-    @on_exception(exit_code=1)
     def report(self, verbosity: Verbosity) -> Optional[int]:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
@@ -172,7 +130,6 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("report", scons_params=scons_params)
 
-    @on_exception(exit_code=1)
     def upload(self, upload_params: UploadParams) -> Optional[int]:
         """Runs a scons subprocess with the 'time' target. Returns process
         exit code, 0 if ok.
@@ -330,7 +287,6 @@ class SConsManager:
                     else FORCE_PIPE
                 ),
                 theme_name=apio_console.current_theme_name(),
-                debug_level=util.debug_level(),
                 yosys_path=oss_define_consts["YOSYS_LIB"],
                 trellis_path=oss_define_consts["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id,
@@ -406,7 +362,7 @@ class SConsManager:
         # -- variables of the scons arg parser.
         apio_ctx.set_env_for_packages()
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
             cout(f"* target:        {scons_target}")
             cout(f"* variables:     {variables}")
@@ -432,7 +388,7 @@ class SConsManager:
         # -- https://scons.org/doc/2.4.1/HTML/scons-man.html
         debug_options = (
             ["--debug=explain,prepare,stacktrace", "--tree=all"]
-            if util.is_debug(1)
+            if is_debug(1)
             else []
         )
 
@@ -466,7 +422,7 @@ class SConsManager:
         with open(params_file_path, "w", encoding="utf8") as f:
             f.write(text_format.MessageToString(scons_params))
 
-        if util.is_debug(1):
+        if is_debug(1):
             cout(f"\nFull scons command: {cmd}\n\n")
 
         # -- Execute the scons builder!

@@ -295,6 +295,17 @@ def fatal_error(
     if isinstance(info, str):
         info = [info]
 
+    # -- Construct a list of error lines.
+    error_lines = list(error_text_lines)
+    if cause:
+        error_lines.append(f"{cause}")
+
+    # -- If there are no error lines, create a generic one and drop
+    # -- any info text.
+    if not error_lines:
+        error_lines.append("Unspecified error detected.")
+        info = []  # Drop any info text
+
     # -- We use an independent ad-hoc is_debug flag to make this function
     # -- as stand alone as possible.
     var = os.environ.get("APIO_DEBUG", "0")
@@ -303,11 +314,7 @@ def fatal_error(
     is_debug = var.isdigit() and int(var) > 0
 
     # -- Print the error line(s)
-    cerror(*error_text_lines)
-
-    # -- If exception is given, print it as an error line
-    if cause:
-        cout(f"{cause}", style=ERROR)
+    cerror(*error_lines)
 
     # -- Print the optional info lines.
     if info:

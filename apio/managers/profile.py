@@ -9,6 +9,7 @@ import json
 import sys
 from pathlib import Path
 from apio.common import apio_console
+from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cerror
 from apio.common.apio_themes import THEMES_TABLE
 from apio.common.apio_styles import INFO, EMPH3
@@ -152,6 +153,6 @@ class Profile:
             json.dump(data, f, indent=2)
 
         # -- Dump for debugging.
-        if util.is_debug(1):
+        if is_debug(1):
             cout("Saved profile:", style=EMPH3)
             cout(json.dumps(data, indent=2))

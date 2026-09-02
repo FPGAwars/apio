@@ -1,10 +1,15 @@
 """Test for the apio_console.py."""
 
+import os
+import pytest
+from pathlib import Path
 from apio.common import apio_console
+from tests.conftest import ApioRunner
 from apio.common.apio_console import (
     FORCE_TERMINAL,
     cstyle,
     cunstyle,
+    fatal_error,
 )
 
 
@@ -28,3 +33,75 @@ def test_style_unstyle():
     assert cunstyle(cstyle("")) == ""
     assert cunstyle(cstyle("abc xyz")) == "abc xyz"
     assert cunstyle(cstyle("ab \n xy")) == "ab \n xy"
+
+
+def test_fatal_error(apio_runner: ApioRunner):
+    """Test the fatal_error() function."""
+
+    with apio_runner.in_sandbox():
+
+        # -- Test with a single error line
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                fatal_error("test error line 1")
+        assert e.value.code == 1
+        assert "Error: test error line 1" in log.out
+        assert "set env var APIO_DEBUG=1" in log.out
+
+        # -- Test with a multiple error lines
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                fatal_error(
+                    "test error line 1",
+                    "test error line 2",
+                )
+        assert e.value.code == 1
+        assert "Error: test error line 1" in log.out
+        assert "test error line 2" in log.out
+        assert "Error: test error line 2" not in log.out
+        assert "set env var APIO_DEBUG=1" in log.out
+
+        # -- Make an exception object with stack info.
+        try:
+            raise RuntimeError("my fake exception error")
+        except RuntimeError as e:
+            test_exc = e
+
+        # -- Test with a cause exception only.
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                fatal_error(cause=test_exc)
+        assert e.value.code == 1
+        assert "Error: test error line 1" not in log.out
+        assert "my fake exception error" in log.out
+        assert "set env var APIO_DEBUG=1" in log.out
+
+        # -- Test with no error text and no cause. Fatal error should
+        # -- fail on assertion with the message 'No errors to print'.
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                fatal_error(info="info-line")
+        assert e.value.code == 1
+        assert "Error: Unspecified error" in log.out
+        assert "info line" not in log.out
+        assert "set env var APIO_DEBUG=1" in log.out
+
+        # -- Test with a cause exception.
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                fatal_error("test error line 1", cause=test_exc)
+        assert e.value.code == 1
+        assert "Error: test error line 1" in log.out
+        assert "my fake exception error" in log.out
+        assert "set env var APIO_DEBUG=1" in log.out
+
+        # -- Test with a cause exception and APIO_DEBUG=1.
+        os.environ["APIO_DEBUG"] = "1"
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                fatal_error("test error line 1", cause=test_exc)
+        assert e.value.code == 1
+        assert "Error: test error line 1" in log.out
+        assert "my fake exception error" in log.out
+        assert str(Path("unit_tests/common/test_apio_console.py")) in log.out
+        assert "set env var APIO_DEBUG=1" not in log.out
