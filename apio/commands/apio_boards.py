@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio boards' command"""
 
-import sys
 from pathlib import Path
 from datetime import date
 from dataclasses import dataclass
@@ -298,5 +297,3 @@ def cli(
         _list_boards_docs_format(apio_ctx)
     else:
         _list_boards(apio_ctx, verbose)
-
-    sys.exit(0)

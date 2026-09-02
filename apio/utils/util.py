@@ -23,8 +23,7 @@ from tarfile import open as tarfile_open
 from rich.progress import track
 import apio
 from apio.utils import env_options
-from apio.common.apio_console import cout, cerror, console
-from apio.common.apio_styles import INFO
+from apio.common.apio_console import cout, cerror, console, fatal_error
 from apio.common.debug_util import is_debug
 
 # ----------------------------------------
@@ -220,15 +219,17 @@ def exec_command(
     # -- User has pressed the Ctrl-C for aborting the command
     except KeyboardInterrupt:
         cerror("Aborted by user")
-        # -- NOTE: If using here sys.exit(1), apio requires pressing ctl-c
-        # -- twice when running 'apio sim'. This form of exit is more direct
-        # -- and harder.
+        # -- NOTE: If using here sys.exit(1) (including indirectly via
+        # -- fatal_error()), apio requires pressing ctl-c twice when running
+        # -- 'apio sim'. This form of exit is more direct and harder.
         os._exit(1)
 
     # -- The command does not exist!
     except FileNotFoundError:
-        cerror("Command not found:", str(cmd))
-        sys.exit(1)
+        fatal_error(
+            "Command not found:",
+            str(cmd),
+        )
 
     # -- Extract stdout text
     lines = stdout.get_buffer()
@@ -264,13 +265,13 @@ def user_directory_or_cwd(
 
         # -- If exists, it must be a dir.
         if project_dir.exists() and not project_dir.is_dir():
-            cerror(f"{description} directory is a file: {project_dir}")
-            sys.exit(1)
+            fatal_error(f"{description} directory is a file: {project_dir}")
 
         # -- If required, it must exist.
         if must_exist and not project_dir.exists():
-            cerror(f"{description} directory is missing: {str(project_dir)}")
-            sys.exit(1)
+            fatal_error(
+                f"{description} directory is missing: {str(project_dir)}"
+            )
 
         # -- If requested, create
         if create_if_missing and not project_dir.exists():
@@ -385,15 +386,11 @@ def _check_apio_dir(apio_dir: Path, desc: str, env_var: str):
     # -- The path should be absolute, see discussion here:
     # -- https://github.com/FPGAwars/apio/issues/522
     if not apio_dir.is_absolute():
-        cerror(
+        fatal_error(
             f"Apio {desc} should be an absolute path " f"[{str(apio_dir)}].",
+            info=f"You can use the system env var '{env_var}' to set "
+            + f"a different apio {desc}.",
         )
-        cout(
-            f"You can use the system env var '{env_var}' to set "
-            f"a different apio {desc}.",
-            style=INFO,
-        )
-        sys.exit(1)
 
     # -- We have problem with spaces and non ascii character above value
     # -- 127, so we allow only ascii characters in the range [33, 127].
@@ -407,18 +404,14 @@ def _check_apio_dir(apio_dir: Path, desc: str, env_var: str):
                 ch_name = ch
             else:
                 ch_name = repr(ch)
-            cerror(
+            fatal_error(
                 f"Unsupported character [{ch_name}] in apio {desc}: "
-                f"[{str(apio_dir)}].",
+                + f"[{str(apio_dir)}].",
+                info="Only the ASCII characters in the range 33 to 127 are "
+                + "allowed, with no spaces. You can use the "
+                + f"system env var '{env_var}' to set a different apio "
+                + f"{desc}.",
             )
-            cout(
-                "Only the ASCII characters in the range 33 to 127 are "
-                "allowed, with no spaces. You can use the "
-                f"system env var '{env_var}' to set a different apio "
-                f"{desc}.",
-                style=INFO,
-            )
-            sys.exit(1)
 
 
 def resolve_home_dir() -> Path:
@@ -453,8 +446,10 @@ def resolve_home_dir() -> Path:
         home_dir.mkdir(parents=True, exist_ok=True)
     except OSError as e:
         # -- E.g. no permission, or the path exists as a plain file.
-        cerror(f"No usable home directory {home_dir}", f"{e}")
-        sys.exit(1)
+        fatal_error(
+            f"No usable home directory {home_dir}",
+            cause=e,
+        )
 
     # Return the home_dir as a Path
     return home_dir
@@ -477,11 +472,10 @@ def resolve_packages_dir(apio_home_dir: Path) -> Path:
         # -- Verify that the env variable contains 'packages' to make sure we
         # -- don't clobber system directories.
         if "packages" not in apio_packages_dir_env:
-            cerror(
+            fatal_error(
                 "Apio packages dir APIO_PACKAGES should include the "
-                "string 'packages'."
+                + "string 'packages'."
             )
-            sys.exit(1)
         # -- Expand user home '~' marker, if exists.
         apio_packages_dir_env = os.path.expanduser(apio_packages_dir_env)
         # -- Expand varas such as $HOME or %HOME% on windows.
@@ -543,8 +537,7 @@ def subprocess_call(
         return exit_code
 
     # -- Here when error
-    cerror(f"Command failed: {cmd}")
-    sys.exit(1)
+    fatal_error(f"Command failed: {cmd}")
 
 
 @contextmanager
@@ -590,8 +583,7 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
 
     # -- Check it's a ".tgz" file
     if not archive_name.endswith(".tgz"):
-        cerror(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
-        sys.exit(1)
+        fatal_error(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
 
     # -- Extract all items while animating the progress bar.
     with tarfile_open(archive_file_path) as tar_file:

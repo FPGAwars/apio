@@ -10,7 +10,6 @@
 
 """Apio scons related utilities.."""
 
-import sys
 from pathlib import Path
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from google.protobuf import text_format
@@ -33,7 +32,7 @@ from apio.scons.plugin_util import (
     get_programmer_cmd,
     TestbenchInfo,
 )
-from apio.common.apio_console import cerror, cout
+from apio.common.apio_console import fatal_error
 
 # -- Scons builders ids.
 SYNTH_BUILDER = "SYNTH_BUILDER"
@@ -105,11 +104,10 @@ class SconsHandler:
             case ApioArch.xilinx:
                 plugin = PluginXilinx(apio_env)
             case _:
-                cout(
+                fatal_error(
                     "Apio SConstruct dispatch error: unknown "
-                    f"arch [{ApioArch.Name(params.arch)}]"
+                    + f"arch [{ApioArch.Name(params.arch)}]"
                 )
-                sys.exit(1)
 
         # -- Create the handler.
         scons_handler = SconsHandler(apio_env, plugin)
@@ -526,8 +524,7 @@ class SconsHandler:
             self._register_apio_lint_target(synth_srcs, test_srcs)
 
         else:
-            cerror(f"Unexpected scons target: {target}")
-            sys.exit(1)
+            fatal_error(f"Unexpected scons target: {target}")
 
         # -- Note that so far we just registered builders and target.
         # -- The actual execution is done by scons once this method returns.

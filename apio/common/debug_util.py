@@ -34,6 +34,8 @@ def debug_level() -> int:
         level_int = int(level_str)
 
     except ValueError:
+        # -- This module is intentionally not dependent on apio_console so
+        # -- we use simple print and sys.exit() instead of calling fatal_error.
         print(f"Error: env value APIO_DEBUG [{level_str}] is not an int.")
         sys.exit(1)
 

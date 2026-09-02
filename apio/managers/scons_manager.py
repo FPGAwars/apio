@@ -16,7 +16,12 @@ from typing import Optional
 from google.protobuf import text_format
 from apio.common.debug_util import is_debug
 from apio.common import apio_console, proto_util
-from apio.common.apio_console import cout, cerror, cstyle, cunstyle
+from apio.common.apio_console import (
+    cout,
+    cstyle,
+    cunstyle,
+    fatal_error,
+)
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
 from apio.utils import util
 from apio.apio_context import ApioContext
@@ -253,8 +258,7 @@ class SConsManager:
                     )
                 )
             case _:
-                cerror(f"Unexpected fpga_arch value {fpga_arch}")
-                sys.exit(1)
+                fatal_error(f"Unexpected fpga_arch value {fpga_arch}")
 
         # -- We are done populating The FpgaInfo params..
         assert result.fpga_info.IsInitialized(), result

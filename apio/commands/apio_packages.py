@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import click
 from rich.table import Table
 from rich import box
-from apio.common.apio_console import cout, ctable, cerror
+from apio.common.apio_console import cout, ctable, fatal_error
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.commands import options
 from apio.utils.cmd_util import (
@@ -245,12 +245,10 @@ def _install_cli(
         # scan = packages.scan_packages(apio_ctx.package_manager)
         scan = apio_ctx.package_manager.scan_packages()
         if not scan.is_all_ok():
-            cerror("Failed to install some packages.")
-            cout(
-                "Run 'apio packages list' to view the packages.",
-                style=INFO,
+            fatal_error(
+                "Failed to install some packages.",
+                info="Run 'apio packages list' to view the packages.",
             )
-            sys.exit(1)
 
         # -- In the verbose case above, this is already printed by
         # -- the print_packages_report() method.
@@ -310,11 +308,9 @@ def _list_cli(check: bool):
 
     # -- Handle check failure
     if check and not packages_ok:
-        cerror("Packages are unhealthy. (--check failed)")
-        sys.exit(1)
+        fatal_error("Packages are unhealthy. (--check failed)")
 
-    # Exit with OK status code.
-    sys.exit(0)
+    # All done OK
 
 
 # ------ apio packages (group)

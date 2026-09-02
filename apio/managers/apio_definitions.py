@@ -8,13 +8,12 @@ and custom boards, fpgas, and programmers definitions."""
 # -- License GPLv2
 
 
-import sys
 import re
 from pathlib import Path
 from typing import Dict, Set, Tuple, Optional
 import json5
 from apio.common import proto_util
-from apio.common.apio_console import cout, cerror
+from apio.common.apio_console import cout, fatal_error
 from apio.common.proto.apio_definitions_pb2 import (
     BoardDefinition,
     FpgaDefinition,
@@ -125,8 +124,7 @@ class ApioDefinitions:
         for board_id, board_definition in self.boards.items():
             # -- Check that board id has a valid format.
             if not DEFINITION_ID_FORMAT.match(board_id):
-                cerror(f"Board id `{board_id}` has an invalid format")
-                sys.exit(1)
+                fatal_error(f"Board id `{board_id}` has an invalid format")
 
             # -- Check that the definition proto is fully initialized.
             proto_util.check_is_initialized(
@@ -138,21 +136,19 @@ class ApioDefinitions:
             proto_util.check_is_required(board_definition, "fpga_id")
             fpga_id = board_definition.fpga_id
             if fpga_id not in self.fpgas:
-                cerror(
+                fatal_error(
                     f"Board `{board_id}` refers to non existing "
-                    f"fpga `{fpga_id}`"
+                    + f"fpga `{fpga_id}`"
                 )
-                sys.exit(1)
 
             # -- Check that the programmer definition exits.
             proto_util.check_is_required(board_definition, "programmer.id")
             programmer_id = board_definition.programmer.id
             if programmer_id not in self.programmers:
-                cerror(
+                fatal_error(
                     f"Board `{board_id}` refers to non existing "
-                    f"programmer `{programmer_id}`"
+                    + f"programmer `{programmer_id}`"
                 )
-                sys.exit(1)
 
             # -- Validate the format of the optional usb.vid and usb.pid
             # -- fields.
@@ -163,27 +159,24 @@ class ApioDefinitions:
                 proto_util.check_not_required(usb, "vid")
                 if usb.HasField("vid"):
                     if not USB_ID_FORMAT.match(usb.vid):
-                        cerror(
+                        fatal_error(
                             "The usb.vid field of the board "
-                            f"'{board_id}' has invalid value `{usb.vid}`"
+                            + f"'{board_id}' has invalid value `{usb.vid}`"
                         )
-                        sys.exit(1)
                 # -- check pid
                 proto_util.check_not_required(usb, "pid")
                 if usb.HasField("pid"):
                     if not USB_ID_FORMAT.match(usb.pid):
-                        cerror(
+                        fatal_error(
                             "The usb.pid field of the board "
-                            f"'{board_id}' has invalid value `{usb.vip}`"
+                            + f"'{board_id}' has invalid value `{usb.vip}`"
                         )
-                        sys.exit(1)
 
         # -- Validate fpgas definitions.
         for fpga_id, fpga_definition in self.fpgas.items():
             # -- Check id format.
             if not DEFINITION_ID_FORMAT.match(fpga_id):
-                cerror(f"FPGA id has an invalid format: {fpga_id}")
-                sys.exit(1)
+                fatal_error(f"FPGA id has an invalid format: {fpga_id}")
 
             # -- Check that the definition proto is fully initialized.
             proto_util.check_is_initialized(
@@ -195,8 +188,9 @@ class ApioDefinitions:
         for programmer_id, programmer_definition in self.programmers.items():
             # -- Check id format.
             if not DEFINITION_ID_FORMAT.match(programmer_id):
-                cerror(f"Programmer id has an invalid format: {programmer_id}")
-                sys.exit(1)
+                fatal_error(
+                    f"Programmer id has an invalid format: {programmer_id}"
+                )
 
             # -- Check that the definition proto is fully initialized.
             proto_util.check_is_initialized(
@@ -272,11 +266,10 @@ class ApioDefinitions:
             jsonc_text = filepath.read_text(encoding="utf-8")
             json_dict = json5.loads(jsonc_text)
         except Exception as e:
-            cerror(
+            fatal_error(
                 f"Failed to read and parse definition file {filepath.name}",
-                f"{e}",
+                cause=e,
             )
-            sys.exit(1)
 
         # -- Return the object for the resource
         return json_dict

@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio fpgas' command"""
 
-import sys
 from datetime import date
 from pathlib import Path
 from dataclasses import dataclass
@@ -291,5 +290,3 @@ def cli(
         _list_fpgas_docs_format(apio_ctx)
     else:
         _list_fpgas(apio_ctx, verbose)
-
-    sys.exit(0)

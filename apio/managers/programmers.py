@@ -6,10 +6,8 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-import sys
 from typing import Optional, List
-from apio.common.apio_console import cout, cerror, cwarning
-from apio.common.apio_styles import INFO
+from apio.common.apio_console import cout, cwarning, fatal_error
 from apio.common import proto_util
 from apio.common.debug_util import is_debug
 from apio.utils import serial_util, usb_util
@@ -108,12 +106,11 @@ def _construct_programmer_cmd(
     # -- Can't have both serial and usb vars (OK to have none).
     if has_usb_vars and has_serial_vars:
         board = apio_ctx.project.get_str_option("board")
-        cerror(
+        fatal_error(
             f"The programmer cmd template of the board '{board}' has "
-            "both usb and serial ${} vars. "
+            + "both usb and serial ${} vars. ",
+            info=f"Cmd template: {cmd_template}",
         )
-        cout(f"Cmd template: {cmd_template}", style=INFO)
-        sys.exit(1)
 
     # -- Dispatch to the appropriate template resolver.
     if has_serial_vars:
@@ -165,10 +162,9 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
     if custom_template:
         cout("Using custom programmer cmd.")
         if BIN_FILE_VALUE in custom_template:
-            cerror(
+            fatal_error(
                 f"Custom programmer-cmd should not contain '{BIN_FILE_VALUE}'."
             )
-            sys.exit(1)
         return custom_template
 
     pr = apio_ctx.project_resources
@@ -312,21 +308,19 @@ def _match_serial_device(
 
     # -- Error if not exactly one match.
     if not matching:
-        cerror("No matching serial device.")
-        cout(
-            "Type 'apio devices scan-serial' for available serial devices.",
-            style=INFO,
+        fatal_error(
+            "No matching serial device.",
+            info="Type 'apio devices scan-serial' for available "
+            + "serial devices.",
         )
-        sys.exit(1)
 
     # -- Error more than one match
     if len(matching) > 1:
-        cerror("Found multiple matching serial devices.")
-        cout(
-            "Type 'apio devices scan-serial' for available serial devices.",
-            style=INFO,
+        fatal_error(
+            "Found multiple matching serial devices.",
+            info="Type 'apio devices scan-serial' for available "
+            + "serial devices.",
         )
-        sys.exit(1)
 
     # -- All done. We have a single match.
     return matching[0]
@@ -385,21 +379,17 @@ def _match_usb_device(
 
     # -- Error if not exactly one match.
     if not matching:
-        cerror("No matching USB device.")
-        cout(
-            "Type 'apio devices scan-usb' for available usb devices.",
-            style=INFO,
+        fatal_error(
+            "No matching USB device.",
+            info="Type 'apio devices scan-usb' for available usb devices.",
         )
-        sys.exit(1)
 
     # -- Error more than one match
     if len(matching) > 1:
-        cerror("Found multiple matching usb devices.")
-        cout(
-            "Type 'apio devices scan-usb' for available usb device.",
-            style=INFO,
+        fatal_error(
+            "Found multiple matching usb devices.",
+            info="Type 'apio devices scan-usb' for available usb device.",
         )
-        sys.exit(1)
 
     # -- All done. We have a single match.
     return matching[0]
@@ -449,11 +439,9 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
 
     # -- If no device passed the filter fail the check.
     if not matching_devices:
-        cerror("No matching device.")
-        cout(
-            "Type 'apio devices scan-usb' for available usb devices.",
-            style=INFO,
+        fatal_error(
+            "No matching device.",
+            info="Type 'apio devices scan-usb' for available usb devices.",
         )
-        sys.exit(1)
 
     # -- All OK.

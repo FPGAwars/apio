@@ -8,7 +8,6 @@
 # pylint: disable=duplicate-code
 
 import json
-import sys
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
@@ -19,8 +18,8 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 import json5
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout
-from apio.common.apio_styles import INFO, EMPH3, ERROR
+from apio.common.apio_console import cout, fatal_error
+from apio.common.apio_styles import INFO, EMPH3
 from apio.utils import util
 
 # -- JSON schema for validating the downloaded remote config files.
@@ -423,8 +422,7 @@ class RemoteConfig:
         """Called to handle a failure of a remote config refresh."""
         # -- Handle hard error.
         if error_is_fatal:
-            cout(*msg, style=ERROR)
-            sys.exit(1)
+            fatal_error(*msg)
 
         # -- Handle soft error. We can continue with a cached config.
         # -- Sanity check, a cached config exists.

@@ -1,10 +1,9 @@
 """Utilities related to the Apio resource files."""
 
-import sys
 from dataclasses import dataclass
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
-from apio.common.apio_console import cerror
+from apio.common.apio_console import fatal_error
 from apio.common import proto_util
 from apio.managers.apio_definitions import ApioDefinitions
 from apio.common.proto.apio_definitions_pb2 import (
@@ -91,8 +90,7 @@ def validate_config(config: dict) -> None:
     try:
         validate(instance=config, schema=CONFIG_SCHEMA)
     except ValidationError as e:
-        cerror(f"Invalid config: {e.message}")
-        sys.exit(1)
+        fatal_error("Invalid config.", cause=e)
 
 
 def validate_packages(packages: dict) -> None:
@@ -100,8 +98,7 @@ def validate_packages(packages: dict) -> None:
     try:
         validate(instance=packages, schema=PACKAGES_SCHEMA)
     except ValidationError as e:
-        cerror(f"Invalid packages resource: {e.message}")
-        sys.exit(1)
+        fatal_error("Invalid packages resource.", cause=e)
 
 
 def collect_project_resources(
@@ -115,8 +112,7 @@ def collect_project_resources(
     # -- Get the board definition.
     board_definition = definitions.boards.get(board_id, None)
     if board_definition is None:
-        cerror(f"Unknown board id '{board_id}'.")
-        sys.exit(1)
+        fatal_error(f"Unknown board id '{board_id}'.")
 
     # -- We assume below that these fields are required.
     proto_util.check_is_required(board_definition, "fpga_id", "programmer.id")

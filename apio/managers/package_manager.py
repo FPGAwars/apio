@@ -7,7 +7,6 @@
 Used by the 'apio packages' command.
 """
 
-import sys
 import os
 import json
 from datetime import datetime
@@ -15,8 +14,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
 from pathlib import Path
 import shutil
-from apio.common.apio_console import cout, cerror, cstyle, fatal_error
-from apio.common.apio_styles import SUCCESS, EMPH3, INFO
+from apio.common.apio_console import cout, cstyle, fatal_error
+from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
@@ -254,8 +253,9 @@ class PackageManager:
             shutil.rmtree(package_dir)
 
         if package_dir.exists():
-            cerror(f"Directory deletion failed: {str(package_dir.absolute())}")
-            sys.exit(1)
+            fatal_error(
+                f"Directory deletion failed: {str(package_dir.absolute())}"
+            )
 
         return dir_found
 
@@ -314,11 +314,10 @@ class PackageManager:
         # -- Here all packages should be ok but we check again just in case.
         scan_results = self.scan_packages()
         if not scan_results.is_all_ok():
-            cerror(
+            fatal_error(
                 "Packages issues detected. Use "
-                "'apio packages list' to investigate."
+                + "'apio packages list' to investigate."
             )
-            sys.exit(1)
 
         # -- Final sanity check of the packages.
         self.check_packages()
@@ -493,8 +492,9 @@ class PackageManager:
             with open(build_info_path, encoding="utf-8") as f:
                 build_info = json.load(f)
         except Exception as e:
-            cerror(f"Reading/parsing [{build_info_path}] failed.", str(e))
-            sys.exit(1)
+            fatal_error(
+                f"Reading/parsing [{build_info_path}] failed.", cause=e
+            )
 
         return build_info
 
@@ -520,18 +520,14 @@ class PackageManager:
 
         # -- Compare the versions.
         if yosys_release_tag1 != yosys_release_tag2:
-            cerror(
+            fatal_error(
                 'The packages "oss-cad-suite" and "openxc7" were built with '
-                'different "yosys-release-tag".',
-                f"Their respective BUILD-INFO.json files "
-                f'contain "{yosys_release_tag1}" vs "{yosys_release_tag2}"',
+                + 'different "yosys-release-tag".',
+                "Their respective BUILD-INFO.json files "
+                + f'contain "{yosys_release_tag1}" vs "{yosys_release_tag2}"',
+                info="This typically happens due to corrupt packages or "
+                + "bad remote configuration by the Apio team.",
             )
-            cout(
-                "This typically happens due to corrupt packages or bad remote "
-                "configuration by the Apio team.",
-                style=INFO,
-            )
-            sys.exit(1)
 
     def package_version_ok(
         self,
@@ -653,17 +649,13 @@ class PackageManager:
                 ), f"installed package '{name}' not a dict"
 
         except (OSError, ValueError, AssertionError) as e:
-            cerror(
-                f"Invalid installed packages index file "
-                f"{self._packages_index_path}",
-                f"{e}",
+            fatal_error(
+                "Invalid installed packages index file "
+                + f"{self._packages_index_path}",
+                cause=e,
+                info="You can delete the file, "
+                + "Apio will recreate it automatically.",
             )
-            cout(
-                "You can delete the file, "
-                "Apio will recreate it automatically.",
-                style=INFO,
-            )
-            sys.exit(1)
 
     def _save_installed_packages(self):
         """Save the installed packages file"""
@@ -721,7 +713,6 @@ class PackageManager:
         """
         package_info = self.required_packages.get(package_name, None)
         if package_info is None:
-            cerror(f"Unknown package '{package_name}'")
-            sys.exit(1)
+            fatal_error(f"Unknown package '{package_name}'")
 
         return package_info

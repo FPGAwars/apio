@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio devices' command"""
 
-import sys
 import click
 from rich.table import Table
 from rich import box
@@ -103,7 +102,6 @@ def _scan_usb_cli():
 
     # -- List all usb devices
     _list_usb_devices(apio_ctx)
-    sys.exit(0)
 
 
 # -- apio devices scan-serial
@@ -192,7 +190,6 @@ def _scan_serial_cli():
 
     # -- List all connected serial devices
     _list_serial_devices(apio_ctx)
-    sys.exit(0)
 
 
 # --- apio devices
