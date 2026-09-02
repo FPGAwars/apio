@@ -245,7 +245,7 @@ class RemoteConfig:
     def _skipping_cache_msg(reason: str):
         """Show a message indicating that the cached remote config is being
         skipped."""
-        cout(f"Cached remote config is unsuitable ({reason}).", style=INFO)
+        cout(f"No suitable cached remote config file ({reason}).", style=INFO)
 
     def _apply_remote_config_policy(self) -> None:
         """Called after loading the profile file, to apply the remote config
@@ -395,7 +395,7 @@ class RemoteConfig:
             self._cached_remote_config = json_data
 
         except (OSError, ValueError, AttributeError) as e:
-            self._skipping_cache_msg("could'nt parse")
+            self._skipping_cache_msg("couldn't parse")
             cout(str(e), style=INFO)
 
     def _save(self):
@@ -416,20 +416,18 @@ class RemoteConfig:
             cout("Saved cached remote config:", style=EMPH3)
             cout(json.dumps(self._cached_remote_config, indent=2))
 
-    def _handle_config_refresh_failure(
-        self, *, msg: List[str], error_is_fatal: bool
+    def _handle_soft_config_refresh_failure(
+        self, *, error_msg_lines: List[str]
     ):
-        """Called to handle a failure of a remote config refresh."""
-        # -- Handle hard error.
-        if error_is_fatal:
-            fatal_error(*msg)
+        """Called to handle a soft failure of a remote config refresh.
+        That is, an error, from which we recover by using the cached
+        remote config."""
 
-        # -- Handle soft error. We can continue with a cached config.
-        # -- Sanity check, a cached config exists.
+        # -- Sanity check, the cached config exists.
         assert self._cached_remote_config, "No cached remote config"
 
         # -- Print the soft warning.
-        cout(*msg, style=INFO)
+        cout(*error_msg_lines, style=INFO)
         cout("Will try again at a latter time.", style=INFO)
 
         # -- Memorize the time of the attempt so we don't retry too often.
@@ -461,12 +459,11 @@ class RemoteConfig:
         try:
             remote_config = json5.loads(config_text)
         except Exception as e:
-            self._handle_config_refresh_failure(
-                msg=[
-                    "Failed to parse the latest Apio remote config file.",
-                    f"{e}",
-                ],
-                error_is_fatal=error_is_fatal,
+            error_msg = "Failed to parse the latest Apio remote config file."
+            if error_is_fatal:
+                fatal_error(error_msg, cause=e)
+            self._handle_soft_config_refresh_failure(
+                error_msg_lines=[error_msg, f"{e}"]
             )
             return
 
@@ -501,9 +498,11 @@ class RemoteConfig:
             validate(instance=remote_config, schema=REMOTE_CONFIG_SCHEMA)
         except ValidationError as e:
             # -- Error.
-            msg = ["Fetched remote config failed validation.", str(e)]
-            self._handle_config_refresh_failure(
-                msg=msg, error_is_fatal=error_is_fatal
+            error_msg = "Fetched remote config failed validation."
+            if error_is_fatal:
+                fatal_error(error_msg, cause=e)
+            self._handle_soft_config_refresh_failure(
+                error_msg_lines=[error_msg, str(e)]
             )
             return False
 
@@ -527,12 +526,11 @@ class RemoteConfig:
                 with open(file_path, encoding="utf-8") as f:
                     file_text = f.read()
             except Exception as e:
-                # -- Since local config file can be fixed and doesn't depend
-                # -- on availability of a remote server, we make this a fatal
-                # -- error instead of a soft error.
-                self._handle_config_refresh_failure(
-                    msg=["Failed to read a local config file.", str(e)],
-                    error_is_fatal=True,
+                # -- Since local config file can't be fixed with a fresh fetch
+                # -- from a remote server, we treat this as a fatal error.
+                fatal_error(
+                    "Failed to read a local config file.",
+                    cause=e,
                 )
 
             # -- Local file read OK.
@@ -543,31 +541,42 @@ class RemoteConfig:
 
         # -- Fetch the remote config. With timeout = 10, this failed a
         # -- few times on github workflow tests so increased to 25.
+        exception: Exception = None
         try:
             resp: requests.Response = requests.get(
                 self.remote_config_url, timeout=25
             )
-            error_msg = None
         except Exception as e:
-            error_msg = str(e)
+            exception = e
 
-        # -- Error codes such as 404 don't cause an exception so we handle
-        # -- them here separately.
-        if (error_msg is None) and (resp.status_code != 200):
-            error_msg = (
-                f"Expected HTTP status code 200, got {resp.status_code}."
+
+
+        context_msg = (
+            "Downloading of the latest Apio remote config file failed."
+        )
+
+        # -- Handle the case of an exception. This is the preferable option
+        # -- since it provides to fatal_error() a more detailed context of
+        # -- the error (which can be viewed with APIO_DEBUG=1)
+        if exception:
+            if error_is_fatal:
+                fatal_error(context_msg, cause=exception)
+            self._handle_soft_config_refresh_failure(
+                error_msg_lines=[context_msg, str(exception)]
             )
 
-        # -- If an error was found then handle it.
-        if error_msg is not None:
-            self._handle_config_refresh_failure(
-                msg=[
-                    "Downloading of the latest Apio remote config "
-                    "file failed.",
-                    error_msg,
-                ],
-                error_is_fatal=error_is_fatal,
+        # -- Handle the case of a status error with no exception.
+        elif resp.status_code != 200:
+            error_lines = [
+                context_msg,
+                f"Expected HTTP status code 200, got {resp.status_code}.",
+            ]
+            if error_is_fatal:
+                fatal_error(*error_lines)
+            self._handle_soft_config_refresh_failure(
+                error_msg_lines=error_lines
             )
+
             return None
 
         # -- Done ok.
