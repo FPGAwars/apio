@@ -631,6 +631,14 @@ class ApioRunner:
             sys.stdout.flush()
             sys.stderr.flush()
 
+    def is_on_github_workflow(self) -> bool:
+        """Returns True if running on a github workflow."""
+        # -- NOTE: The env var GITHUB_ACTIONS needs to be whitelisted
+        # -- in tox.ini for it to reach the test. It's a standard env var
+        # -- defined by the github workflows.
+        val = os.environ.get("GITHUB_ACTIONS")
+        return val == "true"
+
 
 @pytest.fixture(scope="module")
 def apio_runner(request):
