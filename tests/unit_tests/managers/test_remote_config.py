@@ -209,7 +209,7 @@ def test_cached_config_different_apio_version(apio_runner: ApioRunner):
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert (
-            "Cached remote config is unsuitable (Apio version mismatch)"
+            "No suitable cached remote config file (Apio version mismatch)"
             in log.out
         )
         assert "Fetching" in log.out
@@ -256,7 +256,7 @@ def test_cached_config_different_apio_src_url(
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert (
-            "Cached remote config is unsuitable (source URL mismatch)"
+            "No suitable cached remote config file (source URL mismatch)"
             in log.out
         )
         assert "Fetching" in log.out
@@ -299,7 +299,7 @@ def test_cached_remote_config_too_old(apio_runner: ApioRunner):
                 remote_config_policy=RemoteConfigPolicy.CACHED_OK,
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
-        assert "Cached remote config is unsuitable (stale)" in log.out
+        assert "No suitable cached remote config file (stale)" in log.out
         assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -342,7 +342,7 @@ def test_cached_remote_config_too_new(apio_runner: ApioRunner):
                 remote_config_policy=RemoteConfigPolicy.CACHED_OK,
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
-        assert "Cached remote config is unsuitable (stale)" in log.out
+        assert "No suitable cached remote config file (stale)" in log.out
         assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -381,7 +381,9 @@ def test_corrupt_cached_remote_config(apio_runner: ApioRunner):
                 remote_config_policy=RemoteConfigPolicy.CACHED_OK,
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
-        assert "Cached remote config is unsuitable (could'nt parse)" in log.out
+        assert (
+            "No suitable cached remote config file (couldn't parse)" in log.out
+        )
         assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
 
@@ -403,7 +405,9 @@ def test_no_cached_remote_config(apio_runner: ApioRunner):
                 remote_config_policy=RemoteConfigPolicy.CACHED_OK,
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
-        assert "Cached remote config is unsuitable (no cache file)" in log.out
+        assert (
+            "No suitable cached remote config file (no cache file)" in log.out
+        )
         assert "Fetching" in log.out
         assert "oss-cad-suite" in apio_ctx.remote_config.data["packages"]
 
