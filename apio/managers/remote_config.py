@@ -549,8 +549,6 @@ class RemoteConfig:
         except Exception as e:
             exception = e
 
-
-
         context_msg = (
             "Downloading of the latest Apio remote config file failed."
         )
