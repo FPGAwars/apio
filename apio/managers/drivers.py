@@ -196,7 +196,7 @@ class Drivers:
 
     def serial_uninstall(self):
         """Uninstalls the serial driver. Function is platform dependent."""
-        
+
         if self.apio_ctx.is_linux:
             self._serial_uninstall_linux()
         elif self.apio_ctx.is_darwin:
@@ -340,7 +340,7 @@ class Drivers:
         exit_code = self._sudo_steps_linux(steps)
 
         if exit_code != 0:
-            fatal_error("Serial drivers installation failed")
+            fatal_error("Serial drivers uninstallation failed")
 
         cout("Serial drivers uninstalled", style=SUCCESS)
         cout("Unplug and reconnect your board", style=INFO)
