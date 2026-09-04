@@ -84,8 +84,8 @@ class PluginXilinx(PluginBase):
                 get_define_flags(apio_env),
             ),
             suffix=".json",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
         )
 
     # @overrides
@@ -115,8 +115,8 @@ class PluginXilinx(PluginBase):
                 ("" if params.verbosity.all or params.verbosity.pnr else "-q"),
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
-            suffix=".fasm",
             src_suffix=".json",
+            suffix=".fasm",
             emitter=emitter,
         )
 
@@ -150,8 +150,8 @@ class PluginXilinx(PluginBase):
                     part_file, xilinx_params.yosys_part, frames_file_macro
                 ),
             ],
-            suffix=".bit",
             src_suffix=".fasm",
+            suffix=".bit",
         )
 
     # @overrides
@@ -197,9 +197,9 @@ class PluginXilinx(PluginBase):
         return Builder(
             # -- Dynamic action string generator.
             generator=action_generator,
-            suffix=".out",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".out",
         )
 
     # @overrides
@@ -228,6 +228,6 @@ class PluginXilinx(PluginBase):
                 lib_dirs=[self.yosys_lib_dir],
                 lib_files=self.lint_lib_files,
             ),
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
         )

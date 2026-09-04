@@ -106,8 +106,8 @@ class PluginBase:
 
         return Builder(
             action="vvp $SOURCE -dumpfile=$TARGET",
-            suffix=".vcd",
             src_suffix=".out",
+            suffix=".vcd",
         )
 
     def yosys_dot_builder(self) -> BuilderBase | CompositeBuilder:
@@ -144,9 +144,9 @@ class PluginBase:
                 "" if params.verbosity.all else "-q",
                 get_define_flags(apio_env),
             ),
-            suffix=".dot",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".dot",
         )
 
     def graphviz_renderer_builder(self) -> BuilderBase:
@@ -205,8 +205,8 @@ class PluginBase:
             Builder(
                 # Expecting graphviz dot to be installed and in the path.
                 action=actions,
-                suffix=f".{type_str}",
                 src_suffix=".dot",
+                suffix=f".{type_str}",
             ),
         )
 

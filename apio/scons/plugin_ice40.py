@@ -70,9 +70,9 @@ class PluginIce40(PluginBase):
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
             ),
-            suffix=".json",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".json",
         )
 
     # @overrides
@@ -102,8 +102,8 @@ class PluginIce40(PluginBase):
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
-            suffix=".asc",
             src_suffix=".json",
+            suffix=".asc",
             emitter=emitter,
         )
 
@@ -112,8 +112,8 @@ class PluginIce40(PluginBase):
         """Creates and returns the bitstream builder."""
         return Builder(
             action="icepack $SOURCE $TARGET",
-            suffix=".bin",
             src_suffix=".asc",
+            suffix=".bin",
         )
 
     # @overrides
@@ -160,9 +160,9 @@ class PluginIce40(PluginBase):
         return Builder(
             # -- Dynamic action string generator.
             generator=action_generator,
-            suffix=".out",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".out",
         )
 
     # @overrides
@@ -190,6 +190,6 @@ class PluginIce40(PluginBase):
                 lib_dirs=[self.yosys_lib_dir],
                 lib_files=self.lint_lib_files,
             ),
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
         )

@@ -218,8 +218,8 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         )
 
         # -- Verify builder suffixes.
-        assert builder.suffix == ".vlt"
         assert builder.src_suffix == []
+        assert builder.suffix == ".vlt"
 
         # -- Create a target that doesn't exist yet.
         assert not exists("hardware.vlt")
