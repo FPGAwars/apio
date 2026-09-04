@@ -80,9 +80,9 @@ class PluginEcp5(PluginBase):
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
             ),
-            suffix=".json",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".json",
         )
 
     # @overrides
@@ -115,8 +115,8 @@ class PluginEcp5(PluginBase):
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
-            suffix=".config",
             src_suffix=".json",
+            suffix=".config",
             emitter=emitter,
         )
 
@@ -128,8 +128,8 @@ class PluginEcp5(PluginBase):
             action="ecppack --compress --db {0} $SOURCE $TARGET".format(
                 self.database_path,
             ),
-            suffix=".bit",
             src_suffix=".config",
+            suffix=".bit",
         )
 
     # @overrides
@@ -176,9 +176,9 @@ class PluginEcp5(PluginBase):
         return Builder(
             # -- Dynamic action string generator.
             generator=action_generator,
-            suffix=".out",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".out",
         )
 
     # @overrides
@@ -217,6 +217,6 @@ class PluginEcp5(PluginBase):
                 lib_dirs=[self.yosys_lib_dir],
                 lib_files=self.lint_lib_files,
             ),
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
         )

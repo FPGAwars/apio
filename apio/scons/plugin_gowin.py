@@ -93,9 +93,9 @@ class PluginGowin(PluginBase):
                 "" if params.verbosity.all or params.verbosity.synth else "-q",
                 get_define_flags(apio_env),
             ),
-            suffix=".json",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".json",
         )
 
     # @overrides
@@ -131,8 +131,8 @@ class PluginGowin(PluginBase):
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
                 " ".join(params.apio_env_params.nextpnr_extra_options),
             ),
-            suffix=".pnr.json",
             src_suffix=".json",
+            suffix=".pnr.json",
             emitter=emitter,
         )
 
@@ -144,8 +144,8 @@ class PluginGowin(PluginBase):
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
                 self.apio_env.params.fpga_info.gowin_params.packer_device
             ),
-            suffix=".fs",
             src_suffix=".pnr.json",
+            suffix=".fs",
         )
 
     # @overrides
@@ -191,9 +191,9 @@ class PluginGowin(PluginBase):
         return Builder(
             # -- Dynamic action string generator.
             generator=action_generator,
-            suffix=".out",
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
+            suffix=".out",
         )
 
     # @overrides
@@ -226,6 +226,6 @@ class PluginGowin(PluginBase):
                 lib_dirs=[self.yosys_lib_dir],
                 lib_files=self.lint_lib_files,
             ),
-            src_suffix=SRC_SUFFIXES,
             source_scanner=self.verilog_src_scanner,
+            src_suffix=SRC_SUFFIXES,
         )
