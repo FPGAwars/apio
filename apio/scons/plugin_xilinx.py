@@ -121,28 +121,6 @@ class PluginXilinx(PluginBase):
         )
 
     # @overrides
-    def bitstream_pre_builder(self) -> BuilderBase | CompositeBuilder:
-        """Creates and returns the pre-bitstream builder."""
-
-        # -- Keep short references.
-        apio_env = self.apio_env
-        params = apio_env.params
-        xilinx_params = params.fpga_info.xilinx_params
-
-        prjxray_db = Path(apio_env.params.environment.xilinx_prjxray_db_path)
-        prjxray_db = prjxray_db / xilinx_params.yosys_family
-
-        return Builder(
-            action="fasm2frames --part {0} --db-root {1} "
-            " $SOURCE > $TARGET ".format(
-                xilinx_params.yosys_part,
-                prjxray_db,
-            ),
-            suffix=".frames",
-            src_suffix=".fasm",
-        )
-
-    # @overrides
     def make_bitstream_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the bitstream builder."""
 
@@ -155,15 +133,25 @@ class PluginXilinx(PluginBase):
         prjxray_db = prjxray_db / xilinx_params.yosys_family
         part_file = prjxray_db / xilinx_params.yosys_part / "part.yaml"
 
+        # -- Intermediate .frames file path expression. When resolved, it's
+        # -- the same as target file but with the ".frames" extension.
+        frames_file_macro = "${TARGET.base}.frames"
+
         return Builder(
-            action="xc7frames2bit --part_file {0} --part_name {1} "
-            "--frm_file "
-            "$SOURCE --output_file $TARGET".format(
-                part_file,
-                xilinx_params.yosys_part,
-            ),
+            action=[
+                # -- STEP1: Converts .fasm to .frames
+                "fasm2frames --part {0} --db-root {1} "
+                " $SOURCE > {2} ".format(
+                    xilinx_params.yosys_part, prjxray_db, frames_file_macro
+                ),
+                # -- STEP2 Converts .frames to .bit
+                "xc7frames2bit --part_file {0} --part_name {1} "
+                "--frm_file {2} --output_file $TARGET".format(
+                    part_file, xilinx_params.yosys_part, frames_file_macro
+                ),
+            ],
             suffix=".bit",
-            src_suffix=".frames",
+            src_suffix=".fasm",
         )
 
     # @overrides
