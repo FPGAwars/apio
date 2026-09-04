@@ -37,7 +37,6 @@ from apio.common.apio_console import fatal_error
 # -- Scons builders ids.
 SYNTH_BUILDER = "SYNTH_BUILDER"
 PNR_BUILDER = "PNR_BUILDER"
-BITSTREAM_PRE_BUILDER = "BITSTREAM_PRE_BUILDER"
 BITSTREAM_BUILDER = "BITSTREAM_BUILDER"
 TESTBENCH_COMPILE_BUILDER = "TESTBENCH_COMPILE_BUILDER"
 TESTBENCH_RUN_BUILDER = "TESTBENCH_RUN_BUILDER"
@@ -152,51 +151,16 @@ class SconsHandler:
             always_build=(params.verbosity.all or params.verbosity.pnr),
         )
 
-        # -- TODO: abstract the special case for xilinx in the xilinx plugin
-        # -- bitstream_builder() method.
-        # --
-        # -- Special case for xilinx
-        if params.arch == ApioArch.xilinx:
+        # -- Bitstream builder builder and target
+        apio_env.add_builder(
+            BITSTREAM_BUILDER, plugin.make_bitstream_builder()
+        )
 
-            # -- Access to plugin.pre_builder()
-            # -- But using getattr pylance does not complain
-            # -- Cannot access attribute "bitstream_pre_builder"
-            # -- for class "PluginBase" (reportAttributeAccessIssue)
-            pre_builder = getattr(plugin, "bitstream_pre_builder")
-
-            # -- The bitstream builder consist of two stages
-            # -- First stage: pre_builder
-            apio_env.add_builder(BITSTREAM_PRE_BUILDER, pre_builder())
-
-            pre_builder_target = apio_env.add_builder_target(
-                builder_id=BITSTREAM_PRE_BUILDER,
-                target=apio_env.target,
-                sources=pnr_target,
-            )
-
-            # -- Second stage: builder
-            apio_env.add_builder(
-                BITSTREAM_BUILDER, plugin.make_bitstream_builder()
-            )
-
-            apio_env.add_builder_target(
-                builder_id=BITSTREAM_BUILDER,
-                target=apio_env.target,
-                sources=pre_builder_target,
-            )
-
-        else:
-
-            # -- Bitstream builder builder and target
-            apio_env.add_builder(
-                BITSTREAM_BUILDER, plugin.make_bitstream_builder()
-            )
-
-            apio_env.add_builder_target(
-                builder_id=BITSTREAM_BUILDER,
-                target=apio_env.target,
-                sources=pnr_target,
-            )
+        apio_env.add_builder_target(
+            builder_id=BITSTREAM_BUILDER,
+            target=apio_env.target,
+            sources=pnr_target,
+        )
 
     def _register_apio_build_target(self, synth_srcs):
         """Register the 'build' target which creates the binary bitstream."""
