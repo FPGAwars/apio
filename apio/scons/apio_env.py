@@ -96,13 +96,13 @@ class ApioEnv:
                 return True
         return False
 
-    def builder(self, builder_id: str, builder):
+    def add_builder(self, builder_id: str, builder):
         """Append to the scons env a builder with given id. The env
         adds it to the BUILDERS dict and also adds to itself an attribute with
         that name that contains a wrapper to that builder."""
         self.scons_env.Append(BUILDERS={builder_id: builder})
 
-    def builder_target(
+    def add_builder_target(
         self,
         *,
         builder_id: str,
@@ -130,7 +130,9 @@ class ApioEnv:
                 self.scons_env.Depends(target, dependency)
         return target
 
-    def alias(self, name, *, source, action=None, always_build: bool = False):
+    def add_alias(
+        self, name, *, source, action=None, always_build: bool = False
+    ):
         """Creates a target with given dependencies"""
         target = self.scons_env.Alias(name, source, action)
         if always_build:

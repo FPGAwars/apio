@@ -62,7 +62,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def synth_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_synth_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the synth builder."""
 
         # -- Keep short references.
@@ -86,7 +86,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def pnr_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_pnr_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the pnr builder."""
 
         # -- Keep short references.
@@ -121,7 +121,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def bitstream_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_bitstream_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the bitstream builder."""
 
         return Builder(
@@ -133,7 +133,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the testbench compile builder."""
         # -- Keep short references.
         apio_env = self.apio_env
@@ -182,16 +182,17 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def lint_config_builder(self) -> BuilderBase:
+    def make_lint_config_builder(self) -> BuilderBase:
         """Creates and returns the lint config builder."""
 
         # -- Sanity checks
         assert self.apio_env.targeting_one_of("lint")
 
         # -- Make the builder.
+        # -- See https://verilator.org/guide/latest/warnings.html
         return make_verilator_config_builder(
             self.yosys_lib_dir,
-            rules_to_supress=[
+            rules_to_suppress=[
                 # -- cells_sim.v double-includes cells_ff.vh/cells_io.vh
                 # -- (directly and via common_sim.vh); the duplicates are
                 # -- identical and verilator keeps the first definition.
@@ -207,7 +208,7 @@ class PluginEcp5(PluginBase):
         )
 
     # @overrides
-    def lint_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_lint_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the lint builder."""
 
         return Builder(

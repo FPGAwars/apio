@@ -502,7 +502,7 @@ def gtkwave_target(
         actions.append(gtkwave_action)
 
     # -- Define a target with the action(s) we created.
-    target = apio_env.alias(
+    target = apio_env.add_alias(
         target_name,
         source=vcd_file_target,
         action=actions,
@@ -900,11 +900,11 @@ def basename(file_name: str) -> str:
 
 
 def make_verilator_config_builder(
-    lib_path: Path, rules_to_supress: List[str]
+    lib_path: Path, rules_to_suppress: List[str]
 ) -> Builder:  # pyright: ignore[reportGeneralTypeIssues]
     """Create a scons Builder that writes a verilator config file
     (hardware.vlt) that suppresses warnings in the lib directory.
-    Rules_to_supress is a list of Verilator rules that should be supressed
+    Rules_to_suppress is a list of Verilator rules that should be suppressed
     for the given lib_path.
     """
     assert isinstance(lib_path, Path), lib_path
@@ -918,7 +918,7 @@ def make_verilator_config_builder(
     # -- Generate the files lines.  We suppress a union of all the errors we
     # -- encountered in all the architectures.
     lines = ["`verilator_config"]
-    for rule in rules_to_supress:
+    for rule in rules_to_suppress:
         lines.append(f'lint_off -rule {rule}  -file "{glob_str}"')
 
     # -- Join the lines into text.

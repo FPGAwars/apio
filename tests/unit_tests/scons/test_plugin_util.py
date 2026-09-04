@@ -212,7 +212,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         # -- Call the tested method to create a builder.
         builder = make_verilator_config_builder(
             sb.packages_dir,
-            rules_to_supress=[
+            rules_to_suppress=[
                 "SPECIFYIGN",
             ],
         )
