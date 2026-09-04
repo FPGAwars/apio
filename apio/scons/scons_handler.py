@@ -128,13 +128,13 @@ class SconsHandler:
         assert apio_env.targeting_one_of("build", "upload", "report")
 
         # -- Synth builder and target.
-        apio_env.builder(SYNTH_BUILDER, plugin.synth_builder())
+        apio_env.add_builder(SYNTH_BUILDER, plugin.make_synth_builder())
 
         # -- Yosys synthesis builder and target.
         # -- Verbosity is an optional field so we rely on the protocol buffer
         # -- implicit default value false for non populated boolean fields.
         proto_util.check_not_required(params, "verbosity")
-        synth_target = apio_env.builder_target(
+        synth_target = apio_env.add_builder_target(
             builder_id=SYNTH_BUILDER,
             target=apio_env.target,
             sources=[synth_srcs],
@@ -142,10 +142,10 @@ class SconsHandler:
         )
 
         # -- Place-and-route builder and target
-        apio_env.builder(PNR_BUILDER, plugin.pnr_builder())
+        apio_env.add_builder(PNR_BUILDER, plugin.make_pnr_builder())
 
         proto_util.check_not_required(params, "verbosity")
-        pnr_target = apio_env.builder_target(
+        pnr_target = apio_env.add_builder_target(
             builder_id=PNR_BUILDER,
             target=apio_env.target,
             sources=[synth_target, self.arch_plugin.constrain_file()],
@@ -166,18 +166,20 @@ class SconsHandler:
 
             # -- The bitstream builder consist of two stages
             # -- First stage: pre_builder
-            apio_env.builder(BITSTREAM_PRE_BUILDER, pre_builder())
+            apio_env.add_builder(BITSTREAM_PRE_BUILDER, pre_builder())
 
-            pre_builder_target = apio_env.builder_target(
+            pre_builder_target = apio_env.add_builder_target(
                 builder_id=BITSTREAM_PRE_BUILDER,
                 target=apio_env.target,
                 sources=pnr_target,
             )
 
             # -- Second stage: builder
-            apio_env.builder(BITSTREAM_BUILDER, plugin.bitstream_builder())
+            apio_env.add_builder(
+                BITSTREAM_BUILDER, plugin.make_bitstream_builder()
+            )
 
-            apio_env.builder_target(
+            apio_env.add_builder_target(
                 builder_id=BITSTREAM_BUILDER,
                 target=apio_env.target,
                 sources=pre_builder_target,
@@ -186,9 +188,11 @@ class SconsHandler:
         else:
 
             # -- Bitstream builder builder and target
-            apio_env.builder(BITSTREAM_BUILDER, plugin.bitstream_builder())
+            apio_env.add_builder(
+                BITSTREAM_BUILDER, plugin.make_bitstream_builder()
+            )
 
-            apio_env.builder_target(
+            apio_env.add_builder_target(
                 builder_id=BITSTREAM_BUILDER,
                 target=apio_env.target,
                 sources=pnr_target,
@@ -212,7 +216,7 @@ class SconsHandler:
         )
 
         # -- Top level "build" target.
-        apio_env.alias(
+        apio_env.add_alias(
             "build",
             source=target_file,
             always_build=(
@@ -236,7 +240,7 @@ class SconsHandler:
         self._register_common_targets(synth_srcs)
 
         # -- Create the top level 'upload' target.
-        apio_env.alias(
+        apio_env.add_alias(
             "upload",
             source=apio_env.target + plugin_info.bitstream_file_suffix,
             action=get_programmer_cmd(apio_env),
@@ -256,7 +260,7 @@ class SconsHandler:
         self._register_common_targets(synth_srcs)
 
         # -- Register the top level 'report' target.
-        apio_env.alias(
+        apio_env.add_alias(
             "report",
             source=apio_env.target + ".pnr",
             action=report_action(params.verbosity.pnr),
@@ -278,9 +282,9 @@ class SconsHandler:
         assert params.target.HasField("graph")
 
         # -- Create the .dot generation builder and target.
-        apio_env.builder(YOSYS_DOT_BUILDER, plugin.yosys_dot_builder())
+        apio_env.add_builder(YOSYS_DOT_BUILDER, plugin.yosys_dot_builder())
 
-        dot_target = apio_env.builder_target(
+        dot_target = apio_env.add_builder_target(
             builder_id=YOSYS_DOT_BUILDER,
             target=apio_env.graph_target,
             sources=synth_srcs,
@@ -288,10 +292,10 @@ class SconsHandler:
         )
 
         # -- Create the rendering builder and target.
-        apio_env.builder(
+        apio_env.add_builder(
             GRAPHVIZ_RENDERER_BUILDER, plugin.graphviz_renderer_builder()
         )
-        graphviz_target = apio_env.builder_target(
+        graphviz_target = apio_env.add_builder_target(
             builder_id=GRAPHVIZ_RENDERER_BUILDER,
             target=apio_env.graph_target,
             sources=dot_target,
@@ -299,7 +303,7 @@ class SconsHandler:
         )
 
         # -- Create the top level "graph" target.
-        apio_env.alias(
+        apio_env.add_alias(
             "graph",
             source=graphviz_target,
             always_build=True,
@@ -328,9 +332,11 @@ class SconsHandler:
         if using_vlt:
             # -- The auto generated verilator config file with supression
             # -- of some librariy warnings is enable.
-            apio_env.builder(LINT_CONFIG_BUILDER, plugin.lint_config_builder())
+            apio_env.add_builder(
+                LINT_CONFIG_BUILDER, plugin.make_lint_config_builder()
+            )
 
-            lint_config_target = apio_env.builder_target(
+            lint_config_target = apio_env.add_builder_target(
                 builder_id=LINT_CONFIG_BUILDER,
                 target=apio_env.target,
                 sources=[],
@@ -338,7 +344,7 @@ class SconsHandler:
             extra_dependencies.append(lint_config_target)
 
         # -- Create the builder and target the lint operation.
-        apio_env.builder(LINT_BUILDER, plugin.lint_builder())
+        apio_env.add_builder(LINT_BUILDER, plugin.make_lint_builder())
 
         # -- Determine the files that will be linted. If specific files were
         # -- not specified on the command line, we take all the source and
@@ -350,7 +356,7 @@ class SconsHandler:
         else:
             files_to_lint = synth_srcs + test_srcs
 
-        lint_out_target = apio_env.builder_target(
+        lint_out_target = apio_env.add_builder_target(
             builder_id=LINT_BUILDER,
             target=apio_env.target,
             sources=files_to_lint,
@@ -358,7 +364,7 @@ class SconsHandler:
         )
 
         # -- Create the top level "lint" target.
-        apio_env.alias(
+        apio_env.add_alias(
             "lint",
             source=lint_out_target,
             always_build=True,
@@ -389,11 +395,11 @@ class SconsHandler:
 
         # -- Compilation builder and target
 
-        apio_env.builder(
-            TESTBENCH_COMPILE_BUILDER, plugin.testbench_compile_builder()
+        apio_env.add_builder(
+            TESTBENCH_COMPILE_BUILDER, plugin.make_testbench_compile_builder()
         )
 
-        sim_out_target = apio_env.builder_target(
+        sim_out_target = apio_env.add_builder_target(
             builder_id=TESTBENCH_COMPILE_BUILDER,
             target=testbench_info.build_testbench_name,
             sources=testbench_info.srcs,
@@ -402,9 +408,11 @@ class SconsHandler:
 
         # -- Simulation builder and target..
 
-        apio_env.builder(TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder())
+        apio_env.add_builder(
+            TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder()
+        )
 
-        sim_vcd_target = apio_env.builder_target(
+        sim_vcd_target = apio_env.add_builder_target(
             builder_id=TESTBENCH_RUN_BUILDER,
             target=testbench_info.build_testbench_name,
             sources=[sim_out_target],
@@ -448,17 +456,19 @@ class SconsHandler:
         )
 
         # -- Create compilation and simulation targets.
-        apio_env.builder(
-            TESTBENCH_COMPILE_BUILDER, plugin.testbench_compile_builder()
+        apio_env.add_builder(
+            TESTBENCH_COMPILE_BUILDER, plugin.make_testbench_compile_builder()
         )
-        apio_env.builder(TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder())
+        apio_env.add_builder(
+            TESTBENCH_RUN_BUILDER, plugin.testbench_run_builder()
+        )
 
         # -- Create targets for each testbench we are testing.
         tests_targets = []
         for testbench_info in testbenches_infos:
 
             # -- Create the compilation target.
-            test_out_target = apio_env.builder_target(
+            test_out_target = apio_env.add_builder_target(
                 builder_id=TESTBENCH_COMPILE_BUILDER,
                 target=testbench_info.build_testbench_name,
                 sources=testbench_info.srcs,
@@ -466,7 +476,7 @@ class SconsHandler:
             )
 
             # -- Create the simulation target.
-            test_vcd_target = apio_env.builder_target(
+            test_vcd_target = apio_env.add_builder_target(
                 builder_id=TESTBENCH_RUN_BUILDER,
                 target=testbench_info.build_testbench_name,
                 sources=[test_out_target],
@@ -477,7 +487,7 @@ class SconsHandler:
             tests_targets.append(test_vcd_target)
 
         # -- The top level 'test' target.
-        apio_env.alias("test", source=tests_targets, always_build=True)
+        apio_env.add_alias("test", source=tests_targets, always_build=True)
 
     def execute(self):
         """The entry point of the scons handler. It registers the builders

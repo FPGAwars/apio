@@ -69,7 +69,7 @@ class PluginGowin(PluginBase):
         )
 
     # @overrides
-    def synth_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_synth_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the synth builder."""
 
         # -- Keep short references.
@@ -99,7 +99,7 @@ class PluginGowin(PluginBase):
         )
 
     # @overrides
-    def pnr_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_pnr_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the pnr builder."""
 
         # -- Keep short references.
@@ -137,7 +137,7 @@ class PluginGowin(PluginBase):
         )
 
     # @overrides
-    def bitstream_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_bitstream_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the bitstream builder."""
 
         return Builder(
@@ -149,7 +149,7 @@ class PluginGowin(PluginBase):
         )
 
     # @overrides
-    def testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the testbench compile builder."""
 
         # -- Keep short references.
@@ -197,16 +197,17 @@ class PluginGowin(PluginBase):
         )
 
     # @overrides
-    def lint_config_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_lint_config_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the lint config builder."""
 
         # -- Sanity checks
         assert self.apio_env.targeting_one_of("lint")
 
         # -- Make the builder.
+        # -- See https://verilator.org/guide/latest/warnings.html
         return make_verilator_config_builder(
             self.yosys_lib_dir,
-            rules_to_supress=[
+            rules_to_suppress=[
                 "SPECIFYIGN",
                 # -- cells_xtra_gw2a/gw5a re-declare a few modules that also
                 # -- have simulation models in cells_sim.v (DQS, IDES4_MEM,
@@ -216,7 +217,7 @@ class PluginGowin(PluginBase):
         )
 
     # @overrides
-    def lint_builder(self) -> BuilderBase | CompositeBuilder:
+    def make_lint_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the lint builder."""
 
         return Builder(
