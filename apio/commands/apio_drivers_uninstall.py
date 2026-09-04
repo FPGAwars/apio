@@ -7,7 +7,7 @@
 # -- License GPLv2
 """Implementation of 'apio drivers uninstall' command"""
 
-import sys
+# import sys
 import click
 from apio.managers.drivers import Drivers
 from apio.apio_context import (
@@ -51,8 +51,7 @@ def _ftdi_cli():
     drivers = Drivers(apio_ctx)
 
     # -- Uninstall
-    exit_code = drivers.ftdi_uninstall()
-    sys.exit(exit_code)
+    drivers.ftdi_uninstall()
 
 
 # -- apio drivers uninstall serial
@@ -87,8 +86,7 @@ def _serial_cli():
     drivers = Drivers(apio_ctx)
 
     # -- Uninstall
-    exit_code = drivers.serial_uninstall()
-    sys.exit(exit_code)
+    drivers.serial_uninstall()
 
 
 # --- apio drivers uninstall
