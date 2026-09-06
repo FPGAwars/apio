@@ -25,7 +25,7 @@ synthesizable portion of the design. To lint code that is hidden by
 `SYNTHESIS`, use the `--nosynth option`.
 
 To customize the behavior of the `verilator` linter, add the option
-`verilator-extra-option` in the project file `apio.ini` with the extra
+`verilator-extra-options` in the project file `apio.ini` with the extra
 options you would like to use. 
 
 <h3>Options</h3>
@@ -33,9 +33,6 @@ options you would like to use.
 ```
 --nosynth               Do not define the SYNTHESIS macro.
 --novlt                 Disable warning suppression .vlt file.
---nostyle               Disable all style warnings
---nowarn nowarn         Disable specific warning(s)
---warn warn             Enable specific warning(s)
 -t, --top-module name   Restrict linting to this module and its dependencies
 -e, --env name          Use a named environment from apio.ini
 -p, --project-dir path  Specify the project root directory
