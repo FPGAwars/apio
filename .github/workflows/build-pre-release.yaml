@@ -76,8 +76,8 @@ jobs:
           #   REQUESTED_COMMIT="(none)"
           # fi
 
-          # Generate build-info.json
-          cat > build-info.json <<EOF
+          # Generate BUILD-INFO.json
+          cat > BUILD-INFO.json <<EOF
           {
             "package-name":  "apio-cli",
             "description" : "Command-line FPGA design suite",
@@ -95,19 +95,19 @@ jobs:
           }
           EOF
 
-          cat -n build-info.json
+          cat -n BUILD-INFO.json
 
       - name: Format build info json file in-place
         uses: fpgawars/apio-workflows/.github/actions/format-json-file@main
         with:
-          json-file: build-info.json
+          json-file: BUILD-INFO.json
 
       - name: Upload the build info artifact
         uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: build-info
-          path: build-info.json
+          path: BUILD-INFO.json
 
   # ----- Children build jobs
 
@@ -161,13 +161,13 @@ jobs:
       - name: Move build info
         run: |
           find _artifacts
-          mv _artifacts/build-info.json .
-          cat -n build-info.json
+          mv _artifacts/BUILD-INFO.json .
+          cat -n BUILD-INFO.json
 
       - name: Set env vars from JSON
         uses: fpgawars/apio-workflows/.github/actions/set-env-from-json@main
         with:
-          json-file: build-info.json
+          json-file: BUILD-INFO.json
           mappings: >-
             APIO_VERSION  apio-cli-version
             REPO_COMMIT   repo-commit
@@ -177,7 +177,7 @@ jobs:
       - name: Convert json build info to text
         uses: fpgawars/apio-workflows/.github/actions/json-to-text@main
         with:
-          input-json: build-info.json
+          input-json: BUILD-INFO.json
           output-text: build-info.txt
 
       - name: Create assets markdown table
@@ -285,3 +285,4 @@ jobs:
             _artifacts/apio-cli-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb
             _artifacts/apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip
             _artifacts/apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-installer.exe
+            BUILD-INFO.json

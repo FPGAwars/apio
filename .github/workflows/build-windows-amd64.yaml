@@ -27,7 +27,7 @@ jobs:
           os: msys
           arch: x86_64
 
-      - name: Download build-info.json artifact from main job
+      - name: Download BUILD-INFO.json artifact from main job
         uses: actions/download-artifact@v8
         with:
           name: build-info
@@ -37,25 +37,25 @@ jobs:
       - name: Move build info
         run: |
           find _artifacts
-          mv _artifacts/build-info.json .
-          cat -n build-info.json
+          mv _artifacts/BUILD-INFO.json .
+          cat -n BUILD-INFO.json
 
       - name: Add platform info to build info json file
         uses: fpgawars/apio-workflows/.github/actions/write-to-json-file@main
         with:
-          json-file: build-info.json
+          json-file: BUILD-INFO.json
           key: target-platform
           value: windows-amd64
 
       - name: Format build info json file
         uses: fpgawars/apio-workflows/.github/actions/format-json-file@main
         with:
-          json-file: build-info.json
+          json-file: BUILD-INFO.json
 
       - name: Set env vars from JSON
         uses: fpgawars/apio-workflows/.github/actions/set-env-from-json@main
         with:
-          json-file: build-info.json
+          json-file: BUILD-INFO.json
           mappings: >-
             TARGET_PLATFORM  target-platform
             PYTHON_VERSION   apio-python-version
@@ -71,7 +71,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      # We checkout the repo into a subdirectory not to step on build-info.json.
+      # We checkout the repo into a subdirectory not to step on BUILD-INFO.json.
       - name: Checkout apio repo
         uses: actions/checkout@v6
         with:
@@ -130,7 +130,7 @@ jobs:
 
       - name: Add the build info file
         run: |
-          cp build-info.json _dist/apio/BUILD-INFO.json
+          cp BUILD-INFO.json _dist/apio/BUILD-INFO.json
           cat -n _dist/apio/BUILD-INFO.json
 
       - name: Add the LICENSE file
