@@ -23,6 +23,22 @@ THREE_NUM_VERSION_REGEX = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
 )
 
+@dataclass(frozen=True)
+class GithubRelease:
+    """Represents a single release on a github repo."""
+    # -- The github repo. E.g. "fpgawars/apio"
+    repo: str
+    # -- The release tag, e.g. "2026-08-13"
+    tag: str
+
+    def __str__(self) -> str:
+        """Human friendly representation of the object."""
+        return (
+            self.repo
+            + " #"
+            + self.tag
+        )
+
 
 @dataclass(frozen=True)
 class PyPiRelease:
@@ -120,9 +136,8 @@ class VscodeMarketplaceRelease:
     version: Version
     dt: datetime
     is_default: bool
-    apio_cli_repo: str
-    apio_cli_tag: str
     apio_cli_version: Version
+    github_release: GithubRelease
 
     def __str__(self) -> str:
         """Human friendly representation of the object."""
@@ -132,11 +147,9 @@ class VscodeMarketplaceRelease:
             + ", "
             + self.dt.strftime("%Y-%m-%d")
             + ", apio_cli=("
-            + self.apio_cli_repo
-            + ", "
-            + self.apio_cli_tag
-            + ", "
             + str(self.apio_cli_version)
+            + ", "
+            + str(self.github_release)
             + ")]"
             + ("*" if self.is_default else "")
         )
@@ -284,9 +297,10 @@ def get_relevant_apio_vscode_marketplace_releases():
                 version,
                 last_updated_time,
                 is_default,
-                cli_repo,
-                cli_tag,
+             
                 cli_version,
+                GithubRelease(   cli_repo,
+                                cli_tag)
             )
         )
 
@@ -297,7 +311,7 @@ def main():
     """Main function."""
 
     # -- Extract Pypi's apio versions.
-    print("\nQuerying VSCode Marketplace")
+    print("\nQuerying PyPi")
     apio_pypi_releases = get_relevant_apio_pypi_releases()
     print(f"\nCollected {len(apio_pypi_releases)} PyPi releases:")
     for r in apio_pypi_releases:
