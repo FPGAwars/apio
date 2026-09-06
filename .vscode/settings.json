@@ -47,6 +47,7 @@
         "bootmeta",
         "buildable",
         "bver",
+        "cafile",
         "cenv",
         "cerror",
         "cflush",
