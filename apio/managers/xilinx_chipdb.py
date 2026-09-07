@@ -20,7 +20,12 @@ from apio.utils import util
 # -- its size. According to source on the internet, if using sha256, there
 # -- is no need to check also the size.
 
-# -- The expected version of the PARTS-INDEX.json schema. This stored
+# -- The name of the Xilinx parts index file at the root of the openxc7
+# -- package.
+PARTS_INDEX_FILE_NAME = "XILINX-PARTS-INDEX.json"
+
+
+# -- The expected version of the parts index schema. This stored
 # -- in the "schema" field at the top level. If the schema changes, we
 # -- may need to adapt the code below.
 EXPECTED_SCHEMA_VERSION = 5
@@ -52,7 +57,7 @@ def chipdb_file_on_demand(
     # -- Read the xilinx parts index from the file PARTS_INDEX.json at the
     # -- root of the openxc7 package.
     openxc7_dir = apio_ctx.get_package_dir("openxc7")
-    parts_index_path = openxc7_dir / "PARTS-INDEX.json"
+    parts_index_path = openxc7_dir / PARTS_INDEX_FILE_NAME
     with open(parts_index_path, encoding="utf-8") as f:
         json_data = json.load(f)
 
