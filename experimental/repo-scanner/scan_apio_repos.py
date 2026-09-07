@@ -5,10 +5,13 @@ Experimental program to collect information about Apio releases.
 # pylint: disable=fixme
 
 # TODO: Change lists to dictionaries keyed by versions.
+# TODO: Include in apio BUILD-INFO.json list of supported platforms.
+# TODO: Allow to map from pypi to apio repo releases
 
 import re
 import json
-from typing import List
+import json5
+from typing import List, Dict
 from datetime import datetime, date
 from urllib.request import Request, urlopen
 import ssl
@@ -18,7 +21,7 @@ from zipfile import ZipFile
 import certifi
 from packaging.version import Version
 
-
+# APIO_PLATFORMS = ["darwin-arm64", "linux-x86-64", "windows-amd64"]
 
 VERBOSE = False
 
@@ -47,15 +50,15 @@ class GithubReleaseRef:
 
 
 @dataclass(frozen=True)
-class PypyReleaseCrawl:
+class PypiReleaseCrawl:
     """Crawling information of a single Pypi Apio CLI release. See
     https://pypi.org/project/apio/#history
     """
 
     # -- The apio CLI version as appearing on Pypi.
-    version: Version
+    # version: Version
     # -- The date on which the released for published on Pypi.
-    publishing_date: date
+    published: date
 
 
 @dataclass(frozen=True)
@@ -64,9 +67,10 @@ class PypiCrawl:
 
     # -- The default release for 'pip install apio', this is considered the
     # -- 'latest' stable release.
-    default_version: Version
+    latest: Version
     # -- List of Apio releases on Pypi.
-    releases: List[PypyReleaseCrawl]
+    # releases: List[PypiReleaseCrawl]
+    releases: Dict[str, PypiReleaseCrawl]
     # -- Version of Pypi releases that were skipped, e.g. for being too old.
     skipped_versions: List[Version]
 
@@ -78,9 +82,9 @@ class VscodeReleaseCrawl:
     """
 
     # -- The vscode extension release is it appears in the marketplace.
-    version: Version
+    # version: Version
     # -- The date on which the release was published on the VSCode Marketplace.
-    publishing_date: date
+    published: date
     # -- The github release of this extension version.
     apio_vscode_release: GithubReleaseRef
     # -- The github release of the underlying Apio CLI that is used by this
@@ -94,9 +98,9 @@ class VscodeMarketplaceCrawl:
 
     # -- The default Apio Vscode extension version. This considered to be the
     # -- 'latest' stable release.
-    default_version: Version
+    latest: Version
     # -- List of relevant releases that were crawled.
-    releases: List[VscodeReleaseCrawl]
+    releases: Dict[str, VscodeReleaseCrawl]
     # -- List of extension versions that were skipped, e.g. for being too old.
     skipped_versions: List[Version]
 
@@ -104,24 +108,30 @@ class VscodeMarketplaceCrawl:
 @dataclass(frozen=True)
 class RemoteConfigPackageCrawl:
     """Crawling result of a single package configuration in a remote config file."""
-    package_name: str
+
+    # -- Package repo and release tag
     package_release: GithubReleaseRef
-    assets: List[str]
+    # -- True iff the asset contains a ${PLATFORM} placeholder.
+    platform_dependent: bool
+    # -- The asset name.
+    asset: str
 
 
 @dataclass(frozen=True)
 class RemoteConfigFileCrawl:
     """Crawling results of a single remote config file."""
+
     # -- Two num version of the file, e.g. (1, 5) for "1.7.x"
-    version_selector: Version
+    # version_selector: Version
     # -- List of crawled package configurations..
-    packages: RemoteConfigPackageCrawl
+    packages: Dict[str, RemoteConfigPackageCrawl]
 
 
 @dataclass(frozen=True)
-class RemoteConfigCrawl:
+class RemoteConfigsCrawl:
     """Crawling results of all the remote config files."""
-    remote_configs: List[RemoteConfigFileCrawl]
+
+    remote_configs: Dict[Version, RemoteConfigFileCrawl]
 
 
 @dataclass(frozen=True)
@@ -133,10 +143,10 @@ class CrawlResults:
     # -- Results of crawling Apio VSCode releases on the VSCode Marketplace.
     vscode_marketplace_crawl: VscodeMarketplaceCrawl
     # -- Results of crawling the remote config files on fpgawars/apio.
-    remote_configs_crawl: RemoteConfigCrawl
+    remote_configs_crawl: RemoteConfigsCrawl
 
 
-def _crawl_pypi() -> PypyReleaseCrawl:
+def _crawl_pypi() -> PypiCrawl:
     """Crawl pypi for Apio CLI releases."""
 
     # -- Query PyPi.
@@ -149,7 +159,7 @@ def _crawl_pypi() -> PypyReleaseCrawl:
     default_version = Version(default_version_str)
 
     # -- Collect the releases.
-    releases: List[PypyReleaseCrawl] = []
+    releases: Dict[str, PypiReleaseCrawl] = dict()
     skipped_versions: List[Version] = []
     for version_str, files in data["releases"].items():
         # -- Parse release string.
@@ -180,10 +190,11 @@ def _crawl_pypi() -> PypyReleaseCrawl:
         # print(f"{type(publishing_time)=}")
 
         # -- Append the release to the result list.
-        releases.append(PypyReleaseCrawl(version, publishing_time.date()))
+        assert str(version) not in releases
+        releases[str(version)] = PypiReleaseCrawl(publishing_time.date())
 
-    # -- Sort in place in decreasing version num.
-    releases.sort(key=lambda r: r.version, reverse=True)
+    # -- Sort in place in decreasing semantic version key.
+    releases = dict(sorted(releases.items(), key=lambda item: Version(item[0]), reverse=True))
 
     # -- All done ok.
     # return releases, skipped_versions
@@ -199,8 +210,8 @@ _FLAG_INCLUDE_ASSET_URI = 128
 _FLAG_INCLUDE_STATISTICS = 256
 
 
-_VSCODE_PUBLISHER = "fpgawars"
-_VSCODE_EXTENSION = "apio"
+# _VSCODE_PUBLISHER = "fpgawars"
+# _VSCODE_EXTENSION = "apio"
 _MICROSOFT_VSIX_ASSET = "Microsoft.VisualStudio.Services.VSIXPackage"
 _MICROSOFT_PRE_RELEASE = "Microsoft.VisualStudio.Code.PreRelease"
 
@@ -258,8 +269,9 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
     with urlopen(req, context=_SSL_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
-    releases = []
+    releases:Dict[str, VscodeReleaseCrawl] = dict()
     skipped_versions: List[Version] = []
+    default_version = None
 
     for rel in data["results"][0]["extensions"][0]["versions"]:
 
@@ -317,19 +329,117 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
         apio_cli_repo = build_info_json["apio-cli-release-repo"]
         apio_cli_tag = build_info_json["apio-cli-release-tag"]
 
-        releases.append(
+        # -- First item is the 'latest' or default.
+        if default_version is None:
+            default_version = version
+
+        assert str(version) not in releases
+        releases[str(version)] = (
             VscodeReleaseCrawl(
-                version,
+                # version,
                 last_updated_time.date(),
                 GithubReleaseRef(repo, tag),
                 # cli_version,
                 GithubReleaseRef(apio_cli_repo, apio_cli_tag),
             )
         )
+    # default_version = releases.keys()[0]
 
+
+    assert default_version is not None
     return VscodeMarketplaceCrawl(
-        releases[0].version, releases, skipped_versions
+        default_version, releases, skipped_versions
     )
+
+
+# -- Regex to parse remote config file names.
+_REMOTE_CONFIG_NAME_REGEX = re.compile(r"^apio-(\d+)\.(\d+)\.x\.jsonc$")
+
+
+def _crawl_remote_configs() -> RemoteConfigsCrawl:
+
+    url = "https://api.github.com/repos/FPGAwars/apio/contents/remote-config"
+    req = Request(
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "apio-script",
+        },
+    )
+
+    with urlopen(req, context=_SSL_CONTEXT, timeout=30) as resp:
+        entries = json.loads(resp.read().decode("utf-8"))
+
+    # print(json.dumps(entries, indent=2))
+
+    # -- Iterate files
+    files_crawls: Dict[str, RemoteConfigFileCrawl] = dict()
+    for entry in entries:
+        package_name = entry["name"]
+        if package_name in ["README.md"]:
+            continue
+        # print(f"{package_name=}")
+        m = _REMOTE_CONFIG_NAME_REGEX.match(package_name)
+        assert m, package_name
+        version = Version(f"{m.group(1)}.{m.group(2)}")
+        # print(str(version))
+
+        download_url = entry["download_url"]
+        req = Request(download_url, headers={"User-Agent": "apio-script"})
+
+        with urlopen(req, context=_SSL_CONTEXT, timeout=30) as resp:
+            remote_config_text = resp.read().decode("utf-8")
+
+        # print("*****")
+        # print(remote_config_text)
+
+        remote_config_json = json5.loads(remote_config_text)
+
+        packages_crawls: Dict[str, RemoteConfigPackageCrawl] = dict()
+
+        for package_name, package_config in remote_config_json[
+            "packages"
+        ].items():
+            # print(package_name)
+
+            package_repo = (
+                package_config["repository"]["organization"]
+                + "/"
+                + package_config["repository"]["name"]
+            )
+            package_tag = package_config["release"]["tag"]
+            asset = package_config["release"]["package"]
+
+            yyyymmdd = package_tag.replace("-", "")
+            asset = asset.replace("${YYYYMMDD}", yyyymmdd)
+
+            # assert_platform_dependent = "${PLATFORM}" in asset
+
+            # assets = set()
+            # for platform in APIO_PLATFORMS:
+            #     asset = asset.replace("${PLATFORM}", platform)
+            #     assets.add(asset)
+
+            # assets = list(assets)
+            # assets.sort(reverse=True)
+
+            assert package_name not in packages_crawls
+            packages_crawls[package_name] = RemoteConfigPackageCrawl(
+                # package_name,
+                GithubReleaseRef(package_repo, package_tag),
+                "${PLATFORM}" in asset,
+                asset,
+            )
+
+        key = str(version)
+        assert key not in files_crawls
+        files_crawls[key]= RemoteConfigFileCrawl(packages_crawls)
+        
+
+    return RemoteConfigsCrawl(files_crawls)
+
+    # print(f"{entries=}")
+    # return None
 
 
 def crawl() -> CrawlResults:
@@ -341,9 +451,14 @@ def crawl() -> CrawlResults:
     print("Crawling VSCode Marketplace")
     vscode_marketplace_crawl = _crawl_vscode_marketplace()
 
+    print("Crawling Remote Configs")
+    remote_configs_crawl = _crawl_remote_configs()
+
+    # print(json.dumps(asdict(remote_configs_crawl), indent=2, default=str))
+
     print("Crawling done")
 
-    return CrawlResults(pypi_crawl, vscode_marketplace_crawl, None)
+    return CrawlResults(pypi_crawl, vscode_marketplace_crawl, remote_configs_crawl)
 
 
 def main():
