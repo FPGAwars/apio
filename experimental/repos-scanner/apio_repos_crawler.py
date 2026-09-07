@@ -10,7 +10,6 @@ Experimental program to collect information about Apio releases.
 
 import re
 import json
-import json5
 from typing import List, Dict
 from datetime import datetime, date
 from urllib.request import Request, urlopen
@@ -18,6 +17,7 @@ import ssl
 from dataclasses import dataclass, asdict
 from io import BytesIO
 from zipfile import ZipFile
+import json5
 import certifi
 from packaging.version import Version
 
@@ -35,7 +35,7 @@ _THREE_NUM_VERSION_REGEX = re.compile(
 )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True)
 class GithubReleaseRef:
     """Represents a single release on a github repo."""
 
@@ -159,7 +159,7 @@ def _crawl_pypi() -> PypiCrawl:
     default_version = Version(default_version_str)
 
     # -- Collect the releases.
-    releases: Dict[str, PypiReleaseCrawl] = dict()
+    releases: Dict[str, PypiReleaseCrawl] = {}
     skipped_versions: List[Version] = []
     for version_str, files in data["releases"].items():
         # -- Parse release string.
@@ -269,7 +269,7 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
     with urlopen(req, context=_SSL_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
-    releases:Dict[str, VscodeReleaseCrawl] = dict()
+    releases:Dict[str, VscodeReleaseCrawl] = {}
     skipped_versions: List[Version] = []
     default_version = None
 
@@ -357,6 +357,9 @@ _REMOTE_CONFIG_NAME_REGEX = re.compile(r"^apio-(\d+)\.(\d+)\.x\.jsonc$")
 
 
 def _crawl_remote_configs() -> RemoteConfigsCrawl:
+    """Crawls the latest version of the apio remote config files."""
+
+    # pylint: disable=too-many-locals
 
     url = "https://api.github.com/repos/FPGAwars/apio/contents/remote-config"
     req = Request(
@@ -373,7 +376,7 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
     # print(json.dumps(entries, indent=2))
 
     # -- Iterate files
-    files_crawls: Dict[str, RemoteConfigFileCrawl] = dict()
+    files_crawls: Dict[str, RemoteConfigFileCrawl] = {}
     for entry in entries:
         package_name = entry["name"]
         if package_name in ["README.md"]:
@@ -395,7 +398,7 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
 
         remote_config_json = json5.loads(remote_config_text)
 
-        packages_crawls: Dict[str, RemoteConfigPackageCrawl] = dict()
+        packages_crawls: Dict[str, RemoteConfigPackageCrawl] = {}
 
         for package_name, package_config in remote_config_json[
             "packages"
@@ -434,7 +437,7 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
         key = str(version)
         assert key not in files_crawls
         files_crawls[key]= RemoteConfigFileCrawl(packages_crawls)
-        
+
 
     return RemoteConfigsCrawl(files_crawls)
 
