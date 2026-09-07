@@ -34,7 +34,7 @@ OPENXC7_PACKAGE = "openxc7"
 # -- name the document has inside the package, and the dated asset name
 # -- releases up to 2026-08-31 used. Both are accepted, so that the rename
 # -- did not need this script and the toolchain to change at once.
-OPENXC7_PARTS_INDEX_NAME = "PARTS-INDEX.json"
+OPENXC7_PARTS_INDEX_NAME = "XILINX-PARTS-INDEX.json"
 OPENXC7_PARTS_INDEX_PREFIX = "apio-xilinx-parts-index-"
 
 # -- The first openxc7 release whose packages carry no device databases.

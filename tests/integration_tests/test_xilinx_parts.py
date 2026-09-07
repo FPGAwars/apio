@@ -1,5 +1,5 @@
 """
-Tests related to the openxc7 package's PARTS-INDEX.json file.
+Tests related to the openxc7 package's XILINX-PARTS-INDEX.json file.
 """
 
 import json
@@ -15,7 +15,7 @@ from apio.common.proto.apio_common_pb2 import ApioArch
 
 def test_fpgas_yosys_part_num(apio_runner: ApioRunner):
     """Tests that all xilinx fpgas has a valid yosys-part value, that is,
-    it's listed on PARTS-INDEX.json as a generated part."""
+    it's listed on XILINX-PARTS-INDEX.json as a generated part."""
 
     with apio_runner.in_sandbox():
 
@@ -27,7 +27,9 @@ def test_fpgas_yosys_part_num(apio_runner: ApioRunner):
         )
 
         # -- Read the parts index of the Apio's openxc7 package
-        index_path = apio_ctx.get_package_dir("openxc7") / "PARTS-INDEX.json"
+        index_path = (
+            apio_ctx.get_package_dir("openxc7") / "XILINX-PARTS-INDEX.json"
+        )
         index_data = json.loads(index_path.read_text(encoding="utf-8"))
         assert index_data["schema"] == 5, index_data["schema"]
         parts = index_data["parts"]
