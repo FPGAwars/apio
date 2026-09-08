@@ -1,4 +1,5 @@
-# .github/actions/set-apio-release-info/action.yml
+# Implementation of the set-apio-release-info action.
+
 name: "Set Apio RELEASE_INFO"
 description: "Sets the RELEASE_INFO string with repo name, release type and tag"
 
@@ -7,12 +8,8 @@ inputs:
     description: "Relative path from the current working directory to the file containing RELEASE_INFO (e.g. apio/__init__.py)"
     required: true
 
-  platform_id:
-    description: 'The underlying platform id (e.g. "darwin-arm64")'
-    required: true
-
-  release_type:
-    description: 'The type of release (e.g. "pypi", "pyinstaller")'
+  prefix:
+    description: 'The info string prefix, e.g. "pypi" or "pyinstaller-darwin-arm64"'
     required: true
 
   release_tag:
@@ -40,11 +37,10 @@ runs:
             print(f"Error: File not found: {target_file.resolve()}")
             exit(1)
 
-        platform_id = "${{ inputs.platform_id }}"
-        release_type = "${{ inputs.release_type }}"
+        prefix = "${{ inputs.prefix }}"
         release_tag  = "${{ inputs.release_tag }}"
 
-        new_value = f'"{platform_id}-{release_type}-{release_tag}"'
+        new_value = f'"{prefix}-{release_tag}"'
         new_line  = f'RELEASE_INFO = {new_value}'
 
         content = target_file.read_text(encoding="utf-8")
