@@ -84,11 +84,10 @@ jobs:
           path: _apio-repo
 
       - name: Set apio release info
-        uses: ./_apio-repo/.github/actions/set-apio-release-info
+        uses: fpgawars/apio-workflows/.github/actions/set-apio-release-info@main
         with:
           repo_path: _apio-repo
-          platform_id: ${{env.TARGET_PLATFORM}}
-          release_type: pyinst
+          prefix: pyinst-${{env.TARGET_PLATFORM}}
           release_tag: ${{env.RELEASE_TAG}}
 
       - name: Pip install apio
@@ -201,7 +200,7 @@ jobs:
         uses: fpgawars/apio-workflows/.github/actions/uninstall-all-pip-packages@main
 
       - name: Test Apio file bundle
-        uses: ./_apio-repo/.github/actions/test-apio-bundle
+        uses: fpgawars/apio-workflows/.github/actions/test-apio-bundle@main
         with:
           apio-bundle-dir: _debian/opt/apio
           work-dir-name: _work_dir
