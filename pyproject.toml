@@ -79,3 +79,11 @@ target-version = ['py311']
 
 # NOTE: For pylint control see .pylintrc in this directory.
 # It allows controls that pyproject.toml doesn't support.
+
+# NOTE: The publish-to-pypi.yaml workflow automatically appends here
+# release information before submitting to pypi. This allows the repo
+# crawler to map the pypi release to the apio release. Example:
+# [tool.apio-release]
+# repo = "FPGAwars/apio"
+# tag = "2026-09-07"
+# commit = "51cba17ba7913c2f3d4bd3f7e471db9174a64a6c"
