@@ -240,22 +240,25 @@ def view_coverage_task(_: Context):
 def clean_task(_: Context):
     """Clean caches, artifacts, and temporary files."""
     announce_task("clean")
-    r = get_repo_root()
-    assert isinstance(r, Path)
+    repo_root = get_repo_root()
+    assert isinstance(repo_root, Path)
 
     # -- Collect items to delete.
     items = []
     # -- Collect top level items first so they will be deleted first.
-    items.extend(r.glob(".tox"))
-    items.extend(r.glob("_site"))
-    items.extend(r.glob("_build"))
-    items.extend(r.glob(".pytest_cache"))
-    items.extend(r.glob(".coverage"))
-    items.extend(r.glob("htmlcov"))
-    items.extend(r.glob("_pytest-coverage"))
-    items.extend(r.glob(".coverage.*"))
+    items.extend(repo_root.glob(".tox"))
+    items.extend(repo_root.glob("_site"))
+    items.extend(repo_root.glob("_build"))
+    items.extend(repo_root.glob(".pytest_cache"))
+    items.extend(repo_root.glob(".coverage"))
+    items.extend(repo_root.glob("htmlcov"))
+    items.extend(repo_root.glob("_pytest-coverage"))
+    items.extend(repo_root.glob(".coverage.*"))
     # -- Collect nested items
-    items.extend(r.rglob("__pycache__"))
+    items.extend(repo_root.rglob("__pycache__"))
+
+    apio_root = Path.home() / ".apio"
+    items.extend(apio_root.glob("*"))
 
     if not items:
         print("Already clean")
@@ -264,9 +267,12 @@ def clean_task(_: Context):
     print("Deleting:")
 
     for item in items:
-        # -- Item must be strictly under root.
-        assert str(item).startswith(str(r))
-        assert not str(r).startswith(str(item))
+        # -- Item must be strictly under one of the roots.
+        assert str(item).startswith(str(repo_root)) or str(item).startswith(
+            str(apio_root)
+        )
+        assert not str(repo_root).startswith(str(item))
+        assert not str(apio_root).startswith(str(item))
 
         # -- E.g. if we hit a __pycache__ under .tox but already deleted
         # -- tox.
@@ -274,7 +280,10 @@ def clean_task(_: Context):
             continue
 
         # -- Item exists, delete it.
-        description = str(item.relative_to(r))
+        description = str(item)
+        if str(item).startswith(str(repo_root)):
+            description = "${repo}/" + str(item.relative_to(repo_root))
+
         if item.is_dir():
             print(f"[d] {description}")
             shutil.rmtree(item)
