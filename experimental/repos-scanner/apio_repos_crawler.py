@@ -10,6 +10,8 @@ Experimental program to collect information about Apio releases.
 
 import re
 import json
+import tarfile
+import urllib.request
 from typing import List, Dict
 from datetime import datetime, date
 from urllib.request import Request, urlopen
@@ -59,6 +61,8 @@ class PypiReleaseCrawl:
     # version: Version
     # -- The date on which the released for published on Pypi.
     published: date
+
+    apio_cli_release_tag: str
 
 
 @dataclass(frozen=True)
@@ -146,6 +150,46 @@ class CrawlResults:
     remote_configs_crawl: RemoteConfigsCrawl
 
 
+def read_file_from_pypi_apio_release(
+    version: str, file_path_in_package: str
+) -> str:
+    """Read a text file from a pypi apio release"""
+    meta_url = f"https://pypi.org/pypi/apio/{version}/json"
+    with urllib.request.urlopen(meta_url, context=_SSL_CONTEXT) as resp:
+        data = json.load(resp)
+    tarball_url = next(
+        (
+            item["url"]
+            for item in data["urls"]
+            if item["packagetype"] == "sdist"
+        ),
+        None,
+    )
+
+    assert tarball_url, meta_url
+
+
+    with urllib.request.urlopen(tarball_url, context=_SSL_CONTEXT) as resp:
+        blob = resp.read()
+    with tarfile.open(fileobj=BytesIO(blob), mode="r:gz") as tf:
+        suffix = "/" + file_path_in_package
+        member = next(
+            (
+                m
+                for m in tf.getmembers()
+                if m.name.endswith(suffix) and m.isfile()
+            ),
+            None,
+        )
+        if member is None:
+            raise FileNotFoundError(file_path_in_package)
+        with tf.extractfile(member) as f:
+            return f.read().decode("utf-8")
+
+
+RELEASE_INFO_RE = re.compile(r'RELEASE_INFO\s*=\s*"(generic-)?pypi-([^"]*)"')
+
+
 def _crawl_pypi() -> PypiCrawl:
     """Crawl pypi for Apio CLI releases."""
 
@@ -162,6 +206,7 @@ def _crawl_pypi() -> PypiCrawl:
     releases: Dict[str, PypiReleaseCrawl] = {}
     skipped_versions: List[Version] = []
     for version_str, files in data["releases"].items():
+        # print(f"{version_str=}")
         # -- Parse release string.
         version = Version(version_str)
 
@@ -174,10 +219,16 @@ def _crawl_pypi() -> PypiCrawl:
 
         # -- Ignore 0.x releases. They are too old and don't use remote
         # -- config.
-        if version.major < 1:
+        if version <= Version("1.2.1"):
             skipped_versions.append(version)
             if VERBOSE:
-                print(f"Skipped release {version_str:12} (old 0.x)")
+                print(f"Skipped release {version_str:12} (old)")
+            continue
+
+        if version in [Version("1.5.0")]:
+            skipped_versions.append(version)
+            if VERBOSE:
+                print(f"Skipped release {version_str:12} (blacklisted)")
             continue
 
         # -- At this point we expect the release string to be a clean
@@ -187,14 +238,31 @@ def _crawl_pypi() -> PypiCrawl:
         # -- Extract the publishing time.
         publishing_time_str = max(f["upload_time_iso_8601"] for f in files)
         publishing_time = datetime.fromisoformat(publishing_time_str)
-        # print(f"{type(publishing_time)=}")
+
+        # -- Extract the apio release that was used to publish this pypi
+        # -- release.
+        init_py_text = read_file_from_pypi_apio_release(
+           version_str, "apio/__init__.py"
+        )
+
+        match = RELEASE_INFO_RE.search(init_py_text)
+        apio_cli_tag = match.group(2)
 
         # -- Append the release to the result list.
         assert str(version) not in releases
-        releases[str(version)] = PypiReleaseCrawl(publishing_time.date())
+        releases[str(version)] = PypiReleaseCrawl(
+            publishing_time.date(), apio_cli_tag
+        )
 
     # -- Sort in place in decreasing semantic version key.
-    releases = dict(sorted(releases.items(), key=lambda item: Version(item[0]), reverse=True))
+    releases = dict(
+        sorted(
+            releases.items(), key=lambda item: Version(item[0]), reverse=True
+        )
+    )
+
+    # -- Sort in place in descending order.
+    skipped_versions.sort(reverse=True)
 
     # -- All done ok.
     # return releases, skipped_versions
@@ -269,7 +337,7 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
     with urlopen(req, context=_SSL_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
-    releases:Dict[str, VscodeReleaseCrawl] = {}
+    releases: Dict[str, VscodeReleaseCrawl] = {}
     skipped_versions: List[Version] = []
     default_version = None
 
@@ -334,22 +402,17 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
             default_version = version
 
         assert str(version) not in releases
-        releases[str(version)] = (
-            VscodeReleaseCrawl(
-                # version,
-                last_updated_time.date(),
-                GithubReleaseRef(repo, tag),
-                # cli_version,
-                GithubReleaseRef(apio_cli_repo, apio_cli_tag),
-            )
+        releases[str(version)] = VscodeReleaseCrawl(
+            # version,
+            last_updated_time.date(),
+            GithubReleaseRef(repo, tag),
+            # cli_version,
+            GithubReleaseRef(apio_cli_repo, apio_cli_tag),
         )
     # default_version = releases.keys()[0]
 
-
     assert default_version is not None
-    return VscodeMarketplaceCrawl(
-        default_version, releases, skipped_versions
-    )
+    return VscodeMarketplaceCrawl(default_version, releases, skipped_versions)
 
 
 # -- Regex to parse remote config file names.
@@ -416,16 +479,6 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
             yyyymmdd = package_tag.replace("-", "")
             asset = asset.replace("${YYYYMMDD}", yyyymmdd)
 
-            # assert_platform_dependent = "${PLATFORM}" in asset
-
-            # assets = set()
-            # for platform in APIO_PLATFORMS:
-            #     asset = asset.replace("${PLATFORM}", platform)
-            #     assets.add(asset)
-
-            # assets = list(assets)
-            # assets.sort(reverse=True)
-
             assert package_name not in packages_crawls
             packages_crawls[package_name] = RemoteConfigPackageCrawl(
                 # package_name,
@@ -436,13 +489,9 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
 
         key = str(version)
         assert key not in files_crawls
-        files_crawls[key]= RemoteConfigFileCrawl(packages_crawls)
-
+        files_crawls[key] = RemoteConfigFileCrawl(packages_crawls)
 
     return RemoteConfigsCrawl(files_crawls)
-
-    # print(f"{entries=}")
-    # return None
 
 
 def crawl() -> CrawlResults:
@@ -461,7 +510,9 @@ def crawl() -> CrawlResults:
 
     print("Crawling done")
 
-    return CrawlResults(pypi_crawl, vscode_marketplace_crawl, remote_configs_crawl)
+    return CrawlResults(
+        pypi_crawl, vscode_marketplace_crawl, remote_configs_crawl
+    )
 
 
 def main():
