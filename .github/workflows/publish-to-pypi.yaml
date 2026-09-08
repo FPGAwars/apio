@@ -18,49 +18,55 @@ jobs:
   publish:
     runs-on: ubuntu-22.04
     steps:
-      - name: Validate release tag format
+      - name: Check that the release tag has yyyy-mm-dd format.
         uses: fpgawars/apio-workflows/.github/actions/check-release-tag@main
         with:
           release-tag: ${{ inputs.release_tag }}
 
-      - name: Validate release tag is stable
-        run: |
-          # Get release metadata JSON.
-          TAG="${{ inputs.release_tag }}"
-          URL="https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG"
-          echo "URL: $URL"
-          RELEASE_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$URL")
+      - name: Check that the release is stable
+        uses: fpgawars/apio-workflows/.github/actions/check-release-is-stable@main
+        with:
+          release-repo: ${{ github.repository }}
+          release-tag: ${{ inputs.release_tag }}
 
-          # Check if release exists
-          if echo "$RELEASE_JSON" | grep -q "Not Found"; then
-            echo "::error ::Release tag $TAG does not exist"
-            exit 1
-          fi
+      # - name: Validate release tag is stable
+      #   run: |
+      #     # Get release metadata JSON.
+      #     TAG="${{ inputs.release_tag }}"
+      #     URL="https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG"
+      #     echo "URL: $URL"
+      #     RELEASE_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$URL")
 
-          # Dump RELEASE_JSON for debugging.
-          # echo $RELEASE_JSON | jq .
+      #     # Check if release exists
+      #     if echo "$RELEASE_JSON" | grep -q "Not Found"; then
+      #       echo "::error ::Release tag $TAG does not exist"
+      #       exit 1
+      #     fi
 
-          # Since the pypi package is independent of the apio release
-          # packages, there is no need to verify that the tag represent
-          # a stable release and not a pre-release.
+      #     # Dump RELEASE_JSON for debugging.
+      #     # echo $RELEASE_JSON | jq .
 
-          # Extract draft and prerelease flags
-          # DRAFT=$(echo "$RELEASE_JSON" | jq -r '.draft')
-          # PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.prerelease')
+      #     # Since the pypi package is independent of the apio release
+      #     # packages, there is no need to verify that the tag represent
+      #     # a stable release and not a pre-release.
 
-          # if [ "$DRAFT" = "true" ]; then
-          #   echo "::error ::Release $TAG is a draft, must be stable."
-          #   exit 1
-          # fi
+      #     # Extract draft and prerelease flags
+      #     # DRAFT=$(echo "$RELEASE_JSON" | jq -r '.draft')
+      #     # PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.prerelease')
 
-          # if [ "$PRERELEASE" = "true" ]; then
-          #   echo "::error ::Release $TAG is a prerelease, must be stable."
-          #   exit 1
-          # fi
+      #     # if [ "$DRAFT" = "true" ]; then
+      #     #   echo "::error ::Release $TAG is a draft, must be stable."
+      #     #   exit 1
+      #     # fi
 
-          # echo "Release $TAG is stable (non pre-release or draft)"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     # if [ "$PRERELEASE" = "true" ]; then
+      #     #   echo "::error ::Release $TAG is a prerelease, must be stable."
+      #     #   exit 1
+      #     # fi
+
+      #     # echo "Release $TAG is stable (non pre-release or draft)"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # -- Checkout the main branch as the work directory.
       - name: Checkout Apio release ${{ inputs.release_tag }}
