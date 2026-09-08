@@ -9,11 +9,20 @@ on:
         required: true
         type: string
 
+env:
+  # -- Set latter.
+  RELEASE_COMMIT_SHA: ""
+
 jobs:
   # -- Publish a new Apio release
   publish:
     runs-on: ubuntu-22.04
     steps:
+      - name: Validate release tag format
+        uses: fpgawars/apio-workflows/.github/actions/check-release-tag@main
+        with:
+          release-tag: ${{ inputs.release_tag }}
+
       - name: Validate release tag is stable
         run: |
           # Get release metadata JSON.
@@ -53,19 +62,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # -- Checkout the main branch
-      - name: Checkout at release ${{ inputs.release_tag }}
+      # -- Checkout the main branch as the work directory.
+      - name: Checkout Apio release ${{ inputs.release_tag }}
         uses: actions/checkout@v6
         with:
           # Checks out the exact tag entered by the user
           ref: ${{ inputs.release_tag }}
 
-      - name: Set apio release info
-        uses: ./.github/actions/set-apio-release-info
+      - name: Get release commit sha.
+        run: |
+          release_commit_sha=$(git rev-parse HEAD)
+          echo "RELEASE_COMMIT_SHA=$release_commit_sha"
+          echo "RELEASE_COMMIT_SHA=$release_commit_sha" >> $GITHUB_ENV
+
+      - name: Set release info string in apio/__init__.py
+        uses: fpgawars/apio-workflows/.github/actions/set-apio-release-info@main
         with:
           repo_path: .
-          platform_id: generic
-          release_type: pypi
+          prefix: pypi
           release_tag: ${{ inputs.release_tag }}
 
       # -- Install and and configure python
@@ -79,8 +93,22 @@ jobs:
       # -- TODO: Using an old flit as a quick workaround for publishing
       # -- failure in Apio issue 948. Find a more long term solution.
       - name: Install dependencies
-        run: python -m pip install --upgrade pip build "flit<4" "flit_core<4"
-      - name: Build package distributions
+        run: |
+          python -m pip install --upgrade pip build "flit<4" "flit_core<4"
+
+      - name: Append Apio release info to pyproject.toml
+        run: |
+          cat >> pyproject.toml << 'EOF'
+
+          [tool.apio-release]
+          repo = "${{ github.repository }}"
+          tag = "${{ inputs.release_tag }}"
+          commit = "${{ env.RELEASE_COMMIT_SHA }}"
+          EOF
+
+          cat -n pyproject.toml
+
+      - name: Build the package
         run: |
           # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
           python -m build
@@ -89,7 +117,6 @@ jobs:
         run: |
           tar -tzf dist/*.tar.gz | tree --fromfile .
 
-      # -- Publish to Pypi!!
       - name: Publish to PyPi
         env:
           # TODO: As of Dec 27 2025, PYPI_USERNAME and PYPI_PASSWORD
