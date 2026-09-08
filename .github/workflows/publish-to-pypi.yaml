@@ -53,15 +53,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # -- Checkout the main branch
-      - name: Checkout at release ${{ inputs.release_tag }}
+      # -- Checkout the main branch as the work directory.
+      - name: Checkout Apio release ${{ inputs.release_tag }}
         uses: actions/checkout@v6
         with:
           # Checks out the exact tag entered by the user
           ref: ${{ inputs.release_tag }}
 
       - name: Set apio release info
-        uses: ./.github/actions/set-apio-release-info
+        uses: fpgawars/apio-workflows/.github/actions/set-apio-release-info@main
         with:
           repo_path: .
           prefix: pypi
