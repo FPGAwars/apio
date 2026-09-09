@@ -1,0 +1,87 @@
+# A periodic workflow to crawl, analyze, check, fix, and clean
+# Apio's repositories.
+
+name: apio-repos-janitor
+
+on:
+  # Run on commit.
+  push:
+
+  # Run every 6 hours
+  # schedule:
+  #   - cron: "0 */6 * * *"
+
+  # Allow manual launch
+  workflow_dispatch:
+
+jobs:
+  janitor:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # -- We need the apio repo for the janitor scripts.
+      - name: Checkout Apio's main branch
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Set up latest Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install python dependencies
+        run: |
+          pip install -r scripts/janitor/requirements.txt
+
+      - name: Run the crawler
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m scripts.janitor.crawler --work-dir ./_janitor
+
+      - name: Show crawl results
+        run: |
+          cat ./_janitor/crawl_results.json
+
+      - name: Run the analyzer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m scripts.janitor.analyzer --work-dir ./_janitor
+
+      - name: Show analysis results
+        run: |
+          cat ./_janitor/analysis_results.json
+
+      - name: Run the checker
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m scripts.janitor.checker --work-dir ./_janitor
+
+      - name: Show check results
+        run: |
+          cat ./_janitor/check_results.json
+
+      - name: Write check results to summary
+        run: |
+          {
+            echo '## Check results'
+            echo
+            echo '```json'
+            cat ./_janitor/check_results.json
+            echo
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if checks did not pass
+        run: |
+          # -- Dump failures, if any
+          jq '{failures: .failures}' _janitor/check_results.json
+          # -- Fail if passed is not true.
+          jq -e '.passed == true' ./_janitor/check_results.json > /dev/null

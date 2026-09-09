@@ -1,34 +1,42 @@
 """
-Experimental program to collect information about Apio releases.
+The first step of the Apio Repos Janitor workflow. It scans the repos and
+PyPi and VSCode Marketplace and outputs a pickled CrawlResults file with its
+results.
 """
-
-# pylint: disable=fixme
-
-# TODO: Change lists to dictionaries keyed by versions.
-# TODO: Include in apio BUILD-INFO.json list of supported platforms.
-# TODO: Allow to map from pypi to apio repo releases
 
 import re
 import json
 import tarfile
+import pickle
 import urllib.request
+from pathlib import Path
 from typing import List, Dict
-from datetime import datetime, date
+from datetime import datetime
+import argparse
 from urllib.request import Request, urlopen
 import ssl
-from dataclasses import dataclass, asdict
+from dataclasses import asdict
 from io import BytesIO
 from zipfile import ZipFile
 import json5
 import certifi
 from packaging.version import Version
+from scripts.janitor import models
 
-# APIO_PLATFORMS = ["darwin-arm64", "linux-x86-64", "windows-amd64"]
+parser = argparse.ArgumentParser(
+    description="Apio Repos Janitor's crawl phase."
+)
+parser.add_argument(
+    "--work-dir",
+    type=Path,
+    default=Path("./_janitor"),
+    help="Janitor's temp data dir (default = ./_janitor)",
+)
+args = parser.parse_args()
 
-VERBOSE = False
 
 # -- Used for outgoing https requests.
-_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+_SSL_REQUEST_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
 
 # -- A regex to validate n.n.n version string.
@@ -37,125 +45,14 @@ _THREE_NUM_VERSION_REGEX = re.compile(
 )
 
 
-@dataclass(frozen=True, order=True)
-class GithubReleaseRef:
-    """Represents a single release on a github repo."""
-
-    # -- The github repo. E.g. "fpgawars/apio"
-    repo: str
-    # -- The release tag, e.g. "2026-08-13"
-    tag: str
-
-    def __str__(self) -> str:
-        """Human friendly representation of the object."""
-        return self.repo + " #" + self.tag
-
-
-@dataclass(frozen=True)
-class PypiReleaseCrawl:
-    """Crawling information of a single Pypi Apio CLI release. See
-    https://pypi.org/project/apio/#history
-    """
-
-    # -- The apio CLI version as appearing on Pypi.
-    # version: Version
-    # -- The date on which the released for published on Pypi.
-    published: date
-
-    apio_cli_release_tag: str
-
-
-@dataclass(frozen=True)
-class PypiCrawl:
-    """Pypi crawling information."""
-
-    # -- The default release for 'pip install apio', this is considered the
-    # -- 'latest' stable release.
-    latest: Version
-    # -- List of Apio releases on Pypi.
-    # releases: List[PypiReleaseCrawl]
-    releases: Dict[str, PypiReleaseCrawl]
-    # -- Version of Pypi releases that were skipped, e.g. for being too old.
-    skipped_versions: List[Version]
-
-
-@dataclass(frozen=True)
-class VscodeReleaseCrawl:
-    """Crawling information of a single VSCode Marketplace Apio IDE release.
-    https://marketplace.visualstudio.com/items?itemName=fpgawars.apio
-    """
-
-    # -- The vscode extension release is it appears in the marketplace.
-    # version: Version
-    # -- The date on which the release was published on the VSCode Marketplace.
-    published: date
-    # -- The github release of this extension version.
-    apio_vscode_release: GithubReleaseRef
-    # -- The github release of the underlying Apio CLI that is used by this
-    # -- extension.
-    apio_cli_release: GithubReleaseRef
-
-
-@dataclass(frozen=True)
-class VscodeMarketplaceCrawl:
-    """VSCode Marketplace crawling information."""
-
-    # -- The default Apio Vscode extension version. This considered to be the
-    # -- 'latest' stable release.
-    latest: Version
-    # -- List of relevant releases that were crawled.
-    releases: Dict[str, VscodeReleaseCrawl]
-    # -- List of extension versions that were skipped, e.g. for being too old.
-    skipped_versions: List[Version]
-
-
-@dataclass(frozen=True)
-class RemoteConfigPackageCrawl:
-    """Crawling result of a single package configuration in a remote config file."""
-
-    # -- Package repo and release tag
-    package_release: GithubReleaseRef
-    # -- True iff the asset contains a ${PLATFORM} placeholder.
-    platform_dependent: bool
-    # -- The asset name.
-    asset: str
-
-
-@dataclass(frozen=True)
-class RemoteConfigFileCrawl:
-    """Crawling results of a single remote config file."""
-
-    # -- Two num version of the file, e.g. (1, 5) for "1.7.x"
-    # version_selector: Version
-    # -- List of crawled package configurations..
-    packages: Dict[str, RemoteConfigPackageCrawl]
-
-
-@dataclass(frozen=True)
-class RemoteConfigsCrawl:
-    """Crawling results of all the remote config files."""
-
-    remote_configs: Dict[Version, RemoteConfigFileCrawl]
-
-
-@dataclass(frozen=True)
-class CrawlResults:
-    """Crawl results"""
-
-    # -- Results of crawling Apio CLI releases on Pypi.
-    pypi_crawl: PypiCrawl
-    # -- Results of crawling Apio VSCode releases on the VSCode Marketplace.
-    vscode_marketplace_crawl: VscodeMarketplaceCrawl
-    # -- Results of crawling the remote config files on fpgawars/apio.
-    remote_configs_crawl: RemoteConfigsCrawl
-
-
 def read_file_from_pypi_apio_release(
     version: str, file_path_in_package: str
 ) -> str:
     """Read a text file from a pypi apio release"""
     meta_url = f"https://pypi.org/pypi/apio/{version}/json"
-    with urllib.request.urlopen(meta_url, context=_SSL_CONTEXT) as resp:
+    with urllib.request.urlopen(
+        meta_url, context=_SSL_REQUEST_CONTEXT
+    ) as resp:
         data = json.load(resp)
     tarball_url = next(
         (
@@ -168,8 +65,9 @@ def read_file_from_pypi_apio_release(
 
     assert tarball_url, meta_url
 
-
-    with urllib.request.urlopen(tarball_url, context=_SSL_CONTEXT) as resp:
+    with urllib.request.urlopen(
+        tarball_url, context=_SSL_REQUEST_CONTEXT
+    ) as resp:
         blob = resp.read()
     with tarfile.open(fileobj=BytesIO(blob), mode="r:gz") as tf:
         suffix = "/" + file_path_in_package
@@ -187,15 +85,18 @@ def read_file_from_pypi_apio_release(
             return f.read().decode("utf-8")
 
 
-RELEASE_INFO_RE = re.compile(r'RELEASE_INFO\s*=\s*"(generic-)?pypi-([^"]*)"')
+# -- Used to extract apio cli release tag from __init__.py of old PyPi
+# -- releases. For newer releases we include that information in
+# -- pyproject.toml.
+_RELEASE_INFO_RE = re.compile(r'RELEASE_INFO\s*=\s*"(generic-)?pypi-([^"]*)"')
 
 
-def _crawl_pypi() -> PypiCrawl:
+def _crawl_pypi() -> models.PypiCrawl:
     """Crawl pypi for Apio CLI releases."""
 
     # -- Query PyPi.
     api_url = "https://pypi.org/pypi/apio/json"
-    with urlopen(api_url, context=_SSL_CONTEXT, timeout=30) as r:
+    with urlopen(api_url, context=_SSL_REQUEST_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
     # -- Extract default Apio version on PyPi.
@@ -203,7 +104,7 @@ def _crawl_pypi() -> PypiCrawl:
     default_version = Version(default_version_str)
 
     # -- Collect the releases.
-    releases: Dict[str, PypiReleaseCrawl] = {}
+    releases: Dict[str, models.PypiReleaseCrawl] = {}
     skipped_versions: List[Version] = []
     for version_str, files in data["releases"].items():
         # print(f"{version_str=}")
@@ -213,22 +114,19 @@ def _crawl_pypi() -> PypiCrawl:
         # -- Ignore releases that marked with 'yanked'.
         if not files or all(f.get("yanked") for f in files):
             skipped_versions.append(version)
-            if VERBOSE:
-                print(f"Skipped release {version_str:12} (yanked)")
+            print(f"Skipped release {version_str:12} (yanked)")
             continue
 
         # -- Ignore 0.x releases. They are too old and don't use remote
         # -- config.
         if version <= Version("1.2.1"):
             skipped_versions.append(version)
-            if VERBOSE:
-                print(f"Skipped release {version_str:12} (old)")
+            print(f"Skipped release {version_str:12} (old)")
             continue
 
         if version in [Version("1.5.0")]:
             skipped_versions.append(version)
-            if VERBOSE:
-                print(f"Skipped release {version_str:12} (blacklisted)")
+            print(f"Skipped release {version_str:12} (blacklisted)")
             continue
 
         # -- At this point we expect the release string to be a clean
@@ -242,16 +140,17 @@ def _crawl_pypi() -> PypiCrawl:
         # -- Extract the apio release that was used to publish this pypi
         # -- release.
         init_py_text = read_file_from_pypi_apio_release(
-           version_str, "apio/__init__.py"
+            version_str, "apio/__init__.py"
         )
 
-        match = RELEASE_INFO_RE.search(init_py_text)
+        match = _RELEASE_INFO_RE.search(init_py_text)
         apio_cli_tag = match.group(2)
 
         # -- Append the release to the result list.
         assert str(version) not in releases
-        releases[str(version)] = PypiReleaseCrawl(
-            publishing_time.date(), apio_cli_tag
+        releases[str(version)] = models.PypiReleaseCrawl(
+            publishing_time.date(),
+            models.GithubReleaseRef("fpgawars/apio", apio_cli_tag),
         )
 
     # -- Sort in place in decreasing semantic version key.
@@ -266,7 +165,7 @@ def _crawl_pypi() -> PypiCrawl:
 
     # -- All done ok.
     # return releases, skipped_versions
-    return PypiCrawl(default_version, releases, skipped_versions)
+    return models.PypiCrawl(default_version, releases, skipped_versions)
 
 
 # -- Microsoft VSCode Marketplace consts.
@@ -284,25 +183,15 @@ _MICROSOFT_VSIX_ASSET = "Microsoft.VisualStudio.Services.VSIXPackage"
 _MICROSOFT_PRE_RELEASE = "Microsoft.VisualStudio.Code.PreRelease"
 
 
-# -- Regex to extract the value of APIO_CLI_RELEASE_REPO from constants.js.
-_REPO_RE = re.compile(
-    r'^\s*const\s+APIO_CLI_RELEASE_REPO\s*=\s*"([^"]*)"\s*;\s*$',
-    re.MULTILINE,
-)
-
-# -- Regex to extract the value of APIO_CLI_RELEASE_TAG from constants.js.
-_TAG_RE = re.compile(
-    r'^\s*const\s+APIO_CLI_RELEASE_TAG\s*=\s*"([^"]*)"\s*;\s*$',
-    re.MULTILINE,
-)
-
-
-def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
+def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
     """Get info of last Apio IDE version on VSCode marketplace"""
 
     # pylint: disable=too-many-locals
 
-    query_url = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery"
+    query_url = (
+        "https://marketplace.visualstudio.com/"
+        + "_apis/public/gallery/extensionquery"
+    )
 
     flags = (
         _FLAG_INCLUDE_VERSIONS
@@ -334,10 +223,10 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
         method="POST",
     )
 
-    with urlopen(req, context=_SSL_CONTEXT, timeout=30) as r:
+    with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
-    releases: Dict[str, VscodeReleaseCrawl] = {}
+    releases: Dict[str, models.VscodeReleaseCrawl] = {}
     skipped_versions: List[Version] = []
     default_version = None
 
@@ -348,8 +237,7 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
 
         if version < Version("0.1.6"):
             skipped_versions.append(version)
-            if VERBOSE:
-                print(f"Skipping vscode version {version_str:8} (too old)")
+            print(f"Skipping vscode version {version_str:8} (too old)")
             continue
 
         is_prerelease = any(
@@ -359,8 +247,7 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
         )
         if is_prerelease:
             skipped_versions.append(version)
-            if VERBOSE:
-                print(f"Skipping vscode version {version_str:8} (pre-release)")
+            print(f"Skipping vscode version {version_str:8} (pre-release)")
             continue
 
         last_updated_time_str = rel["lastUpdated"]
@@ -378,7 +265,7 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
             headers={"User-Agent": "apio-dev-scanner", "Accept": "*/*"},
         )
 
-        with urlopen(req, context=_SSL_CONTEXT, timeout=30) as resp:
+        with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as resp:
             vsix_package = resp.read()
 
         if version <= Version("0.1.9"):
@@ -402,24 +289,26 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
             default_version = version
 
         assert str(version) not in releases
-        releases[str(version)] = VscodeReleaseCrawl(
+        releases[str(version)] = models.VscodeReleaseCrawl(
             # version,
             last_updated_time.date(),
-            GithubReleaseRef(repo, tag),
+            models.GithubReleaseRef(repo, tag),
             # cli_version,
-            GithubReleaseRef(apio_cli_repo, apio_cli_tag),
+            models.GithubReleaseRef(apio_cli_repo, apio_cli_tag),
         )
     # default_version = releases.keys()[0]
 
     assert default_version is not None
-    return VscodeMarketplaceCrawl(default_version, releases, skipped_versions)
+    return models.VscodeMarketplaceCrawl(
+        default_version, releases, skipped_versions
+    )
 
 
 # -- Regex to parse remote config file names.
 _REMOTE_CONFIG_NAME_REGEX = re.compile(r"^apio-(\d+)\.(\d+)\.x\.jsonc$")
 
 
-def _crawl_remote_configs() -> RemoteConfigsCrawl:
+def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
     """Crawls the latest version of the apio remote config files."""
 
     # pylint: disable=too-many-locals
@@ -433,13 +322,13 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
         },
     )
 
-    with urlopen(req, context=_SSL_CONTEXT, timeout=30) as resp:
+    with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as resp:
         entries = json.loads(resp.read().decode("utf-8"))
 
     # print(json.dumps(entries, indent=2))
 
     # -- Iterate files
-    files_crawls: Dict[str, RemoteConfigFileCrawl] = {}
+    files_crawls: Dict[str, models.RemoteConfigFileCrawl] = {}
     for entry in entries:
         package_name = entry["name"]
         if package_name in ["README.md"]:
@@ -453,7 +342,7 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
         download_url = entry["download_url"]
         req = Request(download_url, headers={"User-Agent": "apio-script"})
 
-        with urlopen(req, context=_SSL_CONTEXT, timeout=30) as resp:
+        with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as resp:
             remote_config_text = resp.read().decode("utf-8")
 
         # print("*****")
@@ -461,7 +350,7 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
 
         remote_config_json = json5.loads(remote_config_text)
 
-        packages_crawls: Dict[str, RemoteConfigPackageCrawl] = {}
+        packages_crawls: Dict[str, models.RemoteConfigPackageCrawl] = {}
 
         for package_name, package_config in remote_config_json[
             "packages"
@@ -480,25 +369,25 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
             asset = asset.replace("${YYYYMMDD}", yyyymmdd)
 
             assert package_name not in packages_crawls
-            packages_crawls[package_name] = RemoteConfigPackageCrawl(
+            packages_crawls[package_name] = models.RemoteConfigPackageCrawl(
                 # package_name,
-                GithubReleaseRef(package_repo, package_tag),
+                models.GithubReleaseRef(package_repo, package_tag),
                 "${PLATFORM}" in asset,
                 asset,
             )
 
         key = str(version)
         assert key not in files_crawls
-        files_crawls[key] = RemoteConfigFileCrawl(packages_crawls)
+        files_crawls[key] = models.RemoteConfigFileCrawl(packages_crawls)
 
-    return RemoteConfigsCrawl(files_crawls)
+    return models.RemoteConfigsCrawl(files_crawls)
 
 
-def crawl() -> CrawlResults:
+def crawl() -> models.CrawlResults:
     """Crawl pypi, vscode market, and the apio related repos."""
 
     print("Crawling PyPi")
-    pypi_crawl: PypiCrawl = _crawl_pypi()
+    pypi_crawl: models.PypiCrawl = _crawl_pypi()
 
     print("Crawling VSCode Marketplace")
     vscode_marketplace_crawl = _crawl_vscode_marketplace()
@@ -510,7 +399,7 @@ def crawl() -> CrawlResults:
 
     print("Crawling done")
 
-    return CrawlResults(
+    return models.CrawlResults(
         pypi_crawl, vscode_marketplace_crawl, remote_configs_crawl
     )
 
@@ -518,10 +407,23 @@ def crawl() -> CrawlResults:
 def main():
     """Main function."""
 
-    crawl_results = crawl()
-    print("\nCrawl results:")
-    print(json.dumps(asdict(crawl_results), indent=2, default=str))
-    print()
+    # -- Get the work dir path.
+    work_dir_path = args.work_dir
+    print(f"work_dir = {str(work_dir_path)}")
+    work_dir_path.mkdir(parents=True, exist_ok=True)
+
+    # -- Do the crawling.
+    crawl_results: models.CrawlResults = crawl()
+
+    # -- Write results as json, for human consumption.
+    (work_dir_path / "crawl_results.json").write_text(
+        json.dumps(asdict(crawl_results), indent=2, default=str),
+        encoding="utf-8",
+    )
+
+    # -- Write results as pickle, for consumption by next step.
+    with (work_dir_path / "crawl_results.pkl").open("wb") as f:
+        pickle.dump(crawl_results, f)
 
 
 if __name__ == "__main__":
