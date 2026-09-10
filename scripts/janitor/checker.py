@@ -120,7 +120,12 @@ def check(analysis_results: models.AnalysisResults) -> models.CheckResults:
         else:
             is_latest[repo] = release_tag
 
-    check_failures = models.CheckFailures(missing, not_stable, not_latest)
+    check_failures = models.CheckFailures(
+        missing,
+        not_stable,
+        not_latest,
+        analysis_results.garbage_prereleases,
+    )
     check_successes = (models.CheckSuccesses(is_stable, is_latest),)
 
     return models.CheckResults(

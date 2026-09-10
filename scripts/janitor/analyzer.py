@@ -10,7 +10,7 @@ import json
 import argparse
 from pathlib import Path
 from typing import List, Dict
-from scripts.janitor import models
+from scripts.janitor import models, consts
 
 parser = argparse.ArgumentParser(
     description="Apio Repos Janitor's analysis phase."
@@ -27,7 +27,9 @@ args = parser.parse_args()
 def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     """Analyze crawling results and generate requirements report."""
 
-    # used_releases: Set[GithubReleaseRef] = set()
+    # pylint: disable=too-many-locals
+
+    # -- TODO: Make the code clearer.
 
     should_be_stable_releases: Dict[str, List[str]] = {}
 
@@ -73,8 +75,29 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
         assert release.repo not in should_be_latest_releases
         should_be_latest_releases[release.repo] = release.tag
 
+    # -- Analyze pre-releases garbage collection.
+
+    garbage_prereleases: Dict[str, List[str]] = {}
+    for repo, repo_crawl in crawl_results.repos_crawl.repos.items():
+        prereleases_kept = 0
+        delete_list = []
+        # -- Iterate releases and process pre-releases. The order is
+        # -- in decreasing created_date value.
+        for release, release_crawl in repo_crawl.releases.items():
+            if release_crawl.state == models.ReleaseState.PRERELEASE:
+                if prereleases_kept < consts.NUM_PRE_RELEASES_TO_KEEP:
+                    # -- Keep this prerelease.
+                    prereleases_kept += 1
+                else:
+                    delete_list.append(release)
+        if delete_list:
+            garbage_prereleases[repo] = delete_list
+
+    # -- All done.
     return models.AnalysisResults(
-        should_be_stable_releases, should_be_latest_releases
+        should_be_stable_releases,
+        should_be_latest_releases,
+        garbage_prereleases,
     )
 
 

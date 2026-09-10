@@ -5,23 +5,21 @@ results.
 """
 
 import re
+import os
 import json
-import tarfile
 import pickle
-import urllib.request
 from pathlib import Path
 from typing import List, Dict
 from datetime import datetime
 import argparse
 from urllib.request import Request, urlopen
-import ssl
 from dataclasses import asdict
 from io import BytesIO
 from zipfile import ZipFile
+import requests
 import json5
-import certifi
 from packaging.version import Version
-from scripts.janitor import models
+from scripts.janitor import models, util, consts
 
 parser = argparse.ArgumentParser(
     description="Apio Repos Janitor's crawl phase."
@@ -35,54 +33,10 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-# -- Used for outgoing https requests.
-_SSL_REQUEST_CONTEXT = ssl.create_default_context(cafile=certifi.where())
-
-
 # -- A regex to validate n.n.n version string.
 _THREE_NUM_VERSION_REGEX = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
 )
-
-
-def read_file_from_pypi_apio_release(
-    version: str, file_path_in_package: str
-) -> str:
-    """Read a text file from a pypi apio release"""
-    meta_url = f"https://pypi.org/pypi/apio/{version}/json"
-    with urllib.request.urlopen(
-        meta_url, context=_SSL_REQUEST_CONTEXT
-    ) as resp:
-        data = json.load(resp)
-    tarball_url = next(
-        (
-            item["url"]
-            for item in data["urls"]
-            if item["packagetype"] == "sdist"
-        ),
-        None,
-    )
-
-    assert tarball_url, meta_url
-
-    with urllib.request.urlopen(
-        tarball_url, context=_SSL_REQUEST_CONTEXT
-    ) as resp:
-        blob = resp.read()
-    with tarfile.open(fileobj=BytesIO(blob), mode="r:gz") as tf:
-        suffix = "/" + file_path_in_package
-        member = next(
-            (
-                m
-                for m in tf.getmembers()
-                if m.name.endswith(suffix) and m.isfile()
-            ),
-            None,
-        )
-        if member is None:
-            raise FileNotFoundError(file_path_in_package)
-        with tf.extractfile(member) as f:
-            return f.read().decode("utf-8")
 
 
 # -- Used to extract apio cli release tag from __init__.py of old PyPi
@@ -96,7 +50,7 @@ def _crawl_pypi() -> models.PypiCrawl:
 
     # -- Query PyPi.
     api_url = "https://pypi.org/pypi/apio/json"
-    with urlopen(api_url, context=_SSL_REQUEST_CONTEXT, timeout=30) as r:
+    with urlopen(api_url, context=util.SSL_REQUEST_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
     # -- Extract default Apio version on PyPi.
@@ -139,7 +93,7 @@ def _crawl_pypi() -> models.PypiCrawl:
 
         # -- Extract the apio release that was used to publish this pypi
         # -- release.
-        init_py_text = read_file_from_pypi_apio_release(
+        init_py_text = util.read_file_from_pypi_apio_release(
             version_str, "apio/__init__.py"
         )
 
@@ -223,7 +177,7 @@ def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
         method="POST",
     )
 
-    with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as r:
+    with urlopen(req, context=util.SSL_REQUEST_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
     releases: Dict[str, models.VscodeReleaseCrawl] = {}
@@ -265,7 +219,9 @@ def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
             headers={"User-Agent": "apio-dev-scanner", "Accept": "*/*"},
         )
 
-        with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as resp:
+        with urlopen(
+            req, context=util.SSL_REQUEST_CONTEXT, timeout=30
+        ) as resp:
             vsix_package = resp.read()
 
         if version <= Version("0.1.9"):
@@ -322,7 +278,7 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
         },
     )
 
-    with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as resp:
+    with urlopen(req, context=util.SSL_REQUEST_CONTEXT, timeout=30) as resp:
         entries = json.loads(resp.read().decode("utf-8"))
 
     # print(json.dumps(entries, indent=2))
@@ -342,7 +298,9 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
         download_url = entry["download_url"]
         req = Request(download_url, headers={"User-Agent": "apio-script"})
 
-        with urlopen(req, context=_SSL_REQUEST_CONTEXT, timeout=30) as resp:
+        with urlopen(
+            req, context=util.SSL_REQUEST_CONTEXT, timeout=30
+        ) as resp:
             remote_config_text = resp.read().decode("utf-8")
 
         # print("*****")
@@ -383,6 +341,64 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
     return models.RemoteConfigsCrawl(files_crawls)
 
 
+def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
+    """Crawl a single repo and get its releases states."""
+    headers = {"Accept": "application/vnd.github+json"}
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    latest_tag = None
+    latest = requests.get(
+        f"https://api.github.com/repos/{repo}/releases/latest",
+        headers=headers,
+        timeout=30,
+    )
+    if latest.status_code != 404:
+        latest.raise_for_status()
+        latest_tag = latest.json().get("tag_name")
+
+    releases: Dict[str, models.ReleaseState] = {}
+    url = f"https://api.github.com/repos/{repo}/releases"
+    params = {"per_page": 100}
+    while url:
+        resp = requests.get(url, headers=headers, params=params, timeout=30)
+        resp.raise_for_status()
+        params = None
+        for rel in resp.json():
+            tag = rel["tag_name"]
+            state = models.ReleaseState.from_flags(
+                draft=bool(rel.get("draft")),
+                prerelease=bool(rel.get("prerelease")),
+                is_latest=tag == latest_tag,
+            )
+            created_date = datetime.fromisoformat(rel["created_at"]).date()
+            releases[tag] = models.ReleaseCrawl(state, created_date)
+        url = resp.links.get("next", {}).get("url")
+
+    # -- Sort the releases by descending order of created_date.
+    releases = dict(
+        sorted(
+            releases.items(),
+            key=lambda item: item[1].created_date,
+            reverse=True,
+        )
+    )
+
+    return models.RepoCrawl(releases)
+
+
+def _crawl_apio_repos() -> models.ReposCrawl:
+    """Crawl the given repos"""
+
+    repos_dict: Dict[str, Dict[str, models.ReleaseState]] = {}
+    for repo in consts.APIO_REPOS:
+        repo_crawl = _crawl_apio_repo(repo)
+        repos_dict[repo] = repo_crawl
+
+    return models.ReposCrawl(repos_dict)
+
+
 def crawl() -> models.CrawlResults:
     """Crawl pypi, vscode market, and the apio related repos."""
 
@@ -395,12 +411,16 @@ def crawl() -> models.CrawlResults:
     print("Crawling Remote Configs")
     remote_configs_crawl = _crawl_remote_configs()
 
+    print("Crawling repos")
+    # TODO: Get repos list from previous steps, e.g. remote config.
+    repos_crawl = _crawl_apio_repos()
+
     # print(json.dumps(asdict(remote_configs_crawl), indent=2, default=str))
 
     print("Crawling done")
 
     return models.CrawlResults(
-        pypi_crawl, vscode_marketplace_crawl, remote_configs_crawl
+        pypi_crawl, vscode_marketplace_crawl, remote_configs_crawl, repos_crawl
     )
 
 

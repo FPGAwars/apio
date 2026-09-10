@@ -44,7 +44,7 @@ jobs:
         run: |
           python -m scripts.janitor.crawler --work-dir ./_janitor
 
-      - name: Show crawl results
+      - name: Show crawler results
         run: |
           cat ./_janitor/crawl_results.json
 
@@ -54,7 +54,7 @@ jobs:
         run: |
           python -m scripts.janitor.analyzer --work-dir ./_janitor
 
-      - name: Show analysis results
+      - name: Show analyzer results
         run: |
           cat ./_janitor/analysis_results.json
 
@@ -64,14 +64,14 @@ jobs:
         run: |
           python -m scripts.janitor.checker --work-dir ./_janitor
 
-      - name: Show check results
+      - name: Show checker results
         run: |
           cat ./_janitor/check_results.json
 
       - name: Write check results to summary
         run: |
           {
-            echo '## Check results'
+            echo '## Checker results'
             echo
             echo '```json'
             cat ./_janitor/check_results.json
@@ -79,7 +79,14 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Fail if checks did not pass
+      - name: Upload the json files as an artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: janitor-json
+          path: ./_janitor/*.json
+          if-no-files-found: error
+
+      - name: Fail if some checks did not pass
         run: |
           # -- Dump failures, if any
           jq '{failures: .failures}' _janitor/check_results.json
