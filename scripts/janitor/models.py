@@ -7,9 +7,51 @@ module resolves some issues with the pickling.
 from typing import List, Dict
 from datetime import date
 from dataclasses import dataclass
+from enum import Enum
 from packaging.version import Version
+from scripts.janitor import consts
 
 # ---------- Common
+
+
+class ReleaseState(Enum):
+    """Represents the state of a release."""
+
+    # -- Draft.
+    DRAFT = "draft"
+    # -- Pre-release.
+    PRERELEASE = "pre-release"
+    # -- Stable but not latest.
+    STABLE = "stable"
+    # -- Stable and latest (only one per repo)
+    LATEST = "latest"
+
+    @classmethod
+    def from_flags(
+        cls, draft: bool, prerelease: bool, is_latest: bool
+    ) -> "ReleaseState":
+        """Map github release flags to a state enum."""
+        if draft:
+            return cls.DRAFT
+        if prerelease:
+            return cls.PRERELEASE
+        if is_latest:
+            return cls.LATEST
+        return cls.STABLE
+
+    def __str__(self) -> str:
+        """Using the string value as string representation. Used by json dumps
+        when default=str.
+        """
+        return self.value
+
+    def is_stable(self) -> bool:
+        """Returns True if the release is stable."""
+        return self in (ReleaseState.STABLE, ReleaseState.LATEST)
+
+    def is_latest(self) -> bool:
+        """Returns true if the release is marked as 'latest'."""
+        return self is ReleaseState.LATEST
 
 
 @dataclass(frozen=True, order=True)
@@ -22,8 +64,9 @@ class GithubReleaseRef:
     tag: str
 
     def __post_init__(self):
-        """Assert repo is all lower case. Use 'fpgawars' and not 'FPGAWars'."""
+        """Sanity checks."""
         assert self.repo == self.repo.lower(), self
+        assert self.repo in consts.APIO_REPOS, self
 
     def __str__(self) -> str:
         """Human friendly representation of the object."""
@@ -39,15 +82,12 @@ class PypiReleaseCrawl:
     https://pypi.org/project/apio/#history
     """
 
-    # -- The apio CLI version as appearing on Pypi.
-    # version: Version
     # -- The date on which the released for published on Pypi.
     published: date
 
+    # -- A reference to the Apio CLI release from which this pypi release
+    # -- was created.
     apio_cli_release: GithubReleaseRef
-
-    # apio_cli_release_repo
-    # apio_cli_release_tag: str
 
 
 @dataclass(frozen=True)
@@ -57,10 +97,10 @@ class PypiCrawl:
     # -- The default release for 'pip install apio', this is considered the
     # -- 'latest' stable release.
     latest: Version
-    # -- List of Apio releases on Pypi.
-    # releases: List[PypiReleaseCrawl]
+    # -- Dict from pypi release version to the release information.
     releases: Dict[str, PypiReleaseCrawl]
-    # -- Version of Pypi releases that were skipped, e.g. for being too old.
+    # -- List of pypi apio releases that were skipped, either too old
+    # -- or known to be problematic.
     skipped_versions: List[Version]
 
 
@@ -70,8 +110,6 @@ class VscodeReleaseCrawl:
     https://marketplace.visualstudio.com/items?itemName=fpgawars.apio
     """
 
-    # -- The vscode extension release is it appears in the marketplace.
-    # version: Version
     # -- The date on which the release was published on the VSCode Marketplace.
     published: date
     # -- The github release of this extension version.
@@ -126,8 +164,34 @@ class RemoteConfigsCrawl:
 
 
 @dataclass(frozen=True)
+class ReleaseCrawl:
+    """Represents crawl information of a single repo release."""
+
+    state: ReleaseState
+    created_date: date
+
+
+@dataclass(frozen=True)
+class RepoCrawl:
+    """Results of crawling a single repo"""
+
+    # -- Maps release tag to release info. Order is
+    # -- descending created_date.
+    releases: Dict[str, ReleaseCrawl]
+
+
+@dataclass(frozen=True)
+class ReposCrawl:
+    """The repos crawling results."""
+
+    repos: Dict[str, RepoCrawl]
+
+
+@dataclass(frozen=True)
 class CrawlResults:
-    """Crawl results"""
+    """Contains the output of the crawl step with all the information
+    collected.
+    """
 
     # -- Results of crawling Apio CLI releases on Pypi.
     pypi_crawl: PypiCrawl
@@ -135,6 +199,8 @@ class CrawlResults:
     vscode_marketplace_crawl: VscodeMarketplaceCrawl
     # -- Results of crawling the remote config files on fpgawars/apio.
     remote_configs_crawl: RemoteConfigsCrawl
+    # -- Results of crawling the repos.
+    repos_crawl: ReposCrawl
 
 
 # ---------- Analyzer output
@@ -142,10 +208,11 @@ class CrawlResults:
 
 @dataclass(frozen=True)
 class AnalysisResults:
-    """Contains analysis reports."""
+    """Contains the result of the analysis step."""
 
     should_be_stable: Dict[str, List[str]]
     should_be_latest: Dict[str, str]
+    garbage_prereleases: Dict[str, List[str]]
 
 
 # ---------- Checker output
@@ -158,6 +225,7 @@ class CheckFailures:
     missing: Dict[str, List[str]]
     non_stable: Dict[str, List[str]]
     non_latest: Dict[str, str]
+    garbage_prereleases: Dict[str, List[str]]
 
     def has_failures(self) -> bool:
         """Returns True if has any error."""
@@ -165,6 +233,7 @@ class CheckFailures:
             len(self.missing) > 0
             or len(self.non_stable) > 0
             or len(self.non_latest) > 0
+            or len(self.garbage_prereleases) > 0
         )
 
 
@@ -178,7 +247,7 @@ class CheckSuccesses:
 
 @dataclass(frozen=True)
 class CheckResults:
-    """The results of the Repos Check step."""
+    """The results of the Checker step."""
 
     # -- We include an explicit passed field so we can easily access
     # -- it in bash script using jq.
