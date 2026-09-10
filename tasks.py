@@ -236,7 +236,7 @@ def view_coverage_task(_: Context):
     open_test_coverage_viewer()
 
 
-@task(name="clean", aliases=["c"])
+@task(name="clean", aliases=["c", "cl"])
 def clean_task(_: Context):
     """Clean caches, artifacts, and temporary files."""
     announce_task("clean")
