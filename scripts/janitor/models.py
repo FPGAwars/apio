@@ -4,7 +4,7 @@ between janitor steps. Having them in a separate python
 module resolves some issues with the pickling.
 """
 
-from typing import List, Dict
+from typing import List, Dict, Any, Set
 from datetime import date
 from dataclasses import dataclass
 from enum import Enum
@@ -12,6 +12,25 @@ from packaging.version import Version
 from scripts.janitor import consts
 
 # ---------- Common
+
+
+@dataclass(frozen=True, order=True)
+class GithubReleaseRef:
+    """Represents a single release on a github repo."""
+
+    # -- The github repo. E.g. "fpgawars/apio"
+    repo: str
+    # -- The release tag, e.g. "2026-08-13"
+    tag: str
+
+    def __post_init__(self):
+        """Sanity checks."""
+        assert self.repo == self.repo.lower(), self
+        assert self.repo in consts.APIO_REPOS, self
+
+    def __str__(self) -> str:
+        """Human friendly representation of the object."""
+        return self.repo + " #" + self.tag
 
 
 class ReleaseState(Enum):
@@ -45,32 +64,104 @@ class ReleaseState(Enum):
         """
         return self.value
 
+    @property
     def is_stable(self) -> bool:
         """Returns True if the release is stable."""
         return self in (ReleaseState.STABLE, ReleaseState.LATEST)
 
+    @property
     def is_latest(self) -> bool:
         """Returns true if the release is marked as 'latest'."""
         return self is ReleaseState.LATEST
 
 
-@dataclass(frozen=True, order=True)
-class GithubReleaseRef:
-    """Represents a single release on a github repo."""
+class ReleaseSet:
+    """Represent a set of GithubReleaseRef that can be be grouped by
+    repo."""
 
-    # -- The github repo. E.g. "fpgawars/apio"
-    repo: str
-    # -- The release tag, e.g. "2026-08-13"
-    tag: str
+    def __init__(self, is_singular: bool):
+        """Singular means that at most one release is allowed per
+        repo."""
+        self._is_singular = is_singular
+        self._repos: Dict[str, Set[GithubReleaseRef]] = {}
 
-    def __post_init__(self):
-        """Sanity checks."""
-        assert self.repo == self.repo.lower(), self
-        assert self.repo in consts.APIO_REPOS, self
+    def __len__(self) -> int:
+        """Allows to use len(release_set) to find the number of releases."""
+        return sum(len(releases) for releases in self._repos.values())
 
-    def __str__(self) -> str:
-        """Human friendly representation of the object."""
-        return self.repo + " #" + self.tag
+    def __contains__(self, release: GithubReleaseRef) -> bool:
+        """Allows to use 'release in set' operator"""
+        assert isinstance(release, GithubReleaseRef), release
+        repo_releases: Set[GithubReleaseRef] = self._repos.get(
+            release.repo, set()
+        )
+        return release in repo_releases
+
+    def add(self, release: GithubReleaseRef, *, may_exists: False) -> None:
+        """Add a release reference to the set."""
+        repo = release.repo
+        # -- Case 1: This is the first for this repo.
+        if repo not in self._repos:
+            self._repos[repo] = set([release])
+            return
+        # -- Case 2: Repo already has at least one release.
+        release_set = self._repos[repo]
+        if not may_exists and release in release_set:
+            raise ValueError(f"Release {release} already in set.")
+        release_set.add(release)
+        if self._is_singular and len(release_set) > 1:
+            raise ValueError(
+                f"Multiple releases in a singular ser: {release_set}."
+            )
+
+    def as_dict(self) -> Dict[str, Set[GithubReleaseRef]]:
+        """Converts to a dict of repo -> release_ref."""
+        return self._repos
+
+    def items(self):
+        """Allows for each iteration of (repo, releases)."""
+        return self.as_dict().items()
+
+    def as_tag_dict(self) -> Dict[str, List[str]]:
+        """Converts to a dict of repo -> release_tag."""
+        result = {}
+        for repo in sorted(self._repos.keys()):
+            tags = [r.tag for r in self._repos[repo]]
+            # tags = sorted(self._repos[repo])
+            tags = sorted(tags, reverse=True)
+            result[repo] = tags
+        return result
+
+    def to_json_dict(self) -> Dict[str, Any]:
+        """Return a dict that can be serialized to json. Called from
+        the json serializer."""
+        return self.as_tag_dict()
+
+    def check_partitioning(
+        self,
+        partition1: "ReleaseSet",
+        partition2: "ReleaseSet",
+    ):
+        """Check that partition1 and partition2 are proper partitioning of this
+        set."""
+        assert isinstance(partition1, ReleaseSet)
+        assert isinstance(partition2, ReleaseSet)
+
+        # -- Sizes should match.
+        assert len(self) == len(partition1) + len(partition2), (
+            len(self),
+            len(partition1),
+            len(partition2),
+        )
+        # -- Every item in partition1 should be in this set
+        for _, releases in partition1.items():
+            for release in releases:
+                assert release in self, release
+
+        # -- Every item in partition2 should be in this set.
+        for _, releases in partition2.items():
+            for release in releases:
+                assert release in self, release
 
 
 # ---------- Crawler output
@@ -206,58 +297,94 @@ class CrawlResults:
 # ---------- Analyzer output
 
 
-@dataclass(frozen=True)
-class AnalysisResults:
-    """Contains the result of the analysis step."""
+@dataclass
+class JanitorRequirements:
+    """Requirements that need to be satisfied."""
 
-    should_be_stable: Dict[str, List[str]]
-    should_be_latest: Dict[str, str]
-    garbage_prereleases: Dict[str, List[str]]
+    should_be_stable: ReleaseSet
+    should_be_latest: ReleaseSet  # Singleton
+    garbage_prereleases: ReleaseSet
 
+    def check_partitioning(
+        self,
+        requirements1: "JanitorRequirements",
+        requirements2: "JanitorRequirements",
+    ):
+        """Checks that the requirements in this object are properly
+        partitioned into requirements1 and requirements2 with no missing or
+        duplicates. The partitions typically represent success and failure
+        sets.
+        """
+        self.should_be_stable.check_partitioning(
+            requirements1.should_be_stable,
+            requirements2.should_be_stable,
+        )
+        self.should_be_latest.check_partitioning(
+            requirements1.should_be_latest,
+            requirements2.should_be_latest,
+        )
+        self.garbage_prereleases.check_partitioning(
+            requirements1.garbage_prereleases,
+            requirements2.garbage_prereleases,
+        )
 
-# ---------- Checker output
+    def __post_init__(self):
+        """Sanity checks."""
+        assert isinstance(self.should_be_stable, ReleaseSet)
+        assert isinstance(self.should_be_latest, ReleaseSet)
+        assert isinstance(self.garbage_prereleases, ReleaseSet)
 
+    @classmethod
+    def make_empty(cls) -> "JanitorRequirements":
+        """Make a new Requirements that contains no requirements."""
+        return JanitorRequirements(
+            should_be_stable=ReleaseSet(is_singular=False),
+            should_be_latest=ReleaseSet(is_singular=True),
+            garbage_prereleases=ReleaseSet(is_singular=False),
+        )
 
-@dataclass(frozen=True)
-class CheckFailures:
-    """Checks that failed."""
-
-    missing: Dict[str, List[str]]
-    non_stable: Dict[str, List[str]]
-    non_latest: Dict[str, str]
-    garbage_prereleases: Dict[str, List[str]]
-
-    def has_failures(self) -> bool:
-        """Returns True if has any error."""
+    def is_empty(self) -> bool:
+        """Returns True if there are no requirements."""
         return (
-            len(self.missing) > 0
-            or len(self.non_stable) > 0
-            or len(self.non_latest) > 0
-            or len(self.garbage_prereleases) > 0
+            len(self.should_be_stable) == 0
+            and len(self.should_be_latest) == 0
+            and len(self.garbage_prereleases) == 0
         )
 
 
 @dataclass(frozen=True)
-class CheckSuccesses:
-    """Checks that were successful."""
+class AnalysisResults:
+    """Contains the result of the analysis step."""
 
-    releases_stable: Dict[str, List[str]]
-    releases_latest: Dict[str, str]
+    requirements: JanitorRequirements
+
+
+# ---------- Fixer output
 
 
 @dataclass(frozen=True)
-class CheckResults:
-    """The results of the Checker step."""
+class FixingResults:
+    """The results of the Fixer step."""
 
-    # -- We include an explicit passed field so we can easily access
-    # -- it in bash script using jq.
+    # TBD
+
+
+# ---------- Verifier output
+
+
+@dataclass(frozen=True)
+class VerificationResults:
+    """The results of the Verifier step."""
+
+    # -- An explicit pass/fail flag to make it accessible for the
+    # -- workflow using jq.
     passed: bool
-    failures: CheckFailures
-    successes: CheckSuccesses
+
+    # -- Requirements that are not met.
+    failures: JanitorRequirements
+    # -- Requirements that are met.
+    successes: JanitorRequirements
 
     def __post_init__(self):
-        assert self.passed == (not self.has_failures())
-
-    def has_failures(self) -> bool:
-        """Returns True if has any error."""
-        return self.failures.has_failures()
+        """Sanity check."""
+        assert self.passed == self.failures.is_empty()
