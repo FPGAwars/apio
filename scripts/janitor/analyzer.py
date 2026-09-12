@@ -88,7 +88,7 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
                 draft_age_days = (today - draft_date).days
                 # -- Mark for deletion if too old.
                 if draft_age_days > consts.MAX_DRAFT_AGE_DAYS:
-                    requirements.should_be_deleted.add(
+                    requirements.draft_should_be_deleted.add(
                         release, may_exists=False
                     )
                 continue
@@ -102,15 +102,13 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
                     prereleases_kept += 1
                 else:
                     # -- Mark the for deletion if too many.
-                    requirements.should_be_deleted.add(
+                    requirements.pre_release_should_be_deleted.add(
                         release, may_exists=False
                     )
                 continue
 
             # -- Case 4: Any other release. Do nothing.
             continue
-
-
 
     # -- All done.
     return models.AnalysisResults(requirements)

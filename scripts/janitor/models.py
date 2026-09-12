@@ -97,6 +97,10 @@ class ReleaseSet:
         )
         return release in repo_releases
 
+    def repo_releases(self, repo: str) -> Set[GithubReleaseRef]:
+        """Return a list of the releases of a single repo."""
+        return self._repos.get(repo, set())
+
     def add(self, release: GithubReleaseRef, *, may_exists: False) -> None:
         """Add a release reference to the set."""
         repo = release.repo
@@ -117,6 +121,10 @@ class ReleaseSet:
     def as_dict(self) -> Dict[str, Set[GithubReleaseRef]]:
         """Converts to a dict of repo -> release_ref."""
         return self._repos
+
+    def repos(self) -> Set[str]:
+        """Return a set of repos that have at least one release."""
+        return set(self._repos.keys())
 
     def items(self):
         """Allows for each iteration of (repo, releases)."""
@@ -305,8 +313,22 @@ class JanitorRequirements:
     should_be_stable: ReleaseSet
     # -- Releases that should be marked latest
     should_be_latest: ReleaseSet  # Singleton
-    # -- Prereleases and draft releases that are old enough to be deleted.
-    should_be_deleted: ReleaseSet
+    # -- Draft releases that are old enough to be deleted.
+    draft_should_be_deleted: ReleaseSet
+    # -- Prereleases that are old enough to be deleted.
+    pre_release_should_be_deleted: ReleaseSet
+
+    def get_repos(self) -> Set[str]:
+        """Returns the set of repos that have at least one requirement."""
+        repos: Set[str] = set()
+        for release_set in [
+            self.should_be_stable,
+            self.should_be_latest,
+            self.draft_should_be_deleted,
+            self.pre_release_should_be_deleted,
+        ]:
+            repos.update(release_set.repos())
+        return repos
 
     def check_partitioning(
         self,
@@ -326,16 +348,21 @@ class JanitorRequirements:
             requirements1.should_be_latest,
             requirements2.should_be_latest,
         )
-        self.should_be_deleted.check_partitioning(
-            requirements1.should_be_deleted,
-            requirements2.should_be_deleted,
+        self.draft_should_be_deleted.check_partitioning(
+            requirements1.draft_should_be_deleted,
+            requirements2.draft_should_be_deleted,
+        )
+        self.pre_release_should_be_deleted.check_partitioning(
+            requirements1.pre_release_should_be_deleted,
+            requirements2.pre_release_should_be_deleted,
         )
 
     def __post_init__(self):
         """Sanity checks."""
         assert isinstance(self.should_be_stable, ReleaseSet)
         assert isinstance(self.should_be_latest, ReleaseSet)
-        assert isinstance(self.should_be_deleted, ReleaseSet)
+        assert isinstance(self.draft_should_be_deleted, ReleaseSet)
+        assert isinstance(self.pre_release_should_be_deleted, ReleaseSet)
 
     @classmethod
     def make_empty(cls) -> "JanitorRequirements":
@@ -343,7 +370,8 @@ class JanitorRequirements:
         return JanitorRequirements(
             should_be_stable=ReleaseSet(is_singular=False),
             should_be_latest=ReleaseSet(is_singular=True),
-            should_be_deleted=ReleaseSet(is_singular=False),
+            draft_should_be_deleted=ReleaseSet(is_singular=False),
+            pre_release_should_be_deleted=ReleaseSet(is_singular=False),
         )
 
     def is_empty(self) -> bool:
@@ -351,7 +379,8 @@ class JanitorRequirements:
         return (
             len(self.should_be_stable) == 0
             and len(self.should_be_latest) == 0
-            and len(self.should_be_deleted) == 0
+            and len(self.draft_should_be_deleted) == 0
+            and len(self.pre_release_should_be_deleted) == 0
         )
 
 

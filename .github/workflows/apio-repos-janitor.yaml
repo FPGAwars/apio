@@ -58,57 +58,50 @@ jobs:
         run: |
           cat ./_janitor-data/analysis-results.json
 
-      - name: Run the pre verifier
+      - name: Run the verifier
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -m scripts.janitor.verifier --phase pre --janitor-data-dir ./_janitor-data
+          python -m scripts.janitor.verifier --janitor-data-dir ./_janitor-data
 
-      - name: Show pre verifier results
+      - name: Show verifier results
         run: |
-          cat ./_janitor-data/pre-verification-results.json
+          cat ./_janitor-data/verification-results.json
 
-      - name: Run the Fixer
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python -m scripts.janitor.fixer --janitor-data-dir ./_janitor-data
+     
 
-      - name: Show fixer results
-        run: |
-          cat ./_janitor-data/fixing-results.json
+  
 
-      - name: Run the post verifier
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python -m scripts.janitor.verifier --phase post --janitor-data-dir ./_janitor-data
-
-      - name: Show post verifier results
-        run: |
-          cat ./_janitor-data/post-verification-results.json
-
-      - name: Write post verification results to summary
+      - name: Write verification report to summary
         run: |
           {
-            echo '## Post verification results'
+            cat ./_janitor-data/verification-results.md
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Write verification results to summary
+        run: |
+          {
+            echo
+            echo '## Verification results'
             echo
             echo '```json'
-            cat ./_janitor-data/post-verification-results.json
+            cat ./_janitor-data/verification-results.json
             echo
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload the json files as an artifact
+      - name: Upload json and report files as an artifact
         uses: actions/upload-artifact@v6
         with:
           name: janitor-json
-          path: ./_janitor-data/*.json
+          path: |
+            ./_janitor-data/*.json
+            ./_janitor-data/*.md
           if-no-files-found: error
 
-      - name: Fail if post verifications has failures
+      - name: Fail if verifications has failures
         run: |
           # -- Dump failures, if any
-          jq '{failures: .failures}' _janitor-data/post-verification-results.json
+          jq '{failures: .failures}' _janitor-data/verification-results.json
           # -- Fail if passed is not true.
-          jq -e '.passed == true' ./_janitor-data/post-verification-results.json > /dev/null
+          jq -e '.passed == true' ./_janitor-data/verification-results.json > /dev/null
