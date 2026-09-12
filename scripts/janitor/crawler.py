@@ -1,7 +1,6 @@
 """
-The first step of the Apio Repos Janitor workflow. It scans the repos and
-PyPi and VSCode Marketplace and outputs a pickled CrawlResults file with its
-results.
+This is the first step of the apio repos janitor, it collects information
+from pypi, vscode market, and apio repos and writes it to file.
 """
 
 import re
@@ -21,17 +20,6 @@ import json5
 from packaging.version import Version
 from scripts.janitor import models, util, consts
 
-parser = argparse.ArgumentParser(
-    description="Apio Repos Janitor's crawl phase."
-)
-parser.add_argument(
-    "--work-dir",
-    type=Path,
-    default=Path("./_janitor"),
-    help="Janitor's temp data dir (default = ./_janitor)",
-)
-args = parser.parse_args()
-
 
 # -- A regex to validate n.n.n version string.
 _THREE_NUM_VERSION_REGEX = re.compile(
@@ -47,6 +35,8 @@ _RELEASE_INFO_RE = re.compile(r'RELEASE_INFO\s*=\s*"(generic-)?pypi-([^"]*)"')
 
 def _crawl_pypi() -> models.PypiCrawl:
     """Crawl pypi for Apio CLI releases."""
+
+    print("Crawling PyPi.")
 
     # -- Query PyPi.
     api_url = "https://pypi.org/pypi/apio/json"
@@ -141,6 +131,8 @@ def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
     """Get info of last Apio IDE version on VSCode marketplace"""
 
     # pylint: disable=too-many-locals
+
+    print("Crawling VSCode marketplace.")
 
     query_url = (
         "https://marketplace.visualstudio.com/"
@@ -269,6 +261,8 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
 
     # pylint: disable=too-many-locals
 
+    print("Crawling apio remote configs.")
+
     url = "https://api.github.com/repos/FPGAwars/apio/contents/remote-config"
     req = Request(
         url,
@@ -388,8 +382,13 @@ def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
     return models.RepoCrawl(releases)
 
 
-def _crawl_apio_repos() -> models.ReposCrawl:
-    """Crawl the given repos"""
+def crawl_apio_repos() -> models.ReposCrawl:
+    """Crawl the given repos. This function is called multiple times
+    during the execution of the janitor, including from other steps,
+    since the state of the apio repos may be changed by the fixing
+    step."""
+
+    print("Crawling Apio repos.")
 
     repos_dict: Dict[str, Dict[str, models.ReleaseState]] = {}
     for repo in consts.APIO_REPOS:
@@ -412,8 +411,7 @@ def crawl() -> models.CrawlResults:
     remote_configs_crawl = _crawl_remote_configs()
 
     print("Crawling repos")
-    # TODO: Get repos list from previous steps, e.g. remote config.
-    repos_crawl = _crawl_apio_repos()
+    repos_crawl = crawl_apio_repos()
 
     # print(json.dumps(asdict(remote_configs_crawl), indent=2, default=str))
 
@@ -425,24 +423,34 @@ def crawl() -> models.CrawlResults:
 
 
 def main():
-    """Main function."""
+    """Program entry point."""
+
+    parser = argparse.ArgumentParser(
+        description="Apio Repos Janitor's crawl phase."
+    )
+    parser.add_argument(
+        "--janitor-data-dir",
+        type=Path,
+        help="Janitor's temp data dir",
+    )
+    args = parser.parse_args()
 
     # -- Get the work dir path.
-    work_dir_path = args.work_dir
-    print(f"work_dir = {str(work_dir_path)}")
-    work_dir_path.mkdir(parents=True, exist_ok=True)
+    janitor_data_dir = args.janitor_data_dir
+    print(f"janitor_data_dir = {str(janitor_data_dir)}")
+    janitor_data_dir.mkdir(parents=True, exist_ok=True)
 
     # -- Do the crawling.
     crawl_results: models.CrawlResults = crawl()
 
     # -- Write results as json, for human consumption.
-    (work_dir_path / "crawl_results.json").write_text(
+    (janitor_data_dir / "crawl-results.json").write_text(
         json.dumps(asdict(crawl_results), indent=2, default=str),
         encoding="utf-8",
     )
 
     # -- Write results as pickle, for consumption by next step.
-    with (work_dir_path / "crawl_results.pkl").open("wb") as f:
+    with (janitor_data_dir / "crawl-results.pkl").open("wb") as f:
         pickle.dump(crawl_results, f)
 
 

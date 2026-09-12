@@ -1,4 +1,4 @@
-# A periodic workflow to crawl, analyze, check, fix, and clean
+# A periodic workflow to crawl, analyze, fix, clean, and verify the
 # Apio's repositories.
 
 name: apio-repos-janitor
@@ -42,39 +42,59 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -m scripts.janitor.crawler --work-dir ./_janitor
+          python -m scripts.janitor.crawler --janitor-data-dir ./_janitor-data
 
       - name: Show crawler results
         run: |
-          cat ./_janitor/crawl_results.json
+          cat ./_janitor-data/crawl-results.json
 
       - name: Run the analyzer
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -m scripts.janitor.analyzer --work-dir ./_janitor
+          python -m scripts.janitor.analyzer --janitor-data-dir ./_janitor-data
 
       - name: Show analyzer results
         run: |
-          cat ./_janitor/analysis_results.json
+          cat ./_janitor-data/analysis-results.json
 
-      - name: Run the checker
+      - name: Run the pre verifier
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -m scripts.janitor.checker --work-dir ./_janitor
+          python -m scripts.janitor.verifier --phase pre --janitor-data-dir ./_janitor-data
 
-      - name: Show checker results
+      - name: Show pre verifier results
         run: |
-          cat ./_janitor/check_results.json
+          cat ./_janitor-data/pre-verification-results.json
 
-      - name: Write check results to summary
+      - name: Run the Fixer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m scripts.janitor.fixer --janitor-data-dir ./_janitor-data
+
+      - name: Show fixer results
+        run: |
+          cat ./_janitor-data/fixing-results.json
+
+      - name: Run the post verifier
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m scripts.janitor.verifier --phase post --janitor-data-dir ./_janitor-data
+
+      - name: Show post verifier results
+        run: |
+          cat ./_janitor-data/post-verification-results.json
+
+      - name: Write post verification results to summary
         run: |
           {
-            echo '## Checker results'
+            echo '## Post verification results'
             echo
             echo '```json'
-            cat ./_janitor/check_results.json
+            cat ./_janitor-data/post-verification-results.json
             echo
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
@@ -83,12 +103,12 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: janitor-json
-          path: ./_janitor/*.json
+          path: ./_janitor-data/*.json
           if-no-files-found: error
 
-      - name: Fail if some checks did not pass
+      - name: Fail if post verifications has failures
         run: |
           # -- Dump failures, if any
-          jq '{failures: .failures}' _janitor/check_results.json
+          jq '{failures: .failures}' _janitor-data/post-verification-results.json
           # -- Fail if passed is not true.
-          jq -e '.passed == true' ./_janitor/check_results.json > /dev/null
+          jq -e '.passed == true' ./_janitor-data/post-verification-results.json > /dev/null

@@ -2,6 +2,7 @@
 Utilities used by the Apio Janitor.
 """
 
+from typing import Dict
 import json
 import tarfile
 import urllib.request
@@ -9,9 +10,26 @@ from io import BytesIO
 import ssl
 import certifi
 
-
 # -- Used for outgoing https requests.
 SSL_REQUEST_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+
+
+def to_json_text(root: Dict) -> str:
+    """Called during serialization as json text to convert this object
+    to a json serializable dict.
+    """
+
+    def json_default(obj):
+        # print(f"****json_default() called for {obj}")
+        to_json_dict = getattr(obj, "to_json_dict", None)
+        # print(f"** {to_json_dict=}")
+        if to_json_dict is not None:
+            # print("** to_json_dict found")
+            return to_json_dict()
+        # print("** to_json_dict not found")
+        return str(obj)
+
+    return json.dumps(root, indent=2, default=json_default)
 
 
 def read_file_from_pypi_apio_release(
