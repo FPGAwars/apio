@@ -97,7 +97,7 @@ def verify(
 
     # -- Iterate the 'garbage pre-releases' requirements and partition them to
     # -- success and failures.
-    for repo, releases in requirements.garbage_prereleases.items():
+    for repo, releases in requirements.should_be_deleted.items():
         # -- Get the garbage releases of this repo.
         # -- We expect the repo to be in the crawling data.
         repo_crawl: models.RepoCrawl = fresh_repo_crawl.repos[repo]
@@ -113,10 +113,10 @@ def verify(
             # release_state = repo_crawl.get(release_tag.tag, None)
             # -- Save this requirement as a success or failure.
             if release_crawl is None:
-                successes.garbage_prereleases.add(release, may_exists=False)
+                successes.should_be_deleted.add(release, may_exists=False)
 
             else:
-                failures.garbage_prereleases.add(release, may_exists=False)
+                failures.should_be_deleted.add(release, may_exists=False)
 
     # -- Check that the requirements from the analyzer are properly
     # -- partitioned among the failures and successes.

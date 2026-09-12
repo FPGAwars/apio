@@ -122,6 +122,13 @@ class ReleaseSet:
         """Allows for each iteration of (repo, releases)."""
         return self.as_dict().items()
 
+    def releases(self) -> Set[GithubReleaseRef]:
+        """Returns a set of all releases in the set."""
+        all_releases: Set[GithubReleaseRef] = set()
+        for s in self._repos.values():
+            all_releases.update(s)
+        return all_releases
+
     def as_tag_dict(self) -> Dict[str, List[str]]:
         """Converts to a dict of repo -> release_tag."""
         result = {}
@@ -147,21 +154,14 @@ class ReleaseSet:
         assert isinstance(partition1, ReleaseSet)
         assert isinstance(partition2, ReleaseSet)
 
-        # -- Sizes should match.
-        assert len(self) == len(partition1) + len(partition2), (
-            len(self),
-            len(partition1),
-            len(partition2),
-        )
-        # -- Every item in partition1 should be in this set
-        for _, releases in partition1.items():
-            for release in releases:
-                assert release in self, release
+        # -- Convert to plain sets of releases.
+        self_releases = self.releases()
+        releases1 = partition1.releases()
+        releases2 = partition2.releases()
 
-        # -- Every item in partition2 should be in this set.
-        for _, releases in partition2.items():
-            for release in releases:
-                assert release in self, release
+        # -- Check no dupes and no missing.
+        assert releases1.isdisjoint(releases2)
+        assert releases1.union(releases2) == self_releases
 
 
 # ---------- Crawler output
@@ -301,9 +301,12 @@ class CrawlResults:
 class JanitorRequirements:
     """Requirements that need to be satisfied."""
 
+    # -- Releases in use that should be stable (including latest)
     should_be_stable: ReleaseSet
+    # -- Releases that should be marked latest
     should_be_latest: ReleaseSet  # Singleton
-    garbage_prereleases: ReleaseSet
+    # -- Prereleases and draft releases that are old enough to be deleted.
+    should_be_deleted: ReleaseSet
 
     def check_partitioning(
         self,
@@ -323,16 +326,16 @@ class JanitorRequirements:
             requirements1.should_be_latest,
             requirements2.should_be_latest,
         )
-        self.garbage_prereleases.check_partitioning(
-            requirements1.garbage_prereleases,
-            requirements2.garbage_prereleases,
+        self.should_be_deleted.check_partitioning(
+            requirements1.should_be_deleted,
+            requirements2.should_be_deleted,
         )
 
     def __post_init__(self):
         """Sanity checks."""
         assert isinstance(self.should_be_stable, ReleaseSet)
         assert isinstance(self.should_be_latest, ReleaseSet)
-        assert isinstance(self.garbage_prereleases, ReleaseSet)
+        assert isinstance(self.should_be_deleted, ReleaseSet)
 
     @classmethod
     def make_empty(cls) -> "JanitorRequirements":
@@ -340,7 +343,7 @@ class JanitorRequirements:
         return JanitorRequirements(
             should_be_stable=ReleaseSet(is_singular=False),
             should_be_latest=ReleaseSet(is_singular=True),
-            garbage_prereleases=ReleaseSet(is_singular=False),
+            should_be_deleted=ReleaseSet(is_singular=False),
         )
 
     def is_empty(self) -> bool:
@@ -348,7 +351,7 @@ class JanitorRequirements:
         return (
             len(self.should_be_stable) == 0
             and len(self.should_be_latest) == 0
-            and len(self.garbage_prereleases) == 0
+            and len(self.should_be_deleted) == 0
         )
 
 

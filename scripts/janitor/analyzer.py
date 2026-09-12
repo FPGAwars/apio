@@ -4,6 +4,7 @@ a file a list of requirements that should be met.
 """
 
 from dataclasses import asdict
+from datetime import date
 import pickle
 import argparse
 from pathlib import Path
@@ -63,30 +64,53 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
         latest_remote_config_key
     ]
     for _, package in latest_remote_config.packages.items():
-        # release = package.package_release
         requirements.should_be_latest.add(
             package.package_release, may_exists=False
         )
 
     # -- Identify the old prereleases that should be deleted.
 
-    # garbage_prereleases: Dict[str, List[str]] = {}
+    today: date = date.today()
     for repo, repo_crawl in crawl_results.repos_crawl.repos.items():
         prereleases_kept = 0
-        # delete_list = []
         # -- Iterate releases and process pre-releases. The order is
         # -- in decreasing created_date value.
         for release_tag, release_crawl in repo_crawl.releases.items():
+            release = models.GithubReleaseRef(repo, release_tag)
+
+            # -- Case 1: Release is in use.
+            if release in requirements.should_be_stable:
+                continue
+
+            # -- Case 2: Release is a draft.
+            if release_crawl.state == models.ReleaseState.DRAFT:
+                draft_date = release_crawl.created_date
+                draft_age_days = (today - draft_date).days
+                # -- Mark for deletion if too old.
+                if draft_age_days > consts.MAX_DRAFT_AGE_DAYS:
+                    requirements.should_be_deleted.add(
+                        release, may_exists=False
+                    )
+                continue
+
+            # -- Case 3: Release is a pre-release.
             if release_crawl.state == models.ReleaseState.PRERELEASE:
+                # -- NOTE: We rely here on the fact that the releases are in
+                # -- descending date (newest first)
                 if prereleases_kept < consts.NUM_PRE_RELEASES_TO_KEEP:
                     # -- Keep this prerelease.
                     prereleases_kept += 1
                 else:
-                    # delete_list.append(release)
-                    release_ref = models.GithubReleaseRef(repo, release_tag)
-                    requirements.garbage_prereleases.add(
-                        release_ref, may_exists=False
+                    # -- Mark the for deletion if too many.
+                    requirements.should_be_deleted.add(
+                        release, may_exists=False
                     )
+                continue
+
+            # -- Case 4: Any other release. Do nothing.
+            continue
+
+
 
     # -- All done.
     return models.AnalysisResults(requirements)
