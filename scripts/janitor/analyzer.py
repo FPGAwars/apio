@@ -72,13 +72,11 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
 
     # -- Populate release_should_be_consistent
 
-    # -- For now we select only the stable openxc7 release.
-    openxc7_repo = "fpgawars/tools-openxc7"
-    assert openxc7_repo in consts.APIO_REPOS
-    for release in requirements.release_should_be_stable.repo_releases(
-        openxc7_repo
-    ):
-        requirements.release_should_be_consistent.add(release)
+    # -- Generate release_should_be_consistent for stable releases whose
+    # -- repos have this flag set.
+    for release in requirements.release_should_be_stable.releases():
+        if consts.APIO_REPOS[release.repo].check_consistency:
+            requirements.release_should_be_consistent.add(release)
 
     # -- Populate draft_should_be_deleted and pre_release_should_be_deleted.
 
