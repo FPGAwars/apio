@@ -4,7 +4,6 @@ from pypi, vscode market, and apio repos and writes it to file.
 """
 
 import re
-import os
 import json
 import pickle
 from pathlib import Path
@@ -19,7 +18,6 @@ import requests
 import json5
 from packaging.version import Version
 from scripts.janitor import models, util, consts
-
 
 # -- A regex to validate n.n.n version string.
 _THREE_NUM_VERSION_REGEX = re.compile(
@@ -68,7 +66,11 @@ def _crawl_pypi() -> models.PypiCrawl:
             print(f"Skipped release {version_str:12} (old)")
             continue
 
-        if version in [Version("1.5.0")]:
+        if version in [
+            Version("1.4.1"),  # Missing apio CLI release 2026-04-05
+            Version("1.4.2"),  # Missing apio CLI release 2026-04-05
+            Version("1.5.0"),  # Broken  apio CLI release 2026-06-19
+        ]:
             skipped_versions.append(version)
             print(f"Skipped release {version_str:12} (blacklisted)")
             continue
@@ -83,7 +85,7 @@ def _crawl_pypi() -> models.PypiCrawl:
 
         # -- Extract the apio release that was used to publish this pypi
         # -- release.
-        init_py_text = util.read_file_from_pypi_apio_release(
+        init_py_text = util.download_file_from_pypi_apio_release(
             version_str, "apio/__init__.py"
         )
 
@@ -269,13 +271,12 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
         headers={
             "Accept": "application/vnd.github+json",
             "User-Agent": "apio-script",
+            **util.github_headers(),
         },
     )
 
     with urlopen(req, context=util.SSL_REQUEST_CONTEXT, timeout=30) as resp:
         entries = json.loads(resp.read().decode("utf-8"))
-
-    # print(json.dumps(entries, indent=2))
 
     # -- Iterate files
     files_crawls: Dict[str, models.RemoteConfigFileCrawl] = {}
@@ -283,11 +284,9 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
         package_name = entry["name"]
         if package_name in ["README.md"]:
             continue
-        # print(f"{package_name=}")
         m = _REMOTE_CONFIG_NAME_REGEX.match(package_name)
         assert m, package_name
         version = Version(f"{m.group(1)}.{m.group(2)}")
-        # print(str(version))
 
         download_url = entry["download_url"]
         req = Request(download_url, headers={"User-Agent": "apio-script"})
@@ -337,10 +336,10 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
 
 def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
     """Crawl a single repo and get its releases states."""
-    headers = {"Accept": "application/vnd.github+json"}
-    token = os.environ.get("GITHUB_TOKEN")
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        **util.github_headers(),
+    }
 
     latest_tag = None
     latest = requests.get(

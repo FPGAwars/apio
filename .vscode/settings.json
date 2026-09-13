@@ -52,6 +52,7 @@
         "cerror",
         "cflush",
         "chipdb",
+        "chipdbs",
         "clamav",
         "clamscan",
         "clkout",

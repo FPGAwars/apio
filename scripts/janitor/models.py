@@ -6,7 +6,7 @@ module resolves some issues with the pickling.
 
 from typing import List, Dict, Any, Set
 from datetime import date
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from enum import Enum
 from packaging.version import Version
 from scripts.janitor import consts
@@ -79,10 +79,8 @@ class ReleaseSet:
     """Represent a set of GithubReleaseRef that can be be grouped by
     repo."""
 
-    def __init__(self, is_singular: bool):
-        """Singular means that at most one release is allowed per
-        repo."""
-        self._is_singular = is_singular
+    def __init__(self):
+        """Constructs an empty set."""
         self._repos: Dict[str, Set[GithubReleaseRef]] = {}
 
     def __len__(self) -> int:
@@ -101,7 +99,7 @@ class ReleaseSet:
         """Return a list of the releases of a single repo."""
         return self._repos.get(repo, set())
 
-    def add(self, release: GithubReleaseRef, *, may_exists: False) -> None:
+    def add(self, release: GithubReleaseRef) -> None:
         """Add a release reference to the set."""
         repo = release.repo
         # -- Case 1: This is the first for this repo.
@@ -109,14 +107,7 @@ class ReleaseSet:
             self._repos[repo] = set([release])
             return
         # -- Case 2: Repo already has at least one release.
-        release_set = self._repos[repo]
-        if not may_exists and release in release_set:
-            raise ValueError(f"Release {release} already in set.")
-        release_set.add(release)
-        if self._is_singular and len(release_set) > 1:
-            raise ValueError(
-                f"Multiple releases in a singular ser: {release_set}."
-            )
+        self._repos[repo].add(release)
 
     def as_dict(self) -> Dict[str, Set[GithubReleaseRef]]:
         """Converts to a dict of repo -> release_ref."""
@@ -310,23 +301,39 @@ class JanitorRequirements:
     """Requirements that need to be satisfied."""
 
     # -- Releases in use that should be stable (including latest)
-    should_be_stable: ReleaseSet
+    release_should_be_stable: ReleaseSet
     # -- Releases that should be marked latest
-    should_be_latest: ReleaseSet  # Singleton
+    release_should_be_latest: ReleaseSet  # Singleton
+    # -- Release should be checked for consistency. We do this only
+    # -- for some of the repos.
+    release_should_be_consistent: ReleaseSet
     # -- Draft releases that are old enough to be deleted.
     draft_should_be_deleted: ReleaseSet
     # -- Prereleases that are old enough to be deleted.
     pre_release_should_be_deleted: ReleaseSet
 
+    def release_sets(self) -> dict[str, ReleaseSet]:
+        """Return a dict with the ReleaseSet fields of this instance.
+        Keys are string names and values are the sets. This methods
+        simplifies operations that applies to all the sets."""
+        result = {
+            f.name: getattr(self, f.name)
+            for f in fields(self)
+            if f.type is ReleaseSet or f.type == "ReleaseSet"
+        }
+        return result
+
+    def __post_init__(self):
+        """Sanity checks."""
+        release_sets = self.release_sets()
+        assert len(release_sets) == 5
+        for release_set in release_sets.values():
+            assert isinstance(release_set, ReleaseSet)
+
     def get_repos(self) -> Set[str]:
         """Returns the set of repos that have at least one requirement."""
         repos: Set[str] = set()
-        for release_set in [
-            self.should_be_stable,
-            self.should_be_latest,
-            self.draft_should_be_deleted,
-            self.pre_release_should_be_deleted,
-        ]:
+        for release_set in self.release_sets().values():
             repos.update(release_set.repos())
         return repos
 
@@ -340,48 +347,26 @@ class JanitorRequirements:
         duplicates. The partitions typically represent success and failure
         sets.
         """
-        self.should_be_stable.check_partitioning(
-            requirements1.should_be_stable,
-            requirements2.should_be_stable,
-        )
-        self.should_be_latest.check_partitioning(
-            requirements1.should_be_latest,
-            requirements2.should_be_latest,
-        )
-        self.draft_should_be_deleted.check_partitioning(
-            requirements1.draft_should_be_deleted,
-            requirements2.draft_should_be_deleted,
-        )
-        self.pre_release_should_be_deleted.check_partitioning(
-            requirements1.pre_release_should_be_deleted,
-            requirements2.pre_release_should_be_deleted,
-        )
-
-    def __post_init__(self):
-        """Sanity checks."""
-        assert isinstance(self.should_be_stable, ReleaseSet)
-        assert isinstance(self.should_be_latest, ReleaseSet)
-        assert isinstance(self.draft_should_be_deleted, ReleaseSet)
-        assert isinstance(self.pre_release_should_be_deleted, ReleaseSet)
+        for name, release_set in self.release_sets().items():
+            release_set.check_partitioning(
+                requirements1.release_sets()[name],
+                requirements2.release_sets()[name],
+            )
 
     @classmethod
     def make_empty(cls) -> "JanitorRequirements":
         """Make a new Requirements that contains no requirements."""
         return JanitorRequirements(
-            should_be_stable=ReleaseSet(is_singular=False),
-            should_be_latest=ReleaseSet(is_singular=True),
-            draft_should_be_deleted=ReleaseSet(is_singular=False),
-            pre_release_should_be_deleted=ReleaseSet(is_singular=False),
+            release_should_be_stable=ReleaseSet(),
+            release_should_be_latest=ReleaseSet(),
+            release_should_be_consistent=ReleaseSet(),
+            draft_should_be_deleted=ReleaseSet(),
+            pre_release_should_be_deleted=ReleaseSet(),
         )
 
     def is_empty(self) -> bool:
         """Returns True if there are no requirements."""
-        return (
-            len(self.should_be_stable) == 0
-            and len(self.should_be_latest) == 0
-            and len(self.draft_should_be_deleted) == 0
-            and len(self.pre_release_should_be_deleted) == 0
-        )
+        return all(len(s) == 0 for s in self.release_sets().values())
 
 
 @dataclass(frozen=True)

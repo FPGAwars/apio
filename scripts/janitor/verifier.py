@@ -5,9 +5,10 @@ write the results to a file and generated a human readable markdown
 report.
 """
 
-from typing import Optional, List
+from typing import Optional, List, Set
 from dataclasses import asdict, dataclass
 import pickle
+import json
 import argparse
 from pathlib import Path
 from scripts.janitor import models, crawler, util
@@ -30,6 +31,8 @@ def verify(
     """Verifies that the analyzer requirements where fixed."""
 
     # pylint: disable=too-many-branches
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
 
     # -- Perform a fresh crawl of the repos.
     fresh_repo_crawl: models.ReposCrawl = crawler.crawl_apio_repos()
@@ -48,7 +51,7 @@ def verify(
 
     # -- Iterate the 'should be stable' requirements and partition them to
     # -- success and failures.
-    for repo, releases in requirements.should_be_stable.items():
+    for repo, releases in requirements.release_should_be_stable.items():
         # -- Get the garbage releases of this repo.
         # -- We expect the repo to be in the crawling data.
         repo_crawl: models.RepoCrawl = fresh_repo_crawl.repos[repo]
@@ -67,13 +70,13 @@ def verify(
 
             # -- Save this requirement as a success or failure.
             if is_stable:
-                successes.should_be_stable.add(release, may_exists=False)
+                successes.release_should_be_stable.add(release)
             else:
-                failures.should_be_stable.add(release, may_exists=False)
+                failures.release_should_be_stable.add(release)
 
     # -- Iterate the 'should be latest' requirements and partition them to
     # -- success and failures.
-    for repo, releases in requirements.should_be_latest.items():
+    for repo, releases in requirements.release_should_be_latest.items():
         # -- Get the garbage releases of this repo.
         # -- We expect the repo to be in the crawling data.
         repo_crawl: models.RepoCrawl = fresh_repo_crawl.repos[repo]
@@ -92,10 +95,55 @@ def verify(
 
             # -- Save this requirement as a success or failure.
             if is_latest:
-                successes.should_be_latest.add(release, may_exists=False)
+                successes.release_should_be_latest.add(release)
 
             else:
-                failures.should_be_latest.add(release, may_exists=False)
+                failures.release_should_be_latest.add(release)
+
+    # -- Process the release_should_be_consistent requirements.
+
+    for repo, releases in requirements.release_should_be_consistent.items():
+        assert repo == "fpgawars/tools-openxc7", repo
+        for release in releases:
+            # -- Older version didn't have the parts index so we just
+            # -- assume they are ok.
+            if release.tag < "2026-09-10":
+                successes.release_should_be_consistent.add(release)
+                continue
+
+            print(f"Checking consistency of release {release}")
+
+            # -- Get the parts index and collect the chipdb file names.
+            json_bytes = util.download_release_asset(
+                release, "XILINX-PARTS-INDEX.json"
+            )
+            index = json.loads(json_bytes)
+            index_chipdbs: Set[str] = set()
+            for part in index["parts"].values():
+                chipdb_asset = part.get("asset", None)
+                if chipdb_asset:
+                    index_chipdbs.add(chipdb_asset)
+            print(f"index_chipdbs has {len(index_chipdbs)} members.")
+
+            # -- Get the release metadata and collects the asset chipdb
+            release_metadata = util.download_release_metadata(release)
+            assets_chipdbs: Set[str] = set()
+            for asset_name in release_metadata.assets.keys():
+                if asset_name.startswith("apio-xilinx-chipdb-"):
+                    assets_chipdbs.add(asset_name)
+            print(f"assets_chipdbs has {len(assets_chipdbs)} members.")
+
+            # -- The two sets should be identical
+            ok = index_chipdbs == assets_chipdbs
+            if ok:
+                successes.release_should_be_consistent.add(release)
+            else:
+                only_in_index = sorted(index_chipdbs - assets_chipdbs)
+                only_in_assets = sorted(assets_chipdbs - index_chipdbs)
+                print(f"*** Release {release} chipdb mismatch")
+                print(f"{only_in_index=}")
+                print(f"{only_in_assets=}")
+                failures.release_should_be_consistent.add(release)
 
     # TODO: The logic of verifying the draft and the releases are very
     # similar, consider to refactor to a shared method.
@@ -116,11 +164,9 @@ def verify(
             )
             # -- Save this requirement as a success or failure.
             if release_crawl is None:
-                successes.draft_should_be_deleted.add(
-                    release, may_exists=False
-                )
+                successes.draft_should_be_deleted.add(release)
             else:
-                failures.draft_should_be_deleted.add(release, may_exists=False)
+                failures.draft_should_be_deleted.add(release)
 
     # -- Iterate the 'pre_release_should_be_deleted' requirements and
     # -- partition them to success and failures.
@@ -138,13 +184,9 @@ def verify(
             )
             # -- Save this requirement as a success or failure.
             if release_crawl is None:
-                successes.pre_release_should_be_deleted.add(
-                    release, may_exists=False
-                )
+                successes.pre_release_should_be_deleted.add(release)
             else:
-                failures.pre_release_should_be_deleted.add(
-                    release, may_exists=False
-                )
+                failures.pre_release_should_be_deleted.add(release)
 
     # -- Check that the requirements from the analyzer are properly
     # -- partitioned among the failures and successes.
@@ -176,25 +218,14 @@ def _generate_markdown_report(
 
     lines.append("**Error founds**")
 
-    # fmt: off
-    sections = {
-        "Releases should be stable":
-            failures.should_be_stable,
-        "Releases should be 'latest'":
-            failures.should_be_latest,
-        "Obsolete draft releases and tags":
-            failures.draft_should_be_deleted,
-        "Obsolete pre-releases and tags":
-            failures.pre_release_should_be_deleted,
-    }
-    # fmt: on
-
     # -- Generate a report section for each repo.
     for repo in active_repos:
         lines.append("\n<br>\n")
         lines.append(f"**{repo}**")
 
-        for title, release_set in sections.items():
+        # for title, release_set in sections.items():
+        for field_name, release_set in failures.release_sets().items():
+            title = field_name.replace("_", " ").capitalize()
             releases = release_set.repo_releases(repo)
             if not releases:
                 continue
