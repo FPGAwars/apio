@@ -276,6 +276,28 @@ class ReposCrawl:
 
     repos: Dict[str, RepoCrawl]
 
+    def get_release_crawl(
+        self, release: GithubReleaseRef, default: Any
+    ) -> ReleaseCrawl | Any:
+        """Lookup the given release crawl. If found, return it, otherwise
+        return 'default'."""
+        assert isinstance(release, GithubReleaseRef)
+
+        # -- Lookup at repo level
+        repo_crawl = self.repos.get(release.repo, None)
+        if repo_crawl is None:
+            return default
+
+        # -- Lookup at release tag level
+        assert isinstance(repo_crawl, RepoCrawl)
+        release_crawl = repo_crawl.releases.get(release.tag, None)
+        if repo_crawl is None:
+            return default
+
+        # -- All done.
+        assert isinstance(release_crawl, ReleaseCrawl)
+        return release_crawl
+
 
 @dataclass(frozen=True)
 class CrawlResults:
