@@ -39,18 +39,17 @@ def _crawl_pypi() -> models.PypiCrawl:
     # -- Query PyPi.
     api_url = "https://pypi.org/pypi/apio/json"
     with urlopen(api_url, context=util.SSL_REQUEST_CONTEXT, timeout=30) as r:
-        data = json.load(r)
+        json_data = json.load(r)
 
     # -- Extract default Apio version on PyPi.
-    default_version_str = data["info"]["version"]
+    default_version_str = json_data["info"]["version"]
     default_version = Version(default_version_str)
 
     # -- Collect the releases.
     releases: Dict[str, models.PypiReleaseCrawl] = {}
     skipped_versions: List[Version] = []
-    for version_str, files in data["releases"].items():
-        # print(f"{version_str=}")
-        # -- Parse release string.
+    for version_str, files in json_data["releases"].items():
+        # -- Parse version string.
         version = Version(version_str)
 
         # -- Ignore releases that marked with 'yanked'.
@@ -358,22 +357,29 @@ def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
         resp = requests.get(url, headers=headers, params=params, timeout=30)
         resp.raise_for_status()
         params = None
-        for rel in resp.json():
-            tag = rel["tag_name"]
-            state = models.ReleaseState.from_flags(
-                draft=bool(rel.get("draft")),
-                prerelease=bool(rel.get("prerelease")),
-                is_latest=tag == latest_tag,
+        for release in resp.json():
+            release_tag = release["tag_name"]
+            # if release_tag in {"v1.5.0"}:
+            #     print(f"Skipping blacklisted {repo} {release_tag}")
+            #     continue
+            release_state = models.ReleaseState.from_flags(
+                draft=bool(release.get("draft")),
+                prerelease=bool(release.get("prerelease")),
+                is_latest=release_tag == latest_tag,
             )
-            created_date = datetime.fromisoformat(rel["created_at"]).date()
-            releases[tag] = models.ReleaseCrawl(state, created_date)
+            published_date = datetime.fromisoformat(
+                release["published_at"]
+            ).date()
+            releases[release_tag] = models.ReleaseCrawl(
+                release_state, published_date
+            )
         url = resp.links.get("next", {}).get("url")
 
-    # -- Sort the releases by descending order of created_date.
+    # -- Sort the releases by descending order of published_date.
     releases = dict(
         sorted(
             releases.items(),
-            key=lambda item: item[1].created_date,
+            key=lambda item: item[1].published_date,
             reverse=True,
         )
     )

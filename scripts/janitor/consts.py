@@ -55,10 +55,11 @@ APIO_REPOS = {
 # -- Currently each repo keeps at most 5 pre-releases so
 # -- we add a small margin here.
 NUM_PRE_RELEASES_TO_KEEP = 7
+# NUM_PRE_RELEASES_TO_KEEP = 3  # For testing
 
 # -- Number of days before a draft release is deleted.
 MAX_DRAFT_AGE_DAYS = 7
 
 # -- Max age in days for the should-have-recent-release requirements. It's
 # -- supposed to identify broken builds.
-MAX_RECENT_RELEASE_DAYS = 2
+MAX_RECENT_RELEASE_DAYS = 1
