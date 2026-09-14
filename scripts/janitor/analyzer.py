@@ -4,6 +4,7 @@ a file a list of requirements that should be met.
 """
 
 from dataclasses import asdict
+from typing import Set
 from datetime import date
 import pickle
 import argparse
@@ -19,35 +20,55 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
 
     # -- A container for the requirements that the analyzer generates.
     # requirements = models.JanitorRequirements({}, {}, {})
-    requirements = models.JanitorRequirements.make_empty()
+    # requirements = models.JanitorRequirements.make_empty()
+    requirements = models.RequirementsSet()
 
-    # -- Populate release_should_be_stable
+    # -- Generate RELEASE_SHOULD_BE_STABLE requirements
 
-    # -- The apio release of each PyPi release should be stable
-    for _, rc in crawl_results.pypi_crawl.releases.items():
-        print(f"{rc=}")
-        requirements.release_should_be_stable.add(rc.apio_cli_release)
+    # -- The apio cli release of each pypi release should be stable.
+    for rc in crawl_results.pypi_crawl.releases.values():
+        requirements.add_by_ref(
+            models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+            rc.apio_cli_release,
+        )
 
-    # -- Each vscode release and the cli releases that it refers to should
-    # -- be stable.
-    for _, rc in crawl_results.vscode_marketplace_crawl.releases.items():
-        requirements.release_should_be_stable.add(rc.apio_vscode_release)
-        requirements.release_should_be_stable.add(rc.apio_cli_release)
+    # -- Each vscode market release, the apio vscode and the apio cli
+    # -- releases should be stable.
+    for rc in crawl_results.vscode_marketplace_crawl.releases.values():
+        requirements.add_by_ref(
+            models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+            rc.apio_vscode_release,
+        )
+        requirements.add_by_ref(
+            models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+            rc.apio_cli_release,
+        )
 
-    # -- All packages that are refereed by a remote config should be stable.
-    for _, rc in crawl_results.remote_configs_crawl.remote_configs.items():
-        for _, package in rc.packages.items():
-            requirements.release_should_be_stable.add(package.package_release)
+        # requirements.release_should_be_stable.add(rc.apio_vscode_release)
+        # requirements.release_should_be_stable.add(rc.apio_cli_release)
 
-    # -- Populate release_should_be_latest
+    # -- All packages that are refereed by a remote config files
+    # -- should be stable.
+    for rc in crawl_results.remote_configs_crawl.remote_configs.values():
+        for package in rc.packages.values():
+            requirements.add_by_ref(
+                models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+                package.package_release,
+            )
+
+    # -- Generate RELEASE_SHOULD_BE_LATEST requirements.
 
     # -- The apio vscode release of the latest vscode market release should
     # -- be marked as latest.
     vscode_crawl = crawl_results.vscode_marketplace_crawl
     vscode_latest_release = vscode_crawl.releases[str(vscode_crawl.latest)]
     # apio_vscode_latest_release = vscode_latest_release.apio_vscode_release
-    requirements.release_should_be_latest.add(
-        vscode_latest_release.apio_vscode_release
+    # requirements.release_should_be_latest.add(
+    #     vscode_latest_release.apio_vscode_release
+    # )
+    requirements.add_by_ref(
+        models.RequirementType.RELEASE_SHOULD_BE_LATEST,
+        vscode_latest_release.apio_vscode_release,
     )
 
     # -- The cli release that is the latest on pypi should be latest in the
@@ -55,8 +76,12 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     pypi_crawl = crawl_results.pypi_crawl
     pypi_latest_release = pypi_crawl.releases[str(pypi_crawl.latest)]
     # apio_cli_latest_release = pypi_latest_release.apio_cli_release
-    requirements.release_should_be_latest.add(
-        pypi_latest_release.apio_cli_release
+    # requirements.release_should_be_latest.add(
+    #     pypi_latest_release.apio_cli_release
+    # )
+    requirements.add_by_ref(
+        models.RequirementType.RELEASE_SHOULD_BE_LATEST,
+        pypi_latest_release.apio_cli_release,
     )
 
     # -- The apio packages releases that are referred by the remote config
@@ -67,38 +92,59 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     latest_remote_config = crawl_results.remote_configs_crawl.remote_configs[
         latest_remote_config_key
     ]
-    for _, package in latest_remote_config.packages.items():
-        requirements.release_should_be_latest.add(package.package_release)
+    for package in latest_remote_config.packages.values():
+        # requirements.release_should_be_latest.add(package.package_release)
+        requirements.add_by_ref(
+            models.RequirementType.RELEASE_SHOULD_BE_LATEST,
+            package.package_release,
+        )
 
-    # -- Populate release_should_be_consistent
+    # -- Now that we set the all the RELEASE_SHOULD_BE_STABLE requirements,
+    # -- extract it as a set of releases in use.
 
-    # -- Generate release_should_be_consistent for stable releases whose
-    # -- repos have this flag set.
-    for release in requirements.release_should_be_stable.releases():
+    releases_in_use: Set[models.GithubReleaseRef] = {
+        req.release_ref()
+        for req in requirements.members_of_type(
+            models.RequirementType.RELEASE_SHOULD_BE_STABLE
+        )
+    }
+
+    # -- Generate RELEASE_SHOULD_BE_CONSISTENT requirements
+
+    # -- Generate RELEASE_SHOULD_BE_CONSISTENT requirement for each
+    # -- RELEASE_SHOULD_BE_STABLE requirement in a repo that is checked
+    # -- for consistency. As for Sep 2026, only the openxc7 repo is checked
+    # -- for consistency.
+    for release in releases_in_use:
         if consts.APIO_REPOS[release.repo].check_consistency:
-            requirements.release_should_be_consistent.add(release)
+            requirements.add_by_ref(
+                models.RequirementType.RELEASE_SHOULD_BE_CONSISTENT, release
+            )
 
-    # -- Populate draft_should_be_deleted and pre_release_should_be_deleted.
+    # -- Generate DRAFT_SHOULD_BE_DELETED and PRERELEASE_SHOULD_BE_DELETED.
 
     today: date = date.today()
     for repo, repo_crawl in crawl_results.repos_crawl.repos.items():
         prereleases_kept = 0
         # -- Iterate releases and process pre-releases. The order is
-        # -- in decreasing created_date value.
+        # -- in decreasing published_date value.
         for release_tag, release_crawl in repo_crawl.releases.items():
             release = models.GithubReleaseRef(repo, release_tag)
 
             # -- Case 1: Release is in use.
-            if release in requirements.release_should_be_stable:
+            if release in releases_in_use:
                 continue
 
             # -- Case 2: Release is a draft.
             if release_crawl.state == models.ReleaseState.DRAFT:
-                draft_date = release_crawl.created_date
+                draft_date = release_crawl.published_date
                 draft_age_days = (today - draft_date).days
                 # -- Mark for deletion if too old.
                 if draft_age_days > consts.MAX_DRAFT_AGE_DAYS:
-                    requirements.draft_should_be_deleted.add(release)
+                    # requirements.draft_should_be_deleted.add(release)
+                    requirements.add_by_ref(
+                        models.RequirementType.DRAFT_SHOULD_BE_DELETED, release
+                    )
                 continue
 
             # -- Case 3: Release is a pre-release.
@@ -110,11 +156,27 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
                     prereleases_kept += 1
                 else:
                     # -- Mark the for deletion if too many.
-                    requirements.pre_release_should_be_deleted.add(release)
+                    # requirements.pre_release_should_be_deleted.add(release)
+                    requirements.add_by_ref(
+                        models.RequirementType.PRERELEASE_SHOULD_BE_DELETED,
+                        release,
+                    )
                 continue
 
             # -- Case 4: Any other release. Do nothing.
             continue
+
+    # -- Generate REPO_SHOULD_HAVE_A_RECENT_BUILD requirements
+
+    for repo, attributes in consts.APIO_REPOS.items():
+        if attributes.daily_builds:
+            requirements.add(
+                models.Requirement(
+                    models.RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD,
+                    repo,
+                    release_tag=None,
+                )
+            )
 
     # -- All done.
     return models.AnalysisResults(requirements)

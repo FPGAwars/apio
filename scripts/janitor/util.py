@@ -114,7 +114,7 @@ def download_release_metadata(
     # -- Construct the githug API request.
     url = (
         f"https://api.github.com/repos/{release.repo}/"
-        f"releases/tags/{release.tag}"
+        f"releases/tags/{release.release_tag}"
     )
 
     req = Request(
@@ -152,7 +152,7 @@ def download_release_asset(
     """Download a release asset into an in-memory buffer."""
     url = (
         f"https://github.com/{release.repo}/releases/download/"
-        f"{release.tag}/{asset_name}"
+        f"{release.release_tag}/{asset_name}"
     )
     print(f"Downloading {url}")
     headers = {

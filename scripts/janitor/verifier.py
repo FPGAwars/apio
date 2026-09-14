@@ -5,13 +5,14 @@ write the results to a file and generated a human readable markdown
 report.
 """
 
-from typing import Optional, List, Set
+from typing import Set, Optional
 from dataclasses import asdict, dataclass
+from datetime import date
 import pickle
 import json
 import argparse
 from pathlib import Path
-from scripts.janitor import models, crawler, util
+from scripts.janitor import models, crawler, util, consts
 
 
 @dataclass(frozen=True)
@@ -25,23 +26,155 @@ class ReleaseStatus:
     is_stable: bool
 
 
-def _is_openxc7_release_consistent(release: models.GithubReleaseRef) -> bool:
-    """Returns True if given openxc7 release is consistent, False otherwise."""
+# def _is_openxc7_release_consistent(release: models.GithubReleaseRef) -> bool:
+#     """Returns True if given openxc7 release is consistent,
+#     False otherwise."""
 
-    assert release.repo == "fpgawars/tools-openxc7", release
-    # for release in releases:
+#     assert release.repo == "fpgawars/tools-openxc7", release
+#     # for release in releases:
+
+#     # -- Older version didn't have the parts index so we just
+#     # -- assume they are ok.
+#     if release.tag < "2026-09-10":
+#         print(f"Old openxc7 release {release}, assuming consistent")
+#         return True
+#         # successes.release_should_be_consistent.add(release)
+#         # continue
+
+#     # -- Download the xilinx parts index.
+#     index_bytes = util.download_release_asset(
+#         release, "XILINX-PARTS-INDEX.json"
+#     )
+#     index = json.loads(index_bytes)
+
+#     # -- Construct a set of the chipdb asset names from the index.
+#     # index_chipdbs: Set[str] = set()
+#     # for part in index["parts"].values():
+#     #     chipdb_asset = part.get("asset", None)
+#     #     if chipdb_asset:
+#     #         index_chipdbs.add(chipdb_asset)
+#     # print(f"index_chipdbs has {len(index_chipdbs)} members.")
+#     # assert len(index_chipdbs) > 20  # Sanity check
+#     index_chipdbs: Set[str] = {
+#         part["asset"] for part in index["parts"].values() if "asset" in part
+#     }
+#     print(f"index_chipdbs has {len(index_chipdbs)} members.")
+#     assert len(index_chipdbs) > 20, index_chipdbs  # Sanity check
+
+#     # -- Download the release metadata.
+#     release_metadata = util.download_release_metadata(release)
+
+#     # -- Construct the set of chipdb assets names from the release
+#     # -- metadata.
+#     assets_chipdbs: Set[str] = {
+#         name
+#         for name in release_metadata.assets.keys()
+#         if name.startswith("apio-xilinx-chipdb-")
+#     }
+#     print(f"assets_chipdbs has {len(assets_chipdbs)} members.")
+#     assert len(assets_chipdbs) > 20, assets_chipdbs  # Sanity check
+
+#     # -- Handle the mismatch case.
+#     if index_chipdbs != assets_chipdbs:
+#         print(f"Openxc7 release {release} is NOT consistent")
+#         only_in_index = sorted(index_chipdbs - assets_chipdbs)
+#         only_in_assets = sorted(assets_chipdbs - index_chipdbs)
+#         print(f"{only_in_index=}")
+#         print(f"{only_in_assets=}")
+#         return False
+
+#     # -- Release is consistent.
+#     print(f"Openxc7 release {release} is consistent")
+#     return True
+
+
+@dataclass
+class VerificationContext:
+    """Contains verification values that are passed to the verification
+    functions."""
+
+    failures: models.RequirementsSet
+    successes: models.RequirementsSet
+    fresh_repos_crawl: models.ReposCrawl
+    today: date
+
+    def add_failure(self, requirement: models.Requirement, verifier_note: str):
+        """Add a an analyzer requirement to the failures set with a note."""
+        self.failures.add(requirement.copy_with_verifier_note(verifier_note))
+
+    def add_success(self, requirement: models.Requirement, verifier_note: str):
+        """Add a an analyzer requirement to the successes set with a note."""
+        self.successes.add(requirement.copy_with_verifier_note(verifier_note))
+
+
+def _verify_release_should_be_stable(
+    ctx: VerificationContext, requirement: models.Requirement
+):
+    """Verify a requirement that a release should be stable."""
+    assert (
+        requirement.req_type == models.RequirementType.RELEASE_SHOULD_BE_STABLE
+    )
+
+    # -- Get the release crawl information
+    release = requirement.release_ref()
+    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+
+    # -- Classify the requirement.
+    if release_crawl is None:
+        ctx.add_failure(requirement, "Release is missing")
+    elif not release_crawl.state.is_stable:
+        ctx.add_failure(requirement, "Release is not stable")
+    else:
+        ctx.add_success(requirement, "Release is stable")
+
+
+def _verify_release_should_be_latest(
+    ctx: VerificationContext, requirement: models.Requirement
+):
+    """Verify a requirement that a release should be latest."""
+    assert (
+        requirement.req_type == models.RequirementType.RELEASE_SHOULD_BE_LATEST
+    )
+
+    # -- Get the release crawl information
+    release = requirement.release_ref()
+    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+
+    # -- Classify the requirement.
+    if release_crawl is None:
+        ctx.add_failure(requirement, "Release is missing")
+    elif not release_crawl.state.is_latest:
+        ctx.add_failure(requirement, "Release is not 'latest'")
+    else:
+        ctx.add_success(requirement, "Release is 'latest'")
+
+
+def _verify_release_should_be_consistent(
+    ctx: VerificationContext, requirement: models.Requirement
+):
+    """Verify a requirement that a release should be consistent."""
+    assert (
+        requirement.req_type
+        == models.RequirementType.RELEASE_SHOULD_BE_CONSISTENT
+    )
+
+    # -- For now we check consistency only of openxc7 releases.
+    release = requirement.release_ref()
+    assert release.repo == "fpgawars/tools-openxc7", requirement
 
     # -- Older version didn't have the parts index so we just
     # -- assume they are ok.
-    if release.tag < "2026-09-10":
-        print(f"Old openxc7 release {release}, assuming consistent")
-        return True
-        # successes.release_should_be_consistent.add(release)
-        # continue
+    if release.release_tag < "2026-09-10":
+        ctx.add_success(requirement, "Old release, assuming OK")
+        return
+    # print(f"Old openxc7 release {release}, assuming consistent")
+    # return True
+    # successes.release_should_be_consistent.add(release)
+    # continue
 
     # -- Download the xilinx parts index.
     index_bytes = util.download_release_asset(
-        release, "XILINX-PARTS-INDEX.json"
+        requirement.release_ref(), "XILINX-PARTS-INDEX.json"
     )
     index = json.loads(index_bytes)
 
@@ -72,18 +205,100 @@ def _is_openxc7_release_consistent(release: models.GithubReleaseRef) -> bool:
     print(f"assets_chipdbs has {len(assets_chipdbs)} members.")
     assert len(assets_chipdbs) > 20, assets_chipdbs  # Sanity check
 
-    # -- Handle the mismatch case.
+    # -- Classify the requirement
     if index_chipdbs != assets_chipdbs:
         print(f"Openxc7 release {release} is NOT consistent")
         only_in_index = sorted(index_chipdbs - assets_chipdbs)
         only_in_assets = sorted(assets_chipdbs - index_chipdbs)
         print(f"{only_in_index=}")
         print(f"{only_in_assets=}")
-        return False
+        ctx.add_failure(requirement, "Chipdb assets do not match")
+    else:
+        ctx.add_success(requirement, "Chipdb assets match index")
 
-    # -- Release is consistent.
-    print(f"Openxc7 release {release} is consistent")
-    return True
+
+def _verify_draft_should_be_deleted(
+    ctx: VerificationContext, requirement: models.Requirement
+):
+    """Verify a requirement that a draft release should be deleted."""
+    assert (
+        requirement.req_type == models.RequirementType.DRAFT_SHOULD_BE_DELETED
+    )
+
+    # -- Get the release crawl information
+    release = requirement.release_ref()
+    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+
+    # -- Classify the requirement
+    if release_crawl is None:
+        ctx.add_success(release, "Draft is deleted")
+    elif release_crawl.state != models.ReleaseState.DRAFT:
+        ctx.add_failure(requirement, "Not a draft")
+    else:
+        ctx.add_failure(requirement, "Draft exists")
+
+
+def _verify_prerelease_should_be_deleted(
+    ctx: VerificationContext, requirement: models.Requirement
+):
+    """Verify a requirement that a prerelease release should be deleted."""
+    assert (
+        requirement.req_type
+        == models.RequirementType.PRERELEASE_SHOULD_BE_DELETED
+    )
+
+    # -- Get the release crawl information
+    release = requirement.release_ref()
+    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+
+    # -- Classify the requirement
+    if release_crawl is None:
+        ctx.add_success(release, "Prerelease is deleted")
+    elif release_crawl.state != models.ReleaseState.PRERELEASE:
+        ctx.add_failure(requirement, "Not a prerelease")
+    else:
+        ctx.add_failure(requirement, "Prerelease exists")
+
+
+def _verify_repo_should_have_a_recent_build(
+    ctx: VerificationContext, requirement: models.Requirement
+):
+    """Verify a requirement that a repo should have a recent build.."""
+    assert (
+        requirement.req_type
+        == models.RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD
+    )
+
+    # -- Get the repo crawl information
+    repo = requirement.repo
+    repo_crawl: models.RepoCrawl = ctx.fresh_repos_crawl.repos[repo]
+
+    # -- Find the date of the latest release
+    latest: Optional[tuple[str, models.ReleaseCrawl]] = max(
+        repo_crawl.releases.items(),
+        key=lambda item: item[1].published_date,
+        default=None,
+    )
+
+    # -- Handle the case of no builds at all
+    if latest is None:
+        ctx.add_failure(requirement, "No builds")
+        return
+
+    # -- We found the latest build, compute its age ind ays.
+    days_since_last_build = (ctx.today - latest[1].published_date).days
+
+    # -- Handle the case of latest build is too old.
+    if days_since_last_build > consts.MAX_RECENT_RELEASE_DAYS:
+        ctx.add_failure(
+            requirement, f"{latest[0]} is {days_since_last_build} days old."
+        )
+        return
+
+    # -- Handle the case of OK
+    ctx.add_success(
+        requirement, f"{latest[0]} is {days_since_last_build} days old."
+    )
 
 
 def verify(
@@ -91,215 +306,56 @@ def verify(
 ) -> models.VerificationResults:
     """Verifies that the analyzer requirements where fixed."""
 
-    # pylint: disable=too-many-branches
-
-    # -- Perform a fresh crawl of the repos.
-    fresh_repo_crawl: models.ReposCrawl = crawler.crawl_apio_repos()
-
     # -- The requirement from the analyzer
-    requirements: models.JanitorRequirements = analysis_results.requirements
+    requirements: models.RequirementsSet = analysis_results.requirements
 
-    # -- We are going to partitions the requirements into successes and
-    # -- failures.
-    failures: models.JanitorRequirements = (
-        models.JanitorRequirements.make_empty()
+    # -- Create a verification context that will be passed around.
+    ctx = VerificationContext(
+        failures=models.RequirementsSet(),
+        successes=models.RequirementsSet(),
+        fresh_repos_crawl=crawler.crawl_apio_repos(),
+        today=date.today(),
     )
-    successes: models.JanitorRequirements = (
-        models.JanitorRequirements.make_empty()
-    )
 
-    # -- Process the should_be_stable requirements.
-    for release in requirements.release_should_be_stable.releases():
-        # -- Determine if the release is stable.
-        release_crawl = fresh_repo_crawl.get_release_crawl(release, None)
-        is_stable = release_crawl is not None and release_crawl.state.is_stable
+    for requirement in requirements.members():
+        # -- Analyzer should not set the verifier_note field.
+        assert requirement.verifier_note is None, requirement
 
-        # -- Save in the the proper output set.
-        if is_stable:
-            successes.release_should_be_stable.add(release)
-        else:
-            failures.release_should_be_stable.add(release)
+        # -- Dispatch requirement verification by type.
+        match requirement.req_type:
+            case models.RequirementType.RELEASE_SHOULD_BE_STABLE:
+                _verify_release_should_be_stable(ctx, requirement)
 
-    # -- Iterate the 'should be stable' requirements and partition them to
-    # -- success and failures.
-    # for repo, releases in requirements.release_should_be_stable.items():
-    #     # -- Get the garbage releases of this repo.
-    #     # -- We expect the repo to be in the crawling data.
-    #     repo_crawl: models.RepoCrawl = fresh_repo_crawl.repos[repo]
-    #     assert isinstance(repo_crawl, models.RepoCrawl)
-    #     for release in releases:
-    #         assert isinstance(release, models.GithubReleaseRef)
-    #         assert release.repo == repo
+            case models.RequirementType.RELEASE_SHOULD_BE_LATEST:
+                _verify_release_should_be_latest(ctx, requirement)
 
-    #         # -- Determine if this release exists and is stable.
-    #         release_crawl: Optional[models.ReleaseCrawl] = (
-    #             repo_crawl.releases.get(release.tag, None)
-    #         )
-    #         is_stable = (
-    #             release_crawl is not None and release_crawl.state.is_stable
-    #         )
+            case models.RequirementType.RELEASE_SHOULD_BE_CONSISTENT:
+                _verify_release_should_be_consistent(ctx, requirement)
 
-    #         # -- Save this requirement as a success or failure.
-    #         if is_stable:
-    #             successes.release_should_be_stable.add(release)
-    #         else:
-    #             failures.release_should_be_stable.add(release)
+            case models.RequirementType.DRAFT_SHOULD_BE_DELETED:
+                _verify_draft_should_be_deleted(ctx, requirement)
 
-    # -- Process the should_be_latest requirements.
-    for release in requirements.release_should_be_latest.releases():
-        # -- Determine if the release is marked as 'latest'.
-        release_crawl = fresh_repo_crawl.get_release_crawl(release, None)
-        is_latest = release_crawl is not None and release_crawl.state.is_latest
+            case models.RequirementType.PRERELEASE_SHOULD_BE_DELETED:
+                _verify_prerelease_should_be_deleted(ctx, requirement)
 
-        # -- Save in the the proper output set.
-        if is_latest:
-            successes.release_should_be_latest.add(release)
-        else:
-            failures.release_should_be_latest.add(release)
-
-    # -- Iterate the 'should be latest' requirements and partition them to
-    # -- success and failures.
-    # for repo, releases in requirements.release_should_be_latest.items():
-    #     # -- Get the garbage releases of this repo.
-    #     # -- We expect the repo to be in the crawling data.
-    #     repo_crawl: models.RepoCrawl = fresh_repo_crawl.repos[repo]
-    #     assert isinstance(repo_crawl, models.RepoCrawl)
-    #     for release in releases:
-    #         assert isinstance(release, models.GithubReleaseRef)
-    #         assert release.repo == repo
-
-    #         # -- Determine if this release is latest.
-    #         release_crawl: Optional[models.ReleaseCrawl] = (
-    #             repo_crawl.releases.get(release.tag, None)
-    #         )
-    #         is_latest = (
-    #             release_crawl is not None and release_crawl.state.is_latest
-    #         )
-
-    #         # -- Save this requirement as a success or failure.
-    #         if is_latest:
-    #             successes.release_should_be_latest.add(release)
-
-    #         else:
-    #             failures.release_should_be_latest.add(release)
-
-    # -- Process the release_should_be_consistent requirements.
-
-    # for repo, releases in requirements.release_should_be_consistent.items():
-    for release in requirements.release_should_be_consistent.releases():
-        # -- For now we have this requirement only for the openxc7 repo.
-        assert release.repo == "fpgawars/tools-openxc7", release
-
-        is_ok = _is_openxc7_release_consistent(release)
-
-        # # -- Older version didn't have the parts index so we just
-        # # -- assume they are ok.
-        # if release.tag < "2026-09-10":
-        #     successes.release_should_be_consistent.add(release)
-        #     continue
-
-        # print(f"Checking consistency of release {release}")
-
-        # # -- Download the xilinx parts index.
-        # index_bytes = util.download_release_asset(
-        #     release, "XILINX-PARTS-INDEX.json"
-        # )
-        # index = json.loads(index_bytes)
-
-        # # -- Construct a set of the chipdb asset names from the index.
-        # index_chipdbs: Set[str] = set()
-        # for part in index["parts"].values():
-        #     chipdb_asset = part.get("asset", None)
-        #     if chipdb_asset:
-        #         index_chipdbs.add(chipdb_asset)
-        # print(f"index_chipdbs has {len(index_chipdbs)} members.")
-
-        # # -- Download the release metadata.
-        # release_metadata = util.download_release_metadata(release)
-
-        # # -- Construct the set of chipdb assets names from the release
-        # # -- metadata.
-        # assets_chipdbs: Set[str] = set()
-        # for asset_name in release_metadata.assets.keys():
-        #     if asset_name.startswith("apio-xilinx-chipdb-"):
-        #         assets_chipdbs.add(asset_name)
-        # print(f"assets_chipdbs has {len(assets_chipdbs)} members.")
-
-        # # -- Test if the two sets are identical
-        # ok = index_chipdbs == assets_chipdbs
-
-        # -- Assign this release to success or failure output sets.
-        if is_ok:
-            successes.release_should_be_consistent.add(release)
-        else:
-            # only_in_index = sorted(index_chipdbs - assets_chipdbs)
-            # only_in_assets = sorted(assets_chipdbs - index_chipdbs)
-            # print(f"*** Release {release} chipdb mismatch")
-            # print(f"{only_in_index=}")
-            # print(f"{only_in_assets=}")
-            failures.release_should_be_consistent.add(release)
-
-    # TODO: The logic of verifying the draft and the releases are very
-    # similar, consider to refactor to a shared method.
-
-    # -- Iterate the 'draft_should_be_deleted' requirements and
-    # -- partition them to success and failures.
-    # for repo, releases in requirements.draft_should_be_deleted.items():
-    for release in requirements.draft_should_be_deleted.releases():
-
-        # -- Get repo crawl information.
-        # -- We expect the repo to be in the crawling data.
-        # repo_crawl: models.RepoCrawl = fresh_repo_crawl.repos[repo]
-        # -- Iterate and check if the releases exist.
-        # for release in releases:
-        assert isinstance(release, models.GithubReleaseRef)
-        # assert release.repo == repo
-        # -- Determine if the draft exists.
-        release_crawl: Optional[models.ReleaseCrawl] = (
-            fresh_repo_crawl.get_release_crawl(release, None)
-        )
-        # (
-        #     repo_crawl.releases.get(release.tag, None)
-        # )
-        # -- Save this requirement as a success or failure.
-        if release_crawl is None:
-            successes.draft_should_be_deleted.add(release)
-        else:
-            failures.draft_should_be_deleted.add(release)
-
-    # -- Iterate the 'pre_release_should_be_deleted' requirements and
-    # -- partition them to success and failures.
-    # for repo, releases in requirements.pre_release_should_be_deleted.items():
-    for release in requirements.pre_release_should_be_deleted.releases():
-        # -- Get repo crawl information.
-        # -- We expect the repo to be in the crawling data.
-        # repo_crawl: models.RepoCrawl = fresh_repo_crawl.repos[repo]
-        # -- Iterate and check if the releases exist.
-        # for release in releases:
-        assert isinstance(release, models.GithubReleaseRef)
-        # assert release.repo == repo
-        # -- Determine if the prerelease exists.
-        release_crawl: Optional[models.ReleaseCrawl] = (
-            fresh_repo_crawl.get_release_crawl(release, None)
-        )
-        # (
-        #     repo_crawl.releases.get(release.tag, None)
-        # )
-        # -- Save this requirement as a success or failure.
-        if release_crawl is None:
-            successes.pre_release_should_be_deleted.add(release)
-        else:
-            failures.pre_release_should_be_deleted.add(release)
+            case models.RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD:
+                _verify_repo_should_have_a_recent_build(ctx, requirement)
+            case _:
+                raise ValueError(
+                    f"unknown requirement type: {requirement.req_type}"
+                )
 
     # -- Check that the requirements from the analyzer are properly
-    # -- partitioned among the failures and successes.
-    requirements.check_partitioning(failures, successes)
+    # -- partitioned among the failures and successes. The added verifier notes
+    # -- are ignore in this check because they are not used for
+    # -- comparisons.
+    requirements.check_partitioning(ctx.failures, ctx.successes)
 
     # -- All done.
     return models.VerificationResults(
-        failures.is_empty(),
-        failures,
-        successes,
+        len(ctx.failures) == 0,
+        ctx.failures,
+        ctx.successes,
     )
 
 
@@ -310,36 +366,31 @@ def _generate_markdown_report(
     results."""
     lines = []
     # -- Get the failing requirements
-    failures: models.JanitorRequirements = verification_results.failures
-    if failures.is_empty():
+    failures: models.RequirementsSet = verification_results.failures
+    if len(failures) == 0:
         lines.append("No errors found.")
         return "\n".join(lines)
-
-    # -- Get a sorted list of the repos that have at least one failure
-    active_repos: List[str] = sorted(failures.get_repos())
-    assert len(active_repos) > 1
 
     lines.append("**Error founds**")
 
     # -- Generate a report section for each repo.
-    for repo in active_repos:
+    for repo, requirement_types in failures.group_by_repo_and_type().items():
         lines.append("\n<br>\n")
         lines.append(f"**{repo}**")
 
-        # for title, release_set in sections.items():
-        for field_name, release_set in failures.release_sets().items():
-            title = field_name.replace("_", " ").capitalize()
-            releases = release_set.repo_releases(repo)
-            if not releases:
-                continue
-            lines.append(f"- {title}")
-            for release in releases:
-                release_link = (
-                    f"[{release.tag}]"
-                    + f"(https://github.com/{repo}/releases/tag/"
-                    + f"{release.tag})"
-                )
-                lines.append(f"  - {release_link}")
+        for requirement_type, requirements in requirement_types.items():
+            type_title = requirement_type.value.replace("-", " ").capitalize()
+            lines.append(f"- {type_title}")
+            for requirement in requirements:
+                if requirement.req_type.is_release_scope:
+                    link = (
+                        f"[{requirement.release_tag}]"
+                        + f"(https://github.com/{repo}/releases/tag/"
+                        + f"{requirement.release_tag})"
+                    )
+                else:
+                    link = f"[releases](https://github.com/{repo}/releases)"
+                lines.append(f"  - {link}")
 
     # -- All done.
     return "\n".join(lines)
