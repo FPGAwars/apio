@@ -12,7 +12,18 @@ import pickle
 import json
 import argparse
 from pathlib import Path
-from scripts.janitor import models, crawler, util, consts
+from scripts.janitor import crawler, util, consts
+from scripts.janitor.models import (
+    RequirementsSet,
+    RepoCrawl,
+    ReposCrawl,
+    Requirement,
+    RequirementType,
+    ReleaseState,
+    ReleaseCrawl,
+    AnalysisResults,
+    VerificationResults,
+)
 
 
 @dataclass(frozen=True)
@@ -26,94 +37,30 @@ class ReleaseStatus:
     is_stable: bool
 
 
-# def _is_openxc7_release_consistent(release: models.GithubReleaseRef) -> bool:
-#     """Returns True if given openxc7 release is consistent,
-#     False otherwise."""
-
-#     assert release.repo == "fpgawars/tools-openxc7", release
-#     # for release in releases:
-
-#     # -- Older version didn't have the parts index so we just
-#     # -- assume they are ok.
-#     if release.tag < "2026-09-10":
-#         print(f"Old openxc7 release {release}, assuming consistent")
-#         return True
-#         # successes.release_should_be_consistent.add(release)
-#         # continue
-
-#     # -- Download the xilinx parts index.
-#     index_bytes = util.download_release_asset(
-#         release, "XILINX-PARTS-INDEX.json"
-#     )
-#     index = json.loads(index_bytes)
-
-#     # -- Construct a set of the chipdb asset names from the index.
-#     # index_chipdbs: Set[str] = set()
-#     # for part in index["parts"].values():
-#     #     chipdb_asset = part.get("asset", None)
-#     #     if chipdb_asset:
-#     #         index_chipdbs.add(chipdb_asset)
-#     # print(f"index_chipdbs has {len(index_chipdbs)} members.")
-#     # assert len(index_chipdbs) > 20  # Sanity check
-#     index_chipdbs: Set[str] = {
-#         part["asset"] for part in index["parts"].values() if "asset" in part
-#     }
-#     print(f"index_chipdbs has {len(index_chipdbs)} members.")
-#     assert len(index_chipdbs) > 20, index_chipdbs  # Sanity check
-
-#     # -- Download the release metadata.
-#     release_metadata = util.download_release_metadata(release)
-
-#     # -- Construct the set of chipdb assets names from the release
-#     # -- metadata.
-#     assets_chipdbs: Set[str] = {
-#         name
-#         for name in release_metadata.assets.keys()
-#         if name.startswith("apio-xilinx-chipdb-")
-#     }
-#     print(f"assets_chipdbs has {len(assets_chipdbs)} members.")
-#     assert len(assets_chipdbs) > 20, assets_chipdbs  # Sanity check
-
-#     # -- Handle the mismatch case.
-#     if index_chipdbs != assets_chipdbs:
-#         print(f"Openxc7 release {release} is NOT consistent")
-#         only_in_index = sorted(index_chipdbs - assets_chipdbs)
-#         only_in_assets = sorted(assets_chipdbs - index_chipdbs)
-#         print(f"{only_in_index=}")
-#         print(f"{only_in_assets=}")
-#         return False
-
-#     # -- Release is consistent.
-#     print(f"Openxc7 release {release} is consistent")
-#     return True
-
-
 @dataclass
 class VerificationContext:
     """Contains verification values that are passed to the verification
     functions."""
 
-    failures: models.RequirementsSet
-    successes: models.RequirementsSet
-    fresh_repos_crawl: models.ReposCrawl
+    failures: RequirementsSet
+    successes: RequirementsSet
+    fresh_repos_crawl: ReposCrawl
     today: date
 
-    def add_failure(self, requirement: models.Requirement, verifier_note: str):
+    def add_failure(self, requirement: Requirement, verifier_note: str):
         """Add a an analyzer requirement to the failures set with a note."""
         self.failures.add(requirement.copy_with_verifier_note(verifier_note))
 
-    def add_success(self, requirement: models.Requirement, verifier_note: str):
+    def add_success(self, requirement: Requirement, verifier_note: str):
         """Add a an analyzer requirement to the successes set with a note."""
         self.successes.add(requirement.copy_with_verifier_note(verifier_note))
 
 
 def _verify_release_should_be_stable(
-    ctx: VerificationContext, requirement: models.Requirement
+    ctx: VerificationContext, requirement: Requirement
 ):
     """Verify a requirement that a release should be stable."""
-    assert (
-        requirement.req_type == models.RequirementType.RELEASE_SHOULD_BE_STABLE
-    )
+    assert requirement.req_type == RequirementType.RELEASE_SHOULD_BE_STABLE
 
     # -- Get the release crawl information
     release = requirement.release_ref()
@@ -129,12 +76,10 @@ def _verify_release_should_be_stable(
 
 
 def _verify_release_should_be_latest(
-    ctx: VerificationContext, requirement: models.Requirement
+    ctx: VerificationContext, requirement: Requirement
 ):
     """Verify a requirement that a release should be latest."""
-    assert (
-        requirement.req_type == models.RequirementType.RELEASE_SHOULD_BE_LATEST
-    )
+    assert requirement.req_type == RequirementType.RELEASE_SHOULD_BE_LATEST
 
     # -- Get the release crawl information
     release = requirement.release_ref()
@@ -150,13 +95,10 @@ def _verify_release_should_be_latest(
 
 
 def _verify_release_should_be_consistent(
-    ctx: VerificationContext, requirement: models.Requirement
+    ctx: VerificationContext, requirement: Requirement
 ):
     """Verify a requirement that a release should be consistent."""
-    assert (
-        requirement.req_type
-        == models.RequirementType.RELEASE_SHOULD_BE_CONSISTENT
-    )
+    assert requirement.req_type == RequirementType.RELEASE_SHOULD_BE_CONSISTENT
 
     # -- For now we check consistency only of openxc7 releases.
     release = requirement.release_ref()
@@ -167,10 +109,6 @@ def _verify_release_should_be_consistent(
     if release.release_tag < "2026-09-10":
         ctx.add_success(requirement, "Old release, assuming OK")
         return
-    # print(f"Old openxc7 release {release}, assuming consistent")
-    # return True
-    # successes.release_should_be_consistent.add(release)
-    # continue
 
     # -- Download the xilinx parts index.
     index_bytes = util.download_release_asset(
@@ -179,13 +117,6 @@ def _verify_release_should_be_consistent(
     index = json.loads(index_bytes)
 
     # -- Construct a set of the chipdb asset names from the index.
-    # index_chipdbs: Set[str] = set()
-    # for part in index["parts"].values():
-    #     chipdb_asset = part.get("asset", None)
-    #     if chipdb_asset:
-    #         index_chipdbs.add(chipdb_asset)
-    # print(f"index_chipdbs has {len(index_chipdbs)} members.")
-    # assert len(index_chipdbs) > 20  # Sanity check
     index_chipdbs: Set[str] = {
         part["asset"] for part in index["parts"].values() if "asset" in part
     }
@@ -218,12 +149,10 @@ def _verify_release_should_be_consistent(
 
 
 def _verify_draft_should_be_deleted(
-    ctx: VerificationContext, requirement: models.Requirement
+    ctx: VerificationContext, requirement: Requirement
 ):
     """Verify a requirement that a draft release should be deleted."""
-    assert (
-        requirement.req_type == models.RequirementType.DRAFT_SHOULD_BE_DELETED
-    )
+    assert requirement.req_type == RequirementType.DRAFT_SHOULD_BE_DELETED
 
     # -- Get the release crawl information
     release = requirement.release_ref()
@@ -232,20 +161,17 @@ def _verify_draft_should_be_deleted(
     # -- Classify the requirement
     if release_crawl is None:
         ctx.add_success(release, "Draft is deleted")
-    elif release_crawl.state != models.ReleaseState.DRAFT:
+    elif release_crawl.state != ReleaseState.DRAFT:
         ctx.add_failure(requirement, "Not a draft")
     else:
         ctx.add_failure(requirement, "Draft exists")
 
 
 def _verify_prerelease_should_be_deleted(
-    ctx: VerificationContext, requirement: models.Requirement
+    ctx: VerificationContext, requirement: Requirement
 ):
     """Verify a requirement that a prerelease release should be deleted."""
-    assert (
-        requirement.req_type
-        == models.RequirementType.PRERELEASE_SHOULD_BE_DELETED
-    )
+    assert requirement.req_type == RequirementType.PRERELEASE_SHOULD_BE_DELETED
 
     # -- Get the release crawl information
     release = requirement.release_ref()
@@ -254,27 +180,26 @@ def _verify_prerelease_should_be_deleted(
     # -- Classify the requirement
     if release_crawl is None:
         ctx.add_success(release, "Prerelease is deleted")
-    elif release_crawl.state != models.ReleaseState.PRERELEASE:
+    elif release_crawl.state != ReleaseState.PRERELEASE:
         ctx.add_failure(requirement, "Not a prerelease")
     else:
         ctx.add_failure(requirement, "Prerelease exists")
 
 
 def _verify_repo_should_have_a_recent_build(
-    ctx: VerificationContext, requirement: models.Requirement
+    ctx: VerificationContext, requirement: Requirement
 ):
     """Verify a requirement that a repo should have a recent build.."""
     assert (
-        requirement.req_type
-        == models.RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD
+        requirement.req_type == RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD
     )
 
     # -- Get the repo crawl information
     repo = requirement.repo
-    repo_crawl: models.RepoCrawl = ctx.fresh_repos_crawl.repos[repo]
+    repo_crawl: RepoCrawl = ctx.fresh_repos_crawl.repos[repo]
 
     # -- Find the date of the latest release
-    latest: Optional[tuple[str, models.ReleaseCrawl]] = max(
+    latest: Optional[tuple[str, ReleaseCrawl]] = max(
         repo_crawl.releases.items(),
         key=lambda item: item[1].published_date,
         default=None,
@@ -302,17 +227,17 @@ def _verify_repo_should_have_a_recent_build(
 
 
 def verify(
-    analysis_results: models.AnalysisResults,
-) -> models.VerificationResults:
+    analysis_results: AnalysisResults,
+) -> VerificationResults:
     """Verifies that the analyzer requirements where fixed."""
 
     # -- The requirement from the analyzer
-    requirements: models.RequirementsSet = analysis_results.requirements
+    requirements: RequirementsSet = analysis_results.requirements
 
     # -- Create a verification context that will be passed around.
     ctx = VerificationContext(
-        failures=models.RequirementsSet(),
-        successes=models.RequirementsSet(),
+        failures=RequirementsSet(),
+        successes=RequirementsSet(),
         fresh_repos_crawl=crawler.crawl_apio_repos(),
         today=date.today(),
     )
@@ -323,22 +248,22 @@ def verify(
 
         # -- Dispatch requirement verification by type.
         match requirement.req_type:
-            case models.RequirementType.RELEASE_SHOULD_BE_STABLE:
+            case RequirementType.RELEASE_SHOULD_BE_STABLE:
                 _verify_release_should_be_stable(ctx, requirement)
 
-            case models.RequirementType.RELEASE_SHOULD_BE_LATEST:
+            case RequirementType.RELEASE_SHOULD_BE_LATEST:
                 _verify_release_should_be_latest(ctx, requirement)
 
-            case models.RequirementType.RELEASE_SHOULD_BE_CONSISTENT:
+            case RequirementType.RELEASE_SHOULD_BE_CONSISTENT:
                 _verify_release_should_be_consistent(ctx, requirement)
 
-            case models.RequirementType.DRAFT_SHOULD_BE_DELETED:
+            case RequirementType.DRAFT_SHOULD_BE_DELETED:
                 _verify_draft_should_be_deleted(ctx, requirement)
 
-            case models.RequirementType.PRERELEASE_SHOULD_BE_DELETED:
+            case RequirementType.PRERELEASE_SHOULD_BE_DELETED:
                 _verify_prerelease_should_be_deleted(ctx, requirement)
 
-            case models.RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD:
+            case RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD:
                 _verify_repo_should_have_a_recent_build(ctx, requirement)
             case _:
                 raise ValueError(
@@ -352,7 +277,7 @@ def verify(
     requirements.check_partitioning(ctx.failures, ctx.successes)
 
     # -- All done.
-    return models.VerificationResults(
+    return VerificationResults(
         len(ctx.failures) == 0,
         ctx.failures,
         ctx.successes,
@@ -360,13 +285,13 @@ def verify(
 
 
 def _generate_markdown_report(
-    verification_results: models.VerificationResults,
+    verification_results: VerificationResults,
 ) -> str:
     """Generates a markdown report for human consumption with the verification
     results."""
     lines = []
     # -- Get the failing requirements
-    failures: models.RequirementsSet = verification_results.failures
+    failures: RequirementsSet = verification_results.failures
     if len(failures) == 0:
         lines.append("No errors found.")
         return "\n".join(lines)
@@ -419,7 +344,7 @@ def main():
         analysis_results = pickle.load(f)
 
     # -- Verify
-    verification_results: models.VerificationResults = verify(analysis_results)
+    verification_results: VerificationResults = verify(analysis_results)
 
     # -- Write results as json, for human consumption.
     (janitor_data_dir / "verification-results.json").write_text(

@@ -330,7 +330,7 @@ class PypiCrawl:
     releases: Dict[str, PypiReleaseCrawl]
     # -- List of pypi apio releases that were skipped, either too old
     # -- or known to be problematic.
-    skipped_versions: List[Version]
+    skipped_versions: List[str]
 
 
 @dataclass(frozen=True)
@@ -358,7 +358,7 @@ class VscodeMarketplaceCrawl:
     # -- List of relevant releases that were crawled.
     releases: Dict[str, VscodeReleaseCrawl]
     # -- List of extension versions that were skipped, e.g. for being too old.
-    skipped_versions: List[Version]
+    skipped_versions: List[str]
 
 
 @dataclass(frozen=True)

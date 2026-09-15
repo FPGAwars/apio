@@ -17,7 +17,22 @@ from zipfile import ZipFile
 import requests
 import json5
 from packaging.version import Version
-from scripts.janitor import models, util, consts
+from scripts.janitor import util, consts
+from scripts.janitor.models import (
+    GithubReleaseRef,
+    PypiCrawl,
+    PypiReleaseCrawl,
+    CrawlResults,
+    VscodeMarketplaceCrawl,
+    RemoteConfigsCrawl,
+    ReposCrawl,
+    ReleaseState,
+    RepoCrawl,
+    VscodeReleaseCrawl,
+    RemoteConfigFileCrawl,
+    RemoteConfigPackageCrawl,
+    ReleaseCrawl,
+)
 
 # -- A regex to validate n.n.n version string.
 _THREE_NUM_VERSION_REGEX = re.compile(
@@ -31,7 +46,7 @@ _THREE_NUM_VERSION_REGEX = re.compile(
 _RELEASE_INFO_RE = re.compile(r'RELEASE_INFO\s*=\s*"(generic-)?pypi-([^"]*)"')
 
 
-def _crawl_pypi() -> models.PypiCrawl:
+def _crawl_pypi() -> PypiCrawl:
     """Crawl pypi for Apio CLI releases."""
 
     print("Crawling PyPi.")
@@ -46,37 +61,27 @@ def _crawl_pypi() -> models.PypiCrawl:
     default_version = Version(default_version_str)
 
     # -- Collect the releases.
-    releases: Dict[str, models.PypiReleaseCrawl] = {}
-    skipped_versions: List[Version] = []
+    releases: Dict[str, PypiReleaseCrawl] = {}
+    skipped_versions: List[str] = []
     for version_str, files in json_data["releases"].items():
-        # -- Parse version string.
-        version = Version(version_str)
+
+        if version_str in consts.PYPI_RELEASES_TO_IGNORE:
+            skipped_versions.append(version_str)
+            print(f"Skipping Pypi release {version_str:12} (ignore list)")
+            continue
 
         # -- Ignore releases that marked with 'yanked'.
         if not files or all(f.get("yanked") for f in files):
-            skipped_versions.append(version)
-            print(f"Skipped release {version_str:12} (yanked)")
-            continue
-
-        # -- Ignore 0.x releases. They are too old and don't use remote
-        # -- config.
-        if version <= Version("1.2.1"):
-            skipped_versions.append(version)
-            print(f"Skipped release {version_str:12} (old)")
-            continue
-
-        if version in [
-            Version("1.4.1"),  # Missing apio CLI release 2026-04-05
-            Version("1.4.2"),  # Missing apio CLI release 2026-04-05
-            Version("1.5.0"),  # Broken  apio CLI release 2026-06-19
-        ]:
-            skipped_versions.append(version)
-            print(f"Skipped release {version_str:12} (blacklisted)")
+            skipped_versions.append(version_str)
+            print(f"Skipping pypi release {version_str:12} (yanked)")
             continue
 
         # -- At this point we expect the release string to be a clean
         # -- three numbers value.
         assert re.fullmatch(_THREE_NUM_VERSION_REGEX, version_str), version_str
+
+        # -- Parse version string.
+        version = Version(version_str)
 
         # -- Extract the publishing time.
         publishing_time_str = max(f["upload_time_iso_8601"] for f in files)
@@ -93,9 +98,9 @@ def _crawl_pypi() -> models.PypiCrawl:
 
         # -- Append the release to the result list.
         assert str(version) not in releases
-        releases[str(version)] = models.PypiReleaseCrawl(
+        releases[str(version)] = PypiReleaseCrawl(
             publishing_time.date(),
-            models.GithubReleaseRef("fpgawars/apio", apio_cli_tag),
+            GithubReleaseRef("fpgawars/apio", apio_cli_tag),
         )
 
     # -- Sort in place in decreasing semantic version key.
@@ -109,8 +114,7 @@ def _crawl_pypi() -> models.PypiCrawl:
     skipped_versions.sort(reverse=True)
 
     # -- All done ok.
-    # return releases, skipped_versions
-    return models.PypiCrawl(default_version, releases, skipped_versions)
+    return PypiCrawl(default_version, releases, skipped_versions)
 
 
 # -- Microsoft VSCode Marketplace consts.
@@ -121,14 +125,11 @@ _FLAG_INCLUDE_VERSION_PROPERTIES = 16
 _FLAG_INCLUDE_ASSET_URI = 128
 _FLAG_INCLUDE_STATISTICS = 256
 
-
-# _VSCODE_PUBLISHER = "fpgawars"
-# _VSCODE_EXTENSION = "apio"
 _MICROSOFT_VSIX_ASSET = "Microsoft.VisualStudio.Services.VSIXPackage"
 _MICROSOFT_PRE_RELEASE = "Microsoft.VisualStudio.Code.PreRelease"
 
 
-def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
+def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
     """Get info of last Apio IDE version on VSCode marketplace"""
 
     # pylint: disable=too-many-locals
@@ -173,18 +174,17 @@ def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
     with urlopen(req, context=util.SSL_REQUEST_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
-    releases: Dict[str, models.VscodeReleaseCrawl] = {}
-    skipped_versions: List[Version] = []
+    releases: Dict[str, VscodeReleaseCrawl] = {}
+    skipped_versions: List[str] = []
     default_version = None
 
     for rel in data["results"][0]["extensions"][0]["versions"]:
 
         version_str = rel["version"]
-        version = Version(version_str)
 
-        if version < Version("0.1.6"):
-            skipped_versions.append(version)
-            print(f"Skipping vscode version {version_str:8} (too old)")
+        if version_str in consts.VSCODE_MARKETPLACE_RELEASES_TO_IGNORE:
+            skipped_versions.append(version_str)
+            print(f"Skipping vscode release {version_str:8} (ignore list)")
             continue
 
         is_prerelease = any(
@@ -193,9 +193,16 @@ def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
             for p in rel.get("properties") or []
         )
         if is_prerelease:
-            skipped_versions.append(version)
+            skipped_versions.append(version_str)
             print(f"Skipping vscode version {version_str:8} (pre-release)")
             continue
+
+        # -- At this point we expect the release string to be a clean
+        # -- three numbers value.
+        assert re.fullmatch(_THREE_NUM_VERSION_REGEX, version_str), version_str
+
+        # -- Parse the version.
+        version = Version(version_str)
 
         last_updated_time_str = rel["lastUpdated"]
         last_updated_time = datetime.fromisoformat(last_updated_time_str)
@@ -238,26 +245,24 @@ def _crawl_vscode_marketplace() -> models.VscodeMarketplaceCrawl:
             default_version = version
 
         assert str(version) not in releases
-        releases[str(version)] = models.VscodeReleaseCrawl(
+        releases[str(version)] = VscodeReleaseCrawl(
             # version,
             last_updated_time.date(),
-            models.GithubReleaseRef(repo, tag),
+            GithubReleaseRef(repo, tag),
             # cli_version,
-            models.GithubReleaseRef(apio_cli_repo, apio_cli_tag),
+            GithubReleaseRef(apio_cli_repo, apio_cli_tag),
         )
     # default_version = releases.keys()[0]
 
     assert default_version is not None
-    return models.VscodeMarketplaceCrawl(
-        default_version, releases, skipped_versions
-    )
+    return VscodeMarketplaceCrawl(default_version, releases, skipped_versions)
 
 
 # -- Regex to parse remote config file names.
 _REMOTE_CONFIG_NAME_REGEX = re.compile(r"^apio-(\d+)\.(\d+)\.x\.jsonc$")
 
 
-def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
+def _crawl_remote_configs() -> RemoteConfigsCrawl:
     """Crawls the latest version of the apio remote config files."""
 
     # pylint: disable=too-many-locals
@@ -278,7 +283,7 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
         entries = json.loads(resp.read().decode("utf-8"))
 
     # -- Iterate files
-    files_crawls: Dict[str, models.RemoteConfigFileCrawl] = {}
+    files_crawls: Dict[str, RemoteConfigFileCrawl] = {}
     for entry in entries:
         package_name = entry["name"]
         if package_name in ["README.md"]:
@@ -295,12 +300,9 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
         ) as resp:
             remote_config_text = resp.read().decode("utf-8")
 
-        # print("*****")
-        # print(remote_config_text)
-
         remote_config_json = json5.loads(remote_config_text)
 
-        packages_crawls: Dict[str, models.RemoteConfigPackageCrawl] = {}
+        packages_crawls: Dict[str, RemoteConfigPackageCrawl] = {}
 
         for package_name, package_config in remote_config_json[
             "packages"
@@ -319,21 +321,21 @@ def _crawl_remote_configs() -> models.RemoteConfigsCrawl:
             asset = asset.replace("${YYYYMMDD}", yyyymmdd)
 
             assert package_name not in packages_crawls
-            packages_crawls[package_name] = models.RemoteConfigPackageCrawl(
+            packages_crawls[package_name] = RemoteConfigPackageCrawl(
                 # package_name,
-                models.GithubReleaseRef(package_repo, package_tag),
+                GithubReleaseRef(package_repo, package_tag),
                 "${PLATFORM}" in asset,
                 asset,
             )
 
         key = str(version)
         assert key not in files_crawls
-        files_crawls[key] = models.RemoteConfigFileCrawl(packages_crawls)
+        files_crawls[key] = RemoteConfigFileCrawl(packages_crawls)
 
-    return models.RemoteConfigsCrawl(files_crawls)
+    return RemoteConfigsCrawl(files_crawls)
 
 
-def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
+def _crawl_apio_repo(repo: str) -> RepoCrawl:
     """Crawl a single repo and get its releases states."""
     headers = {
         "Accept": "application/vnd.github+json",
@@ -350,7 +352,7 @@ def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
         latest.raise_for_status()
         latest_tag = latest.json().get("tag_name")
 
-    releases: Dict[str, models.ReleaseState] = {}
+    releases: Dict[str, ReleaseState] = {}
     url = f"https://api.github.com/repos/{repo}/releases"
     params = {"per_page": 100}
     while url:
@@ -362,7 +364,7 @@ def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
             # if release_tag in {"v1.5.0"}:
             #     print(f"Skipping blacklisted {repo} {release_tag}")
             #     continue
-            release_state = models.ReleaseState.from_flags(
+            release_state = ReleaseState.from_flags(
                 draft=bool(release.get("draft")),
                 prerelease=bool(release.get("prerelease")),
                 is_latest=release_tag == latest_tag,
@@ -370,9 +372,7 @@ def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
             published_date = datetime.fromisoformat(
                 release["published_at"]
             ).date()
-            releases[release_tag] = models.ReleaseCrawl(
-                release_state, published_date
-            )
+            releases[release_tag] = ReleaseCrawl(release_state, published_date)
         url = resp.links.get("next", {}).get("url")
 
     # -- Sort the releases by descending order of published_date.
@@ -384,46 +384,41 @@ def _crawl_apio_repo(repo: str) -> models.RepoCrawl:
         )
     )
 
-    return models.RepoCrawl(releases)
+    return RepoCrawl(releases)
 
 
-def crawl_apio_repos() -> models.ReposCrawl:
+def crawl_apio_repos() -> ReposCrawl:
     """Crawl the given repos. This function is called multiple times
     during the execution of the janitor, including from other steps,
     since the state of the apio repos may be changed by the fixing
     step."""
 
-    print("Crawling Apio repos.")
+    print("Crawling apio repos.")
 
-    repos_dict: Dict[str, Dict[str, models.ReleaseState]] = {}
+    repos_dict: Dict[str, Dict[str, ReleaseState]] = {}
     for repo in consts.APIO_REPOS:
         repo_crawl = _crawl_apio_repo(repo)
         repos_dict[repo] = repo_crawl
 
-    return models.ReposCrawl(repos_dict)
+    return ReposCrawl(repos_dict)
 
 
-def crawl() -> models.CrawlResults:
+def crawl() -> CrawlResults:
     """Crawl pypi, vscode market, and the apio related repos."""
 
-    print("Crawling PyPi")
-    pypi_crawl: models.PypiCrawl = _crawl_pypi()
-
-    print("Crawling VSCode Marketplace")
+    # -- Crawl the various sources.
+    pypi_crawl: PypiCrawl = _crawl_pypi()
     vscode_marketplace_crawl = _crawl_vscode_marketplace()
-
-    print("Crawling Remote Configs")
     remote_configs_crawl = _crawl_remote_configs()
-
-    print("Crawling repos")
     repos_crawl = crawl_apio_repos()
 
-    # print(json.dumps(asdict(remote_configs_crawl), indent=2, default=str))
-
+    # -- All done.
     print("Crawling done")
-
-    return models.CrawlResults(
-        pypi_crawl, vscode_marketplace_crawl, remote_configs_crawl, repos_crawl
+    return CrawlResults(
+        pypi_crawl,
+        vscode_marketplace_crawl,
+        remote_configs_crawl,
+        repos_crawl,
     )
 
 
@@ -446,7 +441,7 @@ def main():
     janitor_data_dir.mkdir(parents=True, exist_ok=True)
 
     # -- Do the crawling.
-    crawl_results: models.CrawlResults = crawl()
+    crawl_results: CrawlResults = crawl()
 
     # -- Write results as json, for human consumption.
     (janitor_data_dir / "crawl-results.json").write_text(
