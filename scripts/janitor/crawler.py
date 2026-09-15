@@ -94,6 +94,7 @@ def _crawl_pypi() -> PypiCrawl:
         )
 
         match = _RELEASE_INFO_RE.search(init_py_text)
+        assert match is not None
         apio_cli_tag = match.group(2)
 
         # -- Append the release to the result list.
@@ -352,9 +353,9 @@ def _crawl_apio_repo(repo: str) -> RepoCrawl:
         latest.raise_for_status()
         latest_tag = latest.json().get("tag_name")
 
-    releases: Dict[str, ReleaseState] = {}
-    url = f"https://api.github.com/repos/{repo}/releases"
-    params = {"per_page": 100}
+    releases: Dict[str, ReleaseCrawl] = {}
+    url: str | None = f"https://api.github.com/repos/{repo}/releases"
+    params: dict | None = {"per_page": 100}
     while url:
         resp = requests.get(url, headers=headers, params=params, timeout=30)
         resp.raise_for_status()
@@ -395,7 +396,7 @@ def crawl_apio_repos() -> ReposCrawl:
 
     print("Crawling apio repos.")
 
-    repos_dict: Dict[str, Dict[str, ReleaseState]] = {}
+    repos_dict: Dict[str, RepoCrawl] = {}
     for repo in consts.APIO_REPOS:
         repo_crawl = _crawl_apio_repo(repo)
         repos_dict[repo] = repo_crawl
@@ -422,7 +423,7 @@ def crawl() -> CrawlResults:
     )
 
 
-def main():
+def main() -> None:
     """Program entry point."""
 
     parser = argparse.ArgumentParser(

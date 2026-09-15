@@ -1,3 +1,4 @@
 json5
 packaging
 requests
+types-requests

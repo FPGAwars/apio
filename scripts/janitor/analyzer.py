@@ -33,28 +33,30 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     # -- Generate RELEASE_SHOULD_BE_STABLE requirements
 
     # -- The apio cli release of each pypi release should be stable.
-    for rc in crawl_results.pypi_crawl.releases.values():
+    for pypi_rc in crawl_results.pypi_crawl.releases.values():
         requirements.add_by_ref(
             RequirementType.RELEASE_SHOULD_BE_STABLE,
-            rc.apio_cli_release,
+            pypi_rc.apio_cli_release,
         )
 
     # -- Each vscode market release, the apio vscode and the apio cli
     # -- releases should be stable.
-    for rc in crawl_results.vscode_marketplace_crawl.releases.values():
+    for vscode_rc in crawl_results.vscode_marketplace_crawl.releases.values():
         requirements.add_by_ref(
             RequirementType.RELEASE_SHOULD_BE_STABLE,
-            rc.apio_vscode_release,
+            vscode_rc.apio_vscode_release,
         )
         requirements.add_by_ref(
             RequirementType.RELEASE_SHOULD_BE_STABLE,
-            rc.apio_cli_release,
+            vscode_rc.apio_cli_release,
         )
 
     # -- All packages that are refereed by a remote config files
     # -- should be stable.
-    for rc in crawl_results.remote_configs_crawl.remote_configs.values():
-        for package in rc.packages.values():
+    for (
+        config_rc
+    ) in crawl_results.remote_configs_crawl.remote_configs.values():
+        for package in config_rc.packages.values():
             requirements.add_by_ref(
                 RequirementType.RELEASE_SHOULD_BE_STABLE,
                 package.package_release,
@@ -177,7 +179,7 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     return AnalysisResults(requirements)
 
 
-def main():
+def main() -> None:
     """Program entry point."""
 
     parser = argparse.ArgumentParser(

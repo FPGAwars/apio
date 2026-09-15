@@ -160,7 +160,7 @@ def _verify_draft_should_be_deleted(
 
     # -- Classify the requirement
     if release_crawl is None:
-        ctx.add_success(release, "Draft is deleted")
+        ctx.add_success(requirement, "Draft is deleted")
     elif release_crawl.state != ReleaseState.DRAFT:
         ctx.add_failure(requirement, "Not a draft")
     else:
@@ -179,7 +179,7 @@ def _verify_prerelease_should_be_deleted(
 
     # -- Classify the requirement
     if release_crawl is None:
-        ctx.add_success(release, "Prerelease is deleted")
+        ctx.add_success(requirement, "Prerelease is deleted")
     elif release_crawl.state != ReleaseState.PRERELEASE:
         ctx.add_failure(requirement, "Not a prerelease")
     else:
@@ -321,7 +321,7 @@ def _generate_markdown_report(
     return "\n".join(lines)
 
 
-def main():
+def main() -> None:
     """Program entry point."""
 
     parser = argparse.ArgumentParser(

@@ -83,9 +83,14 @@ def download_file_from_pypi_apio_release(
             ),
             None,
         )
+
         if member is None:
             raise FileNotFoundError(file_path_in_package)
-        with tf.extractfile(member) as f:
+
+        extracted = tf.extractfile(member)
+        assert extracted is not None
+
+        with extracted as f:
             return f.read().decode("utf-8")
 
 
