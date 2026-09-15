@@ -9,26 +9,33 @@ from datetime import date
 import pickle
 import argparse
 from pathlib import Path
-from scripts.janitor import models, consts, util
+from scripts.janitor import consts, util
+from scripts.janitor.models import (
+    CrawlResults,
+    AnalysisResults,
+    RequirementsSet,
+    RequirementType,
+    GithubReleaseRef,
+    ReleaseState,
+    Requirement,
+)
 
 
-def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
+def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     """Analyze crawling results and generate requirements report."""
 
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-branches
 
     # -- A container for the requirements that the analyzer generates.
-    # requirements = models.JanitorRequirements({}, {}, {})
-    # requirements = models.JanitorRequirements.make_empty()
-    requirements = models.RequirementsSet()
+    requirements = RequirementsSet()
 
     # -- Generate RELEASE_SHOULD_BE_STABLE requirements
 
     # -- The apio cli release of each pypi release should be stable.
     for rc in crawl_results.pypi_crawl.releases.values():
         requirements.add_by_ref(
-            models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+            RequirementType.RELEASE_SHOULD_BE_STABLE,
             rc.apio_cli_release,
         )
 
@@ -36,23 +43,20 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     # -- releases should be stable.
     for rc in crawl_results.vscode_marketplace_crawl.releases.values():
         requirements.add_by_ref(
-            models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+            RequirementType.RELEASE_SHOULD_BE_STABLE,
             rc.apio_vscode_release,
         )
         requirements.add_by_ref(
-            models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+            RequirementType.RELEASE_SHOULD_BE_STABLE,
             rc.apio_cli_release,
         )
-
-        # requirements.release_should_be_stable.add(rc.apio_vscode_release)
-        # requirements.release_should_be_stable.add(rc.apio_cli_release)
 
     # -- All packages that are refereed by a remote config files
     # -- should be stable.
     for rc in crawl_results.remote_configs_crawl.remote_configs.values():
         for package in rc.packages.values():
             requirements.add_by_ref(
-                models.RequirementType.RELEASE_SHOULD_BE_STABLE,
+                RequirementType.RELEASE_SHOULD_BE_STABLE,
                 package.package_release,
             )
 
@@ -62,12 +66,8 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     # -- be marked as latest.
     vscode_crawl = crawl_results.vscode_marketplace_crawl
     vscode_latest_release = vscode_crawl.releases[str(vscode_crawl.latest)]
-    # apio_vscode_latest_release = vscode_latest_release.apio_vscode_release
-    # requirements.release_should_be_latest.add(
-    #     vscode_latest_release.apio_vscode_release
-    # )
     requirements.add_by_ref(
-        models.RequirementType.RELEASE_SHOULD_BE_LATEST,
+        RequirementType.RELEASE_SHOULD_BE_LATEST,
         vscode_latest_release.apio_vscode_release,
     )
 
@@ -75,12 +75,8 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     # -- apio repository.
     pypi_crawl = crawl_results.pypi_crawl
     pypi_latest_release = pypi_crawl.releases[str(pypi_crawl.latest)]
-    # apio_cli_latest_release = pypi_latest_release.apio_cli_release
-    # requirements.release_should_be_latest.add(
-    #     pypi_latest_release.apio_cli_release
-    # )
     requirements.add_by_ref(
-        models.RequirementType.RELEASE_SHOULD_BE_LATEST,
+        RequirementType.RELEASE_SHOULD_BE_LATEST,
         pypi_latest_release.apio_cli_release,
     )
 
@@ -93,19 +89,18 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
         latest_remote_config_key
     ]
     for package in latest_remote_config.packages.values():
-        # requirements.release_should_be_latest.add(package.package_release)
         requirements.add_by_ref(
-            models.RequirementType.RELEASE_SHOULD_BE_LATEST,
+            RequirementType.RELEASE_SHOULD_BE_LATEST,
             package.package_release,
         )
 
     # -- Now that we set the all the RELEASE_SHOULD_BE_STABLE requirements,
     # -- extract it as a set of releases in use.
 
-    releases_in_use: Set[models.GithubReleaseRef] = {
+    releases_in_use: Set[GithubReleaseRef] = {
         req.release_ref()
         for req in requirements.members_of_type(
-            models.RequirementType.RELEASE_SHOULD_BE_STABLE
+            RequirementType.RELEASE_SHOULD_BE_STABLE
         )
     }
 
@@ -118,7 +113,7 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     for release in releases_in_use:
         if consts.APIO_REPOS[release.repo].check_consistency:
             requirements.add_by_ref(
-                models.RequirementType.RELEASE_SHOULD_BE_CONSISTENT, release
+                RequirementType.RELEASE_SHOULD_BE_CONSISTENT, release
             )
 
     # -- Generate DRAFT_SHOULD_BE_DELETED and PRERELEASE_SHOULD_BE_DELETED.
@@ -129,26 +124,26 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
         # -- Iterate releases and process pre-releases. The order is
         # -- in decreasing published_date value.
         for release_tag, release_crawl in repo_crawl.releases.items():
-            release = models.GithubReleaseRef(repo, release_tag)
+            release = GithubReleaseRef(repo, release_tag)
 
             # -- Case 1: Release is in use.
             if release in releases_in_use:
                 continue
 
             # -- Case 2: Release is a draft.
-            if release_crawl.state == models.ReleaseState.DRAFT:
+            if release_crawl.state == ReleaseState.DRAFT:
                 draft_date = release_crawl.published_date
                 draft_age_days = (today - draft_date).days
                 # -- Mark for deletion if too old.
                 if draft_age_days > consts.MAX_DRAFT_AGE_DAYS:
                     # requirements.draft_should_be_deleted.add(release)
                     requirements.add_by_ref(
-                        models.RequirementType.DRAFT_SHOULD_BE_DELETED, release
+                        RequirementType.DRAFT_SHOULD_BE_DELETED, release
                     )
                 continue
 
             # -- Case 3: Release is a pre-release.
-            if release_crawl.state == models.ReleaseState.PRERELEASE:
+            if release_crawl.state == ReleaseState.PRERELEASE:
                 # -- NOTE: We rely here on the fact that the releases are in
                 # -- descending date (newest first)
                 if prereleases_kept < consts.NUM_PRE_RELEASES_TO_KEEP:
@@ -158,7 +153,7 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
                     # -- Mark the for deletion if too many.
                     # requirements.pre_release_should_be_deleted.add(release)
                     requirements.add_by_ref(
-                        models.RequirementType.PRERELEASE_SHOULD_BE_DELETED,
+                        RequirementType.PRERELEASE_SHOULD_BE_DELETED,
                         release,
                     )
                 continue
@@ -171,15 +166,15 @@ def analyze(crawl_results: models.CrawlResults) -> models.AnalysisResults:
     for repo, attributes in consts.APIO_REPOS.items():
         if attributes.daily_builds:
             requirements.add(
-                models.Requirement(
-                    models.RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD,
+                Requirement(
+                    RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD,
                     repo,
                     release_tag=None,
                 )
             )
 
     # -- All done.
-    return models.AnalysisResults(requirements)
+    return AnalysisResults(requirements)
 
 
 def main():
@@ -204,8 +199,8 @@ def main():
         crawl_results = pickle.load(f)
 
     # -- Analyze
-    analysis_results: models.AnalysisResults = analyze(crawl_results)
-    assert isinstance(analysis_results, models.AnalysisResults)
+    analysis_results: AnalysisResults = analyze(crawl_results)
+    assert isinstance(analysis_results, AnalysisResults)
 
     # -- Write results as json, for human consumption.
     (janitor_data_dir / "analysis-results.json").write_text(
