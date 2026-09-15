@@ -36,7 +36,7 @@ class AsyncPipe(Thread):
     from an internal thread. Used to process in real time scons output to
     show its progress."""
 
-    def __init__(self, line_callback=None):
+    def __init__(self, line_callback=None) -> None:
         """If line_callback is not None, it is called for each line as
         line_callback(line:str, terminator:str) where line is the line content
         and terminator is one of:
@@ -54,28 +54,28 @@ class AsyncPipe(Thread):
         self._fd_read, self._fd_write = os.pipe()
 
         # -- A list of lines received so far.
-        self._lines_buffer = []
+        self._lines_buffer: List[str] = []
 
         self.start()
 
-    def get_buffer(self):
+    def get_buffer(self) -> List[str]:
         """DOC: TODO"""
 
         return self._lines_buffer
 
-    def fileno(self):
+    def fileno(self) -> int:
         """DOC: TODO"""
 
         return self._fd_write
 
-    def _handle_incoming_line(self, bfr: bytearray, terminator: str):
+    def _handle_incoming_line(self, bfr: bytearray, terminator: str) -> None:
         """Handle a new incoming line.
         Bfr is a bytes with the line's content, possibly empty.
         See __init__ for the description of terminator.
         """
         # -- Convert the line's bytes to a string. Replace invalid utf-8
         # -- chars with "�"
-        line = bfr.decode("utf-8", errors="replace")
+        line: str = bfr.decode("utf-8", errors="replace")
 
         # -- Append to the lines log buffer.
         self._lines_buffer.append(line)
@@ -84,7 +84,7 @@ class AsyncPipe(Thread):
         if self.outcallback:
             self.outcallback(line, terminator)
 
-    def run(self):
+    def run(self) -> None:
         """DOC: TODO"""
 
         # -- Prepare a buffer for collecting the line chars, excluding

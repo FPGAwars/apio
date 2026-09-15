@@ -253,7 +253,7 @@ def clean_task(_: Context):
     assert isinstance(repo_root, Path)
 
     # -- Collect items to delete.
-    items = []
+    items: List[Path] = []
     # -- Collect top level items first so they will be deleted first.
     items.extend(repo_root.glob(".tox"))
     items.extend(repo_root.glob("_site"))
