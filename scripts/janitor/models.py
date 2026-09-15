@@ -145,9 +145,10 @@ class Requirement:
         """Return a reference for the underlying release of this requirement.
         Applies only to requirements of release scope."""
         assert self.req_type.is_release_scope
+        assert self.release_tag is not None
         return GithubReleaseRef(self.repo, self.release_tag)
 
-    def copy_with_verifier_note(self, verifier_note: str) -> GithubReleaseRef:
+    def copy_with_verifier_note(self, verifier_note: str) -> "Requirement":
         """Create a copy of this Requirement with the added verifier note."""
         # -- Sanity check
         assert self.verifier_note is None  # Do not overwrite a note
@@ -169,7 +170,7 @@ class Requirement:
 class RequirementsSet:
     """A set of Requirement with Janitor specific operations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._members: Set[Requirement] = set()
 
     def add(self, requirement: Requirement) -> None:
@@ -207,7 +208,7 @@ class RequirementsSet:
 
     def group_by_repo_and_type(
         self,
-    ) -> Dict[str, Dict[RequirementType, Set[Requirement]]]:
+    ) -> Dict[str, Dict[RequirementType, List[Requirement]]]:
         """Return all the members as a repo/type/requirement tree. The tree
         is sorted for intuitive order."""
         # -- Sort by
@@ -228,7 +229,7 @@ class RequirementsSet:
 
     def group_by_type_and_repo(
         self,
-    ) -> Dict[RequirementType, Dict[str, Set[Requirement]]]:
+    ) -> Dict[RequirementType, Dict[str, List[Requirement]]]:
         """Return all the members as a type/repo/requirement tree."""
         # --    requirement type (ascending),
         # --    repo (ascending),
