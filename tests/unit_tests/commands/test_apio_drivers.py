@@ -13,7 +13,7 @@ def test_drivers_darwin_only(apio_runner: ApioRunner):
     """Tests the 'apio drivers' commands on darwin platform."""
     # -- Skip this test if not running on a darwin platform
     if not apio_platforms.get_apio_platform().is_darwin:
-        pytest.skip("Darwin only test")
+        pytest.skip("Darwin only")
 
     with apio_runner.in_sandbox() as sb:
 
@@ -55,7 +55,7 @@ def test_drivers_github_linux_only(apio_runner: ApioRunner):
 
     # -- Skip this test if not running on a linux platform
     if not apio_platforms.get_apio_platform().is_linux:
-        pytest.skip("Ubuntu only test")
+        pytest.skip("Linux only")
 
     # -- Skip this test if not running on a github workflow. We need
     # -- the github password-less sudo for this test to succeed.
@@ -92,7 +92,7 @@ def test_drivers_windows_only(apio_runner: ApioRunner):
 
     # -- Skip this test if not running on a windows platform
     if not apio_platforms.get_apio_platform().is_windows:
-        pytest.skip("Windows only test")
+        pytest.skip("Windows only")
 
     with apio_runner.in_sandbox():
 
