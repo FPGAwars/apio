@@ -59,6 +59,14 @@ requires = [
     'json5==0.15.0',
 ]
 
+[tool.flit.metadata.requires-extra]
+# Extra modules with type information that mypy needs to analyze the
+# type consistency.
+mypy = [
+    "types-protobuf>=6.32.1,<7",
+    "types-requests>=2.33.0,<2.34",
+]
+
 [tool.flit.sdist]
 # Note that we don't include 'media/' nor do we have relative references
 # from README.md to resources in media since pypi doesn't show them 
