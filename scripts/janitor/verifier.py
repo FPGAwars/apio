@@ -89,9 +89,9 @@ def _verify_release_should_be_latest(
     if release_crawl is None:
         ctx.add_failure(requirement, "Release is missing")
     elif not release_crawl.state.is_latest:
-        ctx.add_failure(requirement, "Release is not 'latest'")
+        ctx.add_failure(requirement, "Release is not latest")
     else:
-        ctx.add_success(requirement, "Release is 'latest'")
+        ctx.add_success(requirement, "Release is latest")
 
 
 def _verify_release_should_be_consistent(
