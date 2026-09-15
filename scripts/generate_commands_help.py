@@ -25,7 +25,7 @@ def extract_command_list(node: dict, node_path: List[str]) -> list[List[str]]:
     return result
 
 
-def get_commands_list() -> List[str]:
+def get_commands_list() -> List[List[str]]:
     """Run 'apio apio get-commands' and extract the commands list."""
 
     # -- Get the command hierarchy as a JSON doc.

@@ -13,7 +13,7 @@ import sys
 import os
 import traceback
 from dataclasses import dataclass
-from typing import Optional, List, NoReturn
+from typing import Optional, List, NoReturn, Literal
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
@@ -107,7 +107,9 @@ def configure(
             terminal_mode = AUTO_TERMINAL
 
     # -- Determine console color system parameter.
-    color_system = "auto" if theme.colors_enabled else None
+    color_system: Literal["auto"] | None = (
+        "auto" if theme.colors_enabled else None
+    )
 
     # -- Determine console's force_terminal parameter.
     if terminal_mode == FORCE_TERMINAL:
@@ -285,8 +287,8 @@ def cerror(*text_lines: str) -> None:
 
 def fatal_error(
     *error_text_lines: str,
-    info: List[str] | str = None,
-    cause: Exception = None,
+    info: List[str] | str | None = None,
+    cause: Exception | None = None,
 ) -> NoReturn:
     """Prints one or more error lines, then optional info lines, and then
     exists the program with an error status."""
