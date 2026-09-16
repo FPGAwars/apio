@@ -46,9 +46,9 @@ Example:[code]
   apio sim --no-gtkwave      # Simulate but skip GTKWave.
   apio sim --detach          # Launch and forget gtkwave.[/code]
 
-[IMPORTANT] Avoid using the Verilog '$dumpfile()' function in your \
-testbenches, as this may override the default name and location Apio sets \
-for the generated .vcd file.
+[IMPORTANT] Do not call the Verilog '$dumpfile()' function in your \
+testbenches: Apio treats it as a fatal error because it would override \
+the default name and location Apio sets for the generated .vcd file.
 
 [NOTE] Testbench specification is always the testbench file path relative to \
 the project directory, even if using the '--project-dir' option.

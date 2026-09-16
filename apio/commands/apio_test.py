@@ -45,9 +45,9 @@ Examples:[code]
 [NOTE] Testbench specification is always the testbench file path relative to \
 the project directory, even if using the '--project-dir' option.
 
-[IMPORTANT] Do not use the Verilog '$dumpfile()' function in your \
-testbenches, as this may override the default name and location Apio sets \
-for the generated .vcd file.
+[IMPORTANT] Do not call the Verilog '$dumpfile()' function in your \
+testbenches: Apio treats it as a fatal error because it would override \
+the default name and location Apio sets for the generated .vcd file.
 
 The default testbench is the same that is used by the 'apio sim' command \
 which is the one specified in 'apio.ini' using the 'default-testbench' \
