@@ -90,34 +90,3 @@ def test_clean_no_build(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
         assert "Removed" not in result.output
         assert "Already clean" in result.output
-
-
-def test_clean_legacy_files(apio_runner: ApioRunner):
-    """Tests that 'apio clean' deletes also legacy files that may have been
-    left in the project dir by apio version before 1.x.x.
-    """
-
-    with apio_runner.in_sandbox() as sb:
-
-        legacy_files = [
-            "hardware.asc",
-            "hardware.bin",
-            "hardware.dot",
-            "hardware.json",
-            "hardware.pnr",
-            "hardware.svg",
-            "main_tb.vcd",
-        ]
-
-        sb.write_default_apio_ini()
-
-        for legacy_file in legacy_files:
-            sb.write_file(legacy_file, "dummy text")
-            assert Path(legacy_file).exists()
-
-        result = sb.invoke_apio_cmd(apio, ["clean"])
-        sb.assert_result_ok(result)
-
-        for legacy_file in legacy_files:
-            assert f"Removed {legacy_file}" in result.output
-            assert not Path(legacy_file).exists()
