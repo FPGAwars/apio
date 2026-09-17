@@ -129,17 +129,16 @@ class Requirement:
     repo: str
     # -- The release tag, only if req_type.is_repo_scope.
     release_tag: Optional[str]
-    # -- Verifier appended note. This field is ignore in set lookup and
-    # -- in comparisons.
-    verifier_note: Optional[str] = field(default=None, compare=False)
+    # -- List of notes regarding the processing of the requirement.
+    # -- This field does not participate in comparison or set lookup.
+    notes: List[str] = field(compare=False)
 
     def __post_init__(self):
         """Sanity checks."""
         assert self.repo == self.repo.lower(), self
         assert self.repo in consts.APIO_REPOS, self
         assert (self.release_tag is None) == self.req_type.is_repo_scope
-        # assert isinstance(self.notes, list)
-        # assert len(self.notes) == 0
+        assert isinstance(self.notes, list)
 
     def release_ref(self) -> GithubReleaseRef:
         """Return a reference for the underlying release of this requirement.
@@ -148,23 +147,10 @@ class Requirement:
         assert self.release_tag is not None
         return GithubReleaseRef(self.repo, self.release_tag)
 
-    def copy_with_verifier_note(self, verifier_note: str) -> "Requirement":
-        """Create a copy of this Requirement with the added verifier note."""
-        # -- Sanity check
-        assert self.verifier_note is None  # Do not overwrite a note
-        assert verifier_note
-
-        # -- Create the copy with the verifier note.
-        result = Requirement(
-            self.req_type, self.repo, self.release_tag, verifier_note
-        )
-
-        # -- Sanity checks
-        assert result.verifier_note == verifier_note
-        assert result == self  # Verifier note is ignored for comparisons.
-
-        # -- All done
-        return result
+    def append_note(self, note: str) -> "Requirement":
+        """Append note to self.notes. Returns self."""
+        self.notes.append(note)
+        return self
 
 
 class RequirementsSet:
@@ -174,8 +160,13 @@ class RequirementsSet:
         self._members: Set[Requirement] = set()
 
     def add(self, requirement: Requirement) -> None:
-        """Add a member to the set. No change if already in the set."""
+        """Add a member to the set. If already in the set, the notes of the
+        new requirements are appended to the one in the set."""
         assert isinstance(requirement, Requirement)
+        for existing in self._members:
+            if existing == requirement:
+                existing.notes.extend(requirement.notes)
+                return
         self._members.add(requirement)
 
     # def add_with_verifier_note(
@@ -186,14 +177,18 @@ class RequirementsSet:
     #     self.add(requirement.copy_with_verifier_note(verifier_note))
 
     def add_by_ref(
-        self, req_type: RequirementType, release_ref: GithubReleaseRef
+        self,
+        req_type: RequirementType,
+        release_ref: GithubReleaseRef,
+        notes: List[str],
     ) -> None:
         """Similar to add() but from different args."""
         self.add(
             Requirement(
-                req_type,
-                release_ref.repo,
-                release_ref.release_tag,
+                req_type=req_type,
+                repo=release_ref.repo,
+                release_tag=release_ref.release_tag,
+                notes=notes,
             )
         )
 
@@ -273,8 +268,8 @@ class RequirementsSet:
             result: Dict[str, Any] = {}
             if requirement.req_type.is_release_scope:
                 result["release_tag"] = requirement.release_tag
-            if requirement.verifier_note is not None:
-                result["verifier_note"] = requirement.verifier_note
+            if requirement.notes:
+                result["notes"] = requirement.notes
             return result
 
         result: Dict[str, Dict[str, Any]] = {}
