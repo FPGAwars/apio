@@ -17,7 +17,6 @@ env:
   # The Python version of the pyinstaller binaries.
   PYTHON_VERSION: "3.14"
 
-
   # Apio repo branch to use.
   APIO_TARGET_BRANCH: ${{github.event.inputs.apio_branch || 'main'}}
 
@@ -120,8 +119,6 @@ jobs:
     uses: ./.github/workflows/build-darwin-arm64.yaml
     secrets: inherit
 
-
-
   build-linux-x86-64:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yaml
@@ -132,11 +129,23 @@ jobs:
     uses: ./.github/workflows/build-windows-amd64.yaml
     secrets: inherit
 
+  build-pypi-package:
+    needs: prepare
+    uses: ./.github/workflows/build-pypi-package.yaml
+    secrets: inherit
+
   # # ----- Create the pre-release with the generated files.
 
   pre-release:
     needs:
-      [prepare, build-darwin-arm64, prepare, build-linux-x86-64, build-windows-amd64]
+      [
+        prepare,
+        build-darwin-arm64,
+        prepare,
+        build-linux-x86-64,
+        build-windows-amd64,
+        build-pypi-package,
+      ]
 
     runs-on: ubuntu-latest
     permissions:
@@ -277,7 +286,8 @@ jobs:
         with:
           release_tag: ${{ env.RELEASE_TAG }}
           body_path: RELEASE-BODY.txt
-          # We intensionally list explicitly all the expected files.
+          # We intensionally list explicitly all the expected files rather
+          # then using file patterns.
           files: |
             _artifacts/apio-cli-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz
             _artifacts/apio-cli-darwin-arm64-${{env.PACKAGE_TAG}}-installer.pkg
@@ -285,4 +295,5 @@ jobs:
             _artifacts/apio-cli-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb
             _artifacts/apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-bundle.zip
             _artifacts/apio-cli-windows-amd64-${{env.PACKAGE_TAG}}-installer.exe
+            _artifacts/apio-pypi-package-${{env.PACKAGE_TAG}}.tgz
             BUILD-INFO.json

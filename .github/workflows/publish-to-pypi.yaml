@@ -80,6 +80,10 @@ jobs:
           # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
           python -m build
 
+      - name: List dist dir
+        run: |
+          ls -al dist
+
       - name: List package items
         run: |
           tar -tzf dist/*.tar.gz | tree --fromfile .

@@ -76,6 +76,8 @@ include = [
     "pyproject.toml",
     "README.md",
     "LICENSE",
+    # This file is added by the apio build workflow.
+    "BUILD-INFO.json",
 ]
 
 [tool.flit.scripts]
@@ -90,8 +92,9 @@ target-version = ['py311']
 
 # NOTE: The publish-to-pypi.yaml workflow automatically appends here
 # release information before submitting to pypi. This allows the repo
-# crawler to map the pypi release to the apio release. Example:
+# crawler to map the pypi release to the apio release. 
+# Example:
 # [tool.apio-release]
-# repo = "FPGAwars/apio"
+# repo = "fpgawars/apio"
 # tag = "2026-09-07"
 # commit = "51cba17ba7913c2f3d4bd3f7e471db9174a64a6c"
