@@ -1,0 +1,131 @@
+name: build-pypi-package
+
+on:
+  workflow_call:
+
+env:
+  # These are set later.
+  PYTHON_VERSION: ""
+  APIO_REPO: ""
+  APIO_COMMIT: ""
+  RELEASE_TAG: ""
+  PACKAGE_TAG: ""
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    defaults:
+      run:
+        shell: bash # Set Bash as the default shell
+
+    steps:
+      - name: Check required platform
+        uses: fpgawars/apio-workflows/.github/actions/check-platform@main
+        with:
+          os: linux
+          arch: x86_64
+
+      - name: Download BUILD-INFO.json artifact from main job
+        uses: actions/download-artifact@v8
+        with:
+          name: build-info
+          merge-multiple: true
+          path: _artifacts
+
+      - name: Move build info
+        run: |
+          find _artifacts
+          mv _artifacts/BUILD-INFO.json .
+          cat -n BUILD-INFO.json
+
+      - name: Set env vars from JSON
+        uses: fpgawars/apio-workflows/.github/actions/set-env-from-json@main
+        with:
+          json-file: BUILD-INFO.json
+          mappings: >-
+            PYTHON_VERSION   apio-python-version
+            APIO_REPO        repo
+            APIO_COMMIT      repo-commit
+            APIO_VERSION     apio-cli-version
+            RELEASE_TAG      release-tag
+            PACKAGE_TAG      package-tag
+
+      # -- This is the python that will be included in pyinstaller.
+      - name: Install python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # -- Install dependencies.
+      # --
+      # -- TODO: Using an old flit_core as a quick workaround for publishing
+      # -- failure in Apio issue 948. Find a more long term solution.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip "flit_core<4" "build"
+
+      # We checkout the repo into a subdirectory not to step on BUILD-INFO.json.
+      - name: Checkout apio repo
+        uses: actions/checkout@v6
+        with:
+          repository: ${{env.APIO_REPO}}
+          ref: ${{env.APIO_COMMIT}}
+          path: _apio-repo
+
+      - name: Set apio release info
+        uses: fpgawars/apio-workflows/.github/actions/set-apio-release-info@main
+        with:
+          repo_path: _apio-repo
+          prefix: pypi
+          release_tag: ${{env.RELEASE_TAG}}
+
+      - name: Append Apio release info to pyproject.toml
+        run: |
+          cat >> ./_apio-repo/pyproject.toml << 'EOF'
+
+          [tool.apio-release]
+          repo = "${{ env.APIO_REPO }}"
+          tag = "${{ env.RELEASE_TAG }}"
+          commit = "${{ env.APIO_COMMIT }}"
+          EOF
+
+          cat -n _apio-repo/pyproject.toml
+
+      - name: Copy build info to apio
+        run: |
+          cp ./BUILD-INFO.json ./_apio-repo/apio
+
+      - name: List apio root files
+        run: |
+          set -x
+          ls -al ./_apio-repo
+          ls -al ./_apio-repo/apio
+
+      - name: Build the package in dist dir
+        run: |
+          cd _apio-repo
+          python -m build
+
+      - name: List package's dist directory
+        run: |
+          ls -al _apio-repo/dist
+
+      - name: List package's .tar.gz items
+        run: |
+          tar -tzf _apio-repo/dist/*.tar.gz | tree --fromfile .
+
+      - name: Compress the dist directory
+        run: |
+          set -x
+          pushd _apio-repo
+          package="apio-pypi-package-${PACKAGE_TAG}.tgz"
+          tar zcf ../${package} dist
+          popd
+
+      - name: Export the pypi package as an artifact
+        uses: actions/upload-artifact@v6
+        with:
+          if-no-files-found: error
+          name: "apio-pypi-package"
+          path: "apio-pypi-package-${{env.PACKAGE_TAG}}.tgz"
