@@ -33,33 +33,41 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     # -- Generate RELEASE_SHOULD_BE_STABLE requirements
 
     # -- The apio cli release of each pypi release should be stable.
-    for pypi_rc in crawl_results.pypi_crawl.releases.values():
+    for ver, pypi_rc in crawl_results.pypi_crawl.releases.items():
         requirements.add_by_ref(
             RequirementType.RELEASE_SHOULD_BE_STABLE,
             pypi_rc.apio_cli_release,
+            [f"[Analyzer] Published as pypi {ver}."],
         )
 
     # -- Each vscode market release, the apio vscode and the apio cli
     # -- releases should be stable.
-    for vscode_rc in crawl_results.vscode_marketplace_crawl.releases.values():
+    for (
+        ver,
+        vscode_rc,
+    ) in crawl_results.vscode_marketplace_crawl.releases.items():
         requirements.add_by_ref(
             RequirementType.RELEASE_SHOULD_BE_STABLE,
             vscode_rc.apio_vscode_release,
+            [f"[Analyzer] Published as apio vscode {ver}."],
         )
         requirements.add_by_ref(
             RequirementType.RELEASE_SHOULD_BE_STABLE,
             vscode_rc.apio_cli_release,
+            [f"[Analyzer] Used by published vscode {ver}."],
         )
 
     # -- All packages that are refereed by a remote config files
     # -- should be stable.
     for (
-        config_rc
-    ) in crawl_results.remote_configs_crawl.remote_configs.values():
+        ver,
+        config_rc,
+    ) in crawl_results.remote_configs_crawl.remote_configs.items():
         for package in config_rc.packages.values():
             requirements.add_by_ref(
                 RequirementType.RELEASE_SHOULD_BE_STABLE,
                 package.package_release,
+                [f"[Analyzer] Used by remote config {ver}."],
             )
 
     # -- Generate RELEASE_SHOULD_BE_LATEST requirements.
@@ -71,6 +79,10 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     requirements.add_by_ref(
         RequirementType.RELEASE_SHOULD_BE_LATEST,
         vscode_latest_release.apio_vscode_release,
+        notes=[
+            "[Analyzer] Latest published apio-vscode "
+            + f"({vscode_crawl.latest})."
+        ],
     )
 
     # -- The cli release that is the latest on pypi should be latest in the
@@ -80,6 +92,7 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     requirements.add_by_ref(
         RequirementType.RELEASE_SHOULD_BE_LATEST,
         pypi_latest_release.apio_cli_release,
+        notes=[f"[Analyzer] Published as Pypi latest ({pypi_crawl.latest})."],
     )
 
     # -- The apio packages releases that are referred by the remote config
@@ -94,6 +107,10 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
         requirements.add_by_ref(
             RequirementType.RELEASE_SHOULD_BE_LATEST,
             package.package_release,
+            notes=[
+                "[Analyzer] Used by latest apio remote config "
+                f"{latest_remote_config_key}."
+            ],
         )
 
     # -- Now that we set the all the RELEASE_SHOULD_BE_STABLE requirements,
@@ -115,14 +132,16 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     for release in releases_in_use:
         if consts.APIO_REPOS[release.repo].check_consistency:
             requirements.add_by_ref(
-                RequirementType.RELEASE_SHOULD_BE_CONSISTENT, release
+                req_type=RequirementType.RELEASE_SHOULD_BE_CONSISTENT,
+                release_ref=release,
+                notes=["[Analyzer] Consistency checks enabled for repo."],
             )
 
     # -- Generate DRAFT_SHOULD_BE_DELETED and PRERELEASE_SHOULD_BE_DELETED.
 
     today: date = date.today()
     for repo, repo_crawl in crawl_results.repos_crawl.repos.items():
-        prereleases_kept = 0
+        num_prereleases = 0
         # -- Iterate releases and process pre-releases. The order is
         # -- in decreasing published_date value.
         for release_tag, release_crawl in repo_crawl.releases.items():
@@ -140,7 +159,12 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
                 if draft_age_days > consts.MAX_DRAFT_AGE_DAYS:
                     # requirements.draft_should_be_deleted.add(release)
                     requirements.add_by_ref(
-                        RequirementType.DRAFT_SHOULD_BE_DELETED, release
+                        req_type=RequirementType.DRAFT_SHOULD_BE_DELETED,
+                        release_ref=release,
+                        notes=[
+                            f"[Analyzer] Draft is {draft_age_days} "
+                            + "days old."
+                        ],
                     )
                 continue
 
@@ -148,15 +172,14 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
             if release_crawl.state == ReleaseState.PRERELEASE:
                 # -- NOTE: We rely here on the fact that the releases are in
                 # -- descending date (newest first)
-                if prereleases_kept < consts.NUM_PRE_RELEASES_TO_KEEP:
-                    # -- Keep this prerelease.
-                    prereleases_kept += 1
-                else:
+                num_prereleases += 1
+                if num_prereleases > consts.NUM_PRE_RELEASES_TO_KEEP:
                     # -- Mark the for deletion if too many.
                     # requirements.pre_release_should_be_deleted.add(release)
                     requirements.add_by_ref(
-                        RequirementType.PRERELEASE_SHOULD_BE_DELETED,
-                        release,
+                        req_type=RequirementType.PRERELEASE_SHOULD_BE_DELETED,
+                        release_ref=release,
+                        notes=[f"[Analyzer] Prerelease #{num_prereleases}."],
                     )
                 continue
 
@@ -169,9 +192,10 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
         if attributes.daily_builds:
             requirements.add(
                 Requirement(
-                    RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD,
-                    repo,
+                    req_type=RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD,
+                    repo=repo,
                     release_tag=None,
+                    notes=["[Analyzer] Repo should have a daily build."],
                 )
             )
 

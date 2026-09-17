@@ -47,13 +47,19 @@ class VerificationContext:
     fresh_repos_crawl: ReposCrawl
     today: date
 
-    def add_failure(self, requirement: Requirement, verifier_note: str):
-        """Add a an analyzer requirement to the failures set with a note."""
-        self.failures.add(requirement.copy_with_verifier_note(verifier_note))
+    def add_failure(self, requirement: Requirement, note: str):
+        """Append the note to the requirement notes and add the requirement
+        to the failure set.
+        """
+        requirement.append_note(note)
+        self.failures.add(requirement)
 
-    def add_success(self, requirement: Requirement, verifier_note: str):
-        """Add a an analyzer requirement to the successes set with a note."""
-        self.successes.add(requirement.copy_with_verifier_note(verifier_note))
+    def add_success(self, requirement: Requirement, note: str):
+        """Append the note to the requirement notes and add the requirement
+        to the success set.
+        """
+        requirement.append_note(note)
+        self.successes.add(requirement)
 
 
 def _verify_release_should_be_stable(
@@ -68,11 +74,11 @@ def _verify_release_should_be_stable(
 
     # -- Classify the requirement.
     if release_crawl is None:
-        ctx.add_failure(requirement, "Release is missing")
+        ctx.add_failure(requirement, "[Verifier] Release is missing.")
     elif not release_crawl.state.is_stable:
-        ctx.add_failure(requirement, "Release is not stable")
+        ctx.add_failure(requirement, "[Verifier] Release is not stable.")
     else:
-        ctx.add_success(requirement, "Release is stable")
+        ctx.add_success(requirement, "[Verifier] Release is stable.")
 
 
 def _verify_release_should_be_latest(
@@ -87,11 +93,11 @@ def _verify_release_should_be_latest(
 
     # -- Classify the requirement.
     if release_crawl is None:
-        ctx.add_failure(requirement, "Release is missing")
+        ctx.add_failure(requirement, "[Verifier] Release is missing.")
     elif not release_crawl.state.is_latest:
-        ctx.add_failure(requirement, "Release is not latest")
+        ctx.add_failure(requirement, "[Verifier] Release is not latest.")
     else:
-        ctx.add_success(requirement, "Release is latest")
+        ctx.add_success(requirement, "[Verifier] Release is latest.")
 
 
 def _verify_release_should_be_consistent(
@@ -107,7 +113,7 @@ def _verify_release_should_be_consistent(
     # -- Older version didn't have the parts index so we just
     # -- assume they are ok.
     if release.release_tag < "2026-09-10":
-        ctx.add_success(requirement, "Old release, assuming OK")
+        ctx.add_success(requirement, "[Verifier] Old release, assuming OK.")
         return
 
     # -- Download the xilinx parts index.
@@ -143,9 +149,9 @@ def _verify_release_should_be_consistent(
         only_in_assets = sorted(assets_chipdbs - index_chipdbs)
         print(f"{only_in_index=}")
         print(f"{only_in_assets=}")
-        ctx.add_failure(requirement, "Chipdb assets do not match")
+        ctx.add_failure(requirement, "[Verifier] Chipdb assets do not match.")
     else:
-        ctx.add_success(requirement, "Chipdb assets match index")
+        ctx.add_success(requirement, "[Verifier] Chipdb assets match index.")
 
 
 def _verify_draft_should_be_deleted(
@@ -160,11 +166,11 @@ def _verify_draft_should_be_deleted(
 
     # -- Classify the requirement
     if release_crawl is None:
-        ctx.add_success(requirement, "Draft is deleted")
+        ctx.add_success(requirement, "[Verifier] Draft is deleted.")
     elif release_crawl.state != ReleaseState.DRAFT:
-        ctx.add_failure(requirement, "Not a draft")
+        ctx.add_failure(requirement, "[Verifier] Not a draft.")
     else:
-        ctx.add_failure(requirement, "Draft exists")
+        ctx.add_failure(requirement, "[Verifier] Draft exists.")
 
 
 def _verify_prerelease_should_be_deleted(
@@ -179,11 +185,11 @@ def _verify_prerelease_should_be_deleted(
 
     # -- Classify the requirement
     if release_crawl is None:
-        ctx.add_success(requirement, "Prerelease is deleted")
+        ctx.add_success(requirement, "[Verifier] Prerelease is deleted.")
     elif release_crawl.state != ReleaseState.PRERELEASE:
-        ctx.add_failure(requirement, "Not a prerelease")
+        ctx.add_failure(requirement, "[Verifier] Not a prerelease.")
     else:
-        ctx.add_failure(requirement, "Prerelease exists")
+        ctx.add_failure(requirement, "[Verifier] Prerelease exists.")
 
 
 def _verify_repo_should_have_a_recent_build(
@@ -207,7 +213,7 @@ def _verify_repo_should_have_a_recent_build(
 
     # -- Handle the case of no builds at all
     if latest is None:
-        ctx.add_failure(requirement, "No builds")
+        ctx.add_failure(requirement, "[Verifier] No builds.")
         return
 
     # -- We found the latest build, compute its age ind ays.
@@ -216,13 +222,15 @@ def _verify_repo_should_have_a_recent_build(
     # -- Handle the case of latest build is too old.
     if days_since_last_build > consts.MAX_RECENT_RELEASE_DAYS:
         ctx.add_failure(
-            requirement, f"{latest[0]} is {days_since_last_build} days old."
+            requirement,
+            f"[Verifier] {latest[0]} is {days_since_last_build} days old.",
         )
         return
 
     # -- Handle the case of OK
     ctx.add_success(
-        requirement, f"{latest[0]} is {days_since_last_build} days old."
+        requirement,
+        f"[Verifier] {latest[0]} is {days_since_last_build} days old.",
     )
 
 
@@ -244,7 +252,7 @@ def verify(
 
     for requirement in requirements.members():
         # -- Analyzer should not set the verifier_note field.
-        assert requirement.verifier_note is None, requirement
+        # assert requirement.notes is None, requirement
 
         # -- Dispatch requirement verification by type.
         match requirement.req_type:
