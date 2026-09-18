@@ -12,7 +12,7 @@ from pathlib import Path
 from glob import glob
 from typing import Tuple, List, Optional
 import click
-from apio.common.apio_console import cout, cerror, cstyle, fatal_error
+from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import EMPH3, SUCCESS
 from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
 from apio.apio_context import (
@@ -133,10 +133,13 @@ def cli(
     # -- Sort files, case insensitive.
     _files = sort_files(_files)
 
+    # -- Find length of longest file name. We use it to align the
+    # -- status of each file.
+    width = max((len(str(f)) for f in _files), default=0)
+
     # -- Iterate the files and format one at a time. We could format
     # -- all of them at once but this way we can make the output more
     # -- user friendly.
-    failures = 0
     for f in _files:
         # -- Convert to a Path object.
         path = Path(f)
@@ -153,10 +156,6 @@ def cli(
         if not path.is_file():
             fatal_error(f"'{f}' is not a file.")
 
-        # -- Print file name.
-        styled_f = cstyle(f, style=EMPH3)
-        cout(f"Formatting {styled_f}")
-
         # -- Construct the formatter command line.
         command = (
             "verible-verilog-format --nofailsafe_success --inplace "
@@ -165,16 +164,20 @@ def cli(
         if verbose:
             cout(command)
 
+        # -- Remember bytes  before
+        bytes_before = path.read_bytes()
+
         # -- Execute the formatter command line.
         exit_code = os.system(command)
         if exit_code != 0:
-            cerror(f"Formatting of '{f}' failed")
-            failures += 1
+            fatal_error(f"Formatting of '{f}' failed")
 
-    # -- Report failures, if eny.
-    if failures:
-        cout()
-        fatal_error(f"Encountered {util.plurality(failures, 'failure')}.")
+        # -- Report
+        styled_fname = cstyle(f"{f:{width}}", style=EMPH3)
+        if path.read_bytes() != bytes_before:
+            cout(f"{styled_fname} formatted.")
+        else:
+            cout(f"{styled_fname} already formatted.")
 
     # -- All done ok.
     cout(f"Processed {util.plurality(_files, 'file')}.", style=SUCCESS)
