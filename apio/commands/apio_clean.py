@@ -9,7 +9,6 @@
 
 import os
 import shutil
-from glob import glob
 from typing import Optional, List
 from pathlib import Path
 import click
@@ -118,19 +117,8 @@ def cli(
     # -- Change to the project's folder.
     os.chdir(apio_ctx.project_dir)
 
-    # -- TODO: Remove the cleanup of legacy files after releasing the first
-    # -- release with the _build directory.
-    # --
-    # --
-    # -- Until apio 0.9.6, the build artifacts were created in the project
-    # -- directory rather than the _build directory. To simplify the
-    # -- transition we clean here also left over files from 0.9.5.
-    candidates = glob("hardware.*")
-    candidates += glob("*_tb.vcd")
-    candidates += glob("*_tb.out")
-
     # -- Clean the root build directory.
-    candidates.append(str(PROJECT_BUILD_PATH))
+    candidates = [str(PROJECT_BUILD_PATH)]
 
     # -- Clean and report.
     _delete_candidates(candidates)
