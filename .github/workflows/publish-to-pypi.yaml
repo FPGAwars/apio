@@ -1,11 +1,13 @@
+# -- Publish to PyPi an pre-built Apio release.
+
 name: publish-to-pypi
 
-# Manual activation
+# -- Manual activation
 on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Apio CLI release tag, e.g. 2025-12-10"
+        description: "Apio CLI release tag on this repo, e.g. 2025-12-10"
         required: true
         type: string
 
@@ -29,25 +31,15 @@ jobs:
           release-repo: ${{ github.repository }}
           release-tag: ${{ inputs.release_tag }}
 
-      # -- Checkout the main branch as the work directory.
-      - name: Checkout Apio release ${{ inputs.release_tag }}
-        uses: actions/checkout@v6
-        with:
-          # Checks out the exact tag entered by the user
-          ref: ${{ inputs.release_tag }}
-
-      - name: Get release commit sha.
+      - name: Get release and package tags.
         run: |
-          release_commit_sha=$(git rev-parse HEAD)
-          echo "RELEASE_COMMIT_SHA=$release_commit_sha"
-          echo "RELEASE_COMMIT_SHA=$release_commit_sha" >> $GITHUB_ENV
+          RELEASE_TAG="${{ inputs.release_tag }}"
+          echo "RELEASE_TAG=$RELEASE_TAG"
+          echo "RELEASE_TAG=$RELEASE_TAG" >> "$GITHUB_ENV"
 
-      - name: Set release info string in apio/__init__.py
-        uses: fpgawars/apio-workflows/.github/actions/set-apio-release-info@main
-        with:
-          repo_path: .
-          prefix: pypi
-          release_tag: ${{ inputs.release_tag }}
+          PACKAGE_TAG="${RELEASE_TAG//-/}"
+          echo "PACKAGE_TAG=$PACKAGE_TAG"
+          echo "PACKAGE_TAG=$PACKAGE_TAG" >> "$GITHUB_ENV"
 
       # -- Install and and configure python
       - name: Set up Python
@@ -55,38 +47,44 @@ jobs:
         with:
           python-version: "3.13"
 
-      # -- Install dependencies.
-      # --
-      # -- TODO: Using an old flit as a quick workaround for publishing
-      # -- failure in Apio issue 948. Find a more long term solution.
-      - name: Install dependencies
+      # -- Install python dependencies.
+      - name: Install python dependencies
         run: |
-          python -m pip install --upgrade pip build "flit<4" "flit_core<4"
+          python -m pip install --upgrade pip twine
 
-      - name: Append Apio release info to pyproject.toml
+      - name: Fetch pypi package archive from the release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          cat >> pyproject.toml << 'EOF'
+          gh release download "$RELEASE_TAG" \
+            --repo "${{ github.repository }}" \
+            --pattern "apio-pypi-package-${PACKAGE_TAG}.tgz"
+          ls -al
 
-          [tool.apio-release]
-          repo = "${{ github.repository }}"
-          tag = "${{ inputs.release_tag }}"
-          commit = "${{ env.RELEASE_COMMIT_SHA }}"
-          EOF
-
-          cat -n pyproject.toml
-
-      - name: Build the package
+      - name: Unpack the pypi package archive
         run: |
-          # Creates dist/*.tar.gz and dist/*.whl from pyproject.toml
-          python -m build
-
-      - name: List dist dir
-        run: |
+          tar -xzf "apio-pypi-package-${PACKAGE_TAG}.tgz"
           ls -al dist
 
-      - name: List package items
+      - name: List package files
         run: |
-          tar -tzf dist/*.tar.gz | tree --fromfile .
+          tar -tzf dist/apio-*.tar.gz | tree --fromfile .
+
+      - name: Extract BUILD-INFO.json file
+        run: |
+          tar -xOzf dist/apio-*.tar.gz --wildcards --no-anchored '*/apio/BUILD-INFO.json' > BUILD-INFO.json
+          cat -n BUILD-INFO.json
+
+      - name: Append BUILD-INFO.json to workflow summary
+        run: |
+          {
+            echo '### BUILD-INFO.json'
+            echo
+            echo '```json'
+            cat BUILD-INFO.json
+            echo
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish to PyPi
         env:
@@ -101,8 +99,7 @@ jobs:
           # FLIT_USERNAME: ${{ secrets.PYPI_USERNAME }}
           # FLIT_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
 
-          FLIT_USERNAME: __token__
-          FLIT_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          # invoke publish
-          flit publish
+          python -m twine upload dist/*
