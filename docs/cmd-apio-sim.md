@@ -65,7 +65,7 @@ apio sim --detach          # Launch and forget gtkwave.
 
 <h3>Notes</h3>
 
-- Avoid using the Verilog `$dumpfile()` function, as it can override the default name and location Apio assigns for the `.vcd` file.
+- `$dumpfile()` in a testbench is an error; Apio writes the VCD itself.
 
 - Testbench paths must always be relative to the project directory, even when using `--project-dir`.
 

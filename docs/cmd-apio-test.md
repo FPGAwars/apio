@@ -30,8 +30,7 @@ apio test --default        # Run only the default testbench.
 
 <h3>Notes</h3>
 
-- Do not use the Verilog `$dumpfile()` function, as it may override
-  the default name and location Apio assigns for the generated `.vcd` file.
+- `$dumpfile()` in a testbench is an error; Apio writes the VCD itself.
 
 - The default testbench is the same that is used by the 'apio sim'
   command which is the one specified in `apio.ini` using the
