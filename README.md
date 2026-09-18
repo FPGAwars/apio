@@ -17,7 +17,7 @@ This README page is optimized for its appearance in the github repo rather than 
 [![cli-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/build-pre-release.yaml?label=cli-build)](https://github.com/fpgawars/apio/actions/workflows/build-pre-release.yaml)
 [![cli-docs](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/publish-docs.yaml?label=cli-docs)](https://github.com/fpgawars/apio/actions/workflows/publish-docs.yaml)
 [![cli-pypi-monitor](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-pypi.yaml?label=cli-pypi-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-pypi.yaml)
-[![cli-latest-monitor](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-latest.yaml?label=cli-latest-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-latest.yaml)
+[![cli-dev-monitor](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/monitor-apio-dev.yaml?label=cli-dev-monitor)](https://github.com/fpgawars/apio/actions/workflows/monitor-apio-dev.yaml)
 [![repos-janitor](https://img.shields.io/github/actions/workflow/status/fpgawars/apio/apio-repos-janitor.yaml?label=repos-janitor)](https://github.com/fpgawars/apio/actions/workflows/apio-repos-janitor.yaml)
 [![ide-test](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/test.yaml?label=ide-test)](https://github.com/fpgawars/apio-vscode/actions/workflows/test.yaml)
 [![ide-build](https://img.shields.io/github/actions/workflow/status/fpgawars/apio-vscode/build-pre-release.yaml?label=ide-build)](https://github.com/fpgawars/apio-vscode/actions/workflows/build-pre-release.yaml)
