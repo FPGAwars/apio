@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Dict, Optional, Union, Any, List
 from configobj import ConfigObj
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, cwarning, fatal_error
+from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH2
 from apio.common.common_util import PROJECT_BUILD_PATH
 
@@ -461,16 +461,12 @@ def load_project_from_file(
             common_section = dict(parser.items(section_name))
             continue
 
-        # TODO: Remove this option after this is released.
-        # -- Handle the legacy [env] section.
-        if section_name == "env" and len(sections_names) == 1:
-            # env_sections["default"] = parser.items(section_name)
-            cwarning(
-                "Apio.ini has a legacy [env] section. "
-                "Please rename it to [env:default]."
+        # -- A bare [env] section is no longer accepted.
+        if section_name == "env":
+            fatal_error(
+                "Invalid section name 'env' in apio.ini.",
+                info="Rename it to [env:default].",
             )
-            env_sections["default"] = dict(parser.items(section_name))
-            continue
 
         # -- Handle the [env:env-name] sections.
         tokes = section_name.split(":")

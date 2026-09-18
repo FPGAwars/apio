@@ -170,28 +170,19 @@ def test_macro_expansion(apio_runner: ApioRunner):
     ]
 
 
-def test_legacy_apio_ini(apio_runner: ApioRunner):
-    """Tests with an old style apio.ini that has a single [env] section."""
+def test_legacy_env_section_rejected(apio_runner: ApioRunner):
+    """A bare [env] section is rejected with a rename hint."""
 
-    project, stdout = load_apio_ini(
+    error_tester(
+        env_arg=None,
         apio_ini={
             "[env]": {
                 "board": "alhambra-ii",
                 "top-module": "main",
             }
         },
-        env_arg=None,
+        expected_error="Rename it to [env:default]",
         apio_runner=apio_runner,
-    )
-
-    assert project.env_name == "default"
-    assert project.env_options == {
-        "board": "alhambra-ii",
-        "top-module": "main",
-    }
-    assert (
-        "Warning: Apio.ini has a legacy [env] section. "
-        "Please rename it to [env:default]" in stdout
     )
 
 
