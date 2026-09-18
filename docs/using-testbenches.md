@@ -6,7 +6,7 @@ Testbench files can be placed anywhere in the project directory tree, either nea
 
 Apio defines the Verilog macro when running `apio sim` and does not define it when running `apio test`. This allows conditional calls to `$fatal` such that the simulation exits with an error when run in batch mode using `apio test`, but continues and emits the wave file when run using `apio sim`.
 
-Make sure that your testbenches do not call `$dumpfile()` and instead let Apio set the desired location for the generated signal files. Failing to do so may result in Apio being unable to find the file when opening the GTKWave signal viewer or when cleaning the project.
+`$dumpfile()` in a testbench is an error; Apio writes the VCD itself.
 
 ## Example simulation results of a testbench
 
@@ -34,7 +34,7 @@ Apio testbench rules:
 
 - **Rule 5**: Use `$dumpvars()` with the testbench module name as an argument.
 
-- **Rule 6**: Do not use `$dumpfile()`.
+- **Rule 6**: Do not use `$dumpfile()`. It is a fatal error; Apio writes the VCD itself.
 
 ## Example
 

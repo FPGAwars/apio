@@ -24,6 +24,7 @@ from apio.scons.plugin_util import (
     map_params,
     make_verilator_config_builder,
     verilator_lint_action,
+    iverilog_action,
 )
 
 
@@ -233,6 +234,28 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         text = sb.read_file("hardware.vlt")
         assert "verilator_config" in text, text
         assert "lint_off -rule SPECIFYIGN" in text, text
+
+
+def test_iverilog_action_has_no_vcd_output_macro(apio_runner: ApioRunner):
+    """Tests iverilog_action() does not define the retired VCD_OUTPUT macro."""
+
+    with apio_runner.in_sandbox():
+
+        apio_env = make_test_apio_env()
+        action = iverilog_action(apio_env, verbose=False, is_interactive=False)
+
+        normalized_cmd = re.sub(r"\s+", " ", action)
+
+        assert "VCD_OUTPUT" not in normalized_cmd
+        assert "-DAPIO_SIM=0" in normalized_cmd
+        assert normalized_cmd.startswith("iverilog -g2012")
+
+        action_sim = iverilog_action(
+            apio_env, verbose=True, is_interactive=True
+        )
+        normalized_sim = re.sub(r"\s+", " ", action_sim)
+        assert "-DAPIO_SIM=1" in normalized_sim
+        assert "iverilog -g2012 -v " in normalized_sim
 
 
 def test_verilator_lint_action_min(apio_runner: ApioRunner):

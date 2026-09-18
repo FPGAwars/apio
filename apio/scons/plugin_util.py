@@ -853,7 +853,6 @@ def iverilog_action(
     apio_env: ApioEnv,
     *,
     verbose: bool,
-    vcd_output_name: str,
     is_interactive: bool,
     extra_params: List[str] | None = None,
     lib_dirs: List[Path] | None = None,
@@ -862,7 +861,6 @@ def iverilog_action(
     """Construct an iverilog scons action string.
     * env: Rhe scons environment.
     * verbose: IVerilog will show extra info.
-    * vcd_output_name: Value for the macro VCD_OUTPUT.
     * is_interactive: True for apio sim, False otherwise.
     * extra_params: Optional list of additional IVerilog params.
     * lib_dirs: Optional list of dir paths to include.
@@ -873,16 +871,12 @@ def iverilog_action(
 
     # pylint: disable=too-many-arguments
 
-    # Escaping for windows. '\' -> '\\'
-    escaped_vcd_output_name = vcd_output_name.replace("\\", "\\\\")
-
     # -- Construct the action string.
     # -- The -g2012 is for system-verilog support.
     action = (
-        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} {6} $SOURCES"
+        "iverilog -g2012 {0} -o $TARGET {1} {2} {3} {4} {5} $SOURCES"
     ).format(
         "-v" if verbose else "",
-        f"-DVCD_OUTPUT={escaped_vcd_output_name}",
         get_define_flags(apio_env),
         f"-DAPIO_SIM={int(is_interactive)}",
         map_params(extra_params, "{}"),  # pyright: ignore[reportArgumentType]

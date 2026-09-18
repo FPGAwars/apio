@@ -24,7 +24,6 @@ from apio.scons.plugin_util import (
     announce_testbench_action,
     source_files_issue_scanner_action,
     iverilog_action,
-    basename,
     make_verilator_config_builder,
     get_define_flags,
 )
@@ -170,10 +169,9 @@ class PluginXilinx(PluginBase):
         # -- string for sim and test.
         def action_generator(target, source, env, for_signature):
             _ = (source, env, for_signature)  # Unused
-            # Extract testbench name from target file name.
+            # Extract testbench file name from the target.
             testbench_file = str(target[0])
             assert has_testbench_name(testbench_file), testbench_file
-            testbench_name = basename(testbench_file)
 
             # Construct the actions list.
             action = [
@@ -185,7 +183,6 @@ class PluginXilinx(PluginBase):
                 iverilog_action(
                     apio_env,
                     verbose=params.verbosity.all,
-                    vcd_output_name=testbench_name,
                     is_interactive=apio_env.targeting_one_of("sim"),
                     lib_dirs=[self.yosys_lib_dir],
                     lib_files=self.sim_lib_files,
