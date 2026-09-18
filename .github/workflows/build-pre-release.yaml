@@ -53,10 +53,12 @@ jobs:
           release-tag: ${{ env.RELEASE_TAG }}
           just-check: true
 
+      # We get here repo normalized to lowercase. E.g. fpgawars/apio.
       - name: Get repo info
         uses: fpgawars/apio-workflows/.github/actions/get-repo-info@main
         with:
           repo-dir: .
+          repo-var: REPO
           branch-var: REPO_BRANCH
           commit-var: REPO_COMMIT
 
@@ -82,7 +84,7 @@ jobs:
             "description" : "Command-line FPGA design suite",
             "apio-cli-version": "$APIO_VERSION",
             "apio-python-version" : "$PYTHON_VERSION",
-            "repo":  "${{github.repository}}",
+            "repo":  "${REPO}",
             "repo-branch":  "${REPO_BRANCH}",
             "repo-commit":  "${REPO_COMMIT}",
             "release-tag":  "$RELEASE_TAG",
@@ -192,7 +194,7 @@ jobs:
       - name: Create assets markdown table
         run: |
           # The common prefix of the assets urls
-          URL_PREFIX="https://github.com/${{ github.repository }}/releases/download/$RELEASE_TAG"
+          URL_PREFIX="https://github.com/${REPO}/releases/download/$RELEASE_TAG"
           echo "URL_PREFIX=${URL_PREFIX}"
 
           # Write the table to a file.
@@ -227,9 +229,9 @@ jobs:
           $(cat build-info.txt)
           \`\`\`
 
-          - [Apio CLI cutoff commit](https://github.com/${{ github.repository }}/commit/${REPO_COMMIT})
+          - [Apio CLI cutoff commit](https://github.com/${REPO}/commit/${REPO_COMMIT})
 
-          - [Generated Apio CLI pre-release](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_TAG})
+          - [Generated Apio CLI pre-release](https://github.com/${REPO}/releases/tag/${RELEASE_TAG})
           EOF
 
           ls -al
