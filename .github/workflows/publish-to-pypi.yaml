@@ -13,6 +13,8 @@ on:
 
 env:
   # -- Set latter.
+  RELEASE_TAG: ""
+  PACKAGE_TAG: ""
   RELEASE_COMMIT_SHA: ""
 
 jobs:
@@ -52,14 +54,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip twine
 
+      # - name: Fetch pypi package archive from the release
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}
+      #   run: |
+      #     gh release download "$RELEASE_TAG" \
+      #       --repo "${{ github.repository }}" \
+      #       --pattern "apio-pypi-package-${PACKAGE_TAG}.tgz"
+      #     ls -al
+
       - name: Fetch pypi package archive from the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download "$RELEASE_TAG" \
-            --repo "${{ github.repository }}" \
-            --pattern "apio-pypi-package-${PACKAGE_TAG}.tgz"
-          ls -al
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: ${{ github.repository }}
+          tag: ${{ env.RELEASE_TAG }}
+          fileName: "apio-pypi-package-${{ env.PACKAGE_TAG }}.tgz" 
+          token: ${{ secrets.GITHUB_TOKEN }} 
 
       - name: Unpack the pypi package archive
         run: |
