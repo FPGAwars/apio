@@ -5,7 +5,7 @@ write the results to a file and generated a human readable markdown
 report.
 """
 
-from typing import Set, Optional
+from typing import Set
 from dataclasses import asdict, dataclass
 from datetime import date
 import pickle
@@ -205,7 +205,7 @@ def _verify_repo_should_have_a_recent_build(
     repo_crawl: RepoCrawl = ctx.fresh_repos_crawl.repos[repo]
 
     # -- Find the date of the latest release
-    latest: Optional[tuple[str, ReleaseCrawl]] = max(
+    latest: tuple[str, ReleaseCrawl] | None = max(
         repo_crawl.releases.items(),
         key=lambda item: item[1].published_date,
         default=None,

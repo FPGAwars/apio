@@ -13,7 +13,7 @@ import sys
 import os
 import traceback
 from dataclasses import dataclass
-from typing import Optional, List, NoReturn, Literal
+from typing import List, NoReturn, Literal
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
@@ -65,7 +65,7 @@ class ConsoleState:
 _state: ConsoleState | None = None
 
 
-# NOTE: not declaring terminal_mode and  theme_name is Optional[] because it
+# NOTE: not declaring terminal_mode and  theme_name is optional because it
 # causes the tests to fail with python 3.9.
 def configure(
     *,
@@ -351,7 +351,7 @@ def cwarning(*text_lines: str) -> None:
     cflush()
 
 
-def cstyle(text: str, style: Optional[str] = None) -> str:
+def cstyle(text: str, style: str | None = None) -> str:
     """Render the text to a string using an optional style."""
 
     # -- Render into a string buffer.

@@ -16,7 +16,7 @@ class BoardProgrammerSection(_message.Message):
     EXTRA_ARGS_FIELD_NUMBER: _ClassVar[int]
     id: str
     extra_args: str
-    def __init__(self, id: _Optional[str] = ..., extra_args: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _str | None = ..., extra_args: _str | None = ...) -> None: ...
 
 class BoardUsbSection(_message.Message):
     __slots__ = ("vid", "pid", "product_regex")
@@ -26,13 +26,13 @@ class BoardUsbSection(_message.Message):
     vid: str
     pid: str
     product_regex: str
-    def __init__(self, vid: _Optional[str] = ..., pid: _Optional[str] = ..., product_regex: _Optional[str] = ...) -> None: ...
+    def __init__(self, vid: _str | None = ..., pid: _str | None = ..., product_regex: _str | None = ...) -> None: ...
 
 class BoardTinyprogSection(_message.Message):
     __slots__ = ("name_regex",)
     NAME_REGEX_FIELD_NUMBER: _ClassVar[int]
     name_regex: str
-    def __init__(self, name_regex: _Optional[str] = ...) -> None: ...
+    def __init__(self, name_regex: _str | None = ...) -> None: ...
 
 class BoardDefinition(_message.Message):
     __slots__ = ("description", "fpga_id", "programmer", "usb", "tinyprog")
@@ -46,7 +46,7 @@ class BoardDefinition(_message.Message):
     programmer: BoardProgrammerSection
     usb: BoardUsbSection
     tinyprog: BoardTinyprogSection
-    def __init__(self, description: _Optional[str] = ..., fpga_id: _Optional[str] = ..., programmer: _Optional[_Union[BoardProgrammerSection, _Mapping]] = ..., usb: _Optional[_Union[BoardUsbSection, _Mapping]] = ..., tinyprog: _Optional[_Union[BoardTinyprogSection, _Mapping]] = ...) -> None: ...
+    def __init__(self, description: _str | None = ..., fpga_id: _str | None = ..., programmer: _Optional[_Union[BoardProgrammerSection, _Mapping]] = ..., usb: _Optional[_Union[BoardUsbSection, _Mapping]] = ..., tinyprog: _Optional[_Union[BoardTinyprogSection, _Mapping]] = ...) -> None: ...
 
 class FpgaIce40Params(_message.Message):
     __slots__ = ("type", "package")
@@ -54,7 +54,7 @@ class FpgaIce40Params(_message.Message):
     PACKAGE_FIELD_NUMBER: _ClassVar[int]
     type: str
     package: str
-    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ...) -> None: ...
+    def __init__(self, type: _str | None = ..., package: _str | None = ...) -> None: ...
 
 class FpgaEcp5Params(_message.Message):
     __slots__ = ("type", "package", "speed")
@@ -64,7 +64,7 @@ class FpgaEcp5Params(_message.Message):
     type: str
     package: str
     speed: str
-    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
+    def __init__(self, type: _str | None = ..., package: _str | None = ..., speed: _str | None = ...) -> None: ...
 
 class FpgaGowinParams(_message.Message):
     __slots__ = ("yosys_family", "nextpnr_family", "packer_device")
@@ -74,7 +74,7 @@ class FpgaGowinParams(_message.Message):
     yosys_family: str
     nextpnr_family: str
     packer_device: str
-    def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packer_device: _Optional[str] = ...) -> None: ...
+    def __init__(self, yosys_family: _str | None = ..., nextpnr_family: _str | None = ..., packer_device: _str | None = ...) -> None: ...
 
 class FpgaXilinxParams(_message.Message):
     __slots__ = ("family", "yosys_arch", "package", "speed")
@@ -86,7 +86,7 @@ class FpgaXilinxParams(_message.Message):
     yosys_arch: str
     package: str
     speed: str
-    def __init__(self, family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
+    def __init__(self, family: _str | None = ..., yosys_arch: _str | None = ..., package: _str | None = ..., speed: _str | None = ...) -> None: ...
 
 class FpgaDefinition(_message.Message):
     __slots__ = ("part_num", "arch", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params")
@@ -104,7 +104,7 @@ class FpgaDefinition(_message.Message):
     ecp5_params: FpgaEcp5Params
     gowin_params: FpgaGowinParams
     xilinx_params: FpgaXilinxParams
-    def __init__(self, part_num: _Optional[str] = ..., arch: _Optional[_Union[_apio_common_pb2.ApioArch, str]] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[FpgaIce40Params, _Mapping]] = ..., ecp5_params: _Optional[_Union[FpgaEcp5Params, _Mapping]] = ..., gowin_params: _Optional[_Union[FpgaGowinParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[FpgaXilinxParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, part_num: _str | None = ..., arch: _Optional[_Union[_apio_common_pb2.ApioArch, str]] = ..., size: _str | None = ..., ice40_params: _Optional[_Union[FpgaIce40Params, _Mapping]] = ..., ecp5_params: _Optional[_Union[FpgaEcp5Params, _Mapping]] = ..., gowin_params: _Optional[_Union[FpgaGowinParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[FpgaXilinxParams, _Mapping]] = ...) -> None: ...
 
 class ProgrammerDefinition(_message.Message):
     __slots__ = ("command", "args")
@@ -112,7 +112,7 @@ class ProgrammerDefinition(_message.Message):
     ARGS_FIELD_NUMBER: _ClassVar[int]
     command: str
     args: str
-    def __init__(self, command: _Optional[str] = ..., args: _Optional[str] = ...) -> None: ...
+    def __init__(self, command: _str | None = ..., args: _str | None = ...) -> None: ...
 
 class Definitions(_message.Message):
     __slots__ = ("boards", "fpgas", "programmers")
@@ -122,21 +122,21 @@ class Definitions(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: BoardDefinition
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[BoardDefinition, _Mapping]] = ...) -> None: ...
+        def __init__(self, key: _str | None = ..., value: _Optional[_Union[BoardDefinition, _Mapping]] = ...) -> None: ...
     class FpgasEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: FpgaDefinition
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[FpgaDefinition, _Mapping]] = ...) -> None: ...
+        def __init__(self, key: _str | None = ..., value: _Optional[_Union[FpgaDefinition, _Mapping]] = ...) -> None: ...
     class ProgrammersEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: ProgrammerDefinition
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[ProgrammerDefinition, _Mapping]] = ...) -> None: ...
+        def __init__(self, key: _str | None = ..., value: _Optional[_Union[ProgrammerDefinition, _Mapping]] = ...) -> None: ...
     BOARDS_FIELD_NUMBER: _ClassVar[int]
     FPGAS_FIELD_NUMBER: _ClassVar[int]
     PROGRAMMERS_FIELD_NUMBER: _ClassVar[int]

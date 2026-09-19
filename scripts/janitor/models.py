@@ -4,7 +4,7 @@ between janitor steps. Having them in a separate python
 module resolves some issues with the pickling.
 """
 
-from typing import List, Dict, Any, Set, Optional
+from typing import List, Dict, Any, Set
 from datetime import date
 from dataclasses import dataclass, field
 from enum import Enum
@@ -128,7 +128,7 @@ class Requirement:
     # -- The repo name, e.g. "fpgawars/apio"
     repo: str
     # -- The release tag, only if req_type.is_repo_scope.
-    release_tag: Optional[str]
+    release_tag: str | None
     # -- List of notes regarding the processing of the requirement.
     # -- This field does not participate in comparison or set lookup.
     notes: List[str] = field(compare=False)

@@ -8,7 +8,6 @@
 """Implementation of 'apio' report' command"""
 
 import sys
-from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons_manager import SConsManager
@@ -53,8 +52,8 @@ def cli(
     _: click.Context,
     *,
     # Options
-    env: Optional[str],
-    project_dir: Optional[Path],
+    env: str | None,
+    project_dir: Path | None,
     verbose: bool,
 ):
     """Analyze the design and report timing."""

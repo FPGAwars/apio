@@ -14,7 +14,7 @@ import os
 from contextlib import contextmanager
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, Any, Tuple, List
+from typing import Any, Tuple, List
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -171,9 +171,9 @@ def get_path_in_apio_package(subpath: str) -> Path:
 class CommandResult:
     """Contains the results of a command (subprocess) execution."""
 
-    out_text: Optional[str] = None  # stdout multi-line text.
-    err_text: Optional[str] = None  # stderr multi-line text.
-    exit_code: Optional[int] = None  # Exit code, 0 = OK.
+    out_text: str | None = None  # stdout multi-line text.
+    err_text: str | None = None  # stderr multi-line text.
+    exit_code: int | None = None  # Exit code, 0 = OK.
 
 
 def exec_command(
@@ -245,7 +245,7 @@ def exec_command(
 
 
 def user_directory_or_cwd(
-    dir_arg: Optional[Path],
+    dir_arg: Path | None,
     *,
     description: str,
     must_exist: bool = False,

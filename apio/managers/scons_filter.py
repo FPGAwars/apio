@@ -10,7 +10,7 @@
 import re
 import threading
 from enum import Enum
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
@@ -106,7 +106,7 @@ class RangeDetector:
 
     def classify_line(
         self, pipe_id: PipeId, line: str
-    ) -> Optional[RangeEvents]:  # pragma: no cover
+    ) -> RangeEvents | None:  # pragma: no cover
         """Tests if the next stdout/err line affects the range begin/end.
         Subclasses should implement this with the necessary logic for the
         range that is being detected.
@@ -189,7 +189,7 @@ class SconsFilter:
         line: str,
         patterns: List[Tuple[str, str]],
         default_color: str | None = None,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Assigns a color for a given line using a list of (regex, color)
         pairs. Returns the color of the first matching regex (case
         insensitive), or default_color if none match.
@@ -200,7 +200,7 @@ class SconsFilter:
         return default_color
 
     def _output_line(
-        self, line: str, style: Optional[str], terminator: str
+        self, line: str, style: str | None, terminator: str
     ) -> None:
         """Output a line. If a style is given, force that style, otherwise,
         pass on any color information it may have. The implementation takes

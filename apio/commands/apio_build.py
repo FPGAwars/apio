@@ -8,7 +8,6 @@
 """Implementation of 'apio build' command"""
 
 import sys
-from typing import Optional
 from pathlib import Path
 import click
 from apio.utils import cmd_util
@@ -61,8 +60,8 @@ def cli(
     _: click.Context,
     *,
     # Options
-    env: Optional[str],
-    project_dir: Optional[Path],
+    env: str | None,
+    project_dir: Path | None,
     verbose: bool,
     verbose_synth: bool,
     verbose_pnr: bool,

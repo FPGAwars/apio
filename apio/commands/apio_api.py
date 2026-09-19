@@ -11,7 +11,7 @@
 
 import sys
 import os
-from typing import Dict, List, Self, Optional, cast, Any
+from typing import Dict, List, Self, cast, Any
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -247,7 +247,7 @@ def _get_build_report_cli(
     *,
     # Options
     env: str,
-    project_dir: Optional[Path],
+    project_dir: Path | None,
     timestamp: str,
     output: str,
     force: bool,
@@ -341,7 +341,7 @@ def _get_project_cli(
     *,
     # Options
     env: str,
-    project_dir: Optional[Path],
+    project_dir: Path | None,
     timestamp: str,
     output: str,
     force: bool,

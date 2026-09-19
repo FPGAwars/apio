@@ -12,7 +12,6 @@ import time
 import shutil
 
 from datetime import datetime
-from typing import Optional
 from google.protobuf import text_format
 from apio.common.debug_util import is_debug
 from apio.common import apio_console, proto_util
@@ -62,7 +61,7 @@ class SConsManager:
 
     def graph(
         self, graph_params: GraphParams, verbosity: Verbosity
-    ) -> Optional[int]:
+    ) -> int | None:
         """Runs a scons subprocess with the 'graph' target. Returns process
         exit code, 0 if ok."""
 
@@ -75,7 +74,7 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("graph", scons_params=scons_params)
 
-    def lint(self, lint_params: LintParams) -> Optional[int]:
+    def lint(self, lint_params: LintParams) -> int | None:
         """Runs a scons subprocess with the 'lint' target. Returns process
         exit code, 0 if ok."""
 
@@ -87,7 +86,7 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("lint", scons_params=scons_params)
 
-    def sim(self, sim_params: SimParams) -> Optional[int]:
+    def sim(self, sim_params: SimParams) -> int | None:
         """Runs a scons subprocess with the 'sim' target. Returns process
         exit code, 0 if ok."""
 
@@ -99,7 +98,7 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("sim", scons_params=scons_params)
 
-    def test(self, test_params: ApioTestParams) -> Optional[int]:
+    def test(self, test_params: ApioTestParams) -> int | None:
         """Runs a scons subprocess with the 'test' target. Returns process
         exit code, 0 if ok."""
 
@@ -111,7 +110,7 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("test", scons_params=scons_params)
 
-    def build(self, verbosity: Verbosity) -> Optional[int]:
+    def build(self, verbosity: Verbosity) -> int | None:
         """Runs a scons subprocess with the 'build' target. Returns process
         exit code, 0 if ok."""
 
@@ -123,7 +122,7 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("build", scons_params=scons_params)
 
-    def report(self, verbosity: Verbosity) -> Optional[int]:
+    def report(self, verbosity: Verbosity) -> int | None:
         """Runs a scons subprocess with the 'report' target. Returns process
         exit code, 0 if ok."""
 
@@ -135,7 +134,7 @@ class SConsManager:
         # -- Run the scons process.
         return self._run_scons_subprocess("report", scons_params=scons_params)
 
-    def upload(self, upload_params: UploadParams) -> Optional[int]:
+    def upload(self, upload_params: UploadParams) -> int | None:
         """Runs a scons subprocess with the 'time' target. Returns process
         exit code, 0 if ok.
         """
@@ -346,7 +345,7 @@ class SConsManager:
 
     def _run_scons_subprocess(
         self, scons_target: str, *, scons_params: SconsParams
-    ) -> Optional[int]:
+    ) -> int | None:
         """Invoke an scons subprocess."""
 
         # pylint: disable=too-many-locals

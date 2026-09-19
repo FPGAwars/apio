@@ -9,7 +9,7 @@
 
 import os
 import shutil
-from typing import Optional, List
+from typing import List
 from pathlib import Path
 import click
 from apio.commands import options
@@ -97,7 +97,7 @@ Example:[code]
 def cli(
     *,
     # Options
-    project_dir: Optional[Path],
+    project_dir: Path | None,
 ):
     """Implements the apio clean command. It deletes temporary files generated
     by apio commands.

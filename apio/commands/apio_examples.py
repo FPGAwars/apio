@@ -10,7 +10,7 @@
 import re
 from datetime import date
 from pathlib import Path
-from typing import List, Any, Optional
+from typing import List, Any
 import click
 from rich.table import Table
 from rich import box
@@ -246,7 +246,7 @@ def _fetch_cli(
     # Arguments
     example: str,
     # Options
-    dst: Optional[Path],
+    dst: Path | None,
 ):
     """Implements the 'apio examples fetch' command."""
 
@@ -277,7 +277,7 @@ def _fetch_cli(
             ],
         )
     board_id: str = match.group(1)
-    example_name: Optional[str] = match.group(2)
+    example_name: str | None = match.group(2)
 
     if example_name:
         # -- Copy the files of a single example.

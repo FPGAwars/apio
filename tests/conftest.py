@@ -11,7 +11,7 @@ import shutil
 import tempfile
 import contextlib
 from pathlib import Path, PurePosixPath
-from typing import List, Union, cast, Optional, Dict, Any, Tuple
+from typing import List, Union, cast, Dict, Any, Tuple
 import os
 from urllib.parse import urlparse
 from pprint import pprint
@@ -517,7 +517,7 @@ class ApioRunner:
         print("----- End log")
 
     @property
-    def sandbox(self) -> Optional[ApioSandbox]:
+    def sandbox(self) -> ApioSandbox | None:
         """Returns the sandbox object or None if not in a sandbox."""
         return self._sandbox
 

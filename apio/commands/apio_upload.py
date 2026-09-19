@@ -8,7 +8,6 @@
 """Implementation of 'apio upload' command"""
 
 import sys
-from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons_manager import SConsManager
@@ -87,8 +86,8 @@ def cli(
     # Options
     serial_port: str,
     serial_num: str,
-    env: Optional[str],
-    project_dir: Optional[Path],
+    env: str | None,
+    project_dir: Path | None,
 ):
     """Implements the upload command."""
 

@@ -26,7 +26,7 @@ import shutil
 import platform
 import subprocess
 from subprocess import CompletedProcess
-from typing import Optional, List
+from typing import List
 from importlib.metadata import version, PackageNotFoundError
 from invoke.tasks import task
 from invoke.context import Context
@@ -49,7 +49,7 @@ PYTHON = sys.executable
 PTY = platform.system() != "Windows"
 
 
-def package_version(package_name: str) -> Optional[str]:
+def package_version(package_name: str) -> str | None:
     """Get the version of installed package or None if not installed."""
     try:
         return version(package_name)
