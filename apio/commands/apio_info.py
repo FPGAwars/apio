@@ -8,7 +8,7 @@
 """Implementation of 'apio info' command"""
 
 import sys
-from typing import List, Optional
+from typing import List
 from pathlib import Path
 from datetime import date
 import click
@@ -207,7 +207,7 @@ def _project_cli(
     *,
     # Options
     env: str,
-    project_dir: Optional[Path],
+    project_dir: Path | None,
 ):
     """Implements the 'apio info project' command."""
 

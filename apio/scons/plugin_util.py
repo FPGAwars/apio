@@ -15,7 +15,7 @@ import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -41,7 +41,7 @@ from apio.common.build_report import BuildReport, read_build_report
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
 
 
-def map_str_params(str_params: Optional[List[str]], fmt: str) -> str:
+def map_str_params(str_params: List[str] | None, fmt: str) -> str:
     """A common function construct a command string snippet from a list
     of arguments. The function does the following:
     1. If params arg is None replace it with []
@@ -66,7 +66,7 @@ def map_str_params(str_params: Optional[List[str]], fmt: str) -> str:
     return " ".join(mapped_params)
 
 
-def map_path_params(path_params: Optional[List[Path]], fmt: str) -> str:
+def map_path_params(path_params: List[Path] | None, fmt: str) -> str:
     """Same as map_str_params() but accepts a list of Path that is first
     converted to a string and then passed to map_str_params()"""
     # -- Replace None with an empty list
@@ -427,7 +427,7 @@ def gtkwave_target(
     vcd_file_target: NodeList,
     testbench_info: TestbenchInfo,
     sim_params: SimParams,
-    gtkwave_extra_options: Optional[List[str]],
+    gtkwave_extra_options: List[str] | None,
 ) -> List[Alias]:
     """Construct a target to launch the QTWave signal viewer.
     vcd_file_target is the simulator target that generated the vcd file

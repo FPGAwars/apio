@@ -10,7 +10,7 @@
 import os
 from pathlib import Path
 from glob import glob
-from typing import Tuple, List, Optional
+from typing import Tuple, List
 import click
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import EMPH3, SUCCESS
@@ -80,8 +80,8 @@ def cli(
     *,
     # Arguments
     files: Tuple[str],
-    env: Optional[str],
-    project_dir: Optional[Path],
+    env: str | None,
+    project_dir: Path | None,
     verbose: bool,
 ):
     """Implements the format command which formats given or all source

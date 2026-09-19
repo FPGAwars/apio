@@ -10,7 +10,7 @@
 """A class with common services for the apio scons handlers."""
 
 import os
-from typing import List, Optional, Any
+from typing import List, Any
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
@@ -108,7 +108,7 @@ class ApioEnv:
         builder_id: str,
         target,
         sources: List[Any],
-        extra_dependencies: Optional[List] = None,
+        extra_dependencies: List | None = None,
         always_build: bool = False,
     ):
         """Creates an return a target that uses the builder with given id."""

@@ -14,7 +14,7 @@ from dataclasses import dataclass
 import configparser
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Optional, Union, Any, List
+from typing import Dict, Union, Any, List
 from configobj import ConfigObj
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error
@@ -269,7 +269,7 @@ class Project:
     def _determine_default_env_name(
         apio_section: Dict[str, str],
         env_sections: Dict[str, Dict[str, str]],
-        env_arg: Optional[str],
+        env_arg: str | None,
     ) -> str:
         """Determines the active env name. Sections are assumed to be
         validated. 'env_arg' is the value of the optional command line --env
@@ -410,7 +410,7 @@ class Project:
 
 def load_project_from_file(
     project_dir: Path,
-    env_arg: Optional[str],
+    env_arg: str | None,
     boards: Dict[str, BoardDefinition],
 ) -> Project:
     """Read project file from given project dir. Returns None if file

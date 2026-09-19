@@ -11,7 +11,7 @@ import json
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Optional, Any, List
+from typing import Dict, Any, List
 from pathlib import Path
 import requests
 from jsonschema import validate
@@ -104,7 +104,7 @@ class PackageRemoteConfig:
     release_file: str
 
 
-def get_datetime_stamp(dt: Optional[datetime] = None) -> str:
+def get_datetime_stamp(dt: datetime | None = None) -> str:
     """Returns a string with time now as yyyy-mm-dd-hh-mm"""
     if dt is None:
         dt = datetime.now()
@@ -227,7 +227,7 @@ class RemoteConfig:
             cout(f"Remote config url: {self.remote_config_url}")
 
         # -- Start with no remote config.
-        self._cached_remote_config: Optional[Dict[str, Any]] = None
+        self._cached_remote_config: Dict[str, Any] | None = None
 
         # -- Path to the local file with the cached remote config.
         self._cached_remote_config_path = (
@@ -444,7 +444,7 @@ class RemoteConfig:
 
         # -- Fetch the config text. Returns None if error_is_fatal=False and
         # -- fetch failed.
-        config_text: Optional[str] = self._fetch_remote_config_text(
+        config_text: str | None = self._fetch_remote_config_text(
             error_is_fatal=error_is_fatal
         )
 
@@ -511,7 +511,7 @@ class RemoteConfig:
         # -- Ok.
         return True
 
-    def _fetch_remote_config_text(self, error_is_fatal: bool) -> Optional[str]:
+    def _fetch_remote_config_text(self, error_is_fatal: bool) -> str | None:
         """Fetches and returns the apio remote config JSON text. In case
         of an error, returns None."""
 
@@ -543,7 +543,7 @@ class RemoteConfig:
 
         # -- Fetch the remote config. With timeout = 10, this failed a
         # -- few times on github workflow tests so increased to 25.
-        exception: Optional[Exception] = None
+        exception: Exception | None = None
         try:
             resp: requests.Response = requests.get(
                 self.remote_config_url, timeout=25

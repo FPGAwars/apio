@@ -11,7 +11,7 @@ import platform
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Dict
 import json5
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
@@ -120,8 +120,8 @@ class ApioContext:
         project_policy: ProjectPolicy,
         remote_config_policy: RemoteConfigPolicy,
         packages_policy: PackagesPolicy,
-        project_dir_arg: Optional[Path] = None,
-        env_arg: Optional[str] = None,
+        project_dir_arg: Path | None = None,
+        env_arg: str | None = None,
         report_env=True,
     ):
         """Initializes the ApioContext object.
@@ -295,7 +295,7 @@ class ApioContext:
 
         # -- If we determined that we need to load the project, load the
         # -- apio.ini data.
-        self._project: Optional[Project] = None
+        self._project: Project | None = None
         self._project_resources: ProjectResources | None = None
 
         if self._project_dir:

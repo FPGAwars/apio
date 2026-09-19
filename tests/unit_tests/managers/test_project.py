@@ -2,7 +2,7 @@
 Tests of project.py
 """
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, Tuple
 import pytest
 from tests.conftest import ApioRunner
 from apio.managers.project import Project, ENV_OPTIONS_SPEC
@@ -18,7 +18,7 @@ from apio.apio_context import (
 
 def load_apio_ini(
     apio_ini: Dict[str, Dict[str, str]],
-    env_arg: Optional[str],
+    env_arg: str | None,
     apio_runner: ApioRunner,
 ) -> Tuple[Project, str]:
     """A helper function load apio.ini.  Returns (project, log-text)"""
@@ -282,7 +282,7 @@ def test_env_selection_from_env_arg(apio_runner: ApioRunner):
 
 
 def error_tester(
-    env_arg: Optional[str],
+    env_arg: str | None,
     apio_ini: Dict[str, Dict[str, str]],
     expected_error: str,
     apio_runner: ApioRunner,

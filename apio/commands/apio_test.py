@@ -8,7 +8,6 @@
 """Implementation of 'apio test' command"""
 
 import sys
-from typing import Optional
 from pathlib import Path
 import click
 from apio.common.apio_console import cout
@@ -94,8 +93,8 @@ def cli(
     testbench_path: str,
     # Options
     default: bool,
-    env: Optional[str],
-    project_dir: Optional[Path],
+    env: str | None,
+    project_dir: Path | None,
 ):
     """Implements the test command."""
 

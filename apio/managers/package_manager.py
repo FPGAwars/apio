@@ -11,7 +11,7 @@ import os
 import json
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Any
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cstyle, fatal_error
@@ -88,7 +88,7 @@ class PackageScanResults:
         cout(f"  Orphan files  {self.orphan_file_names}")
 
 
-def get_datetime_stamp(dt: Optional[datetime] = None) -> str:
+def get_datetime_stamp(dt: datetime | None = None) -> str:
     """Returns a string with time now as yyyy-mm-dd-hh-mm"""
     if dt is None:
         dt = datetime.now()
@@ -347,7 +347,7 @@ class PackageManager:
         assert package_name in self.required_packages, package_name
 
         # -- Set up installation announcement
-        pending_announcement: Optional[str] = cstyle(
+        pending_announcement: str | None = cstyle(
             f"Installing apio package '{package_name}'", style=EMPH3
         )
 

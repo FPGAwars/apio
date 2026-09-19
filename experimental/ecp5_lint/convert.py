@@ -3,7 +3,7 @@ by the Verilator linter."""
 
 import re
 import sys
-from typing import List, Tuple, Optional
+from typing import List
 import pathlib
 from dataclasses import dataclass
 

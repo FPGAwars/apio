@@ -6,7 +6,7 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-from typing import Optional, List
+from typing import List
 from apio.common.apio_console import cout, cwarning, fatal_error
 from apio.common import proto_util
 from apio.common.debug_util import is_debug
@@ -65,8 +65,8 @@ class _DeviceScanner:
 
 def construct_programmer_cmd(
     apio_ctx: ApioContext,
-    serial_port_flag: Optional[str],
-    serial_num_flag: Optional[str],
+    serial_port_flag: str | None,
+    serial_num_flag: str | None,
 ) -> str:
     """Construct the programmer command for an 'apio upload' command."""
 
@@ -80,8 +80,8 @@ def construct_programmer_cmd(
 def _construct_programmer_cmd(
     apio_ctx: ApioContext,
     scanner: _DeviceScanner,
-    serial_port_flag: Optional[str],
-    serial_num_flag: Optional[str],
+    serial_port_flag: str | None,
+    serial_num_flag: str | None,
 ) -> str:
     """Construct the programmer command for an 'apio upload' command."""
 
@@ -143,7 +143,7 @@ def _construct_programmer_cmd(
     return cmd
 
 
-def _report_unused_flag(flag_name: str, flag_value: Optional[str]):
+def _report_unused_flag(flag_name: str, flag_value: str | None):
     """If flag_value is not falsy then print a warning message."""
     if flag_value:
         cwarning(f"{flag_name} ignored.")
@@ -206,8 +206,8 @@ def _construct_cmd_template(apio_ctx: ApioContext) -> str:
 def _resolve_serial_cmd_template(
     apio_ctx: ApioContext,
     scanner: _DeviceScanner,
-    serial_port_arg: Optional[str],
-    serial_port_num: Optional[str],
+    serial_port_arg: str | None,
+    serial_port_num: str | None,
     cmd_template: str,
 ) -> str:
     """Resolves a programmer command template for a serial device."""
@@ -230,7 +230,7 @@ def _resolve_serial_cmd_template(
 def _resolve_usb_cmd_template(
     apio_ctx: ApioContext,
     scanner: _DeviceScanner,
-    serial_num_flag: Optional[str],
+    serial_num_flag: str | None,
     cmd_template: str,
 ) -> str:
     """Resolves a programmer command template for an USB device."""
@@ -255,8 +255,8 @@ def _resolve_usb_cmd_template(
 def _match_serial_device(
     apio_ctx: ApioContext,
     scanner: _DeviceScanner,
-    serial_port_flag: Optional[str],
-    serial_num_flag: Optional[str],
+    serial_port_flag: str | None,
+    serial_num_flag: str | None,
 ) -> SerialDevice:
     """Scans the serial devices and selects and returns a single matching
     device. Exits with an error if none or multiple matching devices.
@@ -329,7 +329,7 @@ def _match_serial_device(
 
 
 def _match_usb_device(
-    apio_ctx: ApioContext, scanner, serial_num_flag: Optional[str]
+    apio_ctx: ApioContext, scanner, serial_num_flag: str | None
 ) -> UsbDevice:
     """Scans the USB devices and selects and returns a single matching
     device. Exits with an error if none or multiple matching devices.

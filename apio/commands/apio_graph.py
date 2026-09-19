@@ -8,7 +8,6 @@
 """Implementation of 'apio graph' command"""
 
 import sys
-from typing import Optional
 from pathlib import Path
 import click
 from apio.managers.scons_manager import SConsManager
@@ -106,8 +105,8 @@ def cli(
     svg: bool,
     png: bool,
     pdf: bool,
-    env: Optional[str],
-    project_dir: Optional[Path],
+    env: str | None,
+    project_dir: Path | None,
     top_module: str,
     no_viewer: bool,
     verbose: bool,

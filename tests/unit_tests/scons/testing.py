@@ -1,7 +1,7 @@
 """
 Helpers for apio's scons testing."""
 
-from typing import Optional, List
+from typing import List
 import SCons.Script.SConsOptions
 import SCons.Node.FS
 import SCons.Environment
@@ -84,12 +84,12 @@ def make_test_scons_params() -> SconsParams:
 
 def make_test_apio_env(
     *,
-    targets: Optional[List[str]] = None,
-    platform_id: Optional[str] = None,
-    is_windows: Optional[bool] = None,
+    targets: List[str] | None = None,
+    platform_id: str | None = None,
+    is_windows: bool | None = None,
     # debug_level: int = 0,
-    apio_env_params: Optional[ApioEnvParams] = None,
-    target_params: Optional[TargetParams] = None,
+    apio_env_params: ApioEnvParams | None = None,
+    target_params: TargetParams | None = None,
 ) -> ApioEnv:
     """Creates a fresh apio env for testing. The env is created
     with the current directory as the root dir.

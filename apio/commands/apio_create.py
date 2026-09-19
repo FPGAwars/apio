@@ -7,7 +7,6 @@
 # -- License GPLv2
 """Implementation of 'apio create' command"""
 
-from typing import Optional
 from pathlib import Path
 import click
 from apio.common.apio_console import fatal_error
@@ -69,7 +68,7 @@ def cli(
     # Options
     board: str,
     top_module: str,
-    project_dir: Optional[Path],
+    project_dir: Path | None,
 ):
     """Create a project file."""
 

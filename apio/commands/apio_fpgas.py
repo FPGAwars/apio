@@ -10,7 +10,7 @@
 from datetime import date
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Tuple
 import click
 from rich.table import Table
 from rich import box
@@ -264,7 +264,7 @@ def cli(
     # Options
     verbose: bool,
     docs: bool,
-    project_dir: Optional[Path],
+    project_dir: Path | None,
 ):
     """Implements the 'fpgas' command which lists available fpga
     definitions.

@@ -10,7 +10,7 @@
 from pathlib import Path
 from datetime import date
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from typing import List, Dict
 import click
 from rich.table import Table
 from rich import box
@@ -272,7 +272,7 @@ def cli(
     # Options
     verbose: bool,
     docs: bool,
-    project_dir: Optional[Path],
+    project_dir: Path | None,
 ):
     """Implements the 'boards' command which lists available board
     definitions."""

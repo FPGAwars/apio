@@ -8,7 +8,6 @@
 """Implementation of 'apio sim' command"""
 
 import sys
-from typing import Optional
 from pathlib import Path
 import click
 from apio.common.apio_console import cout
@@ -119,10 +118,10 @@ def cli(
     testbench_path: str,
     # Options
     force: bool,
-    env: Optional[str],
+    env: str | None,
     no_gtkwave: bool,
     detach: bool,
-    project_dir: Optional[Path],
+    project_dir: Path | None,
 ):
     """Implements the apio sim command. It simulates a single testbench
     file and shows graphically the signal graphs.

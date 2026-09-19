@@ -10,7 +10,7 @@ import shutil
 import os
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional, List, Dict
+from typing import List, Dict
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.proto.apio_common_pb2 import ApioArch
@@ -168,7 +168,7 @@ class Examples:
         # -- All done
         return counts
 
-    def lookup_example_info(self, example_name) -> Optional[ExampleInfo]:
+    def lookup_example_info(self, example_name) -> ExampleInfo | None:
         """Return the example info for given example or None if not found.
         Example_name looks like 'alhambra-ii/ledon'.
         """
