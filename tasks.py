@@ -101,7 +101,7 @@ install_dependencies()
 
 # -- Now that Rich is installed, we can import and use it.
 # pylint: disable=wrong-import-position
-from rich.console import Console  # noqa: E402
+from rich.console import Console
 
 # -- For outputting via Rich. The regular rich.print() doesn't not allow to
 # -- disable markup.
@@ -156,15 +156,6 @@ def lint_task(ctx: Context):
     # -- NOTE: This also creates the local dir _site which we ignore. We
     # -- don't know how to lint mkdocs without creating it.
     run(ctx, [PYTHON, "-m", "tox", "-e", "lint"])
-
-
-@task(name="lint2", aliases=["l2"])
-def lint2_task(ctx: Context):
-    """Experimental new lint."""
-    announce_task("lint2")
-    # -- NOTE: This also creates the local dir _site which we ignore. We
-    # -- don't know how to lint mkdocs without creating it.
-    run(ctx, [PYTHON, "-m", "tox", "-e", "lint2"])
 
 
 @task(name="test", aliases=["t"])
