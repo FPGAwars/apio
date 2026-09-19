@@ -173,3 +173,35 @@ def chipdb_file_on_demand(
 
     # -- All done, return with the chipdb file path.
     return chipdb_file_path
+
+
+# -- The place and route tool a part's chipdb is built for, when the parts
+# -- index does not name one. It is the tool every part used before the index
+# -- could name another, so an index without the field keeps its meaning.
+DEFAULT_PNR_TOOL = "nextpnr-xilinx"
+
+# -- The tools apio knows how to run for a xilinx part.
+SUPPORTED_PNR_TOOLS = ("nextpnr-xilinx", "nextpnr-himbaechel")
+
+
+def pnr_tool_for_part(apio_ctx: ApioContext, yosys_part: str) -> str:
+    """Given a xilinx yosys-part, returns the place and route tool its chipdb
+    was built for, as named by the optional 'pnr' field of the part in the
+    openxc7 package's parts index. The two tools' chipdbs are not
+    interchangeable, so the tool has to follow the chipdb, not the family."""
+
+    openxc7_dir = apio_ctx.get_package_dir("openxc7")
+    parts_index_path = openxc7_dir / PARTS_INDEX_FILE_NAME
+    with open(parts_index_path, encoding="utf-8") as f:
+        json_data = json.load(f)
+
+    # -- chipdb_file_on_demand() has already rejected an unknown part.
+    part_info = json_data["parts"].get(yosys_part, {})
+    pnr_tool = part_info.get("pnr", DEFAULT_PNR_TOOL)
+    if pnr_tool not in SUPPORTED_PNR_TOOLS:
+        fatal_error(
+            f"Xilinx part {yosys_part} needs place and route tool "
+            f"'{pnr_tool}', which this version of Apio does not support",
+            info="Upgrade Apio.",
+        )
+    return pnr_tool

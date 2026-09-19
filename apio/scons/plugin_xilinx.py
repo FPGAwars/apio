@@ -102,18 +102,39 @@ class PluginXilinx(PluginBase):
             target.append(apio_env.target + ".pnr")
             return target, source
 
-        # -- Create the builder
-        return Builder(
-            action=(
+        quiet = "" if params.verbosity.all or params.verbosity.pnr else "-q"
+        extra_options = " ".join(params.apio_env_params.nextpnr_extra_options)
+
+        # -- The chipdb decides the tool. nextpnr-himbaechel's chipdbs are per
+        # -- die, so it also takes the full part (package and speed grade) as
+        # -- --device, and names its xilinx outputs as uarch options.
+        if xilinx_params.pnr_tool == "nextpnr-himbaechel":
+            action = (
+                "nextpnr-himbaechel --chipdb {0} --device {1} -o xdc={2} "
+                "--json $SOURCE -o fasm=$TARGET --report {3} {4} {5}"
+            ).format(
+                xilinx_params.chipdb_file_path,
+                xilinx_params.yosys_part,
+                self.constrain_file(),
+                apio_env.target + ".pnr",
+                quiet,
+                extra_options,
+            )
+        else:
+            action = (
                 "nextpnr-xilinx --chipdb {0} --xdc {1} --json $SOURCE "
                 "--fasm $TARGET --report {2} {3} {4}"
             ).format(
                 xilinx_params.chipdb_file_path,
                 self.constrain_file(),
                 apio_env.target + ".pnr",
-                ("" if params.verbosity.all or params.verbosity.pnr else "-q"),
-                " ".join(params.apio_env_params.nextpnr_extra_options),
-            ),
+                quiet,
+                extra_options,
+            )
+
+        # -- Create the builder
+        return Builder(
+            action=action,
             src_suffix=".json",
             suffix=".fasm",
             emitter=emitter,
