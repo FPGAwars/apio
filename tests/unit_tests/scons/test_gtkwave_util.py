@@ -59,8 +59,7 @@ def test_create_gtkwave_file(apio_runner: ApioRunner):
         assert gtkw_path.is_file()
 
         # -- Test the generated .gtkw file.
-        text = sb.read_file(gtkw_path)
-        lines = text.split("\n")
+        lines = sb.read_file_lines(gtkw_path)
         print(f"Actual {gtkw_path} lines:")
         for line in lines:
             print(f'    "{line}",')
@@ -91,8 +90,7 @@ def test_default_signals_creation(apio_runner: ApioRunner):
         assert gtkw_path.exists()
 
         # -- Test the generated .gtkw file.
-        text = sb.read_file(gtkw_path)
-        lines = text.split("\n")
+        lines = sb.read_file_lines(gtkw_path)
         print(f"Actual {gtkw_path} lines:")
         for line in lines:
             print(f'    "{line}",')
@@ -114,10 +112,7 @@ def test_user_gtkw_file_protection(apio_runner: ApioRunner):
         # -- Read the user's .gtkw file
         gtkw_path = Path("main_tb.gtkw")
         assert gtkw_path.exists()
-        text_before = sb.read_file(gtkw_path)
-
-        # gtkw_path.unlink()
-        # assert not gtkw_path.exists()
+        text_before = sb.read_file_text(gtkw_path)
 
         # -- Execute "apio sim --no-gtkwave main_tb.v"
         result = sb.invoke_apio_cmd(apio, ["sim", "--no-gtkwave", "main_tb.v"])
@@ -126,7 +121,7 @@ def test_user_gtkw_file_protection(apio_runner: ApioRunner):
 
         # -- Read the .gtkw file after the operation.
         assert gtkw_path.exists()
-        text_after = sb.read_file(gtkw_path)
+        text_after = sb.read_file_text(gtkw_path)
 
         # -- Verify that apio didn't change it.
         assert text_after == text_before

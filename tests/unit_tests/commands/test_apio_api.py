@@ -30,7 +30,7 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert data["boards"]["alhambra-ii"] == {
@@ -68,7 +68,7 @@ def test_apio_api_get_fpgas(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert data["fpgas"]["ice40hx4k-tq144-8k"] == {
@@ -103,7 +103,7 @@ def test_apio_api_get_programmers(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert data["programmers"]["openfpgaloader"] == {
@@ -133,7 +133,7 @@ def test_apio_api_get_commands(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert (
@@ -163,7 +163,7 @@ def test_apio_api_get_packages(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert (
@@ -192,7 +192,7 @@ def test_apio_api_get_system(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert data["system"]["remote-config-url"].endswith(".jsonc")
@@ -228,7 +228,7 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
 
         print("\nActual data:")
@@ -335,7 +335,7 @@ def test_apio_api_get_build_report(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and sanity check the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         print(data)
 
@@ -368,7 +368,7 @@ def test_apio_api_get_examples(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Read and verify the file.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert (
@@ -407,7 +407,7 @@ def test_apio_api_scan_devices(apio_runner: ApioRunner):
 
         # -- Read and verify the output file. Since we don't know what
         # -- devices the platform has, we just check for the section keys.
-        text = sb.read_file(path)
+        text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert "usb-devices" in data

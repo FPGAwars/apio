@@ -24,6 +24,7 @@ def test_resources_references(apio_runner: ApioRunner):
             remote_config_policy=RemoteConfigPolicy.CACHED_OK,
             packages_policy=PackagesPolicy.ENSURE_PACKAGES,
         )
+        assert apio_ctx.definitions is not None
 
         unused_programmers = set(apio_ctx.definitions.programmers.keys())
 

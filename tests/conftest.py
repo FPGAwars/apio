@@ -6,6 +6,7 @@ import subprocess
 from subprocess import CompletedProcess
 from dataclasses import dataclass
 from io import StringIO, TextIOBase
+from collections.abc import Iterator
 import shutil
 import tempfile
 import contextlib
@@ -339,24 +340,17 @@ class ApioSandbox:
         with open(file, "w", encoding="utf-8") as f:
             f.write(text)
 
-    def read_file(
-        self, file: Union[str, Path], lines_mode=False
-    ) -> Union[str, List[str]]:
-        """Read a text file. Returns a string with the text or if
-        lines_mode is True, a list with the individual lines (excluding
-        the \n delimiters)
-        """
-
-        # -- Read the text.
+    def read_file_text(self, file: Union[str, Path]) -> str:
+        """Read a text file. Returns a string with the text or if"""
         with open(file, "r", encoding="utf8") as f:
             text = f.read()
-
-        # -- Split to lines if requested.
-        if lines_mode:
-            text = text.split("\n")
-
-        # -- All done
         return text
+
+    def read_file_lines(self, file: Union[str, Path]) -> List[str]:
+        """Read a text file. Returns a string split into lines."""
+        text = self.read_file_text(file)
+        text_lines = text.split("\n")
+        return text_lines
 
     def write_json_file(
         self,
@@ -372,7 +366,7 @@ class ApioSandbox:
 
     def read_json_file(self, file: Union[str, Path]) -> Dict[str, Any]:
         """Read a json file. 'file' can be a string or a Path."""
-        json_text = self.read_file(file)
+        json_text = self.read_file_text(file)
         json_data = json.loads(json_text)
         return json_data
 
@@ -488,9 +482,11 @@ class ApioRunner:
         # -- Extract the file name part. E.g. 'apio-{major}.{minor}.x.jsonc'.
         # -- The {major} and {minor} are placeholders for apio's major and
         # -- minor version number which we don't resolve here.
-        config_file_path = urlparse(url_str).path
-        config_file_name = PurePosixPath(config_file_path).name
-        print(f"Config-file-name = {config_file_name}")
+        remote_config_file_path: str = urlparse(url_str).path
+        remote_config_file_name: str = PurePosixPath(
+            remote_config_file_path
+        ).name
+        print(f"remote-config-file-name = {remote_config_file_name}")
 
         # -- Construct the path of the config file in this repo. We compute it
         # -- based on the path of this conftest.py python file.
@@ -500,7 +496,7 @@ class ApioRunner:
                 "..",
                 "..",
                 "remote-config",
-                config_file_name,
+                remote_config_file_name,
             )
         )
         # -- Convert the file path to a URL with a 'file://' form.
@@ -526,7 +522,7 @@ class ApioRunner:
         return self._sandbox
 
     @contextlib.contextmanager
-    def in_sandbox(self):
+    def in_sandbox(self) -> Iterator[ApioSandbox]:
         """Create an apio sandbox context manager that delete the temp dir
         and restore the system env upon exist.
 

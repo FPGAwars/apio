@@ -91,7 +91,7 @@ def _test_project(
 
         # -- Modify apio.ini
         apio_ini_lines = cast(
-            list[str], sb.read_file(sb.proj_dir / "apio.ini", lines_mode=True)
+            list[str], sb.read_file_lines(sb.proj_dir / "apio.ini")
         )
         apio_ini_lines.append(" ")
         sb.write_file(sb.proj_dir / "apio.ini", apio_ini_lines, exists_ok=True)

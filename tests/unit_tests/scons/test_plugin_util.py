@@ -5,6 +5,7 @@ Tests of the scons plugin_util.py functions.
 import re
 import os
 from os.path import isfile, exists, join
+from pathlib import Path
 import pytest
 from SCons.Node.FS import FS
 from SCons.Action import FunctionAction
@@ -231,7 +232,7 @@ def test_make_verilator_config_builder(apio_runner: ApioRunner):
         assert isfile("hardware.vlt")
 
         # -- Verify that the file was created with the given text.
-        text = sb.read_file("hardware.vlt")
+        text = sb.read_file_text("hardware.vlt")
         assert "verilator_config" in text, text
         assert "lint_off -rule SPECIFYIGN" in text, text
 
@@ -315,8 +316,8 @@ def test_verilator_lint_action_max(apio_runner: ApioRunner):
         action = verilator_lint_action(
             apio_env,
             extra_params=["param1", "param2"],
-            lib_dirs=["dir1", "dir2"],
-            lib_files=["file1", "file2"],
+            lib_dirs=[Path("dir1"), Path("dir2")],
+            lib_files=[Path("file1"), Path("file2")],
         )
 
         # -- The return action is a list of two steps, a function to call and

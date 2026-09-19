@@ -64,8 +64,8 @@ def test_fatal_error(apio_runner: ApioRunner):
         # -- Make an exception object with stack info.
         try:
             raise RuntimeError("my fake exception error")
-        except RuntimeError as e:
-            test_exc = e
+        except RuntimeError as exp:
+            test_exc: RuntimeError = exp
 
         # -- Test with a cause exception only.
         with apio_runner.with_logger() as log:

@@ -11,7 +11,7 @@
 
 import sys
 import os
-from typing import Dict, List, Self, Optional, cast
+from typing import Dict, List, Self, Optional, cast, Any
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -947,7 +947,7 @@ def _scan_devices_cli(
     )
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
