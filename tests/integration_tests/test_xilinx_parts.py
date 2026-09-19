@@ -36,6 +36,7 @@ def test_fpgas_yosys_part_num(apio_runner: ApioRunner):
 
         # -- Iterate FPGA definitions and verify
         verified = 0
+        assert apio_ctx.definitions is not None
         for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
             # -- Skip if not a xilinx fpga
             arch = fpga_definition.arch

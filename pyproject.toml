@@ -67,6 +67,17 @@ mypy = [
     "types-requests>=2.33.0,<2.34",
 ]
 
+[[tool.mypy.overrides]]
+# Supress mypy warning for these imported modules since type stubs are
+# not available for them.
+module = [
+    "configobj",
+    "configobj.*",
+    "SCons",
+    "SCons.*",
+]
+ignore_missing_imports = true
+
 [tool.flit.sdist]
 # Note that we don't include 'media/' nor do we have relative references
 # from README.md to resources in media since pypi doesn't show them 

@@ -11,6 +11,7 @@
 """Apio scons related utilities.."""
 
 from pathlib import Path
+from typing import List
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from google.protobuf import text_format
 from apio.common.common_util import get_project_source_files
@@ -334,7 +335,7 @@ class SconsHandler:
             always_build=True,
         )
 
-    def _register_apio_sim_target(self, synth_srcs, test_srcs):
+    def _register_apio_sim_target(self, synth_srcs, test_srcs) -> None:
         """Registers the 'sim' targets which compiles and runs the
         simulation of a testbench."""
 
@@ -385,8 +386,9 @@ class SconsHandler:
 
         # -- Get the gtkwave extra options (with the correct type)
         # -- for avoiding pylance warnings
-        gtkwave_extra_options = params.apio_env_params.gtkwave_extra_options
-        gtkwave_extra_options = [str(x) for x in gtkwave_extra_options]
+        gtkwave_extra_options: List[str] = [
+            str(x) for x in params.apio_env_params.gtkwave_extra_options
+        ]
 
         # -- The top level "sim" target.
         gtkwave_target(

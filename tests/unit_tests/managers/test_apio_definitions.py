@@ -27,6 +27,7 @@ def test_default_loading_no_project(apio_runner: ApioRunner):
         )
 
         assert not apio_ctx.has_project
+        assert apio_ctx.definitions is not None
         assert "alhambra-ii" in apio_ctx.definitions.boards
         assert "ice40hx4k-tq144-8k" in apio_ctx.definitions.fpgas
         assert "openfpgaloader" in apio_ctx.definitions.programmers
@@ -48,6 +49,7 @@ def test_default_loading_with_project(apio_runner: ApioRunner):
         )
 
         assert apio_ctx.has_project
+        assert apio_ctx.definitions is not None
         assert "alhambra-ii" in apio_ctx.definitions.boards
         assert "ice40hx4k-tq144-8k" in apio_ctx.definitions.fpgas
         assert "openfpgaloader" in apio_ctx.definitions.programmers
@@ -103,6 +105,7 @@ def test_loading_with_custom_boards(apio_runner: ApioRunner):
 
         # -- Verify
         definitions = apio_ctx.definitions
+        assert definitions is not None
 
         assert apio_ctx.has_project
         assert "ice40hx4k-tq144-8k" in definitions.fpgas
@@ -166,6 +169,7 @@ def test_loading_with_custom_fpgas(apio_runner: ApioRunner):
 
         # -- Verify
         definitions = apio_ctx.definitions
+        assert definitions is not None
 
         assert apio_ctx.has_project
         assert "alhambra-ii" in definitions.boards
@@ -223,6 +227,7 @@ def test_loading_with_custom_programmer(apio_runner: ApioRunner):
 
         # -- Verify
         definitions = apio_ctx.definitions
+        assert definitions is not None
 
         assert apio_ctx.has_project
         assert "alhambra-ii" in definitions.boards

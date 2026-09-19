@@ -26,10 +26,11 @@ class FakeDeviceScanner(_DeviceScanner):
 
     def __init__(
         self,
-        usb_devices: List[UsbDevice] = None,
-        serial_devices: List[SerialDevice] = None,
+        apio_ctx: ApioContext,
+        usb_devices: List[UsbDevice] | None = None,
+        serial_devices: List[SerialDevice] | None = None,
     ):
-        super().__init__(apio_ctx=None)
+        super().__init__(apio_ctx)
         self._usb_devices = usb_devices
         self._serial_devices = serial_devices
 
@@ -40,7 +41,7 @@ class FakeDeviceScanner(_DeviceScanner):
         return self._usb_devices
 
     # @override
-    def get_serial_devices(self) -> List[UsbDevice]:
+    def get_serial_devices(self) -> List[SerialDevice]:
         """Returns the fake serial devices."""
         assert self._serial_devices
         return self._serial_devices
@@ -81,7 +82,7 @@ def fake_serial_device(
     sn="SNXXXX",
     device_type="FT2232H",
     location="0.1",
-) -> UsbDevice:
+) -> SerialDevice:
     """Create a fake serial device for resting."""
     # pylint: disable=too-many-arguments
     return SerialDevice(
@@ -194,6 +195,7 @@ def test_get_cmd_usb(apio_runner: ApioRunner):
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
+            apio_ctx,
             usb_devices=[
                 fake_usb_device(dev=0, prod="non alhambra"),
                 fake_usb_device(dev=1),
@@ -246,6 +248,7 @@ def test_get_cmd_usb_no_match(apio_runner: ApioRunner):
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
+            apio_ctx,
             usb_devices=[
                 fake_usb_device(dev=0, prod="non alhambra"),
                 fake_usb_device(dev=2, prod="non alhambra"),
@@ -295,6 +298,7 @@ def test_get_cmd_usb_multiple_matches(apio_runner: ApioRunner):
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
+            apio_ctx,
             usb_devices=[
                 fake_usb_device(dev=0, sn="SN001"),
                 fake_usb_device(dev=1, prod="non alhambra"),
@@ -352,6 +356,7 @@ def test_get_cmd_serial(apio_runner: ApioRunner):
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
+            apio_ctx,
             serial_devices=[
                 fake_serial_device(port_name="port1", pid="1234"),
                 fake_serial_device(port_name="port2"),
@@ -403,6 +408,7 @@ def test_get_cmd_serial_no_match(
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
+            apio_ctx,
             serial_devices=[
                 fake_serial_device(port_name="port1", pid="1234"),
                 fake_serial_device(port_name="port3", pid="1234"),
@@ -452,6 +458,7 @@ def test_get_cmd_serial_multiple_matches(apio_runner: ApioRunner):
 
         # -- Create fake devices
         scanner = FakeDeviceScanner(
+            apio_ctx,
             serial_devices=[
                 fake_serial_device(port_name="port1"),
                 fake_serial_device(port_name="port2", pid="1234"),
@@ -508,6 +515,7 @@ def test_device_presence_ok(apio_runner: ApioRunner):
 
         # -- Create fake devices, with two matching devices.
         scanner = FakeDeviceScanner(
+            apio_ctx,
             usb_devices=[
                 fake_usb_device(dev=0),
                 fake_usb_device(dev=1, prod="non alhambra"),
@@ -562,6 +570,7 @@ def test_device_presence_not_found(apio_runner: ApioRunner):
 
         # -- Create fake devices, with two matching devices.
         scanner = FakeDeviceScanner(
+            apio_ctx,
             usb_devices=[
                 fake_usb_device(dev=0, prod="non alhambra"),
                 fake_usb_device(dev=1, prod="non alhambra"),

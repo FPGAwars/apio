@@ -129,7 +129,7 @@ def test_raw_icepll(apio_runner: ApioRunner):
         )
         print(result.output)
         sb.assert_result_ok(result)
-        module = sb.read_file("pll.v")
+        module = sb.read_file_text("pll.v")
         print(module)
 
         assert "module pll" in module
@@ -151,7 +151,7 @@ def test_raw_ecppll(apio_runner: ApioRunner):
         )
         print(result.output)
         sb.assert_result_ok(result)
-        module = sb.read_file("pll.v")
+        module = sb.read_file_text("pll.v")
         print(module)
 
         assert "module pll" in module
@@ -187,7 +187,7 @@ def test_raw_gowin_pll(apio_runner: ApioRunner):
         )
         print(result.output)
         sb.assert_result_ok(result)
-        module = sb.read_file("pll.v")
+        module = sb.read_file_text("pll.v")
         print(module)
 
         assert "module pll" in module
@@ -219,7 +219,7 @@ def test_raw_xc7pll(apio_runner: ApioRunner):
         )
         print(result.output)
         sb.assert_result_ok(result)
-        module = sb.read_file("pll.v")
+        module = sb.read_file_text("pll.v")
         print(module)
 
         assert "module pll" in module

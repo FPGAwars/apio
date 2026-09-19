@@ -75,8 +75,7 @@ def construct_remote_config_status_str(apio_ctx: ApioContext) -> str:
         config_status.append("Not cached")
 
     # -- Concatenate and return.
-    config_status = ", ".join(config_status)
-    return config_status
+    return ", ".join(config_status)
 
 
 # -- Text in the rich-text format of the python rich library.
@@ -242,12 +241,14 @@ def _project_cli(
     table.add_column("VALUE", no_wrap=True, style=EMPH1)
 
     # -- Add rows
+    board_id = project.get_str_option("board")
+    assert isinstance(board_id, str)
 
-    board_id = project.env_options["board"]
     fpga_id = res.fpga_id
     programmer_id = res.programmer_id
 
     defs = apio_ctx.definitions
+    assert defs is not None
 
     board_definition_src = (
         "User custom" if defs.is_custom_board(board_id) else "Apio standard"
@@ -266,7 +267,7 @@ def _project_cli(
 
     table.add_row("Total project envs", str(len(project.env_names)))
     table.add_row("Active project env", project.env_name)
-    table.add_row("Top module name", project.env_options.get("top-module", ""))
+    table.add_row("Top module name", project.get_str_option("top-module", ""))
     table.add_row("Board id", board_id)
     table.add_row("Board definition", board_definition_src)
     table.add_row("FPGA id", fpga_id)
@@ -460,7 +461,7 @@ Examples:
     short_help="Show apio themes.",
     help=APIO_INFO_THEMES_HELP,
 )
-def _themes_cli():
+def _themes_cli() -> None:
     """Implements the 'apio info themes' command."""
 
     # -- This initializes the output console.
@@ -471,10 +472,10 @@ def _themes_cli():
     )
 
     # -- Collect the list of apio list names.
-    style_names = set()
+    style_names_set = set()
     for theme_info in THEMES_TABLE.values():
-        style_names.update(list(theme_info.styles.keys()))
-    style_names = sorted(list(style_names), key=str.lower)
+        style_names_set.update(list(theme_info.styles.keys()))
+    style_names_list = sorted(list(style_names_set), key=str.lower)
 
     # -- Define the table.
     table = Table(
@@ -500,7 +501,7 @@ def _themes_cli():
         table.add_column(column_name, no_wrap=True, justify="center")
 
     # -- Append the table rows
-    for style_name in style_names:
+    for style_name in style_names_list:
         row_values: List[Text] = []
         for theme_name, theme_info in THEMES_TABLE.items():
             # Get style
