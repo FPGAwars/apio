@@ -44,6 +44,9 @@ message XilinxParams {
   required string yosys_arch = 2;
   required string yosys_part = 3;
   required string chipdb_file_path = 4;
+  // The place and route tool the chipdb was built for, as named by the
+  // openxc7 package's parts index. Unset means the legacy nextpnr-xilinx.
+  optional string pnr_tool = 5;
 }
 
 // General fpga info.

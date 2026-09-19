@@ -249,12 +249,18 @@ class SConsManager:
                 chipdb_file_path = xilinx_chipdb.chipdb_file_on_demand(
                     apio_ctx, params.yosys_part
                 )
+                # -- The chipdb decides the place and route tool: the two
+                # -- tools' chipdbs are not interchangeable.
+                pnr_tool = xilinx_chipdb.pnr_tool_for_part(
+                    apio_ctx, params.yosys_part
+                )
                 result.fpga_info.xilinx_params.MergeFrom(
                     XilinxParams(
                         yosys_family=params.yosys_family,
                         yosys_arch=params.yosys_arch,
                         yosys_part=params.yosys_part,
                         chipdb_file_path=str(chipdb_file_path),
+                        pnr_tool=pnr_tool,
                     )
                 )
             case _:

@@ -57,16 +57,18 @@ class GowinParams(_message.Message):
     def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packer_device: _Optional[str] = ...) -> None: ...
 
 class XilinxParams(_message.Message):
-    __slots__ = ("yosys_family", "yosys_arch", "yosys_part", "chipdb_file_path")
+    __slots__ = ("yosys_family", "yosys_arch", "yosys_part", "chipdb_file_path", "pnr_tool")
     YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
     YOSYS_ARCH_FIELD_NUMBER: _ClassVar[int]
     YOSYS_PART_FIELD_NUMBER: _ClassVar[int]
     CHIPDB_FILE_PATH_FIELD_NUMBER: _ClassVar[int]
+    PNR_TOOL_FIELD_NUMBER: _ClassVar[int]
     yosys_family: str
     yosys_arch: str
     yosys_part: str
     chipdb_file_path: str
-    def __init__(self, yosys_family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., yosys_part: _Optional[str] = ..., chipdb_file_path: _Optional[str] = ...) -> None: ...
+    pnr_tool: str
+    def __init__(self, yosys_family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., yosys_part: _Optional[str] = ..., chipdb_file_path: _Optional[str] = ..., pnr_tool: _Optional[str] = ...) -> None: ...
 
 class FpgaInfo(_message.Message):
     __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params")
