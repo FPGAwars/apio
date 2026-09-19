@@ -146,42 +146,42 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
         assert isinstance(device, usb.core.Device), type(device)
 
         # -- Skip hubs, they are not interesting
-        d = device.bDeviceClass  # pyright: ignore[reportAttributeAccessIssue]
+        d = device.bDeviceClass
         if d == 0x09:
             continue
 
         # -- Lookup device type or "" if not found.
         device_type = get_device_type(
-            device.idVendor,  # pyright: ignore[reportAttributeAccessIssue]
-            device.idProduct,  # pyright: ignore[reportAttributeAccessIssue]
-        )  # pyright: ignore[reportAttributeAccessIssue]
+            device.idVendor,
+            device.idProduct,
+        )
 
         # -- Create the device object.
         unavail = "--unavail--"
-        vid = device.idVendor  # pyright: ignore[reportAttributeAccessIssue]
-        pid = device.idProduct  # pyright: ignore[reportAttributeAccessIssue]
+        vid = device.idVendor
+        pid = device.idProduct
 
         d = device
-        man = d.iManufacturer  # pyright: ignore[reportAttributeAccessIssue]
-        iser = d.iSerialNumber  # pyright: ignore[reportAttributeAccessIssue]
+        man = d.iManufacturer
+        iser = d.iSerialNumber
         item = UsbDevice(
             vid=f"{vid:04X}",
             pid=f"{pid:04X}",
-            bus=device.bus,  # pyright: ignore[reportArgumentType]
+            bus=device.bus,
             device=device.address or 0,
             manufacturer=_get_usb_str(
-                device,  # pyright: ignore[reportArgumentType]
+                device,
                 man,
                 default=unavail,
             ),
             product=_get_usb_str(
-                device,  # pyright: ignore[reportArgumentType]
-                device.iProduct,  # pyright: ignore[reportAttributeAccessIssue]
+                device,
+                device.iProduct,
                 default=unavail,
             ),
             serial_number=_get_usb_str(
-                device,  # pyright: ignore[reportArgumentType]
-                iser,  # pyright: ignore[reportAttributeAccessIssue]
+                device,
+                iser,
                 default="",
             ),
             device_type=device_type,

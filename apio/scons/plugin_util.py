@@ -267,9 +267,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
                 cout(f"  {dependency}", style=EMPH2)
 
         # All done
-        return apio_env.scons_env.File(
-            dependencies
-        )  # pyright: ignore[reportReturnType]
+        return apio_env.scons_env.File(dependencies)
 
     return apio_env.scons_env.Scanner(function=verilog_src_scanner_func)
 
@@ -338,27 +336,12 @@ def verilator_lint_action(
         " ".join(params.apio_env_params.verilator_extra_options),
         f"--top-module {top_module}" if top_module else "",
         get_define_flags(apio_env),
-        map_str_params(
-            extra_params, "{}"
-        ),  # pyright: ignore[reportArgumentType]
-        (
-            map_path_params(
-                lib_dirs, '-I"{}"'  # pyright: ignore[reportArgumentType]
-            )
-            if lint_whole_project
-            else ""
-        ),
+        map_str_params(extra_params, "{}"),
+        (map_path_params(lib_dirs, '-I"{}"') if lint_whole_project else ""),
         apio_env.target + ".vlt" if using_vlt else "",
-        (
-            map_path_params(
-                lib_files, '"{}"'  # pyright: ignore[reportArgumentType]
-            )
-            if lint_whole_project
-            else ""
-        ),
+        (map_path_params(lib_files, '"{}"') if lint_whole_project else ""),
     )
 
-    # pyright: ignore[reportReturnType]
     return [
         source_files_issue_scanner_action(),
         str(action),
@@ -380,9 +363,7 @@ class TestbenchInfo:
         return basename(self.testbench_path)
 
 
-def detached_action(
-    api_env: ApioEnv, cmd: List[str]
-) -> Action:  # pyright: ignore[reportGeneralTypeIssues]
+def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
     """
     Launch the given command, given as a list of tokens, in a detached
     (non blocking) mode.
@@ -676,7 +657,7 @@ def announce_testbench_action() -> FunctionAction:
 
     # -- Run the action but don't announce the action.
     return Action(
-        announce_testbench,  # pyright: ignore[reportReturnType]
+        announce_testbench,
         strfunction=None,
     )
 
@@ -724,7 +705,7 @@ def source_files_issue_scanner_action() -> FunctionAction:
     # -- Run the action but don't announce the action. We will print
     # -- ourselves in report_source_files_issues.
     return Action(
-        report_source_files_issues,  # pyright: ignore[reportReturnType]
+        report_source_files_issues,
         strfunction=None,
     )
 
@@ -830,7 +811,7 @@ def report_action(verbose: bool) -> FunctionAction:
         _print_pnr_report(build_report, verbose)
 
     return Action(
-        print_pnr_report,  # pyright: ignore[reportReturnType]
+        print_pnr_report,
         "Formatting pnr report.",
     )
 
@@ -894,15 +875,9 @@ def iverilog_action(
         "-v" if verbose else "",
         get_define_flags(apio_env),
         f"-DAPIO_SIM={int(is_interactive)}",
-        map_str_params(
-            extra_params, "{}"
-        ),  # pyright: ignore[reportArgumentType]
-        map_path_params(
-            lib_dirs, '-I"{}"'
-        ),  # pyright: ignore[reportArgumentType]
-        map_path_params(
-            lib_files, '"{}"'
-        ),  # pyright: ignore[reportArgumentType]
+        map_str_params(extra_params, "{}"),
+        map_path_params(lib_dirs, '-I"{}"'),
+        map_path_params(lib_files, '"{}"'),
     )
 
     return action
@@ -916,7 +891,7 @@ def basename(file_name: str) -> str:
 
 def make_verilator_config_builder(
     lib_path: Path, rules_to_suppress: List[str]
-) -> Builder:  # pyright: ignore[reportGeneralTypeIssues]
+) -> Builder:
     """Create a scons Builder that writes a verilator config file
     (hardware.vlt) that suppresses warnings in the lib directory.
     Rules_to_suppress is a list of Verilator rules that should be suppressed

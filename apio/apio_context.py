@@ -356,7 +356,7 @@ class ApioContext:
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
         assert self._project is not None
-        return self._project  # pyright: ignore[reportReturnType]
+        return self._project
 
     @property
     def project_resources(self) -> ProjectResources:
@@ -365,7 +365,7 @@ class ApioContext:
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
         assert self._project_resources is not None
-        return self._project_resources  # pyright: ignore[reportReturnType]
+        return self._project_resources
 
     @property
     def env_build_path(self) -> Path:
