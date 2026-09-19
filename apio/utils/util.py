@@ -207,7 +207,7 @@ def exec_command(
         ) as proc:
 
             # -- Wait for completion.
-            out_text, err_text = proc.communicate()
+            _, _ = proc.communicate()
 
             # -- Get status code.
             exit_code = proc.returncode
@@ -561,7 +561,7 @@ def is_pyinstaller_app() -> bool:
 def compute_file_sha256(path: Path) -> str:
     """Given a file path, compute and return sha256 string."""
     # -- Sanity check
-    assert path.is_file, path
+    assert path.is_file(), path
 
     # -- Compute sha256. We perform it in chunks to limit the memory
     # -- requirements.

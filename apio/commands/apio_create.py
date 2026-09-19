@@ -85,6 +85,7 @@ def cli(
         remote_config_policy=RemoteConfigPolicy.CACHED_OK,
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
+    assert apio_ctx.definitions is not None
 
     # -- Make sure the board exist.
     if board not in apio_ctx.definitions.boards:

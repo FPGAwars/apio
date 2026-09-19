@@ -2,7 +2,7 @@
 
 import re
 from glob import glob
-from typing import List, Optional, Any
+from typing import List, Any
 from dataclasses import dataclass
 import usb.core
 import usb.backend.libusb1
@@ -73,9 +73,7 @@ class UsbDevice:
         )
 
 
-def _get_usb_str(
-    device: usb.core.Device, index: int, default: str
-) -> Optional[str]:
+def _get_usb_str(device: usb.core.Device, index: int, default: str) -> str:
     """Extract usb string by its index."""
     # pylint: disable=broad-exception-caught
     try:

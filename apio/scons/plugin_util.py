@@ -15,7 +15,7 @@ import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -41,9 +41,9 @@ from apio.common.build_report import BuildReport, read_build_report
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
 
 
-def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
+def map_str_params(str_params: Optional[List[str]], fmt: str) -> str:
     """A common function construct a command string snippet from a list
-    of arguments. The functon does the following:
+    of arguments. The function does the following:
     1. If params arg is None replace it with []
     2. Drops empty or white space only items.
     3. Maps the items using the format string which contains exactly one
@@ -52,19 +52,32 @@ def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
 
     For examples, see the unit test at test_scons_util.py.
     """
-    # None designates empty list. Avoiding the pylint non safe default
-    # warning.
-    if params is None:
-        params = []
+    # -- Replace None with an empty list.
+    if str_params is None:
+        str_params = []
 
     # Convert params to stripped strings.
-    params = [str(x).strip() for x in params]
+    str_params = [x.strip() for x in str_params]
 
     # Drop the empty params and map the rest.
-    mapped_params = [fmt.format(x) for x in params if x]
+    mapped_params = [fmt.format(x) for x in str_params if x]
 
     # Join using a single space.
     return " ".join(mapped_params)
+
+
+def map_path_params(path_params: Optional[List[Path]], fmt: str) -> str:
+    """Same as map_str_params() but accepts a list of Path that is first
+    converted to a string and then passed to map_str_params()"""
+    # -- Replace None with an empty list
+    if path_params is None:
+        path_params = []
+
+    # -- Convert to string.
+    str_params = [str(x) for x in path_params]
+
+    # -- Map the strings.
+    return map_str_params(str_params, fmt)
 
 
 def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
@@ -325,9 +338,11 @@ def verilator_lint_action(
         " ".join(params.apio_env_params.verilator_extra_options),
         f"--top-module {top_module}" if top_module else "",
         get_define_flags(apio_env),
-        map_params(extra_params, "{}"),  # pyright: ignore[reportArgumentType]
+        map_str_params(
+            extra_params, "{}"
+        ),  # pyright: ignore[reportArgumentType]
         (
-            map_params(
+            map_path_params(
                 lib_dirs, '-I"{}"'  # pyright: ignore[reportArgumentType]
             )
             if lint_whole_project
@@ -335,7 +350,7 @@ def verilator_lint_action(
         ),
         apio_env.target + ".vlt" if using_vlt else "",
         (
-            map_params(
+            map_path_params(
                 lib_files, '"{}"'  # pyright: ignore[reportArgumentType]
             )
             if lint_whole_project
@@ -879,9 +894,15 @@ def iverilog_action(
         "-v" if verbose else "",
         get_define_flags(apio_env),
         f"-DAPIO_SIM={int(is_interactive)}",
-        map_params(extra_params, "{}"),  # pyright: ignore[reportArgumentType]
-        map_params(lib_dirs, '-I"{}"'),  # pyright: ignore[reportArgumentType]
-        map_params(lib_files, '"{}"'),  # pyright: ignore[reportArgumentType]
+        map_str_params(
+            extra_params, "{}"
+        ),  # pyright: ignore[reportArgumentType]
+        map_path_params(
+            lib_dirs, '-I"{}"'
+        ),  # pyright: ignore[reportArgumentType]
+        map_path_params(
+            lib_files, '"{}"'
+        ),  # pyright: ignore[reportArgumentType]
     )
 
     return action

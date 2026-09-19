@@ -66,12 +66,12 @@ class ApioDefinitions:
         # -- Convert the board definition to BoardDefinition protos and save.
         self.boards: Dict[str, BoardDefinition] = {}
         for board_id, definition_dict in boards_json.items():
-            definition = proto_util.proto_from_json_dict(
+            board_definition = proto_util.proto_from_json_dict(
                 definition_dict,
                 BoardDefinition,
                 f"Failed to parse board definition '{board_id}",
             )
-            self.boards[board_id] = definition
+            self.boards[board_id] = board_definition
 
         # -- Read fpgas definitions as json dicts.
         # -- Custom definitions overrides apio standard definitions.
@@ -85,12 +85,12 @@ class ApioDefinitions:
         # -- save.
         self.fpgas: Dict[str, FpgaDefinition] = {}
         for fpga_id, definition_dict in fpgas_json.items():
-            definition = proto_util.proto_from_json_dict(
+            fpga_definition = proto_util.proto_from_json_dict(
                 definition_dict,
                 FpgaDefinition,
                 f"Failed to parse fpga definition '{fpga_id}",
             )
-            self.fpgas[fpga_id] = definition
+            self.fpgas[fpga_id] = fpga_definition
 
         # -- Load programmers definitions as json dicts.
         # -- Custom definitions overrides apio standard definitions.
@@ -104,12 +104,12 @@ class ApioDefinitions:
         # -- and save.
         self.programmers: Dict[str, ProgrammerDefinition] = {}
         for programmer_id, definition_dict in programmers_json.items():
-            definition = proto_util.proto_from_json_dict(
+            programmer_definition = proto_util.proto_from_json_dict(
                 definition_dict,
                 ProgrammerDefinition,
                 f"Failed to parse programmer definition '{programmer_id}",
             )
-            self.programmers[programmer_id] = definition
+            self.programmers[programmer_id] = programmer_definition
 
         # -- Validate the definitions we just loaded.
         self._validate_definitions()
@@ -221,7 +221,7 @@ class ApioDefinitions:
         cls,
         name: str,
         package_definitions_dir: Path,
-        project_definitions_dir: Path,
+        project_definitions_dir: Optional[Path],
     ) -> Tuple[Dict[str, Dict], Set[str]]:
         """Load a jsonc file. Try first from custom_dir, if given, and then
         from standard dir. This method is called for resource files in
@@ -234,7 +234,7 @@ class ApioDefinitions:
         # -- Load the standard definition as a json dict.
         filepath = package_definitions_dir / name
         combined_dict = cls._load_definitions_file(filepath)
-        custom_ids = set()
+        custom_ids: Set[str] = set()
 
         # -- If there is a project specific override file, apply it on
         # -- top of the standard apio definition dict.

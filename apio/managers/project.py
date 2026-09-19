@@ -20,6 +20,7 @@ from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH2
 from apio.common.common_util import PROJECT_BUILD_PATH
+from apio.common.proto.apio_definitions_pb2 import BoardDefinition
 
 DEFAULT_TOP_MODULE = "main"
 
@@ -111,11 +112,11 @@ class Project:
     def __init__(
         self,
         *,
-        apio_section: Dict[str, str],
-        common_section: Dict[str, Dict],
-        env_sections: Dict[str, Dict],
+        apio_section: Dict[str, Any],
+        common_section: Dict[str, Any],
+        env_sections: Dict[str, Dict[str, Any]],
         env_arg: str | None,
-        boards: Dict[str, Dict],
+        boards: Dict[str, BoardDefinition],
     ):
         """Construct the project with information from apio.ini, command
         line arg, and boards resources."""
@@ -178,7 +179,7 @@ class Project:
         apio_section: Dict[str, str],
         common_section: Dict,
         env_sections: Dict[str, Dict[str, str]],
-        boards: Dict[str, Dict],
+        boards: Dict[str, BoardDefinition],
     ):
         """Validate the parsed apio.ini sections."""
 
@@ -246,7 +247,7 @@ class Project:
     def _validate_env_section(
         section_title: str,
         section_options: Dict[str, str],
-        boards: Dict[str, Dict],
+        boards: Dict[str, BoardDefinition],
     ):
         """Validate the options of a section that contains env options. This
         includes the sections [env:*] and [common]."""
@@ -354,8 +355,8 @@ class Project:
 
         # -- Convert the list options from strings to list.
         for name, str_val in result.items():
-            option_spec: EnvOptionSpec | None = ENV_OPTIONS_SPEC.get(name)
-            if option_spec and option_spec.is_list:
+            list_option_spec: EnvOptionSpec | None = ENV_OPTIONS_SPEC.get(name)
+            if list_option_spec and list_option_spec.is_list:
                 if isinstance(str_val, str):
                     list_val = str_val.split("\n")
                     # -- Select the non empty items.
@@ -408,7 +409,9 @@ class Project:
 
 
 def load_project_from_file(
-    project_dir: Path, env_arg: Optional[str], boards: Dict[str, Dict]
+    project_dir: Path,
+    env_arg: Optional[str],
+    boards: Dict[str, BoardDefinition],
 ) -> Project:
     """Read project file from given project dir. Returns None if file
     does not exists. Exits on any error. Otherwise creates adn
@@ -440,25 +443,29 @@ def load_project_from_file(
     # -- no duplicates.
     sections_names = parser.sections()
 
-    apio_section = None
-    common_section = None
-    env_sections = {}
+    apio_section: Dict[str, Any] = {}
+    common_section: Dict[str, Any] = {}
+    env_sections: Dict[str, Dict[str, Any]] = {}
+
+    common_section_found: bool = False
+    env_sections_found: bool = False
 
     for section_name in sections_names:
         # -- Handle the [apio[ section.]]
         if section_name == "apio":
-            if common_section or env_sections:
+            if common_section_found or env_sections_found:
                 fatal_error("The [apio] section must be the first section.")
             apio_section = dict(parser.items(section_name))
             continue
 
         # -- Handle the [common] section.
         if section_name == "common":
-            if env_sections:
+            if env_sections_found:
                 fatal_error(
                     "The [common] section must be before [env:] sections."
                 )
             common_section = dict(parser.items(section_name))
+            common_section_found = True
             continue
 
         # -- A bare [env] section is no longer accepted.
@@ -484,10 +491,8 @@ def load_project_from_file(
 
     # -- Construct the Project object. Its constructor validates the options.
     return Project(
-        apio_section=apio_section or {},
-        common_section=(
-            common_section or {}
-        ),  # pyright: ignore[reportArgumentType]
+        apio_section=apio_section,
+        common_section=common_section,
         env_sections=env_sections,
         env_arg=env_arg,
         boards=boards,

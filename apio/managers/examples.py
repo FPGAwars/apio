@@ -78,6 +78,10 @@ class Examples:
 
         # pylint: disable=too-many-locals
 
+        # -- The context should have the board, fpgas, and programmer
+        # -- definitions.
+        assert self.apio_ctx.definitions is not None
+
         # -- Collect the examples home dir each board.
         boards_dirs: List[Path] = []
 

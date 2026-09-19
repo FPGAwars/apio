@@ -227,7 +227,7 @@ class RemoteConfig:
             cout(f"Remote config url: {self.remote_config_url}")
 
         # -- Start with no remote config.
-        self._cached_remote_config = None
+        self._cached_remote_config: Optional[Dict[str, Any]] = None
 
         # -- Path to the local file with the cached remote config.
         self._cached_remote_config_path = (
@@ -320,12 +320,14 @@ class RemoteConfig:
     def data(self) -> Dict:
         """Returns the remote config that is applicable for this invocation.
         Should not called if the context was initialized with NO_CONFIG."""
+        assert self._cached_remote_config is not None
         return self._cached_remote_config.get("remote-config", {})
 
     @property
     def metadata(self) -> Dict:
         """Returns the remote config metadata. Should not be called
         if the context was initialized with NO_CONFIG."""
+        assert self._cached_remote_config is not None
         return self._cached_remote_config.get("metadata", {})
 
     def get_package_config(
@@ -481,7 +483,7 @@ class RemoteConfig:
 
         # -- Append remote config metadata. This also clear the
         # -- "refresh-failure-on" field if exists.
-        metadata_dict = {}
+        metadata_dict: Dict[str, Any] = {}
         metadata_dict["loaded-by"] = util.get_apio_version_str()
         metadata_dict["loaded-at"] = get_datetime_stamp()
         metadata_dict["loaded-from"] = self.remote_config_url
@@ -541,7 +543,7 @@ class RemoteConfig:
 
         # -- Fetch the remote config. With timeout = 10, this failed a
         # -- few times on github workflow tests so increased to 25.
-        exception: Exception = None
+        exception: Optional[Exception] = None
         try:
             resp: requests.Response = requests.get(
                 self.remote_config_url, timeout=25
@@ -556,7 +558,7 @@ class RemoteConfig:
         # -- Handle the case of an exception. This is the preferable option
         # -- since it provides to fatal_error() a more detailed context of
         # -- the error (which can be viewed with APIO_DEBUG=1)
-        if exception:
+        if exception is not None:
             if error_is_fatal:
                 fatal_error(context_msg, cause=exception)
             self._handle_soft_config_refresh_failure(

@@ -143,7 +143,7 @@ def _construct_programmer_cmd(
     return cmd
 
 
-def _report_unused_flag(flag_name: str, flag_value: str):
+def _report_unused_flag(flag_name: str, flag_value: Optional[str]):
     """If flag_value is not falsy then print a warning message."""
     if flag_value:
         cwarning(f"{flag_name} ignored.")
@@ -277,13 +277,15 @@ def _match_serial_device(
 
     # -- Construct a device filter.
     serial_filter = SerialDeviceFilter()
-    proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
-    if usb_info and usb_info.vid:
-        serial_filter.set_vid(usb_info.vid.upper())
-    if usb_info and usb_info.pid:
-        serial_filter.set_pid(usb_info.pid.upper())
-    if usb_info and usb_info.product_regex:
-        serial_filter.set_product_regex(usb_info.product_regex)
+    if usb_info:
+        proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
+        if usb_info.vid:
+            serial_filter.set_vid(usb_info.vid.upper())
+        if usb_info.pid:
+            serial_filter.set_pid(usb_info.pid.upper())
+        if usb_info.product_regex:
+            serial_filter.set_product_regex(usb_info.product_regex)
+
     if serial_port_flag:
         serial_filter.set_port(serial_port_flag)
     if serial_num_flag:
@@ -350,13 +352,15 @@ def _match_usb_device(
 
     # -- Construct a device filter.
     usb_filter = UsbDeviceFilter()
-    proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
-    if usb_info and usb_info.vid:
-        usb_filter.set_vid(usb_info.vid.upper())
-    if usb_info and usb_info.pid:
-        usb_filter.set_pid(usb_info.pid.upper())
-    if usb_info and usb_info.product_regex:
-        usb_filter.set_product_regex(usb_info.product_regex)
+    if usb_info:
+        proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
+        if usb_info.vid:
+            usb_filter.set_vid(usb_info.vid.upper())
+        if usb_info.pid:
+            usb_filter.set_pid(usb_info.pid.upper())
+        if usb_info.product_regex:
+            usb_filter.set_product_regex(usb_info.product_regex)
+
     if serial_num_flag:
         usb_filter.set_serial_num(serial_num_flag)
 
@@ -419,13 +423,14 @@ def _check_device_presence(apio_ctx: ApioContext, scanner: _DeviceScanner):
     # -- section may contain no constrained which will result in a pass-all
     # -- filter.
     usb_filter = UsbDeviceFilter()
-    proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
-    if usb_info and usb_info.vid:
-        usb_filter.set_vid(usb_info.vid.upper())
-    if usb_info and usb_info.pid:
-        usb_filter.set_pid(usb_info.pid.upper())
-    if usb_info and usb_info.product_regex:
-        usb_filter.set_product_regex(usb_info.product_regex)
+    if usb_info:
+        proto_util.check_not_required(usb_info, "vid", "pid", "product_regex")
+        if usb_info.vid:
+            usb_filter.set_vid(usb_info.vid.upper())
+        if usb_info.pid:
+            usb_filter.set_pid(usb_info.pid.upper())
+        if usb_info.product_regex:
+            usb_filter.set_product_regex(usb_info.product_regex)
 
     cout("Checking device presence...")
     cout(f"- FILTER {usb_filter.summary()}")

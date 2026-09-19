@@ -13,7 +13,7 @@ def test_device_summaries():
     assert device.summary() == "[0403:6010] [0:1] [m0] [p0] [sn0]"
 
 
-def test_filtering():
+def test_filtering() -> None:
     """Test the filtering function."""
     devs: List[UsbDevice] = [
         UsbDevice("0403", "6010", 0, 1, "m0", "p0", "sn0", "t0"),  # devs[0]

@@ -476,7 +476,7 @@ class Drivers:
             if exit_code != 0:
                 fatal_error("Zadig failed")
 
-    def _ftdi_uninstall_windows(self) -> int:
+    def _ftdi_uninstall_windows(self) -> None:
 
         cout("", "Launching the interactive Device Manager.")
         cmarkdown(FTDI_UNINSTALL_INSTRUCTIONS_WINDOWS)

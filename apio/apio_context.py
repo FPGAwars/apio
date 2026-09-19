@@ -26,7 +26,6 @@ from apio.managers.apio_definitions import ApioDefinitions
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
-    # validate_project_resources,
     validate_config,
     validate_packages,
 )
@@ -300,6 +299,9 @@ class ApioContext:
         self._project_resources: ProjectResources | None = None
 
         if self._project_dir:
+            # -- If we have a project, we must also have definitions.
+            assert self.definitions is not None
+
             # -- Load the project object
             self._project = load_project_from_file(
                 self._project_dir, env_arg, self.definitions.boards
@@ -353,6 +355,7 @@ class ApioContext:
         True."""
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
+        assert self._project is not None
         return self._project  # pyright: ignore[reportReturnType]
 
     @property
@@ -361,6 +364,7 @@ class ApioContext:
         has_project() is True."""
         # -- Failure here is a programming error, not a user error.
         assert self.has_project, "project(): project is not loaded"
+        assert self._project_resources is not None
         return self._project_resources  # pyright: ignore[reportReturnType]
 
     @property
@@ -546,7 +550,7 @@ class ApioContext:
             # -- Sanity check that all platform ids are valid. If fails it's
             # -- a programming error.
             for p in required_for_platforms:
-                assert p in all_apio_platforms.keys(), platform
+                assert p in all_apio_platforms, platform
 
             # -- If available for 'platform_id', add it.
             if platform_id in required_for_platforms:

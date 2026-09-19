@@ -51,6 +51,9 @@ class Entry:
 
 
 def _collect_board_entries(apio_ctx: ApioContext) -> List[Entry]:
+    # -- The context is expected to have the board, fpga, and programmers
+    # -- definitions.
+    assert apio_ctx.definitions is not None
 
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)

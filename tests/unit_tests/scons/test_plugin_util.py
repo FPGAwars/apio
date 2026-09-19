@@ -22,7 +22,8 @@ from apio.scons.plugin_util import (
     get_constraint_file,
     verilog_src_scanner,
     get_programmer_cmd,
-    map_params,
+    map_str_params,
+    map_path_params,
     make_verilator_config_builder,
     verilator_lint_action,
     iverilog_action,
@@ -190,17 +191,27 @@ def test_get_programmer_cmd():
     assert get_programmer_cmd(apio_env) == "my_prog aa $SOURCE bb"
 
 
-def test_map_params():
-    """Test the map_params() function."""
+def test_map_str_params():
+    """Test the map_str_params() function."""
 
     # -- Empty cases
-    assert map_params([], "x_{}_y") == ""
-    assert map_params(["", "   "], "x_{}_y") == ""
+    assert map_str_params([], "x_{}_y") == ""
+    assert map_str_params(["", "   "], "x_{}_y") == ""
 
     # -- Non empty cases
-    assert map_params(["a"], "x_{}_y") == "x_a_y"
-    assert map_params([" a "], "x_{}_y") == "x_a_y"
-    assert map_params(["a", "a", "b"], "x_{}_y") == "x_a_y x_a_y x_b_y"
+    assert map_str_params(["a"], "x_{}_y") == "x_a_y"
+    assert map_str_params([" a "], "x_{}_y") == "x_a_y"
+    assert map_str_params(["a", "a", "b"], "x_{}_y") == "x_a_y x_a_y x_b_y"
+
+
+def test_map_path_params():
+    """Test the map_path_params() function."""
+
+    assert map_path_params([], "x_{}_y") == ""
+    assert (
+        map_path_params(["aa/bb", "."], "x/_{}_/y")
+        == "x/_aa" + os.sep + "bb_/y" + " x/_._/y"
+    )
 
 
 def test_make_verilator_config_builder(apio_runner: ApioRunner):
