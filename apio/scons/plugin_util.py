@@ -73,8 +73,11 @@ def map_path_params(path_params: Optional[List[Path]], fmt: str) -> str:
     if path_params is None:
         path_params = []
 
-    # -- Convert to string.
-    str_params = [str(x) for x in path_params]
+    # -- Convert to a list of strings.
+    str_params: List[str] = []
+    for p in path_params:
+        assert isinstance(p, Path), type(p)
+        str_params.append(str(p))
 
     # -- Map the strings.
     return map_str_params(str_params, fmt)

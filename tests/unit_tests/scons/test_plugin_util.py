@@ -208,9 +208,10 @@ def test_map_path_params():
     """Test the map_path_params() function."""
 
     assert map_path_params([], "x_{}_y") == ""
+
     assert (
-        map_path_params(["aa/bb", "."], "x/_{}_/y")
-        == "x/_aa" + os.sep + "bb_/y" + " x/_._/y"
+        map_path_params([Path("aa/bb"), Path(".")], "x/_{}_/y")
+        == "x/_aa" + os.sep + "bb_/y" + " " + "x/_._/y"
     )
 
 
