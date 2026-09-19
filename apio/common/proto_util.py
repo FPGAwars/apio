@@ -25,7 +25,10 @@ def check_is_initialized(
     # -- Check 1: All required fields should present.
     if not proto_msg.IsInitialized():
         # -- Report the first missing required field.
-        missing_field: str = proto_msg.FindInitializationErrors()[0]
+        # missing_field: str = proto_msg.FindInitializationErrors()[0]
+        find = getattr(proto_msg, "FindInitializationErrors", None)
+        assert callable(find)
+        missing_field = str(find()[0])
         if json_naming:
             missing_field = missing_field.replace("_", "-")
         fatal_error(error_context, f"Missing required field '{missing_field}'")

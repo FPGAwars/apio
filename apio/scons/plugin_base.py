@@ -175,7 +175,7 @@ class PluginBase:
             target: List[File],
             source: List[File],
             env: SConsEnvironment,
-        ):  # noqa
+        ):
             """Action function that prints a completion message and if
             requested, open a viewer on the output file.."""
             _ = (source, env)  # Unused

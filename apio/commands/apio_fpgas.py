@@ -57,6 +57,8 @@ def _get_fpga_arch_params(fpga_definition: FpgaDefinition) -> Tuple[str, Dict]:
 
 def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
     """Returns a sorted list of supported fpgas entries."""
+    # -- Context should have the board, fpgas, and programmer definitions.
+    assert apio_ctx.definitions is not None
 
     # -- Collect a sparse dict with fpga ids to board count.
     boards_counts: Dict[str, int] = {}

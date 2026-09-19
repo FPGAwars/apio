@@ -118,9 +118,7 @@ class ApioEnv:
         # -- Scons wraps the builder with a wrapper. We use it to create the
         # -- new target.
         builder_wrapper: BuilderWrapper = getattr(self.scons_env, builder_id)
-        target = builder_wrapper(
-            target, sources  # pyright: ignore[reportArgumentType]
-        )
+        target = builder_wrapper(target, sources)
         # -- Mark as 'always build' if requested.
         if always_build:
             self.scons_env.AlwaysBuild(target)
@@ -142,9 +140,7 @@ class ApioEnv:
     def dump_env_vars(self) -> None:
         """Prints a list of the environment variables. For debugging."""
         sc = self.scons_env
-        dictionary: dict = (
-            sc.Dictionary()  # pyright: ignore[reportAssignmentType]
-        )
+        dictionary: dict = sc.Dictionary()
         keys = list(dictionary.keys())
         keys.sort()
         cout("")

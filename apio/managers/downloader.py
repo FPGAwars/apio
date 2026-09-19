@@ -70,7 +70,7 @@ class FileDownloader:
 
     def get_size(self) -> int:
         """Return the size (in bytes) of the latest bytes block received"""
-
+        assert self._request is not None
         return int(self._request.headers["content-length"])
 
     def download(self):

@@ -157,13 +157,13 @@ def _get_system_cli(
     platform = apio_ctx.platform
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict = {}
+    section_dict: Dict[str, Any] = {}
 
     # -- Add fields.
     section_dict["apio-cli-version"] = util.get_apio_version_str()
@@ -273,16 +273,16 @@ def _get_build_report_cli(
     report = build_report.read_build_report(pnr_json_file)
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict = {}
+    section_dict: Dict[str, Any] = {}
     section_dict["env"] = apio_ctx.project.env_name
 
-    resources_dict = {}
+    resources_dict: Dict[str, Any] = {}
     for res in report.resources:
         resources_dict[res.name] = {
             "used": res.used,
@@ -292,7 +292,7 @@ def _get_build_report_cli(
 
     section_dict["resources"] = resources_dict
 
-    clocks_dict = {}
+    clocks_dict: Dict[str, Any] = {}
     for clk in report.clocks:
         clocks_dict[clk.name] = {"fmax_mhz": clk.fmax_mhz}
 
@@ -356,21 +356,22 @@ def _get_project_cli(
         env_arg=env,
         report_env=False,
     )
+    assert apio_ctx.definitions is not None
 
     # -- Change to the project's folder for function such as
     # -- get_project_source_files() which expects to run at the project root.
     os.chdir(apio_ctx.project_dir)
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict = {}
+    section_dict: Dict[str, Any] = {}
 
-    active_env_dict = {}
+    active_env_dict: Dict[str, Any] = {}
     active_env_dict["name"] = apio_ctx.project.env_name
     active_env_dict["options"] = apio_ctx.project.env_options
     section_dict["active-env"] = active_env_dict
@@ -460,19 +461,20 @@ def _get_boards_cli(
         remote_config_policy=RemoteConfigPolicy.CACHED_OK,
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
+    assert apio_ctx.definitions is not None
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the boards section.
-    section = {}
+    section: Dict[str, Any] = {}
     for board_id, board_definition in apio_ctx.definitions.boards.items():
         # -- The board output dict.
-        board_dict = {}
+        board_dict: Dict[str, Any] = {}
 
         # -- We assume that these proto fields are requires and therefore
         # -- must exist.
@@ -552,16 +554,17 @@ def _get_fpgas_cli(
         remote_config_policy=RemoteConfigPolicy.CACHED_OK,
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
+    assert apio_ctx.definitions is not None
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the fpgas section
-    section = {}
+    section: Dict[str, Any] = {}
     for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
         section[fpga_id] = proto_util.proto_to_json_dict(fpga_definition)
 
@@ -614,16 +617,17 @@ def _get_programmers_cli(
         remote_config_policy=RemoteConfigPolicy.CACHED_OK,
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
+    assert apio_ctx.definitions is not None
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the 'programmers' section.
-    section = {}
+    section: Dict[str, Any] = {}
     for (
         programmer_id,
         programmer_definition,
@@ -693,14 +697,14 @@ def _get_examples_cli(
         boards_examples[example.board_id] = board_examples
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the 'examples' section.
-    section = {}
+    section: Dict[str, Any] = {}
     for board, board_examples in boards_examples.items():
         board_dict = {}
         # -- Generate board examples
@@ -732,7 +736,7 @@ class CmdInfo:
 
 def scan_children(cmd_cli) -> Dict:
     """Return a dict describing this command subtree."""
-    result = {}
+    result: Dict[str, Any] = {}
 
     # -- Sanity check
     assert isinstance(result, dict), type(result)
@@ -746,7 +750,7 @@ def scan_children(cmd_cli) -> Dict:
     subgroups: List[ApioSubgroup] = cmd_cli.subgroups
 
     # -- Create the dict for the command subgroups.
-    subcommands_dict = {}
+    subcommands_dict: Dict[str, Any] = {}
     result["commands"] = subcommands_dict
 
     # -- Iterate the subgroups and populate them. We flaten the subcommands
@@ -756,6 +760,7 @@ def scan_children(cmd_cli) -> Dict:
         assert isinstance(subgroup.title, str), type(subgroup.title)
         for subcommand in subgroup.commands:
             subcommand_dict = scan_children(subcommand)
+            assert subcommand.name is not None
             subcommands_dict[subcommand.name] = subcommand_dict
 
     # -- All done ok.
@@ -803,8 +808,8 @@ def _get_commands_cli(
     # -- directly but it would create a circular python import.
     ctx = cast(ApioCmdContext, cmd_ctx)
     while ctx.parent:
+        assert isinstance(ctx.parent, ApioCmdContext), type(ctx.parent)
         ctx = ctx.parent
-        assert isinstance(ctx, ApioCmdContext), type(ctx)
     top_cli = ctx.command
     assert top_cli.name == "apio", top_cli
 
@@ -816,13 +821,13 @@ def _get_commands_cli(
     )
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict = {}
+    section_dict: Dict[str, Any] = {}
     section_dict["apio"] = scan_children(top_cli)
     top_dict["commands"] = section_dict
 
@@ -877,14 +882,14 @@ def _get_packages_cli(
     package_manager = apio_ctx.package_manager
 
     # -- The top dict that we will emit as json.
-    top_dict = {}
+    top_dict: Dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Packages section
-    section_dict = {}
+    section_dict: Dict[str, Any] = {}
     top_dict["packages"] = section_dict
 
     for package_name in package_manager.required_packages:
@@ -957,16 +962,16 @@ def _scan_devices_cli(
 
     # -- Scan and report usb devices.
     section = []
-    for device in usb_devices:
+    for usb_device in usb_devices:
         dev = {}
-        dev["vid"] = device.vid
-        dev["pid"] = device.pid
-        dev["bus"] = device.bus
-        dev["device"] = device.device
-        dev["manufacturer"] = device.manufacturer
-        dev["product"] = device.product
-        dev["serial-number"] = device.serial_number
-        dev["device_type"] = device.device_type
+        dev["vid"] = usb_device.vid
+        dev["pid"] = usb_device.pid
+        dev["bus"] = str(usb_device.bus)
+        dev["device"] = str(usb_device.device)
+        dev["manufacturer"] = usb_device.manufacturer
+        dev["product"] = usb_device.product
+        dev["serial-number"] = usb_device.serial_number
+        dev["device_type"] = usb_device.device_type
 
         section.append(dev)
 
@@ -978,16 +983,16 @@ def _scan_devices_cli(
     )
 
     section = []
-    for device in serial_devices:
+    for serial_device in serial_devices:
         dev = {}
-        dev["port"] = device.port
-        dev["port-name"] = device.port_name
-        dev["vendor-id"] = device.vid
-        dev["product-id"] = device.pid
-        dev["manufacturer"] = device.manufacturer
-        dev["product"] = device.product
-        dev["serial-number"] = device.serial_number
-        dev["device-type"] = device.device_type
+        dev["port"] = serial_device.port
+        dev["port-name"] = serial_device.port_name
+        dev["vendor-id"] = serial_device.vid
+        dev["product-id"] = serial_device.pid
+        dev["manufacturer"] = serial_device.manufacturer
+        dev["product"] = serial_device.product
+        dev["serial-number"] = serial_device.serial_number
+        dev["device-type"] = serial_device.device_type
 
         section.append(dev)
 

@@ -6,6 +6,7 @@
 """Manage the apio profile file"""
 
 import json
+from typing import Dict
 from pathlib import Path
 from apio.common import apio_console
 from apio.common.debug_util import is_debug
@@ -37,7 +38,7 @@ class Profile:
         # ---- Set the default parameters
 
         # User preferences
-        self.preferences = {}
+        self.preferences: Dict[str, str] = {}
 
         # -- Cache the profile file path
         # -- Ex. '/home/obijuan/.apio/profile.json'
@@ -53,7 +54,7 @@ class Profile:
         self.apply_color_preferences()
 
     @staticmethod
-    def apply_color_preferences():
+    def apply_color_preferences() -> None:
         """Apply currently preferred theme."""
         # -- Make sure the console is configured, with the default theme,
         # -- before reading the preferences. Reading the preferences resolves

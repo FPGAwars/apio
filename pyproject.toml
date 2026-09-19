@@ -65,6 +65,8 @@ requires = [
 mypy = [
     "types-protobuf>=6.32.1,<7",
     "types-requests>=2.33.0,<2.34",
+    "types-pyserial>=3.5.0.2024,<3.6",
+    "types-jsonschema>=4.26.0.20260518,<4.27",
 ]
 
 [[tool.mypy.overrides]]
@@ -75,6 +77,11 @@ module = [
     "configobj.*",
     "SCons",
     "SCons.*",
+    "usb",
+    "usb.*",
+    "vcdvcd",
+    "vcdvcd.*",
+    "google.protobuf.unknown_fields",
 ]
 ignore_missing_imports = true
 

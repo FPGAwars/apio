@@ -85,11 +85,11 @@ def make_test_scons_params() -> SconsParams:
 def make_test_apio_env(
     *,
     targets: Optional[List[str]] = None,
-    platform_id: str = None,
-    is_windows: bool = None,
+    platform_id: Optional[str] = None,
+    is_windows: Optional[bool] = None,
     # debug_level: int = 0,
-    apio_env_params: ApioEnvParams = None,
-    target_params: TargetParams = None,
+    apio_env_params: Optional[ApioEnvParams] = None,
+    target_params: Optional[TargetParams] = None,
 ) -> ApioEnv:
     """Creates a fresh apio env for testing. The env is created
     with the current directory as the root dir.

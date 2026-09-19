@@ -162,6 +162,7 @@ class SConsManager:
         process."""
 
         # pylint: disable=too-many-statements
+        # pylint: disable=too-many-locals
 
         # -- Create a shortcut.
         apio_ctx = self.apio_ctx
@@ -199,61 +200,68 @@ class SConsManager:
         match fpga_arch:
             case ApioArch.ice40:
                 assert fpga_definition.HasField("ice40_params")
-                params = fpga_definition.ice40_params
+                ice40_params = fpga_definition.ice40_params
                 result.arch = ApioArch.ice40
-                proto_util.check_is_required(params, "type", "package")
+                proto_util.check_is_required(ice40_params, "type", "package")
                 result.fpga_info.ice40_params.MergeFrom(
                     Ice40Params(
-                        type=params.type,
-                        package=params.package,
+                        type=ice40_params.type,
+                        package=ice40_params.package,
                     )
                 )
             case ApioArch.ecp5:
                 assert fpga_definition.HasField("ecp5_params")
-                params = fpga_definition.ecp5_params
+                epp5_params = fpga_definition.ecp5_params
                 result.arch = ApioArch.ecp5
                 proto_util.check_is_required(
-                    params, "type", "package", "speed"
+                    epp5_params, "type", "package", "speed"
                 )
                 result.fpga_info.ecp5_params.MergeFrom(
                     Ecp5FpgaParams(
-                        type=params.type,
-                        package=params.package,
-                        speed=params.speed,
+                        type=epp5_params.type,
+                        package=epp5_params.package,
+                        speed=epp5_params.speed,
                     )
                 )
             case ApioArch.gowin:
                 assert fpga_definition.HasField("gowin_params")
-                params = fpga_definition.gowin_params
+                gowin_params = fpga_definition.gowin_params
                 result.arch = ApioArch.gowin
                 proto_util.check_is_required(
-                    params, "yosys_family", "nextpnr_family", "packer_device"
+                    gowin_params,
+                    "yosys_family",
+                    "nextpnr_family",
+                    "packer_device",
                 )
                 result.fpga_info.gowin_params.MergeFrom(
                     GowinParams(
-                        yosys_family=params.yosys_family,
-                        nextpnr_family=params.nextpnr_family,
-                        packer_device=params.packer_device,
+                        yosys_family=gowin_params.yosys_family,
+                        nextpnr_family=gowin_params.nextpnr_family,
+                        packer_device=gowin_params.packer_device,
                     )
                 )
             case ApioArch.xilinx:
                 assert fpga_definition.HasField("xilinx_params")
-                params = fpga_definition.xilinx_params
+                xilinx_params = fpga_definition.xilinx_params
                 result.arch = ApioArch.xilinx
                 proto_util.check_is_required(
-                    params, "yosys_family", "yosys_arch", "yosys_part", "speed"
+                    xilinx_params,
+                    "yosys_family",
+                    "yosys_arch",
+                    "yosys_part",
+                    "speed",
                 )
                 # -- Get a path to the chipdb file for this yosys part.
                 # -- If it doesn't exist, it is fetched on the fly from
                 # -- the release of the installed openxc7 package.
                 chipdb_file_path = xilinx_chipdb.chipdb_file_on_demand(
-                    apio_ctx, params.yosys_part
+                    apio_ctx, xilinx_params.yosys_part
                 )
                 result.fpga_info.xilinx_params.MergeFrom(
                     XilinxParams(
-                        yosys_family=params.yosys_family,
-                        yosys_arch=params.yosys_arch,
-                        yosys_part=params.yosys_part,
+                        yosys_family=xilinx_params.yosys_family,
+                        yosys_arch=xilinx_params.yosys_arch,
+                        yosys_part=xilinx_params.yosys_part,
                         chipdb_file_path=str(chipdb_file_path),
                     )
                 )

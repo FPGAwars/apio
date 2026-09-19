@@ -50,11 +50,12 @@ def _get_all_params_definitions(
 ) -> Dict[str, Union[click.Option, click.Argument]]:
     """Return a mapping from param id to param obj, for all options and
     arguments that are defined for the command."""
-    result = {}
+    result: Dict[str, Union[click.Option, click.Argument]] = {}
     for param_obj in cmd_ctx.command.get_params(cmd_ctx):
         assert isinstance(param_obj, (click.Option, click.Argument)), type(
             param_obj
         )
+        assert param_obj.name is not None
         result[param_obj.name] = param_obj
     return result
 
@@ -247,7 +248,7 @@ class ApioGroup(click.Group):
     """A customized click.Group class that allows apio customized help
     format."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
 
         # -- Consume the 'subgroups' arg.
         self.subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")

@@ -11,7 +11,7 @@ import os
 import json
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Any
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cstyle, fatal_error
@@ -135,7 +135,7 @@ class PackageManager:
 
         # -- Initialized installed packages, a copy of
         # -- installed-packages.json.
-        self.installed_packages = {}
+        self.installed_packages: Dict[str, Any] = {}
 
         # -- Cache the packages index file path
         # -- Ex. '/home/obijuan/.apio/packages/installed_packages.json'
@@ -347,13 +347,13 @@ class PackageManager:
         assert package_name in self.required_packages, package_name
 
         # -- Set up installation announcement
-        pending_announcement = cstyle(
+        pending_announcement: Optional[str] = cstyle(
             f"Installing apio package '{package_name}'", style=EMPH3
         )
 
         # -- If in chatty mode, announce now and clear. Otherwise we will
         # -- announce later only if actually installing.
-        if verbose:
+        if verbose and pending_announcement:
             cout(pending_announcement)
             pending_announcement = None
 
@@ -400,7 +400,7 @@ class PackageManager:
         # -- Here we actually do the work. Announce if we haven't done it yet.
         if pending_announcement:
             cout(pending_announcement)
-            pending_announcement = True
+            pending_announcement = None
 
         cout(f"Fetching version {target_version} ({self.platform.id})")
 
@@ -480,7 +480,7 @@ class PackageManager:
             # -- Delete.
             file_path.unlink()
 
-    def read_package_build_info(self, package_name: str) -> str:
+    def read_package_build_info(self, package_name: str) -> Dict[str, Any]:
         """Returns the BUILD-INFO.json of the package as a dict. Fatal
         error if doesn't exist or can't parse."""
 

@@ -17,7 +17,7 @@ def test_device_summaries():
     assert device.summary() == "[dev/port0] [0403:6010] [m0] [p0] [sn0]"
 
 
-def test_filtering():
+def test_filtering() -> None:
     """Test the filtering function."""
     devs: List[SerialDevice] = [
         SerialDevice(  # devs[0]

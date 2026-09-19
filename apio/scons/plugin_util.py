@@ -15,7 +15,7 @@ import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -41,9 +41,9 @@ from apio.common.build_report import BuildReport, read_build_report
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
 
 
-def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
+def map_str_params(str_params: Optional[List[str]], fmt: str) -> str:
     """A common function construct a command string snippet from a list
-    of arguments. The functon does the following:
+    of arguments. The function does the following:
     1. If params arg is None replace it with []
     2. Drops empty or white space only items.
     3. Maps the items using the format string which contains exactly one
@@ -52,19 +52,35 @@ def map_params(params: Optional[List[Union[str, Path]]], fmt: str) -> str:
 
     For examples, see the unit test at test_scons_util.py.
     """
-    # None designates empty list. Avoiding the pylint non safe default
-    # warning.
-    if params is None:
-        params = []
+    # -- Replace None with an empty list.
+    if str_params is None:
+        str_params = []
 
     # Convert params to stripped strings.
-    params = [str(x).strip() for x in params]
+    str_params = [x.strip() for x in str_params]
 
     # Drop the empty params and map the rest.
-    mapped_params = [fmt.format(x) for x in params if x]
+    mapped_params = [fmt.format(x) for x in str_params if x]
 
     # Join using a single space.
     return " ".join(mapped_params)
+
+
+def map_path_params(path_params: Optional[List[Path]], fmt: str) -> str:
+    """Same as map_str_params() but accepts a list of Path that is first
+    converted to a string and then passed to map_str_params()"""
+    # -- Replace None with an empty list
+    if path_params is None:
+        path_params = []
+
+    # -- Convert to a list of strings.
+    str_params: List[str] = []
+    for p in path_params:
+        assert isinstance(p, Path), type(p)
+        str_params.append(str(p))
+
+    # -- Map the strings.
+    return map_str_params(str_params, fmt)
 
 
 def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
@@ -254,9 +270,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
                 cout(f"  {dependency}", style=EMPH2)
 
         # All done
-        return apio_env.scons_env.File(
-            dependencies
-        )  # pyright: ignore[reportReturnType]
+        return apio_env.scons_env.File(dependencies)
 
     return apio_env.scons_env.Scanner(function=verilog_src_scanner_func)
 
@@ -325,25 +339,12 @@ def verilator_lint_action(
         " ".join(params.apio_env_params.verilator_extra_options),
         f"--top-module {top_module}" if top_module else "",
         get_define_flags(apio_env),
-        map_params(extra_params, "{}"),  # pyright: ignore[reportArgumentType]
-        (
-            map_params(
-                lib_dirs, '-I"{}"'  # pyright: ignore[reportArgumentType]
-            )
-            if lint_whole_project
-            else ""
-        ),
+        map_str_params(extra_params, "{}"),
+        (map_path_params(lib_dirs, '-I"{}"') if lint_whole_project else ""),
         apio_env.target + ".vlt" if using_vlt else "",
-        (
-            map_params(
-                lib_files, '"{}"'  # pyright: ignore[reportArgumentType]
-            )
-            if lint_whole_project
-            else ""
-        ),
+        (map_path_params(lib_files, '"{}"') if lint_whole_project else ""),
     )
 
-    # pyright: ignore[reportReturnType]
     return [
         source_files_issue_scanner_action(),
         str(action),
@@ -365,9 +366,7 @@ class TestbenchInfo:
         return basename(self.testbench_path)
 
 
-def detached_action(
-    api_env: ApioEnv, cmd: List[str]
-) -> Action:  # pyright: ignore[reportGeneralTypeIssues]
+def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
     """
     Launch the given command, given as a list of tokens, in a detached
     (non blocking) mode.
@@ -661,7 +660,7 @@ def announce_testbench_action() -> FunctionAction:
 
     # -- Run the action but don't announce the action.
     return Action(
-        announce_testbench,  # pyright: ignore[reportReturnType]
+        announce_testbench,
         strfunction=None,
     )
 
@@ -709,7 +708,7 @@ def source_files_issue_scanner_action() -> FunctionAction:
     # -- Run the action but don't announce the action. We will print
     # -- ourselves in report_source_files_issues.
     return Action(
-        report_source_files_issues,  # pyright: ignore[reportReturnType]
+        report_source_files_issues,
         strfunction=None,
     )
 
@@ -815,7 +814,7 @@ def report_action(verbose: bool) -> FunctionAction:
         _print_pnr_report(build_report, verbose)
 
     return Action(
-        print_pnr_report,  # pyright: ignore[reportReturnType]
+        print_pnr_report,
         "Formatting pnr report.",
     )
 
@@ -879,9 +878,9 @@ def iverilog_action(
         "-v" if verbose else "",
         get_define_flags(apio_env),
         f"-DAPIO_SIM={int(is_interactive)}",
-        map_params(extra_params, "{}"),  # pyright: ignore[reportArgumentType]
-        map_params(lib_dirs, '-I"{}"'),  # pyright: ignore[reportArgumentType]
-        map_params(lib_files, '"{}"'),  # pyright: ignore[reportArgumentType]
+        map_str_params(extra_params, "{}"),
+        map_path_params(lib_dirs, '-I"{}"'),
+        map_path_params(lib_files, '"{}"'),
     )
 
     return action
@@ -895,7 +894,7 @@ def basename(file_name: str) -> str:
 
 def make_verilator_config_builder(
     lib_path: Path, rules_to_suppress: List[str]
-) -> Builder:  # pyright: ignore[reportGeneralTypeIssues]
+) -> Builder:
     """Create a scons Builder that writes a verilator config file
     (hardware.vlt) that suppresses warnings in the lib directory.
     Rules_to_suppress is a list of Verilator rules that should be suppressed

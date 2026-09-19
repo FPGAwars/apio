@@ -94,6 +94,7 @@ class SconsHandler:
 
         # -- Select the plugin.
         proto_util.check_is_required(params, "arch")
+        plugin: PluginBase
         match params.arch:
             case ApioArch.ice40:
                 plugin = PluginIce40(apio_env)
