@@ -47,7 +47,8 @@ For example:
 
 [code]format-verible-options =
     --column_limit=80
-    --indentation_spaces=4[/code]
+    --indentation_spaces=4
+    --line_terminator LF[/code]
 
 If needed, sections of source code can be protected from formatting using \
 Verible formatter directives:

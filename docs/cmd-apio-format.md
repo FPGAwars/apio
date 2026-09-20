@@ -36,6 +36,7 @@ which can be configured using the `format-verible-options` setting in `apio.ini`
 format-verible-options =
     --column_limit=80
     --indentation_spaces=4
+    --line_terminator LF
 ```
 
 For a full list of Verible formatter flags, refer to the documentation

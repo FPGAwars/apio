@@ -787,6 +787,7 @@ Usage: apio format [OPTIONS] [FILES]...
   format-verible-options =
       --column_limit=80
       --indentation_spaces=4
+      --line_terminator LF
 
   If needed, sections of source code can be protected from formatting
   using Verible formatter directives:
@@ -1250,9 +1251,8 @@ Usage: apio sim [OPTIONS] [TESTBENCH-PATH]
     apio sim --detach          # Launch and forget gtkwave.
 
   [IMPORTANT] Do not call the Verilog '$dumpfile()' function in your
-  testbenches: Apio treats it as a fatal error because it would
-  override the default name and location Apio sets for the generated
-  .vcd file.
+  testbenches: Apio treats it as a fatal error because it would override
+  the default name and location Apio sets for the generated .vcd file.
 
   [NOTE] Testbench specification is always the testbench file path
   relative to the project directory, even if using the '--project-dir'
@@ -1313,9 +1313,8 @@ Usage: apio test [OPTIONS] [TESTBENCH-PATH]
   option.
 
   [IMPORTANT] Do not call the Verilog '$dumpfile()' function in your
-  testbenches: Apio treats it as a fatal error because it would
-  override the default name and location Apio sets for the generated
-  .vcd file.
+  testbenches: Apio treats it as a fatal error because it would override
+  the default name and location Apio sets for the generated .vcd file.
 
   The default testbench is the same that is used by the 'apio sim'
   command which is the one specified in 'apio.ini' using the
