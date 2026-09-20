@@ -63,7 +63,7 @@ jobs:
       # -- failure in Apio issue 948. Find a more long term solution.
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip "flit_core<4" "build"
+          python -m pip install --upgrade pip "flit_core>=4,<5" "build"
 
       # We checkout the repo into a subdirectory not to step on BUILD-INFO.json.
       - name: Checkout apio repo
