@@ -1,4 +1,3 @@
-from typing import  Set
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -49,23 +48,23 @@ class Port:
 
     name: str
     direction: Direction
-    net_nums: Set[int]
+    net_nums: set[int]
 
-    def input_nets(self) -> Set[int]:
+    def input_nets(self) -> set[int]:
         """Returns the set of net numbers this port may use as an input."""
         if self.direction in [Direction.IN, Direction.INOUT]:
             return self.net_nums
         else:
             return set()
 
-    def output_nets(self) -> Set[int]:
+    def output_nets(self) -> set[int]:
         """Returns the set of net numbers this port may use as an output."""
         if self.direction in [Direction.OUT, Direction.INOUT]:
             return self.net_nums
         else:
             return set()
 
-    def all_nets(self) -> Set[int]:
+    def all_nets(self) -> set[int]:
         result = set()
         result.update(self.input_nets())
         result.update(self.output_nets())
@@ -81,7 +80,7 @@ class Module:
     ports: list[Port]
     children: list[Module]
 
-    def input_nets(self) -> Set[int]:
+    def input_nets(self) -> set[int]:
         """Returns the set of net numbers this module may use as an input."""
         result = set()
         for port in self.ports:
@@ -90,7 +89,7 @@ class Module:
             result.update(child.input_nets())
         return result
 
-    def output_nets(self) -> Set[int]:
+    def output_nets(self) -> set[int]:
         """Returns the set of net numbers this module may use as an output."""
         result = set()
         for port in self.ports:
@@ -211,7 +210,7 @@ def dot_net_color(net_num: int) -> str:
     return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
 
 
-def gen_dot_graph(design: Design, nets: Set[int]):
+def gen_dot_graph(design: Design, nets: set[int]):
     with open("_graph.dot", "w", encoding="utf-8") as f:
 
         f.write("digraph D {\n")

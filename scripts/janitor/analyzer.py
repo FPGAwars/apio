@@ -4,7 +4,6 @@ a file a list of requirements that should be met.
 """
 
 from dataclasses import asdict
-from typing import Set
 from datetime import date
 import pickle
 import argparse
@@ -116,7 +115,7 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     # -- Now that we set the all the RELEASE_SHOULD_BE_STABLE requirements,
     # -- extract it as a set of releases in use.
 
-    releases_in_use: Set[GithubReleaseRef] = {
+    releases_in_use: set[GithubReleaseRef] = {
         req.release_ref()
         for req in requirements.members_of_type(
             RequirementType.RELEASE_SHOULD_BE_STABLE

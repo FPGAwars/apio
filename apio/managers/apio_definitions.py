@@ -10,7 +10,7 @@ and custom boards, fpgas, and programmers definitions."""
 
 import re
 from pathlib import Path
-from typing import Set, Tuple
+from typing import Tuple
 import json5
 from apio.common import proto_util
 from apio.common.apio_console import cout, fatal_error
@@ -222,7 +222,7 @@ class ApioDefinitions:
         name: str,
         package_definitions_dir: Path,
         project_definitions_dir: Path | None,
-    ) -> Tuple[dict[str, dict], Set[str]]:
+    ) -> Tuple[dict[str, dict], set[str]]:
         """Load a jsonc file. Try first from custom_dir, if given, and then
         from standard dir. This method is called for resource files in
         apio/resources and definitions files in the definitions packages.
@@ -234,7 +234,7 @@ class ApioDefinitions:
         # -- Load the standard definition as a json dict.
         filepath = package_definitions_dir / name
         combined_dict = cls._load_definitions_file(filepath)
-        custom_ids: Set[str] = set()
+        custom_ids: set[str] = set()
 
         # -- If there is a project specific override file, apply it on
         # -- top of the standard apio definition dict.

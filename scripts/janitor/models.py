@@ -4,7 +4,7 @@ between janitor steps. Having them in a separate python
 module resolves some issues with the pickling.
 """
 
-from typing import Any, Set
+from typing import Any
 from datetime import date
 from dataclasses import dataclass, field
 from enum import Enum
@@ -157,7 +157,7 @@ class RequirementsSet:
     """A set of Requirement with Janitor specific operations."""
 
     def __init__(self) -> None:
-        self._members: Set[Requirement] = set()
+        self._members: set[Requirement] = set()
 
     def add(self, requirement: Requirement) -> None:
         """Add a member to the set. If already in the set, the notes of the
@@ -241,15 +241,15 @@ class RequirementsSet:
             by_repo.setdefault(req.repo, []).append(req)
         return result
 
-    def repos(self) -> Set[str]:
+    def repos(self) -> set[str]:
         """Return a set of repos that have at least one requirement."""
         return {m.repo for m in self._members}
 
-    def members(self) -> Set[Requirement]:
+    def members(self) -> set[Requirement]:
         """Returns a flat set of all members."""
         return self._members
 
-    def members_of_type(self, req_type: RequirementType) -> Set[Requirement]:
+    def members_of_type(self, req_type: RequirementType) -> set[Requirement]:
         """Return the subset of requirements of given type."""
         return {req for req in self._members if req.req_type == req_type}
 
