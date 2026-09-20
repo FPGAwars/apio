@@ -1,30 +1,33 @@
 # Apio's project file.
-# Package version is set in apio/__init.py
+# Package version is set in apio/__init__.py
 
 [build-system]
-requires = ["flit_core >=2,<4"]
+requires = ["flit_core>=4,<5"]
 build-backend = "flit_core.buildapi"
 
-[tool.flit.metadata.urls]
-"Homepage" = "https://github.com/fpgawars/apio"
-"Documentation" = "https://fpgawars.github.io/apio/docs"
-"Bugs Tracker" = "https://github.com/fpgawars/apio/issues"
-"Discussions" = "https://github.com/fpgawars/apio/discussions"
-"Apio IDE" = "https://marketplace.visualstudio.com/items?itemName=fpgawars.apio"
+[project]
+name = "apio"
+description = "FPGA development made easy"
 
-[tool.flit.metadata]
-module = "apio"
-author = "Jesus Arroyo"
-author-email = "jesus.jkhlg@gmail.com "
-home-page = "https://github.com/fpgawars/apio"
-# For convinience, we use the same readme file for the github repo
+# Version is read from __version__: str in apio/__init__.py
+dynamic = ["version"]
+
+authors = [
+    {name = "Jesus Arroyo", email = "jesus.jkhlg@gmail.com"},
+]
+# For convenience, we use the same readme file for the github repo
 # and for PyPi. Can split them if needed.
-description-file = "README.md"
-classifiers=[
+readme = "README.md"
+
+license = "GPL-3.0-or-later"
+
+license-files = ["LICENSE"]
+
+classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        # "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
@@ -35,8 +38,10 @@ classifiers=[
         "Operating System :: POSIX :: Linux",
         "Operating System :: MacOS",
 ]
+
 requires-python = ">=3.11"
-requires = [
+
+dependencies = [
     'click==8.2.1',
     'colorama==0.4.6',
     'configobj==5.0.9',
@@ -59,7 +64,7 @@ requires = [
     'json5==0.15.0',
 ]
 
-[tool.flit.metadata.requires-extra]
+[project.optional-dependencies]
 # Extra modules with type information that mypy needs to analyze the
 # type consistency.
 mypy = [
@@ -68,6 +73,16 @@ mypy = [
     "types-pyserial>=3.5.0.2024,<3.6",
     "types-jsonschema>=4.26.0.20260518,<4.27",
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/fpgawars/apio"
+"Documentation" = "https://fpgawars.github.io/apio/docs"
+"Bugs Tracker" = "https://github.com/fpgawars/apio/issues"
+"Discussions" = "https://github.com/fpgawars/apio/discussions"
+"Apio IDE" = "https://marketplace.visualstudio.com/items?itemName=fpgawars.apio"
+
+[project.scripts]
+apio = "apio.__main__:main"
 
 [[tool.mypy.overrides]]
 # Supress mypy warning for these imported modules since type stubs are
@@ -87,7 +102,7 @@ ignore_missing_imports = true
 
 [tool.flit.sdist]
 # Note that we don't include 'media/' nor do we have relative references
-# from README.md to resources in media since pypi doesn't show them 
+# from README.md to resources in media since pypi doesn't show them
 # correctly. Instead we use absolute links to github.
 include = [
     "apio/",
@@ -98,9 +113,6 @@ include = [
     "BUILD-INFO.json",
 ]
 
-[tool.flit.scripts]
-apio = "apio.__main__:main"
-
 [tool.black]
 line-length = 79
 target-version = ['py311']
@@ -110,7 +122,7 @@ target-version = ['py311']
 
 # NOTE: The publish-to-pypi.yaml workflow automatically appends here
 # release information before submitting to pypi. This allows the repo
-# crawler to map the pypi release to the apio release. 
+# crawler to map the pypi release to the apio release.
 # Example:
 # [tool.apio-release]
 # repo = "fpgawars/apio"

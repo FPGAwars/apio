@@ -82,7 +82,7 @@ def install_package(package_name: str, required_version: str) -> None:
 DEPENDENCIES = [
     ("rich", "14.0.0"),
     ("tox", "4.27.0"),
-    ("flit", "3.12.0"),
+    # ("flit", "3.12.0"),
     ("mkdocs-material", "9.6.14"),
     ("pytest", "8.4.2"),
 ]

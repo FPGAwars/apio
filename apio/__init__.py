@@ -24,11 +24,11 @@ RELEASE_INFO = ""
 # -- Get the version as a string. Ex: "0.10.1"
 __version__ = ".".join([str(s) for s in APIO_VERSION])
 
-__title__ = "apio"
-__description__ = "Open source ecosystem for open FPGA boards"
-__url__ = "https://github.com/FPGAwars/apio"
+# __title__ = "apio"
+# __description__ = "Open source ecosystem for open FPGA boards"
+# __url__ = "https://github.com/FPGAwars/apio"
 
-__author__ = "Jesús Arroyo Torrens"
-__email__ = "jesus.arroyo.torrens@gmail.com"
+# __author__ = "Jesús Arroyo Torrens"
+# __email__ = "jesus.arroyo.torrens@gmail.com"
 
-__license__ = "GPLv3+"
+# __license__ = "GPLv3+"
