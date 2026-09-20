@@ -7,7 +7,7 @@ import re
 import json
 import pickle
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict
 from datetime import datetime
 import argparse
 from urllib.request import Request, urlopen
@@ -62,7 +62,7 @@ def _crawl_pypi() -> PypiCrawl:
 
     # -- Collect the releases.
     releases: Dict[str, PypiReleaseCrawl] = {}
-    skipped_versions: List[str] = []
+    skipped_versions: list[str] = []
     for version_str, files in json_data["releases"].items():
 
         if version_str in consts.PYPI_RELEASES_TO_IGNORE:
@@ -176,7 +176,7 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
         data = json.load(r)
 
     releases: Dict[str, VscodeReleaseCrawl] = {}
-    skipped_versions: List[str] = []
+    skipped_versions: list[str] = []
     default_version = None
 
     for rel in data["results"][0]["extensions"][0]["versions"]:

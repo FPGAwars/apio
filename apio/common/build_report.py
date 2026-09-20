@@ -12,7 +12,6 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 from apio.common.apio_console import fatal_error
 
 
@@ -38,8 +37,8 @@ class ClockReport:
 class BuildReport:
     """Represents FPGA resources utilization and clocks speeds."""
 
-    resources: List[ResourceReport]
-    clocks: List[ClockReport]
+    resources: list[ResourceReport]
+    clocks: list[ClockReport]
 
 
 def read_build_report(pnr_json_file_path: Path) -> BuildReport:
@@ -79,7 +78,7 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     is_ecp5 = any("TRELLIS" in key for key in json_dict["utilization"])
 
     # -- Collect resources
-    resources: List[ResourceReport] = []
+    resources: list[ResourceReport] = []
     for resource_name, vals in json_dict["utilization"].items():
         available: int = vals["available"]
         used: int = vals["used"]
@@ -92,7 +91,7 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     resources.sort(key=lambda r: r.name.lower())
 
     # -- Collect clocks
-    clocks: List[ClockReport] = []
+    clocks: list[ClockReport] = []
     for clk_net, vals in json_dict["fmax"].items():
         # -- Break the clk net name into parts
         name_parts = clk_net.split("$")

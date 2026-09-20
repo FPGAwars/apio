@@ -11,7 +11,7 @@ import platform
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict
 import json5
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
@@ -54,10 +54,10 @@ class EnvMutations:
     """Contains mutations to the system env."""
 
     # -- List of env vars to unset.
-    unset_vars: List[str]
+    unset_vars: list[str]
 
     # -- PATH items to add.
-    paths: List[str]
+    paths: list[str]
 
     # -- Dict with env vars name/value to set.
     set_vars: Dict[str, str]
@@ -578,8 +578,8 @@ class ApioContext:
         """Collects the env mutation for each of the defined packages,
         in the order they are defined."""
 
-        unset_vars: List[str] = []
-        paths: List[str] = []
+        unset_vars: list[str] = []
+        paths: list[str] = []
         set_vars: Dict[str, str] = {}
         for _, package_config in self.required_packages.items():
             # -- Get the json 'env' section. We require it, even if it's empty,

@@ -3,7 +3,6 @@ by the Verilator linter."""
 
 import re
 import sys
-from typing import List
 import pathlib
 from dataclasses import dataclass
 
@@ -25,7 +24,7 @@ class Port:
 
     direction: str
     name: str
-    annotations: List[str]
+    annotations: list[str]
 
 
 @dataclass(frozen=True)
@@ -33,11 +32,11 @@ class Module:
     """Represents a parsed module."""
 
     name: str
-    params: List[Param]
-    ports: List[Port]
+    params: list[Param]
+    ports: list[Port]
 
 
-def parse_module(module_lines: List[str]) -> Param:
+def parse_module(module_lines: list[str]) -> Param:
     """Parse module lines. First line is 'module...' and last one is
     'endmodule'."""
 
@@ -45,8 +44,8 @@ def parse_module(module_lines: List[str]) -> Param:
     module_name = module_match.group(1)
     # print(f"{module_name=}")
 
-    params: List[Param] = []
-    ports: List[Port] = []
+    params: list[Param] = []
+    ports: list[Port] = []
     port_annotations = []
     for line in module_lines[1:-1]:
         l = line.strip()
@@ -89,7 +88,7 @@ def parse_module(module_lines: List[str]) -> Param:
     return module
 
 
-def parsed_module_to_output_lines(module: Module) -> List[str]:
+def parsed_module_to_output_lines(module: Module) -> list[str]:
     """Convet a module declaration to output lines."""
     result = []
     result.append(f"module {module.name} #(")

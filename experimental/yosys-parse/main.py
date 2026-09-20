@@ -1,4 +1,4 @@
-from typing import List, Set, Dict
+from typing import  Set, Dict
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -77,9 +77,9 @@ class Module:
     """Represents a single module or cell."""
 
     name: str
-    parents: List[Module]
-    ports: List[Port]
-    children: List[Module]
+    parents: list[Module]
+    ports: list[Port]
+    children: list[Module]
 
     def input_nets(self) -> Set[int]:
         """Returns the set of net numbers this module may use as an input."""
@@ -105,14 +105,14 @@ class Design:
     """Represents a single yosys design synthesis."""
 
     top_module: Module
-    all_modules: List[Module]
-    leaf_modules: List[Module]
+    all_modules: list[Module]
+    leaf_modules: list[Module]
 
 
 def parse_module(
     module_name: str,
     module_json: dict,
-    parents: List[Module],
+    parents: list[Module],
 ) -> Module:
     """Parse a module tree and return the result as a top Module."""
     module = Module(
@@ -133,7 +133,7 @@ def parse_module(
                 # children.append(child)
                 # all_modules.extend(all)
 
-    # ports: List[Port] = []
+    # ports: list[Port] = []
     if "ports" in module_json:
         for port_name, port_data in module_json["ports"].items():
             # direction = port_data["direction"]
@@ -277,7 +277,7 @@ def gen_dot_graph(design: Design, nets: Set[int]):
         f.write("}\n")
 
 
-def get_module_list(root: Module) -> List[Module]:
+def get_module_list(root: Module) -> list[Module]:
     """Return a list of all modules in a tree."""
     result = [root]
     # Iterate recursively.

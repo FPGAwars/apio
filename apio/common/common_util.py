@@ -14,7 +14,7 @@ import os
 import sys
 from pathlib import Path
 from glob import glob
-from typing import List, Union, Any, Tuple
+from typing import Union, Any, Tuple
 import debugpy
 
 # -- A list with the file extensions of the source files.
@@ -67,7 +67,7 @@ def file_sort_key_func(f: Union[str, Path]) -> Any:
     The order is lexicography and case sensitive."""
     path = Path(f)
     # -- List of directory names in lower case.
-    parents: List[str] = [s.lower() for s in path.parent.parts]
+    parents: list[str] = [s.lower() for s in path.parent.parts]
     # -- File name in lower case.
     name: str = path.name.lower()
     # -- Sort by directory and then by file name.
@@ -90,7 +90,7 @@ def has_testbench_name(file_name: str) -> bool:
     return name.lower().endswith("_tb")
 
 
-def sort_files(files: List[str]) -> List[str]:
+def sort_files(files: list[str]) -> list[str]:
     """Sort a list of files by directory and then by file name.
     A new sorted list is returned.
     """
@@ -98,7 +98,7 @@ def sort_files(files: List[str]) -> List[str]:
     return sorted(files, key=file_sort_key_func)
 
 
-def get_project_source_files() -> Tuple[List[str], List[str]]:
+def get_project_source_files() -> Tuple[list[str], list[str]]:
     """Get the list of source files in the directory tree under the current
     directory, splitted into synth and testbench lists.
     If source file has the suffix _tb it's is classified st a testbench,
@@ -108,7 +108,7 @@ def get_project_source_files() -> Tuple[List[str], List[str]]:
     # -- Ideally we should use the scons env.Glob() method but it doesn't
     # -- work with the recursive=True option. So we use the glob() function
     # -- instead.
-    files: List[str] = []
+    files: list[str] = []
     for ext in SRC_SUFFIXES:
         files.extend(glob(f"**/*{ext}", recursive=True))
 

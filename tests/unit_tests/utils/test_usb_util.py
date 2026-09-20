@@ -1,6 +1,5 @@
 """Tests of usb_util.py"""
 
-from typing import List
 from apio.utils.usb_util import (
     UsbDevice,
     UsbDeviceFilter,
@@ -15,7 +14,7 @@ def test_device_summaries():
 
 def test_filtering() -> None:
     """Test the filtering function."""
-    devs: List[UsbDevice] = [
+    devs: list[UsbDevice] = [
         UsbDevice("0403", "6010", 0, 1, "m0", "p0", "sn0", "t0"),  # devs[0]
         UsbDevice("0403", "6020", 3, 1, "m1", "p1", "sn1", "t1"),  # devs[1]
         UsbDevice("0405", "6020", 3, 1, "m2", "p2", "sn2", "t2"),  # devs[2]

@@ -10,7 +10,7 @@
 from datetime import date
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, Dict, Tuple
+from typing import Dict, Tuple
 import click
 from rich.table import Table
 from rich import box
@@ -55,7 +55,7 @@ def _get_fpga_arch_params(fpga_definition: FpgaDefinition) -> Tuple[str, Dict]:
     return (field_name, field_value)
 
 
-def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
+def _collect_fpgas_entries(apio_ctx: ApioContext) -> list[Entry]:
     """Returns a sorted list of supported fpgas entries."""
     # -- Context should have the board, fpgas, and programmer definitions.
     assert apio_ctx.definitions is not None
@@ -69,7 +69,7 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> List[Entry]:
         boards_counts[fpga_id] = old_count + 1
 
     # -- Collect all entries.
-    result: List[Entry] = []
+    result: list[Entry] = []
     for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
         proto_util.check_is_required(
             fpga_definition, "arch", "part_num", "size"
@@ -107,7 +107,7 @@ def _list_fpgas(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available FPGA definitions."""
 
     # -- Collect a sorted list of supported fpgas.
-    entries: List[Entry] = _collect_fpgas_entries(apio_ctx)
+    entries: list[Entry] = _collect_fpgas_entries(apio_ctx)
 
     # -- Define the table.
     table = Table(
@@ -173,7 +173,7 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     )
 
     # -- Collect the fpagas info into a list of entires, one per fpga.
-    entries: List[Entry] = _collect_fpgas_entries(apio_ctx)
+    entries: list[Entry] = _collect_fpgas_entries(apio_ctx)
 
     # -- Determine column sizes
     w1 = max(len("FPGA-ID"), *(len(entry.fpga) for entry in entries))

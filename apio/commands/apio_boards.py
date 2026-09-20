@@ -10,7 +10,7 @@
 from pathlib import Path
 from datetime import date
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import Dict
 import click
 from rich.table import Table
 from rich import box
@@ -50,7 +50,7 @@ class Entry:
         return (util.fpga_arch_sort_key(self.fpga_arch), self.board_id.lower())
 
 
-def _collect_board_entries(apio_ctx: ApioContext) -> List[Entry]:
+def _collect_board_entries(apio_ctx: ApioContext) -> list[Entry]:
     # -- The context is expected to have the board, fpga, and programmers
     # -- definitions.
     assert apio_ctx.definitions is not None
@@ -60,7 +60,7 @@ def _collect_board_entries(apio_ctx: ApioContext) -> List[Entry]:
     examples_counts: Dict[str, int] = examples.count_examples_by_board()
 
     # -- Collect the boards info into a list of entires, one per board.
-    result: List[Entry] = []
+    result: list[Entry] = []
     for board_id, board_definition in apio_ctx.definitions.boards.items():
         proto_util.check_is_required(
             board_definition, "fpga_id", "description", "programmer.id"
@@ -101,7 +101,7 @@ def _list_boards(apio_ctx: ApioContext, verbose: bool):
     """Prints all the available board definitions."""
 
     # -- Collect the boards info into a list of entires, one per board.
-    entries: List[Entry] = _collect_board_entries(apio_ctx)
+    entries: list[Entry] = _collect_board_entries(apio_ctx)
 
     # -- Define the table.
     table = Table(
@@ -174,7 +174,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
     )
 
     # -- Collect the boards info into a list of entires, one per board.
-    entries: List[Entry] = _collect_board_entries(apio_ctx)
+    entries: list[Entry] = _collect_board_entries(apio_ctx)
 
     # -- Determine column sizes
     w1 = max(len("BOARD"), *(len(entry.board_id) for entry in entries))

@@ -11,7 +11,7 @@ import shutil
 import tempfile
 import contextlib
 from pathlib import Path, PurePosixPath
-from typing import List, Union, cast, Dict, Any, Tuple
+from typing import Union, cast, Dict, Any, Tuple
 import os
 from urllib.parse import urlparse
 from pprint import pprint
@@ -166,7 +166,7 @@ class ApioSandbox:
     def invoke_apio_cmd(
         self,
         cli,
-        args: List[str],
+        args: list[str],
         terminal_mode: bool = True,
         in_subprocess: bool = False,
     ) -> ApioResult:
@@ -255,7 +255,7 @@ class ApioSandbox:
     def assert_result_ok(
         self,
         result: ApioResult,
-        bad_words: List[str] | Tuple[str, ...] = tuple(_DEFAULT_BAD_WORDS),
+        bad_words: list[str] | Tuple[str, ...] = tuple(_DEFAULT_BAD_WORDS),
     ):
         """Check if apio command results where ok. Bad words is an optional
         list of lower case strings strings if found in the lower case version
@@ -321,7 +321,7 @@ class ApioSandbox:
     def write_file(
         self,
         file: Union[str, Path],
-        text: Union[str, List[str]],
+        text: Union[str, list[str]],
         exists_ok=False,
     ) -> None:
         """Write text to given file. If text is a list, items are joined with
@@ -346,7 +346,7 @@ class ApioSandbox:
             text = f.read()
         return text
 
-    def read_file_lines(self, file: Union[str, Path]) -> List[str]:
+    def read_file_lines(self, file: Union[str, Path]) -> list[str]:
         """Read a text file. Returns a string split into lines."""
         text = self.read_file_text(file)
         text_lines = text.split("\n")
@@ -383,7 +383,7 @@ class ApioSandbox:
         path = Path("apio.ini")
 
         # -- List with text of each section.
-        sections_texts: List[str] = []
+        sections_texts: list[str] = []
 
         # -- Add the apio section if specified.
         for section_header, section_options in sections.items():

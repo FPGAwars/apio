@@ -15,7 +15,6 @@ import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 from rich.table import Table
 from rich import box
 from SCons import Scanner
@@ -41,7 +40,7 @@ from apio.common.build_report import BuildReport, read_build_report
 TESTBENCH_HINT = "Testbench file names must end with '_tb.v' or '_tb.sv'."
 
 
-def map_str_params(str_params: List[str] | None, fmt: str) -> str:
+def map_str_params(str_params: list[str] | None, fmt: str) -> str:
     """A common function construct a command string snippet from a list
     of arguments. The function does the following:
     1. If params arg is None replace it with []
@@ -66,7 +65,7 @@ def map_str_params(str_params: List[str] | None, fmt: str) -> str:
     return " ".join(mapped_params)
 
 
-def map_path_params(path_params: List[Path] | None, fmt: str) -> str:
+def map_path_params(path_params: list[Path] | None, fmt: str) -> str:
     """Same as map_str_params() but accepts a list of Path that is first
     converted to a string and then passed to map_str_params()"""
     # -- Replace None with an empty list
@@ -74,7 +73,7 @@ def map_path_params(path_params: List[Path] | None, fmt: str) -> str:
         path_params = []
 
     # -- Convert to a list of strings.
-    str_params: List[str] = []
+    str_params: list[str] = []
     for p in path_params:
         assert isinstance(p, Path), type(p)
         str_params.append(str(p))
@@ -130,10 +129,10 @@ def get_constraint_file(apio_env: ApioEnv, file_ext: str) -> str:
 
     # -- No user specified constraint file, we will try to look for it
     # -- in the project tree.
-    glob_files: List[str] = glob(f"**/*{file_ext}", recursive=True)
+    glob_files: list[str] = glob(f"**/*{file_ext}", recursive=True)
 
     # -- Exclude files that are under _build
-    filtered_files: List[str] = [
+    filtered_files: list[str] = [
         f for f in glob_files if PROJECT_BUILD_PATH not in Path(f).parents
     ]
 
@@ -193,7 +192,7 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 
     def verilog_src_scanner_func(
         file_node: File, env: SConsEnvironment, ignored_path
-    ) -> List[str]:
+    ) -> list[str]:
         """Given a [System]Verilog file, scan it and return a list of
         references to other files it depends on. It's not require to report
         dependency on another source file in the project since scons loads
@@ -278,15 +277,15 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
 def verilator_lint_action(
     apio_env: ApioEnv,
     *,
-    extra_params: List[str] | None = None,
-    lib_dirs: List[Path] | None = None,
-    lib_files: List[Path] | None = None,
-) -> List[FunctionAction | str]:
-    #   -> List[
+    extra_params: list[str] | None = None,
+    lib_dirs: list[Path] | None = None,
+    lib_files: list[Path] | None = None,
+) -> list[FunctionAction | str]:
+    #   -> list[
     #     Callable[
     #         [
-    #             List[File],
-    #             List[Alias],
+    #             list[File],
+    #             list[Alias],
     #             SConsEnvironment,
     #         ],
     #         None,
@@ -358,7 +357,7 @@ class TestbenchInfo:
 
     testbench_path: str  # The relative testbench file path.
     build_testbench_name: str  # testbench_name prefixed by build dir.
-    srcs: List[str]  # List of source files to compile.
+    srcs: list[str]  # List of source files to compile.
 
     @property
     def testbench_name(self) -> str:
@@ -366,14 +365,14 @@ class TestbenchInfo:
         return basename(self.testbench_path)
 
 
-def detached_action(api_env: ApioEnv, cmd: List[str]) -> Action:
+def detached_action(api_env: ApioEnv, cmd: list[str]) -> Action:
     """
     Launch the given command, given as a list of tokens, in a detached
     (non blocking) mode.
     """
 
     def action_func(
-        target: List[Alias], source: List[File], env: SConsEnvironment
+        target: list[Alias], source: list[File], env: SConsEnvironment
     ):
         """A call back function to perform the detached command invocation."""
 
@@ -427,8 +426,8 @@ def gtkwave_target(
     vcd_file_target: NodeList,
     testbench_info: TestbenchInfo,
     sim_params: SimParams,
-    gtkwave_extra_options: List[str] | None,
-) -> List[Alias]:
+    gtkwave_extra_options: list[str] | None,
+) -> list[Alias]:
     """Construct a target to launch the QTWave signal viewer.
     vcd_file_target is the simulator target that generated the vcd file
     with the signals. Returns the new targets.
@@ -446,7 +445,7 @@ def gtkwave_target(
     vcd_path = str(vcd_file_target[0])
 
     def create_default_gtkw_file(
-        target: List[Alias], source: List[File], env: SConsEnvironment
+        target: list[Alias], source: list[File], env: SConsEnvironment
     ):
         """The action function to generate the default .gtkw file."""
         _ = (target, source, env)  # Unused.
@@ -524,8 +523,8 @@ def check_valid_testbench_name(testbench: str) -> None:
 def get_apio_sim_testbench_info(
     apio_env: ApioEnv,
     sim_params: SimParams,
-    synth_srcs: List[str],
-    test_srcs: List[str],
+    synth_srcs: list[str],
+    test_srcs: list[str],
 ) -> TestbenchInfo:
     """Returns a SimulationConfig for a sim command. 'testbench' is
     an optional testbench file name. 'synth_srcs' and 'test_srcs' are the
@@ -576,9 +575,9 @@ def get_apio_sim_testbench_info(
 def get_apio_test_testbenches_infos(
     apio_env: ApioEnv,
     test_params: ApioTestParams,
-    synth_srcs: List[str],
+    synth_srcs: list[str],
     test_srcs: list[str],
-) -> List[TestbenchInfo]:
+) -> list[TestbenchInfo]:
     """Return a list of SimulationConfigs for each of the testbenches that
     need to be run for a 'apio test' command. If testbench is empty,
     all the testbenches in test_srcs will be tested. Otherwise, only the
@@ -639,8 +638,8 @@ def announce_testbench_action() -> FunctionAction:
     """Returns an action that prints a title with the testbench name."""
 
     def announce_testbench(
-        target: List[Alias],
-        source: List[File],
+        target: list[Alias],
+        source: list[File],
         env: SConsEnvironment,
     ):
         """The action function."""
@@ -673,8 +672,8 @@ def source_files_issue_scanner_action() -> FunctionAction:
     testbench_dumpfile_re = re.compile(r"[$]dumpfile\s*[(]")
 
     def report_source_files_issues(
-        target: List[Alias],
-        source: List[File],
+        target: list[Alias],
+        source: list[File],
         env: SConsEnvironment,
     ):
         """The scanner function."""
@@ -801,8 +800,8 @@ def report_action(verbose: bool) -> FunctionAction:
     indicates if the --verbose flag was invoked."""
 
     def print_pnr_report(
-        target: List[Alias],
-        source: List[File],
+        target: list[Alias],
+        source: list[File],
         env: SConsEnvironment,
     ):
         """Action function. Loads the pnr json report and print in a user
@@ -841,7 +840,7 @@ def get_programmer_cmd(apio_env: ApioEnv) -> str:
 def get_define_flags(apio_env: ApioEnv) -> str:
     """Return a string with the -D flags for the verilog defines. Returns
     an empty string if there are no defines."""
-    flags: List[str] = []
+    flags: list[str] = []
     for define in apio_env.params.apio_env_params.defines:
         flags.append("-D" + define)
 
@@ -853,9 +852,9 @@ def iverilog_action(
     *,
     verbose: bool,
     is_interactive: bool,
-    extra_params: List[str] | None = None,
-    lib_dirs: List[Path] | None = None,
-    lib_files: List[Path] | None = None,
+    extra_params: list[str] | None = None,
+    lib_dirs: list[Path] | None = None,
+    lib_files: list[Path] | None = None,
 ) -> str:
     """Construct an iverilog scons action string.
     * env: Rhe scons environment.
@@ -893,7 +892,7 @@ def basename(file_name: str) -> str:
 
 
 def make_verilator_config_builder(
-    lib_path: Path, rules_to_suppress: List[str]
+    lib_path: Path, rules_to_suppress: list[str]
 ) -> Builder:
     """Create a scons Builder that writes a verilator config file
     (hardware.vlt) that suppresses warnings in the lib directory.

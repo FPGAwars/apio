@@ -14,7 +14,7 @@ from dataclasses import dataclass
 import configparser
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Union, Any, List
+from typing import Dict, Union, Any
 from configobj import ConfigObj
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error
@@ -161,7 +161,7 @@ class Project:
 
         # -- Expand and selected env options. This is also patches default
         # -- values and validates the results.
-        self.env_options: Dict[str, Union[str, List[str]]] = (
+        self.env_options: Dict[str, Union[str, list[str]]] = (
             Project._parse_env_options(
                 env_name=self.env_name,
                 common_section=common_section,
@@ -309,8 +309,8 @@ class Project:
     def _parse_env_options(
         env_name: str,
         common_section: Dict,
-        env_sections: Dict[str, Dict[str, Union[str, List[str]]]],
-    ) -> Dict[str, Union[str, List[str]]]:
+        env_sections: Dict[str, Dict[str, Union[str, list[str]]]],
+    ) -> Dict[str, Union[str, list[str]]]:
         """Expand the options of given env name. The given common and envs
         sections are already validate. String options are returned as strings
         and list options are returned as list of strings.
@@ -334,7 +334,7 @@ class Project:
         # -- Create an empty result dict.
         # -- We will insert to it the relevant options by the oder they appear
         # -- in apio.ini.
-        result: Dict[str, Union[str, List[str]]] = {}
+        result: Dict[str, Union[str, list[str]]] = {}
 
         # -- Add common options that are not in env section
         for name, val in common_section.items():
@@ -386,7 +386,7 @@ class Project:
 
     def get_list_option(
         self, option: str, default: Any = None
-    ) -> Union[List[str], Any]:
+    ) -> Union[list[str], Any]:
         """Lookup an env option value that has a line list format. Returns
         the list of non empty lines or default if no value. Option
         must be in OPTIONS."""

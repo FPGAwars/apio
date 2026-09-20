@@ -1,7 +1,6 @@
 """Serial devices related utilities."""
 
 import re
-from typing import List
 from dataclasses import dataclass
 from serial.tools.list_ports import comports
 from serial.tools.list_ports_common import ListPortInfo
@@ -42,7 +41,7 @@ class SerialDevice:
         )
 
 
-def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
+def scan_serial_devices(_: ApioContext) -> list[SerialDevice]:
     """Scan the connected serial devices and return their information."""
 
     # -- Initial empty device list
@@ -51,7 +50,7 @@ def scan_serial_devices(_: ApioContext) -> List[SerialDevice]:
     # -- Use the serial.tools.list_ports module for reading the
     # -- serial ports. More info:
     # --   https://pyserial.readthedocs.io/en/latest/tools.html
-    list_port_info: List[ListPortInfo] = list(comports())
+    list_port_info: list[ListPortInfo] = list(comports())
     assert isinstance(list_port_info, list)
     if list_port_info:
         assert isinstance(list_port_info[0], ListPortInfo)
@@ -201,7 +200,7 @@ class SerialDeviceFilter:
 
         return True
 
-    def filter(self, devices: List[SerialDevice]):
+    def filter(self, devices: list[SerialDevice]):
         """Return a copy of the list with items that are pass this filter.
         Items order is preserved."""
         result = [d for d in devices if self._eval(d)]

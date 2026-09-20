@@ -10,7 +10,7 @@
 import os
 from pathlib import Path
 from glob import glob
-from typing import Tuple, List
+from typing import Tuple
 import click
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import EMPH3, SUCCESS
@@ -110,7 +110,7 @@ def cli(
     apio_ctx.set_env_for_packages(quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
-    _files: List[str] = list(files)
+    _files: list[str] = list(files)
 
     # -- Change to the project's folder.
     os.chdir(apio_ctx.project_dir)

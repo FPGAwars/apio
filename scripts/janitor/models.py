@@ -4,7 +4,7 @@ between janitor steps. Having them in a separate python
 module resolves some issues with the pickling.
 """
 
-from typing import List, Dict, Any, Set
+from typing import Dict, Any, Set
 from datetime import date
 from dataclasses import dataclass, field
 from enum import Enum
@@ -131,7 +131,7 @@ class Requirement:
     release_tag: str | None
     # -- List of notes regarding the processing of the requirement.
     # -- This field does not participate in comparison or set lookup.
-    notes: List[str] = field(compare=False)
+    notes: list[str] = field(compare=False)
 
     def __post_init__(self):
         """Sanity checks."""
@@ -180,7 +180,7 @@ class RequirementsSet:
         self,
         req_type: RequirementType,
         release_ref: GithubReleaseRef,
-        notes: List[str],
+        notes: list[str],
     ) -> None:
         """Similar to add() but from different args."""
         self.add(
@@ -203,7 +203,7 @@ class RequirementsSet:
 
     def group_by_repo_and_type(
         self,
-    ) -> Dict[str, Dict[RequirementType, List[Requirement]]]:
+    ) -> Dict[str, Dict[RequirementType, list[Requirement]]]:
         """Return all the members as a repo/type/requirement tree. The tree
         is sorted for intuitive order."""
         # -- Sort by
@@ -216,7 +216,7 @@ class RequirementsSet:
         members = sorted(members, key=lambda r: (r.repo, r.req_type.value))
 
         # -- Construct the tree.
-        result: Dict[str, Dict[RequirementType, List[Requirement]]] = {}
+        result: Dict[str, Dict[RequirementType, list[Requirement]]] = {}
         for req in members:
             by_type = result.setdefault(req.repo, {})
             by_type.setdefault(req.req_type, []).append(req)
@@ -224,7 +224,7 @@ class RequirementsSet:
 
     def group_by_type_and_repo(
         self,
-    ) -> Dict[RequirementType, Dict[str, List[Requirement]]]:
+    ) -> Dict[RequirementType, Dict[str, list[Requirement]]]:
         """Return all the members as a type/repo/requirement tree."""
         # --    requirement type (ascending),
         # --    repo (ascending),
@@ -235,7 +235,7 @@ class RequirementsSet:
         members = sorted(members, key=lambda r: (r.req_type.value, r.repo))
 
         # -- Construct the tree.
-        result: Dict[RequirementType, Dict[str, List[Requirement]]] = {}
+        result: Dict[RequirementType, Dict[str, list[Requirement]]] = {}
         for req in members:
             by_repo = result.setdefault(req.req_type, {})
             by_repo.setdefault(req.repo, []).append(req)
@@ -326,7 +326,7 @@ class PypiCrawl:
     releases: Dict[str, PypiReleaseCrawl]
     # -- List of pypi apio releases that were skipped, either too old
     # -- or known to be problematic.
-    skipped_versions: List[str]
+    skipped_versions: list[str]
 
 
 @dataclass(frozen=True)
@@ -354,7 +354,7 @@ class VscodeMarketplaceCrawl:
     # -- List of relevant releases that were crawled.
     releases: Dict[str, VscodeReleaseCrawl]
     # -- List of extension versions that were skipped, e.g. for being too old.
-    skipped_versions: List[str]
+    skipped_versions: list[str]
 
 
 @dataclass(frozen=True)

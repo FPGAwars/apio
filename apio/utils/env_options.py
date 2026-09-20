@@ -12,7 +12,6 @@ variables that are used to modify the default behavior of APIO.
 """
 
 import os
-from typing import List
 
 # -- Env variable to override the apio home dir ~/.apio. If specified,
 # -- it contains the profile.json file and if APIO_PACKAGES is not
@@ -102,7 +101,7 @@ def is_defined(var_name) -> bool:
     return var_value is not None
 
 
-def get_defined() -> List[str]:
+def get_defined() -> list[str]:
     """Return the list of apio env options vars in _SUPPORTED_APIO_VARS
     that are currently defined. The returned value is not cached such that
     mutating the var in this program may affect the result."""
@@ -113,6 +112,6 @@ def get_defined() -> List[str]:
     return result
 
 
-def get_all() -> List[str]:
+def get_all() -> list[str]:
     """Return the list of all of apio supported env vars."""
     return _SUPPORTED_APIO_VARS.copy()

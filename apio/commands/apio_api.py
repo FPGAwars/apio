@@ -11,7 +11,7 @@
 
 import sys
 import os
-from typing import Dict, List, Self, cast, Any
+from typing import Dict, Self, cast, Any
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -687,10 +687,10 @@ def _get_examples_cli(
     )
 
     # -- Get examples infos.
-    examples: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
+    examples: list[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
     # -- Group examples by boards
-    boards_examples: Dict[str, List[ExampleInfo]] = {}
+    boards_examples: Dict[str, list[ExampleInfo]] = {}
     for example in examples:
         board_examples = boards_examples.get(example.board_id, [])
         board_examples.append(example)
@@ -729,9 +729,9 @@ class CmdInfo:
     """Represents the information of a single apio command."""
 
     name: str
-    path: List[str]
+    path: list[str]
     cli: click.Command
-    children: List[Self]
+    children: list[Self]
 
 
 def scan_children(cmd_cli) -> Dict:
@@ -747,7 +747,7 @@ def scan_children(cmd_cli) -> Dict:
 
     # -- Here we have a group and it should have at least one sub command.
     assert isinstance(cmd_cli, ApioGroup), type(cmd_cli)
-    subgroups: List[ApioSubgroup] = cmd_cli.subgroups
+    subgroups: list[ApioSubgroup] = cmd_cli.subgroups
 
     # -- Create the dict for the command subgroups.
     subcommands_dict: Dict[str, Any] = {}
@@ -958,7 +958,7 @@ def _scan_devices_cli(
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    usb_devices: List[UsbDevice] = usb_util.scan_usb_devices(apio_ctx)
+    usb_devices: list[UsbDevice] = usb_util.scan_usb_devices(apio_ctx)
 
     # -- Scan and report usb devices.
     section = []
@@ -978,7 +978,7 @@ def _scan_devices_cli(
     top_dict["usb-devices"] = section
 
     # -- Scan and report serial devices.
-    serial_devices: List[SerialDevice] = serial_util.scan_serial_devices(
+    serial_devices: list[SerialDevice] = serial_util.scan_serial_devices(
         apio_ctx
     )
 

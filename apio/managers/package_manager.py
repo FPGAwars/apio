@@ -11,7 +11,7 @@ import os
 import json
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Any
+from typing import Dict, Tuple, Any
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cstyle, fatal_error
@@ -29,24 +29,24 @@ class PackageScanResults:
 
     # -- Normal and Error. Packages in required_packages that are installed
     # -- regardless if the version matches or not.
-    installed_ok_package_names: List[str]
+    installed_ok_package_names: list[str]
     # -- Error. Packages in required_packages that are installed but with
     # -- version mismatch.
-    bad_version_package_names: List[str]
+    bad_version_package_names: list[str]
     # -- Normal. Packages in required_packages that are uninstalled properly.
-    uninstalled_package_names: List[str]
+    uninstalled_package_names: list[str]
     # -- Error. Packages in required_packages with broken installation. E.g,
     # -- registered in installed packages but the package directory is missing.
-    broken_package_names: List[str]
+    broken_package_names: list[str]
     # -- Error. Packages that are in installed packages but are not
     # -- in required_packages.
-    orphan_package_names: List[str]
+    orphan_package_names: list[str]
     # -- Error. Basenames of directories in packages dir that don't match
     # -- folder_name of packages in required_packages.
-    orphan_dir_names: List[str]
+    orphan_dir_names: list[str]
     # -- Error. Basenames of all files in packages directory. That directory is
     # -- expected to contain only directories for packages.a
-    orphan_file_names: List[str]
+    orphan_file_names: list[str]
 
     def packages_installed_ok(self) -> bool:
         """Returns true if all packages are installed ok, regardless of

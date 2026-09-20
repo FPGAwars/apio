@@ -14,7 +14,7 @@ import os
 from contextlib import contextmanager
 from enum import Enum
 from dataclasses import dataclass
-from typing import Any, Tuple, List
+from typing import Any, Tuple
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -54,11 +54,11 @@ class AsyncPipe(Thread):
         self._fd_read, self._fd_write = os.pipe()
 
         # -- A list of lines received so far.
-        self._lines_buffer: List[str] = []
+        self._lines_buffer: list[str] = []
 
         self.start()
 
-    def get_buffer(self) -> List[str]:
+    def get_buffer(self) -> list[str]:
         """DOC: TODO"""
 
         return self._lines_buffer
@@ -177,7 +177,7 @@ class CommandResult:
 
 
 def exec_command(
-    cmd: List[str], stdout: AsyncPipe, stderr: AsyncPipe
+    cmd: list[str], stdout: AsyncPipe, stderr: AsyncPipe
 ) -> CommandResult:
     """Execute the given command using async stdout/stderr..
 
@@ -325,7 +325,7 @@ def plurality(
     return plural
 
 
-def list_plurality(str_list: List[str], conjunction: str) -> str:
+def list_plurality(str_list: list[str], conjunction: str) -> str:
     """Format a list as a human friendly string."""
     # -- This is a programming error. Not a user error.
     assert str_list, "list_plurality expect len() >= 1."
@@ -519,7 +519,7 @@ def fpga_arch_sort_key(fpga_arch: str) -> Any:
 
 
 def subprocess_call(
-    cmd: List[str],
+    cmd: list[str],
 ) -> int:
     """A helper for running subprocess.call. Exit if an error."""
 

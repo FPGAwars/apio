@@ -6,7 +6,6 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-from typing import List
 from apio.common.apio_console import cout, cwarning, fatal_error
 from apio.common import proto_util
 from apio.common.debug_util import is_debug
@@ -43,17 +42,17 @@ class _DeviceScanner:
 
     def __init__(self, apio_ctx: ApioContext):
         self._apio_ctx: ApioContext = apio_ctx
-        self._usb_devices: List[UsbDevice] | None = None
-        self._serial_devices: List[SerialDevice] | None = None
+        self._usb_devices: list[UsbDevice] | None = None
+        self._serial_devices: list[SerialDevice] | None = None
 
-    def get_usb_devices(self) -> List[UsbDevice]:
+    def get_usb_devices(self) -> list[UsbDevice]:
         """Scan usb devices, with caching."""
         if self._usb_devices is None:
             self._usb_devices = usb_util.scan_usb_devices(self._apio_ctx)
             assert isinstance(self._usb_devices, list)
         return self._usb_devices
 
-    def get_serial_devices(self) -> List[SerialDevice]:
+    def get_serial_devices(self) -> list[SerialDevice]:
         """Scan serial devices, with caching."""
         if self._serial_devices is None:
             self._serial_devices = serial_util.scan_serial_devices(
@@ -267,7 +266,7 @@ def _match_serial_device(
     board_definition = pr.board_definition
 
     # -- Scan for all serial devices.
-    all_devices: List[SerialDevice] = scanner.get_serial_devices()
+    all_devices: list[SerialDevice] = scanner.get_serial_devices()
 
     # -- Get board optional usb constraints
     proto_util.check_not_required(board_definition, "usb")
@@ -296,7 +295,7 @@ def _match_serial_device(
     cout(f"- FILTER {serial_filter.summary()}")
 
     # -- Get matching devices
-    matching: List[SerialDevice] = serial_filter.filter(all_devices)
+    matching: list[SerialDevice] = serial_filter.filter(all_devices)
 
     for dev in matching:
         cout(f"- DEVICE {dev.summary()}")
@@ -340,7 +339,7 @@ def _match_usb_device(
     board_definition = pr.board_definition
 
     # -- Scan for all serial devices.
-    all_devices: List[UsbDevice] = scanner.get_usb_devices()
+    all_devices: list[UsbDevice] = scanner.get_usb_devices()
 
     # -- Get board optional usb constraints
     proto_util.check_not_required(board_definition, "usb")
@@ -369,7 +368,7 @@ def _match_usb_device(
     cout(f"- FILTER {usb_filter.summary()}")
 
     # -- Get matching devices
-    matching: List[UsbDevice] = usb_filter.filter(all_devices)
+    matching: list[UsbDevice] = usb_filter.filter(all_devices)
 
     for dev in matching:
         cout(f"- DEVICE {dev.summary()}")

@@ -11,7 +11,7 @@ import json
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any
 from pathlib import Path
 import requests
 from jsonschema import validate
@@ -419,7 +419,7 @@ class RemoteConfig:
             cout(json.dumps(self._cached_remote_config, indent=2))
 
     def _handle_soft_config_refresh_failure(
-        self, *, error_msg_lines: List[str]
+        self, *, error_msg_lines: list[str]
     ):
         """Called to handle a soft failure of a remote config refresh.
         That is, an error, from which we recover by using the cached

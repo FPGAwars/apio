@@ -1,9 +1,9 @@
 import re
 import sys
-from typing import List, Tuple
+from typing import  Tuple
 
 
-def parse_ports(lines: List[str]) -> List[Tuple[str, str]]:
+def parse_ports(lines: list[str]) -> list[Tuple[str, str]]:
     """
     Extract port declarations from module body lines.
     Returns list of (direction, port_decl) e.g. ("input", "D") or ("output", "[3:0] Q")
@@ -37,7 +37,7 @@ def parse_ports(lines: List[str]) -> List[Tuple[str, str]]:
     return ports
 
 
-def build_port_list(ports: List[Tuple[str, str]]) -> str:
+def build_port_list(ports: list[Tuple[str, str]]) -> str:
     """Convert collected ports to comma-separated list for module header."""
     if not ports:
         return ""
