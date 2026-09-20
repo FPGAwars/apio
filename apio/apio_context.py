@@ -9,7 +9,7 @@
 import os
 import platform
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, unique
 from pathlib import Path
 import json5
 from apio.common.apio_console import cout, cstyle, fatal_error
@@ -62,6 +62,7 @@ class EnvMutations:
     set_vars: dict[str, str]
 
 
+@unique
 class ProjectPolicy(Enum):
     """Represents the possible context policies regarding loading apio.ini.
     and project related information."""
@@ -74,6 +75,7 @@ class ProjectPolicy(Enum):
     PROJECT_REQUIRED = 3
 
 
+@unique
 class PackagesPolicy(Enum):
     """Represents the possible context policies regarding loading apio.ini.
     and project related information."""

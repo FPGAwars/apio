@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from enum import Enum
+from enum import Enum, unique
 import colorsys
 import hashlib
 
@@ -23,6 +23,7 @@ NETS = {6, 151, 98, 143, 145}
 TOP_MODULE_NAME = "main"
 
 
+@unique
 class Direction(Enum):
     """Represents the direction(s) of a port."""
 

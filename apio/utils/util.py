@@ -12,7 +12,7 @@
 import sys
 import os
 from contextlib import contextmanager
-from enum import Enum
+from enum import Enum, unique
 from dataclasses import dataclass
 from typing import Any
 import subprocess
@@ -127,6 +127,7 @@ class AsyncPipe(Thread):
         self.join()
 
 
+@unique
 class TerminalMode(Enum):
     """Represents to two modes of stdout/err."""
 

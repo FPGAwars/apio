@@ -8,7 +8,7 @@
 # pylint: disable=duplicate-code
 
 import json
-from enum import Enum
+from enum import Enum, unique
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -77,6 +77,7 @@ REMOTE_CONFIG_SCHEMA = {
 }
 
 
+@unique
 class RemoteConfigPolicy(Enum):
     """Represents possible requirements from the remote config."""
 

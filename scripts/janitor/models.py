@@ -7,13 +7,14 @@ module resolves some issues with the pickling.
 from typing import Any
 from datetime import date
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, unique
 from packaging.version import Version
 from scripts.janitor import consts
 
 # ---------- Common
 
 
+@unique
 class ReleaseState(Enum):
     """Represents the state of a release."""
 
@@ -93,6 +94,7 @@ class GithubReleaseRef:
         return _repo_and_tag_to_str(self.repo, self.release_tag)
 
 
+@unique
 class RequirementType(Enum):
     """Represents the state of a release."""
 

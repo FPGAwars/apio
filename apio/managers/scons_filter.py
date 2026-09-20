@@ -9,7 +9,7 @@
 
 import re
 import threading
-from enum import Enum
+from enum import Enum, unique
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
@@ -53,6 +53,7 @@ LINE_IGNORE_LIST = [
 ]
 
 
+@unique
 class PipeId(Enum):
     """Represent the two output streams from the scons subprocess."""
 
@@ -60,6 +61,7 @@ class PipeId(Enum):
     STDERR = 2
 
 
+@unique
 class RangeEvents(Enum):
     """An stdout/err line can trigger one of these events, when detecting a
     range of lines."""
