@@ -98,17 +98,6 @@ jobs:
 
       - name: Publish to PyPi
         env:
-          # TODO: As of Dec 27 2025, PYPI_USERNAME and PYPI_PASSWORD
-          # contain a token rather than the actual username and
-          # password (good security). We copied PYPI_PASSWORD to
-          # PYPI_API_TOKEN and use a literal "__token__" instead
-          # of PYPI_USERNAME. Once this new configuration publishes
-          # successfully, the two secrets PYPI_USERNAME and PYPI_PASSWORD
-          # should be deleted for clarity.
-          #
-          # FLIT_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          # FLIT_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
