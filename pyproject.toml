@@ -51,7 +51,7 @@ dependencies = [
     'requests==2.33.1',
     'scons==4.8.1',
     'semantic_version==2.10.0',
-    'wheel==0.45.1',
+    'wheel==0.46.2',
     'blackiceprog==2.0.0',
     'tinyfpgab==1.1.0',
     'tinyprog==1.0.21',
