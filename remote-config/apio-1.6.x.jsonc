@@ -77,7 +77,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-09-15",
+        "tag": "2026-09-20",
         "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     }
