@@ -10,7 +10,6 @@
 import os
 from pathlib import Path
 from glob import glob
-from typing import Tuple
 import click
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import EMPH3, SUCCESS
@@ -79,7 +78,7 @@ _FILE_TYPES = [".v", ".sv", ".vh", ".svh"]
 def cli(
     *,
     # Arguments
-    files: Tuple[str],
+    files: tuple[str],
     env: str | None,
     project_dir: Path | None,
     verbose: bool,

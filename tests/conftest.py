@@ -11,7 +11,7 @@ import shutil
 import tempfile
 import contextlib
 from pathlib import Path, PurePosixPath
-from typing import Union, cast, Any, Tuple
+from typing import Union, cast, Any
 import os
 from urllib.parse import urlparse
 from pprint import pprint
@@ -255,7 +255,7 @@ class ApioSandbox:
     def assert_result_ok(
         self,
         result: ApioResult,
-        bad_words: list[str] | Tuple[str, ...] = tuple(_DEFAULT_BAD_WORDS),
+        bad_words: list[str] | tuple[str, ...] = tuple(_DEFAULT_BAD_WORDS),
     ):
         """Check if apio command results where ok. Bad words is an optional
         list of lower case strings strings if found in the lower case version

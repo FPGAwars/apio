@@ -14,7 +14,7 @@ import os
 import sys
 from pathlib import Path
 from glob import glob
-from typing import Union, Any, Tuple
+from typing import Union, Any
 import debugpy
 
 # -- A list with the file extensions of the source files.
@@ -98,7 +98,7 @@ def sort_files(files: list[str]) -> list[str]:
     return sorted(files, key=file_sort_key_func)
 
 
-def get_project_source_files() -> Tuple[list[str], list[str]]:
+def get_project_source_files() -> tuple[list[str], list[str]]:
     """Get the list of source files in the directory tree under the current
     directory, splitted into synth and testbench lists.
     If source file has the suffix _tb it's is classified st a testbench,

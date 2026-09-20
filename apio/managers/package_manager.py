@@ -11,7 +11,7 @@ import os
 import json
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Tuple, Any
+from typing import Any
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cstyle, fatal_error
@@ -674,7 +674,7 @@ class PackageManager:
             cout("Saved installed packages index:", style=EMPH3)
             cout(json.dumps(self.installed_packages, indent=2))
 
-    def get_installed_package_info(self, package_name: str) -> Tuple[str, str]:
+    def get_installed_package_info(self, package_name: str) -> tuple[str, str]:
         """Return (package_version, platform_id) of the given installed
         package. Values are replaced with "" if not installed or a value is
         missing."""

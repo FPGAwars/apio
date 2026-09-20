@@ -10,7 +10,6 @@
 import sys
 import shlex
 import subprocess
-from typing import Tuple
 import click
 from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_styles import SUCCESS, ERROR
@@ -106,7 +105,7 @@ def cli(
     cmd_ctx: click.Context,
     *,
     # Arguments
-    cmd: Tuple[str],
+    cmd: tuple[str],
     # Options
     verbose: bool,
 ):

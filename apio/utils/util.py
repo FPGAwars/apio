@@ -14,7 +14,7 @@ import os
 from contextlib import contextmanager
 from enum import Enum
 from dataclasses import dataclass
-from typing import Any, Tuple
+from typing import Any
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -292,7 +292,7 @@ def get_python_version() -> str:
     return f"{sys.version_info[0]}.{sys.version_info[1]}"
 
 
-def get_python_ver_tuple() -> Tuple[int, int, int]:
+def get_python_ver_tuple() -> tuple[int, int, int]:
     """Return a tuple with the python version. e.g. (3, 12, 1)."""
     return sys.version_info[:3]
 
@@ -342,13 +342,13 @@ def list_plurality(str_list: list[str], conjunction: str) -> str:
     return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"
 
 
-def get_apio_version_tuple() -> Tuple[int, int, int]:
+def get_apio_version_tuple() -> tuple[int, int, int]:
     """Returns the version of the apio package as tuple of 3 ints."""
     # -- Apio's version is defined in the __init__.py file of the apio package.
     # -- Using the version from a file in the apio package rather than from
     # -- the pip metadata makes apio more self contained, for example when
     # -- installing with pyinstaller rather than with pip.
-    ver: Tuple[int, int, int] = apio.APIO_VERSION
+    ver: tuple[int, int, int] = apio.APIO_VERSION
     assert len(ver) == 3, ver
     assert isinstance(ver[0], int)
     assert isinstance(ver[1], int)
@@ -358,7 +358,7 @@ def get_apio_version_tuple() -> Tuple[int, int, int]:
 
 def get_apio_version_str() -> str:
     """Returns the version of the apio package as a string like "1.22.3"."""
-    ver: Tuple[int, int, int] = get_apio_version_tuple()
+    ver: tuple[int, int, int] = get_apio_version_tuple()
     return f"{ver[0]}.{ver[1]}.{ver[2]}"
 
 

@@ -10,7 +10,6 @@
 import re
 import threading
 from enum import Enum
-from typing import Tuple
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
@@ -187,7 +186,7 @@ class SconsFilter:
     @staticmethod
     def _assign_line_color(
         line: str,
-        patterns: list[Tuple[str, str]],
+        patterns: list[tuple[str, str]],
         default_color: str | None = None,
     ) -> str | None:
         """Assigns a color for a given line using a list of (regex, color)

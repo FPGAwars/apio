@@ -2,7 +2,6 @@
 Tests of project.py
 """
 
-from typing import Tuple
 import pytest
 from tests.conftest import ApioRunner
 from apio.managers.project import Project, ENV_OPTIONS_SPEC
@@ -20,7 +19,7 @@ def load_apio_ini(
     apio_ini: dict[str, dict[str, str]],
     env_arg: str | None,
     apio_runner: ApioRunner,
-) -> Tuple[Project, str]:
+) -> tuple[Project, str]:
     """A helper function load apio.ini.  Returns (project, log-text)"""
 
     with apio_runner.in_sandbox() as sb:
