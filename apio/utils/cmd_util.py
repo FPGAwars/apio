@@ -10,7 +10,6 @@
 """Utility functionality for apio click commands."""
 
 from dataclasses import dataclass
-from typing import List, Dict, Union
 import click
 from click.formatting import HelpFormatter
 from apio.common import apio_console
@@ -47,10 +46,10 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
 
 def _get_all_params_definitions(
     cmd_ctx: click.Context,
-) -> Dict[str, Union[click.Option, click.Argument]]:
+) -> dict[str, click.Option | click.Argument]:
     """Return a mapping from param id to param obj, for all options and
     arguments that are defined for the command."""
-    result: Dict[str, Union[click.Option, click.Argument]] = {}
+    result: dict[str, click.Option | click.Argument] = {}
     for param_obj in cmd_ctx.command.get_params(cmd_ctx):
         assert isinstance(param_obj, (click.Option, click.Argument)), type(
             param_obj
@@ -61,8 +60,8 @@ def _get_all_params_definitions(
 
 
 def _params_ids_to_aliases(
-    cmd_ctx: click.Context, params_ids: List[str]
-) -> List[str]:
+    cmd_ctx: click.Context, params_ids: list[str]
+) -> list[str]:
     """Maps param ids to their respective user facing canonical aliases.
     The order of the params is in the input list is preserved.
 
@@ -79,7 +78,7 @@ def _params_ids_to_aliases(
     # Map the param ids to their canonical aliases.
     result = []
     for param_id in params_ids:
-        param_obj: Union[click.Option, click.Argument] = params_dict[param_id]
+        param_obj: click.Option | click.Argument = params_dict[param_id]
         assert isinstance(param_obj, (click.Option, click.Argument)), type(
             param_obj
         )
@@ -119,8 +118,8 @@ def _is_param_specified(cmd_ctx, param_id) -> bool:
 
 
 def _specified_params(
-    cmd_ctx: click.Context, param_ids: List[str]
-) -> List[str]:
+    cmd_ctx: click.Context, param_ids: list[str]
+) -> list[str]:
     """Returns the subset of param ids that were used in the command line.
     The original order of the list is preserved.
     For definition of params and param ids see check_exclusive_params().
@@ -133,7 +132,7 @@ def _specified_params(
 
 
 def check_at_most_one_param(
-    cmd_ctx: click.Context, param_ids: List[str]
+    cmd_ctx: click.Context, param_ids: list[str]
 ) -> None:
     """Checks that at most one of given params were specified in
     the command line. If more than one param was specified, exits the
@@ -156,7 +155,7 @@ def check_at_most_one_param(
 
 
 def check_exactly_one_param(
-    cmd_ctx: click.Context, param_ids: List[str]
+    cmd_ctx: click.Context, param_ids: list[str]
 ) -> None:
     """Checks that at exactly one of given params is specified in
     the command line. If more or less than one params is specified, exits the
@@ -187,7 +186,7 @@ def check_exactly_one_param(
 
 
 def check_at_least_one_param(
-    cmd_ctx: click.Context, param_ids: List[str]
+    cmd_ctx: click.Context, param_ids: list[str]
 ) -> None:
     """Checks that at least one of given params is specified in
     the command line. If none of the params is specified, exits the
@@ -226,7 +225,7 @@ class ApioSubgroup:
     of type group, contains two or more subcommand in one or more subgroups."""
 
     title: str
-    commands: List[click.Command]
+    commands: list[click.Command]
 
 
 def _format_apio_rich_text_help_text(
@@ -251,7 +250,7 @@ class ApioGroup(click.Group):
     def __init__(self, *args, **kwargs) -> None:
 
         # -- Consume the 'subgroups' arg.
-        self.subgroups: List[ApioSubgroup] = kwargs.pop("subgroups")
+        self.subgroups: list[ApioSubgroup] = kwargs.pop("subgroups")
         assert isinstance(self.subgroups, list)
         assert isinstance(self.subgroups[0], ApioSubgroup)
 

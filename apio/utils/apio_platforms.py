@@ -12,7 +12,6 @@
 import re
 import platform
 from dataclasses import dataclass
-from typing import Dict
 from apio.utils import env_options
 from apio.common.apio_console import fatal_error
 
@@ -75,7 +74,7 @@ class ApioPlatform:
 # -- The supported platforms as a dict with platform id as keys and
 # -- ApioPlatform as values. It is constructed from the values in
 # -- _SUPPORTED_PLATFORMS.
-# _APIO_PLATFORMS: Dict[str, ApioPlatform] = {
+# _APIO_PLATFORMS: dict[str, ApioPlatform] = {
 #     id: ApioPlatform(id=id, **fields)
 #     for id, fields in _SUPPORTED_PLATFORMS.items()
 # }
@@ -103,7 +102,7 @@ _APIO_PLATFORMS_DICT = {
 }
 
 # -- Same set of platforms, but keyed by platform id.
-# _APIO_PLATFORMS_DICT: Dict[str, ApioPlatform] = {
+# _APIO_PLATFORMS_DICT: dict[str, ApioPlatform] = {
 #     p.id: p for p in _APIO_PLATFORMS_LIST
 # }
 
@@ -160,7 +159,7 @@ def get_apio_platform() -> ApioPlatform:
     return _APIO_PLATFORMS_DICT[platform_id]
 
 
-def get_all_apio_platforms() -> Dict[str, ApioPlatform]:
+def get_all_apio_platforms() -> dict[str, ApioPlatform]:
     """Return a dict with all supported platforms."""
     return _APIO_PLATFORMS_DICT.copy()
 

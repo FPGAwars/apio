@@ -8,7 +8,6 @@
 """Implementation of 'apio info' command"""
 
 import sys
-from typing import List
 from pathlib import Path
 from datetime import date
 import click
@@ -502,7 +501,7 @@ def _themes_cli() -> None:
 
     # -- Append the table rows
     for style_name in style_names_list:
-        row_values: List[Text] = []
+        row_values: list[Text] = []
         for theme_name, theme_info in THEMES_TABLE.items():
             # Get style
             colors_enabled = theme_info.colors_enabled

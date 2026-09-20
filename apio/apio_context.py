@@ -9,9 +9,8 @@
 import os
 import platform
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, unique
 from pathlib import Path
-from typing import List, Dict
 import json5
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
@@ -54,15 +53,16 @@ class EnvMutations:
     """Contains mutations to the system env."""
 
     # -- List of env vars to unset.
-    unset_vars: List[str]
+    unset_vars: list[str]
 
     # -- PATH items to add.
-    paths: List[str]
+    paths: list[str]
 
     # -- Dict with env vars name/value to set.
-    set_vars: Dict[str, str]
+    set_vars: dict[str, str]
 
 
+@unique
 class ProjectPolicy(Enum):
     """Represents the possible context policies regarding loading apio.ini.
     and project related information."""
@@ -75,6 +75,7 @@ class ProjectPolicy(Enum):
     PROJECT_REQUIRED = 3
 
 
+@unique
 class PackagesPolicy(Enum):
     """Represents the possible context policies regarding loading apio.ini.
     and project related information."""
@@ -427,7 +428,7 @@ class ApioContext:
 
     @staticmethod
     def _resolve_package_envs(
-        packages_: Dict[str, Dict], packages_dir: Path
+        packages_: dict[str, dict], packages_dir: Path
     ) -> None:
         """Resolve in-place the path and var value templates in the
         given packages dictionary. For example, %p is replaced with
@@ -517,9 +518,9 @@ class ApioContext:
 
     @staticmethod
     def _select_required_packages_for_platform(
-        all_packages: Dict[str, Dict],
+        all_packages: dict[str, dict],
         platform_id: str,
-    ) -> Dict:
+    ) -> dict:
         """Given a dictionary with the packages.jsonc packages infos,
         returns subset dictionary with packages that are available for
         'platform_id'.
@@ -578,9 +579,9 @@ class ApioContext:
         """Collects the env mutation for each of the defined packages,
         in the order they are defined."""
 
-        unset_vars: List[str] = []
-        paths: List[str] = []
-        set_vars: Dict[str, str] = {}
+        unset_vars: list[str] = []
+        paths: list[str] = []
+        set_vars: dict[str, str] = {}
         for _, package_config in self.required_packages.items():
             # -- Get the json 'env' section. We require it, even if it's empty,
             # -- for clarity reasons.

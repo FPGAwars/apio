@@ -9,7 +9,6 @@
 
 import os
 import shutil
-from typing import List
 from pathlib import Path
 import click
 from apio.commands import options
@@ -29,7 +28,7 @@ from apio.apio_context import (
 # ----------- apio clean
 
 
-def _delete_candidates(candidates: List[str]):
+def _delete_candidates(candidates: list[str]):
     """Delete given files and dirs."""
 
     # pylint: disable=broad-exception-caught

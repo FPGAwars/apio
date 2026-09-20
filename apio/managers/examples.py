@@ -10,7 +10,6 @@ import shutil
 import os
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, Dict
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.proto.apio_common_pb2 import ApioArch
@@ -59,7 +58,7 @@ class Examples:
         assert path.is_dir(), f"Not a dir: {path}"
 
         # -- Get the dir content,  including hidden entries.
-        dir_content: List[str] = os.listdir(path)
+        dir_content: list[str] = os.listdir(path)
 
         # -- We don't care about macOS
         ignore_list = [".DS_Store"]
@@ -72,7 +71,7 @@ class Examples:
                 + f"is not empty (e.g, '{dir_content[0]}')."
             )
 
-    def get_examples_infos(self) -> List[ExampleInfo]:
+    def get_examples_infos(self) -> list[ExampleInfo]:
         """Scans the examples and returns a list of ExampleInfos.
         Returns null if an error."""
 
@@ -83,14 +82,14 @@ class Examples:
         assert self.apio_ctx.definitions is not None
 
         # -- Collect the examples home dir each board.
-        boards_dirs: List[Path] = []
+        boards_dirs: list[Path] = []
 
         for board_dir in self.examples_dir.iterdir():
             if board_dir.is_dir():
                 boards_dirs.append(board_dir)
 
         # -- Collect the examples of each boards.
-        examples: List[ExampleInfo] = []
+        examples: list[ExampleInfo] = []
         for board_dir in boards_dirs:
             # -- Convert board dir to board id
             board_id = board_dir.name
@@ -151,15 +150,15 @@ class Examples:
 
         return examples
 
-    def count_examples_by_board(self) -> Dict[str, int]:
+    def count_examples_by_board(self) -> dict[str, int]:
         """Returns a dictionary with example count per board. Boards
         that have no examples are not included in the dictionary."""
 
         # -- Get list of examples.
-        examples: List[ExampleInfo] = self.get_examples_infos()
+        examples: list[ExampleInfo] = self.get_examples_infos()
 
         # -- Count examples by board
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for example in examples:
             board = example.board_id
             old_count = counts.get(board, 0)
@@ -231,7 +230,7 @@ class Examples:
         # -- Inform the user.
         cout(f"Example '{example_name}' fetched successfully.", style=SUCCESS)
 
-    def get_board_examples(self, board_id) -> List[ExampleInfo]:
+    def get_board_examples(self, board_id) -> list[ExampleInfo]:
         """Returns the list of examples with given board id."""
         return [x for x in self.get_examples_infos() if x.board_id == board_id]
 
@@ -248,7 +247,7 @@ class Examples:
         # dst_dir = util.resolve_project_dir(
         #     dst_dir, create_if_missing=True
         # )
-        board_examples: List[ExampleInfo] = self.get_board_examples(board_id)
+        board_examples: list[ExampleInfo] = self.get_board_examples(board_id)
 
         if not board_examples:
             fatal_error(

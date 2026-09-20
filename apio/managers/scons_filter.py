@@ -9,8 +9,7 @@
 
 import re
 import threading
-from enum import Enum
-from typing import List, Tuple
+from enum import Enum, unique
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
@@ -54,6 +53,7 @@ LINE_IGNORE_LIST = [
 ]
 
 
+@unique
 class PipeId(Enum):
     """Represent the two output streams from the scons subprocess."""
 
@@ -61,6 +61,7 @@ class PipeId(Enum):
     STDERR = 2
 
 
+@unique
 class RangeEvents(Enum):
     """An stdout/err line can trigger one of these events, when detecting a
     range of lines."""
@@ -187,7 +188,7 @@ class SconsFilter:
     @staticmethod
     def _assign_line_color(
         line: str,
-        patterns: List[Tuple[str, str]],
+        patterns: list[tuple[str, str]],
         default_color: str | None = None,
     ) -> str | None:
         """Assigns a color for a given line using a list of (regex, color)

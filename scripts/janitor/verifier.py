@@ -5,7 +5,6 @@ write the results to a file and generated a human readable markdown
 report.
 """
 
-from typing import Set
 from dataclasses import asdict, dataclass
 from datetime import date
 import pickle
@@ -123,7 +122,7 @@ def _verify_release_should_be_consistent(
     index = json.loads(index_bytes)
 
     # -- Construct a set of the chipdb asset names from the index.
-    index_chipdbs: Set[str] = {
+    index_chipdbs: set[str] = {
         part["asset"] for part in index["parts"].values() if "asset" in part
     }
     print(f"index_chipdbs has {len(index_chipdbs)} members.")
@@ -134,7 +133,7 @@ def _verify_release_should_be_consistent(
 
     # -- Construct the set of chipdb assets names from the release
     # -- metadata.
-    assets_chipdbs: Set[str] = {
+    assets_chipdbs: set[str] = {
         name
         for name in release_metadata.assets.keys()
         if name.startswith("apio-xilinx-chipdb-")

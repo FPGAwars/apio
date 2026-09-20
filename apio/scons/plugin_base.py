@@ -12,7 +12,7 @@
 
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, cast
+from typing import cast
 import webbrowser
 from SCons.Builder import BuilderBase, CompositeBuilder
 from SCons.Action import Action
@@ -172,8 +172,8 @@ class PluginBase:
         assert type_str, f"Unexpected graph type {graph_params.output_type}"
 
         def completion_action(
-            target: List[File],
-            source: List[File],
+            target: list[File],
+            source: list[File],
             env: SConsEnvironment,
         ):
             """Action function that prints a completion message and if

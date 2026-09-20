@@ -26,7 +26,6 @@ import shutil
 import platform
 import subprocess
 from subprocess import CompletedProcess
-from typing import List
 from importlib.metadata import version, PackageNotFoundError
 from invoke.tasks import task
 from invoke.context import Context
@@ -134,7 +133,7 @@ def open_test_coverage_viewer() -> None:
     default_browser.open(file_uri)
 
 
-def run(ctx: Context, cmd: List[str]) -> None:
+def run(ctx: Context, cmd: list[str]) -> None:
     """Run a command. Abort if it returns an error code."""
     dry_run: bool = ctx.config.run.dry
     prefix = "DRY: " if dry_run else ""
@@ -244,7 +243,7 @@ def clean_task(_: Context):
     assert isinstance(repo_root, Path)
 
     # -- Collect items to delete.
-    items: List[Path] = []
+    items: list[Path] = []
     # -- Collect top level items first so they will be deleted first.
     items.extend(repo_root.glob(".tox"))
     items.extend(repo_root.glob("_site"))

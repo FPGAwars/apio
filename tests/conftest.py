@@ -11,7 +11,7 @@ import shutil
 import tempfile
 import contextlib
 from pathlib import Path, PurePosixPath
-from typing import List, Union, cast, Dict, Any, Tuple
+from typing import cast, Any
 import os
 from urllib.parse import urlparse
 from pprint import pprint
@@ -166,7 +166,7 @@ class ApioSandbox:
     def invoke_apio_cmd(
         self,
         cli,
-        args: List[str],
+        args: list[str],
         terminal_mode: bool = True,
         in_subprocess: bool = False,
     ) -> ApioResult:
@@ -255,7 +255,7 @@ class ApioSandbox:
     def assert_result_ok(
         self,
         result: ApioResult,
-        bad_words: List[str] | Tuple[str, ...] = tuple(_DEFAULT_BAD_WORDS),
+        bad_words: list[str] | tuple[str, ...] = tuple(_DEFAULT_BAD_WORDS),
     ):
         """Check if apio command results where ok. Bad words is an optional
         list of lower case strings strings if found in the lower case version
@@ -285,7 +285,7 @@ class ApioSandbox:
                 assert bad_word not in lower_case_output, bad_word
 
     def restore_system_env(
-        self, original_env: Dict[str, str], scope: str
+        self, original_env: dict[str, str], scope: str
     ) -> None:
         """Overwrites the existing sys.environ with the given dict. Vars
         that are not in the dict are deleted and vars that have a different
@@ -320,8 +320,8 @@ class ApioSandbox:
 
     def write_file(
         self,
-        file: Union[str, Path],
-        text: Union[str, List[str]],
+        file: str | Path,
+        text: str | list[str],
         exists_ok=False,
     ) -> None:
         """Write text to given file. If text is a list, items are joined with
@@ -340,13 +340,13 @@ class ApioSandbox:
         with open(file, "w", encoding="utf-8") as f:
             f.write(text)
 
-    def read_file_text(self, file: Union[str, Path]) -> str:
+    def read_file_text(self, file: str | Path) -> str:
         """Read a text file. Returns a string with the text or if"""
         with open(file, "r", encoding="utf8") as f:
             text = f.read()
         return text
 
-    def read_file_lines(self, file: Union[str, Path]) -> List[str]:
+    def read_file_lines(self, file: str | Path) -> list[str]:
         """Read a text file. Returns a string split into lines."""
         text = self.read_file_text(file)
         text_lines = text.split("\n")
@@ -354,8 +354,8 @@ class ApioSandbox:
 
     def write_json_file(
         self,
-        file: Union[str, Path],
-        json_data: Dict[str, Dict],
+        file: str | Path,
+        json_data: dict[str, dict],
         exists_ok=False,
     ):
         """Write a dict to given json file. 'file' can be a string or a
@@ -364,7 +364,7 @@ class ApioSandbox:
             file, json.dumps(json_data, indent=2), exists_ok=exists_ok
         )
 
-    def read_json_file(self, file: Union[str, Path]) -> Dict[str, Any]:
+    def read_json_file(self, file: str | Path) -> dict[str, Any]:
         """Read a json file. 'file' can be a string or a Path."""
         json_text = self.read_file_text(file)
         json_data = json.loads(json_text)
@@ -372,7 +372,7 @@ class ApioSandbox:
 
     def write_apio_ini(
         self,
-        sections: Dict[str, Dict[str, str]] | None = None,
+        sections: dict[str, dict[str, str]] | None = None,
     ):
         """Write in the current directory an apio.ini file with given
         section. If an apio.ini file already exists, overwrite it."""
@@ -383,7 +383,7 @@ class ApioSandbox:
         path = Path("apio.ini")
 
         # -- List with text of each section.
-        sections_texts: List[str] = []
+        sections_texts: list[str] = []
 
         # -- Add the apio section if specified.
         for section_header, section_options in sections.items():
@@ -532,7 +532,7 @@ class ApioRunner:
         assert self._sandbox is None, "Already in a sandbox."
 
         # -- Snapshot the system env.
-        original_env: Dict[str, str] = os.environ.copy()
+        original_env: dict[str, str] = os.environ.copy()
 
         # -- Snapshot the current directory.
         original_cwd = os.getcwd()

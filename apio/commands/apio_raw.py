@@ -10,7 +10,6 @@
 import sys
 import shlex
 import subprocess
-from typing import Tuple, List
 import click
 from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_styles import SUCCESS, ERROR
@@ -28,7 +27,7 @@ from apio.utils.cmd_util import ApioCommand
 
 
 def _run_raw_command(
-    arg_list: List[str], is_windows: bool, verbose: bool
+    arg_list: list[str], is_windows: bool, verbose: bool
 ) -> int:
     """
     Runs a command and returns its exit code.
@@ -106,7 +105,7 @@ def cli(
     cmd_ctx: click.Context,
     *,
     # Arguments
-    cmd: Tuple[str],
+    cmd: tuple[str],
     # Options
     verbose: bool,
 ):
@@ -170,7 +169,7 @@ def cli(
         return
 
     # -- Convert the tuple of strings to a list of strings.
-    arg_list: List[str] = list(cmd)
+    arg_list: list[str] = list(cmd)
 
     # -- Invoke the command.
     exit_code = _run_raw_command(arg_list, apio_ctx.is_windows, verbose)

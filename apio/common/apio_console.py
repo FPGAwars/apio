@@ -13,7 +13,7 @@ import sys
 import os
 import traceback
 from dataclasses import dataclass
-from typing import List, NoReturn, Literal
+from typing import NoReturn, Literal
 from rich.console import Console
 from rich.ansi import AnsiDecoder
 from rich.theme import Theme
@@ -287,7 +287,7 @@ def cerror(*text_lines: str) -> None:
 
 def fatal_error(
     *error_text_lines: str,
-    info: List[str] | str | None = None,
+    info: list[str] | str | None = None,
     cause: Exception | None = None,
 ) -> NoReturn:
     """Prints one or more error lines, then optional info lines, and then

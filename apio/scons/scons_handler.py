@@ -11,7 +11,6 @@
 """Apio scons related utilities.."""
 
 from pathlib import Path
-from typing import List
 from SCons.Script import ARGUMENTS, COMMAND_LINE_TARGETS
 from google.protobuf import text_format
 from apio.common.common_util import get_project_source_files
@@ -387,7 +386,7 @@ class SconsHandler:
 
         # -- Get the gtkwave extra options (with the correct type)
         # -- for avoiding pylance warnings
-        gtkwave_extra_options: List[str] = [
+        gtkwave_extra_options: list[str] = [
             str(x) for x in params.apio_env_params.gtkwave_extra_options
         ]
 

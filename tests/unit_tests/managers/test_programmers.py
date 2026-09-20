@@ -2,7 +2,6 @@
 Tests of the apio.managers.programmers.py module.
 """
 
-from typing import List
 from pytest import raises
 from tests.conftest import ApioRunner
 from apio.apio_context import (
@@ -27,21 +26,21 @@ class FakeDeviceScanner(_DeviceScanner):
     def __init__(
         self,
         apio_ctx: ApioContext,
-        usb_devices: List[UsbDevice] | None = None,
-        serial_devices: List[SerialDevice] | None = None,
+        usb_devices: list[UsbDevice] | None = None,
+        serial_devices: list[SerialDevice] | None = None,
     ):
         super().__init__(apio_ctx)
         self._usb_devices = usb_devices
         self._serial_devices = serial_devices
 
     # @override
-    def get_usb_devices(self) -> List[UsbDevice]:
+    def get_usb_devices(self) -> list[UsbDevice]:
         """Returns the fake usb devices."""
         assert self._usb_devices
         return self._usb_devices
 
     # @override
-    def get_serial_devices(self) -> List[SerialDevice]:
+    def get_serial_devices(self) -> list[SerialDevice]:
         """Returns the fake serial devices."""
         assert self._serial_devices
         return self._serial_devices

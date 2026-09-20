@@ -1,7 +1,6 @@
 """
 Helpers for apio's scons testing."""
 
-from typing import List
 import SCons.Script.SConsOptions
 import SCons.Node.FS
 import SCons.Environment
@@ -84,7 +83,7 @@ def make_test_scons_params() -> SconsParams:
 
 def make_test_apio_env(
     *,
-    targets: List[str] | None = None,
+    targets: list[str] | None = None,
     platform_id: str | None = None,
     is_windows: bool | None = None,
     # debug_level: int = 0,

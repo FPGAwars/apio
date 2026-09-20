@@ -2,11 +2,10 @@
 
 import sys
 import json
-from typing import List
 import subprocess
 
 
-def extract_command_list(node: dict, node_path: List[str]) -> list[List[str]]:
+def extract_command_list(node: dict, node_path: list[str]) -> list[list[str]]:
     """Recursively extract the commands from the json commands tree."""
 
     # -- Add the node to the list.
@@ -25,7 +24,7 @@ def extract_command_list(node: dict, node_path: List[str]) -> list[List[str]]:
     return result
 
 
-def get_commands_list() -> List[List[str]]:
+def get_commands_list() -> list[list[str]]:
     """Run 'apio apio get-commands' and extract the commands list."""
 
     # -- Get the command hierarchy as a JSON doc.

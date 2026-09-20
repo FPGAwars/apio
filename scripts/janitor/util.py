@@ -4,7 +4,6 @@ Utilities used by the Apio Janitor.
 
 import os
 from io import BytesIO
-from typing import Dict
 from datetime import date, datetime
 from dataclasses import dataclass
 from urllib.request import Request, urlopen
@@ -20,7 +19,7 @@ from scripts.janitor import models
 SSL_REQUEST_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
 
-def github_headers() -> Dict[str, str]:
+def github_headers() -> dict[str, str]:
     """Returns headers with an optional github token."""
     headers = {}
     # -- This env var is set by the Janitor workflow to elevate the github
@@ -31,7 +30,7 @@ def github_headers() -> Dict[str, str]:
     return headers
 
 
-def to_json_text(root: Dict) -> str:
+def to_json_text(root: dict) -> str:
     """Called during serialization as json text to convert this object
     to a json serializable dict.
     """
@@ -109,7 +108,7 @@ class ReleaseMetadata:
 
     is_draft: bool
     is_prerelease: bool
-    assets: Dict[str, AssetMetadata]
+    assets: dict[str, AssetMetadata]
 
 
 def download_release_metadata(
@@ -136,7 +135,7 @@ def download_release_metadata(
         json_resp = json.loads(resp.read().decode("utf-8"))
 
     # -- Collect the assets metadata
-    assets_metadata: Dict[str, AssetMetadata] = {}
+    assets_metadata: dict[str, AssetMetadata] = {}
     for json_asset in json_resp["assets"]:
         assets_metadata[json_asset["name"]] = AssetMetadata(
             json_asset["browser_download_url"],

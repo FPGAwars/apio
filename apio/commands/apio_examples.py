@@ -10,7 +10,7 @@
 import re
 from datetime import date
 from pathlib import Path
-from typing import List, Any
+from typing import Any
 import click
 from rich.table import Table
 from rich import box
@@ -55,7 +55,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
     code, 0 if ok, non zero otherwise."""
 
     # -- Get list of examples.
-    entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
+    entries: list[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
     # -- Sort boards by case insensitive board id.
     entries.sort(key=examples_sort_key)
@@ -126,7 +126,7 @@ def list_examples_docs_format(apio_ctx: ApioContext):
     )
 
     # -- Get list of examples.
-    entries: List[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
+    entries: list[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
     # -- Sort boards by case insensitive board id.
     entries.sort(key=examples_sort_key)

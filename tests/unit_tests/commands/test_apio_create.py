@@ -2,13 +2,12 @@
 
 from pathlib import Path
 from os.path import isfile, exists
-from typing import Dict
 from configobj import ConfigObj
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
 
 
-def _check_ini_file(apio_ini: Path, expected_vars: Dict[str, str]) -> None:
+def _check_ini_file(apio_ini: Path, expected_vars: dict[str, str]) -> None:
     """Assert that apio.ini contains exactly the given vars."""
     # Read the ini file.
     assert isfile(apio_ini)

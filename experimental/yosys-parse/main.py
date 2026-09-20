@@ -1,8 +1,7 @@
-from typing import List, Set, Dict
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from enum import Enum
+from enum import Enum, unique
 import colorsys
 import hashlib
 
@@ -24,6 +23,7 @@ NETS = {6, 151, 98, 143, 145}
 TOP_MODULE_NAME = "main"
 
 
+@unique
 class Direction(Enum):
     """Represents the direction(s) of a port."""
 
@@ -49,23 +49,23 @@ class Port:
 
     name: str
     direction: Direction
-    net_nums: Set[int]
+    net_nums: set[int]
 
-    def input_nets(self) -> Set[int]:
+    def input_nets(self) -> set[int]:
         """Returns the set of net numbers this port may use as an input."""
         if self.direction in [Direction.IN, Direction.INOUT]:
             return self.net_nums
         else:
             return set()
 
-    def output_nets(self) -> Set[int]:
+    def output_nets(self) -> set[int]:
         """Returns the set of net numbers this port may use as an output."""
         if self.direction in [Direction.OUT, Direction.INOUT]:
             return self.net_nums
         else:
             return set()
 
-    def all_nets(self) -> Set[int]:
+    def all_nets(self) -> set[int]:
         result = set()
         result.update(self.input_nets())
         result.update(self.output_nets())
@@ -77,11 +77,11 @@ class Module:
     """Represents a single module or cell."""
 
     name: str
-    parents: List[Module]
-    ports: List[Port]
-    children: List[Module]
+    parents: list[Module]
+    ports: list[Port]
+    children: list[Module]
 
-    def input_nets(self) -> Set[int]:
+    def input_nets(self) -> set[int]:
         """Returns the set of net numbers this module may use as an input."""
         result = set()
         for port in self.ports:
@@ -90,7 +90,7 @@ class Module:
             result.update(child.input_nets())
         return result
 
-    def output_nets(self) -> Set[int]:
+    def output_nets(self) -> set[int]:
         """Returns the set of net numbers this module may use as an output."""
         result = set()
         for port in self.ports:
@@ -105,14 +105,14 @@ class Design:
     """Represents a single yosys design synthesis."""
 
     top_module: Module
-    all_modules: List[Module]
-    leaf_modules: List[Module]
+    all_modules: list[Module]
+    leaf_modules: list[Module]
 
 
 def parse_module(
     module_name: str,
     module_json: dict,
-    parents: List[Module],
+    parents: list[Module],
 ) -> Module:
     """Parse a module tree and return the result as a top Module."""
     module = Module(
@@ -133,7 +133,7 @@ def parse_module(
                 # children.append(child)
                 # all_modules.extend(all)
 
-    # ports: List[Port] = []
+    # ports: list[Port] = []
     if "ports" in module_json:
         for port_name, port_data in module_json["ports"].items():
             # direction = port_data["direction"]
@@ -161,7 +161,7 @@ def parse_module(
     return module
 
 
-def parse_design(yosys_json: Dict) -> Design:
+def parse_design(yosys_json: dict) -> Design:
 
     # Extract the json dict of the top module.
     modules_json = yosys_json["modules"]
@@ -211,7 +211,7 @@ def dot_net_color(net_num: int) -> str:
     return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
 
 
-def gen_dot_graph(design: Design, nets: Set[int]):
+def gen_dot_graph(design: Design, nets: set[int]):
     with open("_graph.dot", "w", encoding="utf-8") as f:
 
         f.write("digraph D {\n")
@@ -277,7 +277,7 @@ def gen_dot_graph(design: Design, nets: Set[int]):
         f.write("}\n")
 
 
-def get_module_list(root: Module) -> List[Module]:
+def get_module_list(root: Module) -> list[Module]:
     """Return a list of all modules in a tree."""
     result = [root]
     # Iterate recursively.

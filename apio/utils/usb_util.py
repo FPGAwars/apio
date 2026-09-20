@@ -2,7 +2,7 @@
 
 import re
 from glob import glob
-from typing import List, Any
+from typing import Any
 from dataclasses import dataclass
 import usb.core
 import usb.backend.libusb1
@@ -88,7 +88,7 @@ def _get_usb_str(device: usb.core.Device, index: int, default: str) -> str:
         return default
 
 
-def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
+def scan_usb_devices(apio_ctx: ApioContext) -> list[UsbDevice]:
     """Query and return a list with usb device info."""
     # pylint: disable=too-many-locals
 
@@ -131,10 +131,10 @@ def scan_usb_devices(apio_ctx: ApioContext) -> List[UsbDevice]:
 
     # -- Find the usb devices.
     raw_devices = usb.core.find(find_all=True, backend=backend)
-    devices: List[Any] = list(raw_devices) if raw_devices else []
+    devices: list[Any] = list(raw_devices) if raw_devices else []
 
     # -- Collect the devices
-    result: List[UsbDevice] = []
+    result: list[UsbDevice] = []
     for device in devices:
         # -- Print entire raw device info for debugging.
         if is_debug(1):
@@ -280,7 +280,7 @@ class UsbDeviceFilter:
 
         return True
 
-    def filter(self, devices: List[UsbDevice]):
+    def filter(self, devices: list[UsbDevice]):
         """Return a copy of the list with items that are pass this filter.
         Items order is preserved."""
         result = [d for d in devices if self._eval(d)]

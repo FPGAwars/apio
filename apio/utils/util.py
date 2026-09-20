@@ -12,9 +12,9 @@
 import sys
 import os
 from contextlib import contextmanager
-from enum import Enum
+from enum import Enum, unique
 from dataclasses import dataclass
-from typing import Any, Tuple, List
+from typing import Any
 import subprocess
 from threading import Thread
 from pathlib import Path
@@ -54,11 +54,11 @@ class AsyncPipe(Thread):
         self._fd_read, self._fd_write = os.pipe()
 
         # -- A list of lines received so far.
-        self._lines_buffer: List[str] = []
+        self._lines_buffer: list[str] = []
 
         self.start()
 
-    def get_buffer(self) -> List[str]:
+    def get_buffer(self) -> list[str]:
         """DOC: TODO"""
 
         return self._lines_buffer
@@ -127,6 +127,7 @@ class AsyncPipe(Thread):
         self.join()
 
 
+@unique
 class TerminalMode(Enum):
     """Represents to two modes of stdout/err."""
 
@@ -177,7 +178,7 @@ class CommandResult:
 
 
 def exec_command(
-    cmd: List[str], stdout: AsyncPipe, stderr: AsyncPipe
+    cmd: list[str], stdout: AsyncPipe, stderr: AsyncPipe
 ) -> CommandResult:
     """Execute the given command using async stdout/stderr..
 
@@ -292,7 +293,7 @@ def get_python_version() -> str:
     return f"{sys.version_info[0]}.{sys.version_info[1]}"
 
 
-def get_python_ver_tuple() -> Tuple[int, int, int]:
+def get_python_ver_tuple() -> tuple[int, int, int]:
     """Return a tuple with the python version. e.g. (3, 12, 1)."""
     return sys.version_info[:3]
 
@@ -325,7 +326,7 @@ def plurality(
     return plural
 
 
-def list_plurality(str_list: List[str], conjunction: str) -> str:
+def list_plurality(str_list: list[str], conjunction: str) -> str:
     """Format a list as a human friendly string."""
     # -- This is a programming error. Not a user error.
     assert str_list, "list_plurality expect len() >= 1."
@@ -342,13 +343,13 @@ def list_plurality(str_list: List[str], conjunction: str) -> str:
     return ", ".join(str_list[:-1]) + f", {conjunction} {str_list[-1]}"
 
 
-def get_apio_version_tuple() -> Tuple[int, int, int]:
+def get_apio_version_tuple() -> tuple[int, int, int]:
     """Returns the version of the apio package as tuple of 3 ints."""
     # -- Apio's version is defined in the __init__.py file of the apio package.
     # -- Using the version from a file in the apio package rather than from
     # -- the pip metadata makes apio more self contained, for example when
     # -- installing with pyinstaller rather than with pip.
-    ver: Tuple[int, int, int] = apio.APIO_VERSION
+    ver: tuple[int, int, int] = apio.APIO_VERSION
     assert len(ver) == 3, ver
     assert isinstance(ver[0], int)
     assert isinstance(ver[1], int)
@@ -358,7 +359,7 @@ def get_apio_version_tuple() -> Tuple[int, int, int]:
 
 def get_apio_version_str() -> str:
     """Returns the version of the apio package as a string like "1.22.3"."""
-    ver: Tuple[int, int, int] = get_apio_version_tuple()
+    ver: tuple[int, int, int] = get_apio_version_tuple()
     return f"{ver[0]}.{ver[1]}.{ver[2]}"
 
 
@@ -519,7 +520,7 @@ def fpga_arch_sort_key(fpga_arch: str) -> Any:
 
 
 def subprocess_call(
-    cmd: List[str],
+    cmd: list[str],
 ) -> int:
     """A helper for running subprocess.call. Exit if an error."""
 

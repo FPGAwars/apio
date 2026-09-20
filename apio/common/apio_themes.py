@@ -9,7 +9,6 @@
 # ---- License Apache v2
 """Apio themes definitions"""
 
-from typing import Dict, Union
 from dataclasses import dataclass
 from rich.style import Style
 from apio.common import apio_styles
@@ -25,7 +24,7 @@ class ApioTheme:
     colors_enabled: bool
     # -- The theme styles table. All theme are expected to have the same
     # -- set of styles keys, even if color is disabled.
-    styles: Dict[str, Union[str, Style]]
+    styles: dict[str, str | Style]
 
 
 # -- A theme that is optimized for light backgrounds.

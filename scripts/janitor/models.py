@@ -4,16 +4,17 @@ between janitor steps. Having them in a separate python
 module resolves some issues with the pickling.
 """
 
-from typing import List, Dict, Any, Set
+from typing import Any
 from datetime import date
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, unique
 from packaging.version import Version
 from scripts.janitor import consts
 
 # ---------- Common
 
 
+@unique
 class ReleaseState(Enum):
     """Represents the state of a release."""
 
@@ -93,6 +94,7 @@ class GithubReleaseRef:
         return _repo_and_tag_to_str(self.repo, self.release_tag)
 
 
+@unique
 class RequirementType(Enum):
     """Represents the state of a release."""
 
@@ -131,7 +133,7 @@ class Requirement:
     release_tag: str | None
     # -- List of notes regarding the processing of the requirement.
     # -- This field does not participate in comparison or set lookup.
-    notes: List[str] = field(compare=False)
+    notes: list[str] = field(compare=False)
 
     def __post_init__(self):
         """Sanity checks."""
@@ -157,7 +159,7 @@ class RequirementsSet:
     """A set of Requirement with Janitor specific operations."""
 
     def __init__(self) -> None:
-        self._members: Set[Requirement] = set()
+        self._members: set[Requirement] = set()
 
     def add(self, requirement: Requirement) -> None:
         """Add a member to the set. If already in the set, the notes of the
@@ -180,7 +182,7 @@ class RequirementsSet:
         self,
         req_type: RequirementType,
         release_ref: GithubReleaseRef,
-        notes: List[str],
+        notes: list[str],
     ) -> None:
         """Similar to add() but from different args."""
         self.add(
@@ -203,7 +205,7 @@ class RequirementsSet:
 
     def group_by_repo_and_type(
         self,
-    ) -> Dict[str, Dict[RequirementType, List[Requirement]]]:
+    ) -> dict[str, dict[RequirementType, list[Requirement]]]:
         """Return all the members as a repo/type/requirement tree. The tree
         is sorted for intuitive order."""
         # -- Sort by
@@ -216,7 +218,7 @@ class RequirementsSet:
         members = sorted(members, key=lambda r: (r.repo, r.req_type.value))
 
         # -- Construct the tree.
-        result: Dict[str, Dict[RequirementType, List[Requirement]]] = {}
+        result: dict[str, dict[RequirementType, list[Requirement]]] = {}
         for req in members:
             by_type = result.setdefault(req.repo, {})
             by_type.setdefault(req.req_type, []).append(req)
@@ -224,7 +226,7 @@ class RequirementsSet:
 
     def group_by_type_and_repo(
         self,
-    ) -> Dict[RequirementType, Dict[str, List[Requirement]]]:
+    ) -> dict[RequirementType, dict[str, list[Requirement]]]:
         """Return all the members as a type/repo/requirement tree."""
         # --    requirement type (ascending),
         # --    repo (ascending),
@@ -235,26 +237,26 @@ class RequirementsSet:
         members = sorted(members, key=lambda r: (r.req_type.value, r.repo))
 
         # -- Construct the tree.
-        result: Dict[RequirementType, Dict[str, List[Requirement]]] = {}
+        result: dict[RequirementType, dict[str, list[Requirement]]] = {}
         for req in members:
             by_repo = result.setdefault(req.req_type, {})
             by_repo.setdefault(req.repo, []).append(req)
         return result
 
-    def repos(self) -> Set[str]:
+    def repos(self) -> set[str]:
         """Return a set of repos that have at least one requirement."""
         return {m.repo for m in self._members}
 
-    def members(self) -> Set[Requirement]:
+    def members(self) -> set[Requirement]:
         """Returns a flat set of all members."""
         return self._members
 
-    def members_of_type(self, req_type: RequirementType) -> Set[Requirement]:
+    def members_of_type(self, req_type: RequirementType) -> set[Requirement]:
         """Return the subset of requirements of given type."""
         return {req for req in self._members if req.req_type == req_type}
 
     # TODO: Tweak the json tree.
-    def to_json_dict(self) -> Dict[str, Any]:
+    def to_json_dict(self) -> dict[str, Any]:
         """Return a dict that can be serialized to json. Called from
         the json serializer. The returned dict is tweaked for human
         consumption and does not necessarily contain all the information."""
@@ -262,17 +264,17 @@ class RequirementsSet:
         def requirement_type_to_key(req_type: RequirementType) -> str:
             return req_type.name.lower().replace("_", "-")
 
-        def requirement_to_dict(requirement: Requirement) -> Dict[str, Any]:
+        def requirement_to_dict(requirement: Requirement) -> dict[str, Any]:
             # -- We drop the req_type and repo fields which which already
             # -- appear in the dict tree in the path to this item.
-            result: Dict[str, Any] = {}
+            result: dict[str, Any] = {}
             if requirement.req_type.is_release_scope:
                 result["release_tag"] = requirement.release_tag
             if requirement.notes:
                 result["notes"] = requirement.notes
             return result
 
-        result: Dict[str, Dict[str, Any]] = {}
+        result: dict[str, dict[str, Any]] = {}
         for req_type, by_repo in self.group_by_type_and_repo().items():
             for repo, requirements in by_repo.items():
                 result.setdefault(repo, {})[
@@ -323,10 +325,10 @@ class PypiCrawl:
     # -- 'latest' stable release.
     latest: Version
     # -- Dict from pypi release version to the release information.
-    releases: Dict[str, PypiReleaseCrawl]
+    releases: dict[str, PypiReleaseCrawl]
     # -- List of pypi apio releases that were skipped, either too old
     # -- or known to be problematic.
-    skipped_versions: List[str]
+    skipped_versions: list[str]
 
 
 @dataclass(frozen=True)
@@ -352,9 +354,9 @@ class VscodeMarketplaceCrawl:
     # -- 'latest' stable release.
     latest: Version
     # -- List of relevant releases that were crawled.
-    releases: Dict[str, VscodeReleaseCrawl]
+    releases: dict[str, VscodeReleaseCrawl]
     # -- List of extension versions that were skipped, e.g. for being too old.
-    skipped_versions: List[str]
+    skipped_versions: list[str]
 
 
 @dataclass(frozen=True)
@@ -378,14 +380,14 @@ class RemoteConfigFileCrawl:
     # -- Two num version of the file, e.g. (1, 5) for "1.7.x"
     # version_selector: Version
     # -- List of crawled package configurations..
-    packages: Dict[str, RemoteConfigPackageCrawl]
+    packages: dict[str, RemoteConfigPackageCrawl]
 
 
 @dataclass(frozen=True)
 class RemoteConfigsCrawl:
     """Crawling results of all the remote config files."""
 
-    remote_configs: Dict[str, RemoteConfigFileCrawl]
+    remote_configs: dict[str, RemoteConfigFileCrawl]
 
 
 @dataclass(frozen=True)
@@ -402,14 +404,14 @@ class RepoCrawl:
 
     # -- Maps release tag to release info. Order is
     # -- descending published_date.
-    releases: Dict[str, ReleaseCrawl]
+    releases: dict[str, ReleaseCrawl]
 
 
 @dataclass(frozen=True)
 class ReposCrawl:
     """The repos crawling results."""
 
-    repos: Dict[str, RepoCrawl]
+    repos: dict[str, RepoCrawl]
 
     def get_release_crawl(
         self, release: GithubReleaseRef, default: Any

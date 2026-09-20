@@ -11,7 +11,7 @@ import os
 import json
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Any
+from typing import Any
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cstyle, fatal_error
@@ -29,24 +29,24 @@ class PackageScanResults:
 
     # -- Normal and Error. Packages in required_packages that are installed
     # -- regardless if the version matches or not.
-    installed_ok_package_names: List[str]
+    installed_ok_package_names: list[str]
     # -- Error. Packages in required_packages that are installed but with
     # -- version mismatch.
-    bad_version_package_names: List[str]
+    bad_version_package_names: list[str]
     # -- Normal. Packages in required_packages that are uninstalled properly.
-    uninstalled_package_names: List[str]
+    uninstalled_package_names: list[str]
     # -- Error. Packages in required_packages with broken installation. E.g,
     # -- registered in installed packages but the package directory is missing.
-    broken_package_names: List[str]
+    broken_package_names: list[str]
     # -- Error. Packages that are in installed packages but are not
     # -- in required_packages.
-    orphan_package_names: List[str]
+    orphan_package_names: list[str]
     # -- Error. Basenames of directories in packages dir that don't match
     # -- folder_name of packages in required_packages.
-    orphan_dir_names: List[str]
+    orphan_dir_names: list[str]
     # -- Error. Basenames of all files in packages directory. That directory is
     # -- expected to contain only directories for packages.a
-    orphan_file_names: List[str]
+    orphan_file_names: list[str]
 
     def packages_installed_ok(self) -> bool:
         """Returns true if all packages are installed ok, regardless of
@@ -107,7 +107,7 @@ class PackageManager:
     def __init__(
         self,
         remote_config: RemoteConfig,
-        required_packages: Dict,
+        required_packages: dict,
         platform: ApioPlatform,
         apio_home_dir: Path,
         packages_dir: Path,
@@ -135,7 +135,7 @@ class PackageManager:
 
         # -- Initialized installed packages, a copy of
         # -- installed-packages.json.
-        self.installed_packages: Dict[str, Any] = {}
+        self.installed_packages: dict[str, Any] = {}
 
         # -- Cache the packages index file path
         # -- Ex. '/home/obijuan/.apio/packages/installed_packages.json'
@@ -480,7 +480,7 @@ class PackageManager:
             # -- Delete.
             file_path.unlink()
 
-    def read_package_build_info(self, package_name: str) -> Dict[str, Any]:
+    def read_package_build_info(self, package_name: str) -> dict[str, Any]:
         """Returns the BUILD-INFO.json of the package as a dict. Fatal
         error if doesn't exist or can't parse."""
 
@@ -674,7 +674,7 @@ class PackageManager:
             cout("Saved installed packages index:", style=EMPH3)
             cout(json.dumps(self.installed_packages, indent=2))
 
-    def get_installed_package_info(self, package_name: str) -> Tuple[str, str]:
+    def get_installed_package_info(self, package_name: str) -> tuple[str, str]:
         """Return (package_version, platform_id) of the given installed
         package. Values are replaced with "" if not installed or a value is
         missing."""
@@ -706,7 +706,7 @@ class PackageManager:
             # self._save()
             self._save_installed_packages()
 
-    def get_required_package_info(self, package_name: str) -> Dict:
+    def get_required_package_info(self, package_name: str) -> dict:
         """Returns the information of the package with given name.
         The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.

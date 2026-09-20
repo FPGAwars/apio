@@ -10,7 +10,6 @@ and custom boards, fpgas, and programmers definitions."""
 
 import re
 from pathlib import Path
-from typing import Dict, Set, Tuple
 import json5
 from apio.common import proto_util
 from apio.common.apio_console import cout, fatal_error
@@ -64,7 +63,7 @@ class ApioDefinitions:
         )
 
         # -- Convert the board definition to BoardDefinition protos and save.
-        self.boards: Dict[str, BoardDefinition] = {}
+        self.boards: dict[str, BoardDefinition] = {}
         for board_id, definition_dict in boards_json.items():
             board_definition = proto_util.proto_from_json_dict(
                 definition_dict,
@@ -83,7 +82,7 @@ class ApioDefinitions:
 
         # -- Convert the fpgas definition dicts to FpgasDefinition protos and
         # -- save.
-        self.fpgas: Dict[str, FpgaDefinition] = {}
+        self.fpgas: dict[str, FpgaDefinition] = {}
         for fpga_id, definition_dict in fpgas_json.items():
             fpga_definition = proto_util.proto_from_json_dict(
                 definition_dict,
@@ -102,7 +101,7 @@ class ApioDefinitions:
 
         # -- Convert the programmers definition dicts to FpgaDefinition protos
         # -- and save.
-        self.programmers: Dict[str, ProgrammerDefinition] = {}
+        self.programmers: dict[str, ProgrammerDefinition] = {}
         for programmer_id, definition_dict in programmers_json.items():
             programmer_definition = proto_util.proto_from_json_dict(
                 definition_dict,
@@ -222,7 +221,7 @@ class ApioDefinitions:
         name: str,
         package_definitions_dir: Path,
         project_definitions_dir: Path | None,
-    ) -> Tuple[Dict[str, Dict], Set[str]]:
+    ) -> tuple[dict[str, dict], set[str]]:
         """Load a jsonc file. Try first from custom_dir, if given, and then
         from standard dir. This method is called for resource files in
         apio/resources and definitions files in the definitions packages.
@@ -234,7 +233,7 @@ class ApioDefinitions:
         # -- Load the standard definition as a json dict.
         filepath = package_definitions_dir / name
         combined_dict = cls._load_definitions_file(filepath)
-        custom_ids: Set[str] = set()
+        custom_ids: set[str] = set()
 
         # -- If there is a project specific override file, apply it on
         # -- top of the standard apio definition dict.

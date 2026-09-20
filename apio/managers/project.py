@@ -14,7 +14,7 @@ from dataclasses import dataclass
 import configparser
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Union, Any, List
+from typing import Any
 from configobj import ConfigObj
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error
@@ -112,11 +112,11 @@ class Project:
     def __init__(
         self,
         *,
-        apio_section: Dict[str, Any],
-        common_section: Dict[str, Any],
-        env_sections: Dict[str, Dict[str, Any]],
+        apio_section: dict[str, Any],
+        common_section: dict[str, Any],
+        env_sections: dict[str, dict[str, Any]],
         env_arg: str | None,
-        boards: Dict[str, BoardDefinition],
+        boards: dict[str, BoardDefinition],
     ):
         """Construct the project with information from apio.ini, command
         line arg, and boards resources."""
@@ -161,7 +161,7 @@ class Project:
 
         # -- Expand and selected env options. This is also patches default
         # -- values and validates the results.
-        self.env_options: Dict[str, Union[str, List[str]]] = (
+        self.env_options: dict[str, str | list[str]] = (
             Project._parse_env_options(
                 env_name=self.env_name,
                 common_section=common_section,
@@ -176,10 +176,10 @@ class Project:
 
     @staticmethod
     def _validate_all_sections(
-        apio_section: Dict[str, str],
-        common_section: Dict,
-        env_sections: Dict[str, Dict[str, str]],
-        boards: Dict[str, BoardDefinition],
+        apio_section: dict[str, str],
+        common_section: dict,
+        env_sections: dict[str, dict[str, str]],
+        boards: dict[str, BoardDefinition],
     ):
         """Validate the parsed apio.ini sections."""
 
@@ -212,7 +212,7 @@ class Project:
 
     @staticmethod
     def _validate_apio_section(
-        apio_section: Dict[str, str], env_sections: Dict[str, Dict[str, str]]
+        apio_section: dict[str, str], env_sections: dict[str, dict[str, str]]
     ):
         """Validate the [apio] section. 'env_sections' are assumed to be
         validated."""
@@ -246,8 +246,8 @@ class Project:
     @staticmethod
     def _validate_env_section(
         section_title: str,
-        section_options: Dict[str, str],
-        boards: Dict[str, BoardDefinition],
+        section_options: dict[str, str],
+        boards: dict[str, BoardDefinition],
     ):
         """Validate the options of a section that contains env options. This
         includes the sections [env:*] and [common]."""
@@ -267,8 +267,8 @@ class Project:
 
     @staticmethod
     def _determine_default_env_name(
-        apio_section: Dict[str, str],
-        env_sections: Dict[str, Dict[str, str]],
+        apio_section: dict[str, str],
+        env_sections: dict[str, dict[str, str]],
         env_arg: str | None,
     ) -> str:
         """Determines the active env name. Sections are assumed to be
@@ -299,7 +299,7 @@ class Project:
         return env_name
 
     @staticmethod
-    def _expand_value(s: str, macros: Dict[str, str]) -> str:
+    def _expand_value(s: str, macros: dict[str, str]) -> str:
         """Expand macros by replacing macros keys with macro values."""
         for k, v in macros.items():
             s = s.replace(k, v)
@@ -308,9 +308,9 @@ class Project:
     @staticmethod
     def _parse_env_options(
         env_name: str,
-        common_section: Dict,
-        env_sections: Dict[str, Dict[str, Union[str, List[str]]]],
-    ) -> Dict[str, Union[str, List[str]]]:
+        common_section: dict,
+        env_sections: dict[str, dict[str, str | list[str]]],
+    ) -> dict[str, str | list[str]]:
         """Expand the options of given env name. The given common and envs
         sections are already validate. String options are returned as strings
         and list options are returned as list of strings.
@@ -334,7 +334,7 @@ class Project:
         # -- Create an empty result dict.
         # -- We will insert to it the relevant options by the oder they appear
         # -- in apio.ini.
-        result: Dict[str, Union[str, List[str]]] = {}
+        result: dict[str, str | list[str]] = {}
 
         # -- Add common options that are not in env section
         for name, val in common_section.items():
@@ -365,9 +365,7 @@ class Project:
 
         return result
 
-    def get_str_option(
-        self, option: str, default: Any = None
-    ) -> Union[str, Any]:
+    def get_str_option(self, option: str, default: Any = None) -> str | Any:
         """Lookup an env option value by name. Returns default if not found."""
 
         # -- If this fails, this is a programming error.
@@ -386,7 +384,7 @@ class Project:
 
     def get_list_option(
         self, option: str, default: Any = None
-    ) -> Union[List[str], Any]:
+    ) -> list[str] | Any:
         """Lookup an env option value that has a line list format. Returns
         the list of non empty lines or default if no value. Option
         must be in OPTIONS."""
@@ -411,7 +409,7 @@ class Project:
 def load_project_from_file(
     project_dir: Path,
     env_arg: str | None,
-    boards: Dict[str, BoardDefinition],
+    boards: dict[str, BoardDefinition],
 ) -> Project:
     """Read project file from given project dir. Returns None if file
     does not exists. Exits on any error. Otherwise creates adn
@@ -443,9 +441,9 @@ def load_project_from_file(
     # -- no duplicates.
     sections_names = parser.sections()
 
-    apio_section: Dict[str, Any] = {}
-    common_section: Dict[str, Any] = {}
-    env_sections: Dict[str, Dict[str, Any]] = {}
+    apio_section: dict[str, Any] = {}
+    common_section: dict[str, Any] = {}
+    env_sections: dict[str, dict[str, Any]] = {}
 
     common_section_found: bool = False
     env_sections_found: bool = False

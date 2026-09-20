@@ -2,7 +2,6 @@
 Tests of serial_util.py
 """
 
-from typing import List
 from apio.utils.serial_util import (
     SerialDevice,
     SerialDeviceFilter,
@@ -19,7 +18,7 @@ def test_device_summaries():
 
 def test_filtering() -> None:
     """Test the filtering function."""
-    devs: List[SerialDevice] = [
+    devs: list[SerialDevice] = [
         SerialDevice(  # devs[0]
             "port0",
             "name0",
