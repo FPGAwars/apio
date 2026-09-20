@@ -11,7 +11,7 @@ import shutil
 import tempfile
 import contextlib
 from pathlib import Path, PurePosixPath
-from typing import Union, cast, Any
+from typing import cast, Any
 import os
 from urllib.parse import urlparse
 from pprint import pprint
@@ -320,8 +320,8 @@ class ApioSandbox:
 
     def write_file(
         self,
-        file: Union[str, Path],
-        text: Union[str, list[str]],
+        file: str | Path,
+        text: str | list[str],
         exists_ok=False,
     ) -> None:
         """Write text to given file. If text is a list, items are joined with
@@ -340,13 +340,13 @@ class ApioSandbox:
         with open(file, "w", encoding="utf-8") as f:
             f.write(text)
 
-    def read_file_text(self, file: Union[str, Path]) -> str:
+    def read_file_text(self, file: str | Path) -> str:
         """Read a text file. Returns a string with the text or if"""
         with open(file, "r", encoding="utf8") as f:
             text = f.read()
         return text
 
-    def read_file_lines(self, file: Union[str, Path]) -> list[str]:
+    def read_file_lines(self, file: str | Path) -> list[str]:
         """Read a text file. Returns a string split into lines."""
         text = self.read_file_text(file)
         text_lines = text.split("\n")
@@ -354,7 +354,7 @@ class ApioSandbox:
 
     def write_json_file(
         self,
-        file: Union[str, Path],
+        file: str | Path,
         json_data: dict[str, dict],
         exists_ok=False,
     ):
@@ -364,7 +364,7 @@ class ApioSandbox:
             file, json.dumps(json_data, indent=2), exists_ok=exists_ok
         )
 
-    def read_json_file(self, file: Union[str, Path]) -> dict[str, Any]:
+    def read_json_file(self, file: str | Path) -> dict[str, Any]:
         """Read a json file. 'file' can be a string or a Path."""
         json_text = self.read_file_text(file)
         json_data = json.loads(json_text)

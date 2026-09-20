@@ -14,7 +14,7 @@ import os
 import sys
 from pathlib import Path
 from glob import glob
-from typing import Union, Any
+from typing import Any
 import debugpy
 
 # -- A list with the file extensions of the source files.
@@ -62,7 +62,7 @@ def maybe_wait_for_remote_debugger(env_var_name: str):
         print("Remote debugger is attached, program continues...")
 
 
-def file_sort_key_func(f: Union[str, Path]) -> Any:
+def file_sort_key_func(f: str | Path) -> Any:
     """Given a file name or path, return a key to sort a file list.
     The order is lexicography and case sensitive."""
     path = Path(f)
