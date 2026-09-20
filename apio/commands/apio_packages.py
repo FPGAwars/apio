@@ -8,7 +8,6 @@
 """Implementation of 'apio packages' command"""
 
 import sys
-from typing import Dict
 from dataclasses import dataclass
 import click
 from rich.table import Table
@@ -75,7 +74,7 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
-    required_packages_rows: Dict[str, RequiredPackageRow] = {}
+    required_packages_rows: dict[str, RequiredPackageRow] = {}
 
     # -- Collect rows of required packages that are installed OK.
     for package_name in scan.installed_ok_package_names:

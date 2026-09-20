@@ -7,7 +7,6 @@ import re
 import json
 import pickle
 from pathlib import Path
-from typing import Dict
 from datetime import datetime
 import argparse
 from urllib.request import Request, urlopen
@@ -61,7 +60,7 @@ def _crawl_pypi() -> PypiCrawl:
     default_version = Version(default_version_str)
 
     # -- Collect the releases.
-    releases: Dict[str, PypiReleaseCrawl] = {}
+    releases: dict[str, PypiReleaseCrawl] = {}
     skipped_versions: list[str] = []
     for version_str, files in json_data["releases"].items():
 
@@ -175,7 +174,7 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
     with urlopen(req, context=util.SSL_REQUEST_CONTEXT, timeout=30) as r:
         data = json.load(r)
 
-    releases: Dict[str, VscodeReleaseCrawl] = {}
+    releases: dict[str, VscodeReleaseCrawl] = {}
     skipped_versions: list[str] = []
     default_version = None
 
@@ -284,7 +283,7 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
         entries = json.loads(resp.read().decode("utf-8"))
 
     # -- Iterate files
-    files_crawls: Dict[str, RemoteConfigFileCrawl] = {}
+    files_crawls: dict[str, RemoteConfigFileCrawl] = {}
     for entry in entries:
         package_name = entry["name"]
         if package_name in ["README.md"]:
@@ -303,7 +302,7 @@ def _crawl_remote_configs() -> RemoteConfigsCrawl:
 
         remote_config_json = json5.loads(remote_config_text)
 
-        packages_crawls: Dict[str, RemoteConfigPackageCrawl] = {}
+        packages_crawls: dict[str, RemoteConfigPackageCrawl] = {}
 
         for package_name, package_config in remote_config_json[
             "packages"
@@ -353,7 +352,7 @@ def _crawl_apio_repo(repo: str) -> RepoCrawl:
         latest.raise_for_status()
         latest_tag = latest.json().get("tag_name")
 
-    releases: Dict[str, ReleaseCrawl] = {}
+    releases: dict[str, ReleaseCrawl] = {}
     url: str | None = f"https://api.github.com/repos/{repo}/releases"
     params: dict | None = {"per_page": 100}
     while url:
@@ -396,7 +395,7 @@ def crawl_apio_repos() -> ReposCrawl:
 
     print("Crawling apio repos.")
 
-    repos_dict: Dict[str, RepoCrawl] = {}
+    repos_dict: dict[str, RepoCrawl] = {}
     for repo in consts.APIO_REPOS:
         repo_crawl = _crawl_apio_repo(repo)
         repos_dict[repo] = repo_crawl

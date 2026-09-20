@@ -10,7 +10,6 @@ import shutil
 import os
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Dict
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.proto.apio_common_pb2 import ApioArch
@@ -151,7 +150,7 @@ class Examples:
 
         return examples
 
-    def count_examples_by_board(self) -> Dict[str, int]:
+    def count_examples_by_board(self) -> dict[str, int]:
         """Returns a dictionary with example count per board. Boards
         that have no examples are not included in the dictionary."""
 
@@ -159,7 +158,7 @@ class Examples:
         examples: list[ExampleInfo] = self.get_examples_infos()
 
         # -- Count examples by board
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for example in examples:
             board = example.board_id
             old_count = counts.get(board, 0)

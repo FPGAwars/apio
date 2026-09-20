@@ -6,7 +6,6 @@
 """Manage the apio profile file"""
 
 import json
-from typing import Dict
 from pathlib import Path
 from apio.common import apio_console
 from apio.common.debug_util import is_debug
@@ -38,7 +37,7 @@ class Profile:
         # ---- Set the default parameters
 
         # User preferences
-        self.preferences: Dict[str, str] = {}
+        self.preferences: dict[str, str] = {}
 
         # -- Cache the profile file path
         # -- Ex. '/home/obijuan/.apio/profile.json'

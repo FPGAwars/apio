@@ -10,7 +10,6 @@
 from pathlib import Path
 from datetime import date
 from dataclasses import dataclass
-from typing import Dict
 import click
 from rich.table import Table
 from rich import box
@@ -57,7 +56,7 @@ def _collect_board_entries(apio_ctx: ApioContext) -> list[Entry]:
 
     # -- Get examples counts by board. This is a sparse dictionary.
     examples = Examples(apio_ctx)
-    examples_counts: Dict[str, int] = examples.count_examples_by_board()
+    examples_counts: dict[str, int] = examples.count_examples_by_board()
 
     # -- Collect the boards info into a list of entires, one per board.
     result: list[Entry] = []

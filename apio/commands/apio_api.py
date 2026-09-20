@@ -11,7 +11,7 @@
 
 import sys
 import os
-from typing import Dict, Self, cast, Any
+from typing import Self, cast, Any
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -77,7 +77,7 @@ output_option = click.option(
 )
 
 
-def write_as_json_doc(top_dict: Dict, output_flag: str, force_flag: bool):
+def write_as_json_doc(top_dict: dict, output_flag: str, force_flag: bool):
     """A common function to write a dict as a JSON doc."""
     # -- Format the top dict as json text.
     text = json.dumps(top_dict, indent=2)
@@ -157,13 +157,13 @@ def _get_system_cli(
     platform = apio_ctx.platform
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict: Dict[str, Any] = {}
+    section_dict: dict[str, Any] = {}
 
     # -- Add fields.
     section_dict["apio-cli-version"] = util.get_apio_version_str()
@@ -273,16 +273,16 @@ def _get_build_report_cli(
     report = build_report.read_build_report(pnr_json_file)
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict: Dict[str, Any] = {}
+    section_dict: dict[str, Any] = {}
     section_dict["env"] = apio_ctx.project.env_name
 
-    resources_dict: Dict[str, Any] = {}
+    resources_dict: dict[str, Any] = {}
     for res in report.resources:
         resources_dict[res.name] = {
             "used": res.used,
@@ -292,7 +292,7 @@ def _get_build_report_cli(
 
     section_dict["resources"] = resources_dict
 
-    clocks_dict: Dict[str, Any] = {}
+    clocks_dict: dict[str, Any] = {}
     for clk in report.clocks:
         clocks_dict[clk.name] = {"fmax_mhz": clk.fmax_mhz}
 
@@ -363,15 +363,15 @@ def _get_project_cli(
     os.chdir(apio_ctx.project_dir)
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict: Dict[str, Any] = {}
+    section_dict: dict[str, Any] = {}
 
-    active_env_dict: Dict[str, Any] = {}
+    active_env_dict: dict[str, Any] = {}
     active_env_dict["name"] = apio_ctx.project.env_name
     active_env_dict["options"] = apio_ctx.project.env_options
     section_dict["active-env"] = active_env_dict
@@ -464,17 +464,17 @@ def _get_boards_cli(
     assert apio_ctx.definitions is not None
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the boards section.
-    section: Dict[str, Any] = {}
+    section: dict[str, Any] = {}
     for board_id, board_definition in apio_ctx.definitions.boards.items():
         # -- The board output dict.
-        board_dict: Dict[str, Any] = {}
+        board_dict: dict[str, Any] = {}
 
         # -- We assume that these proto fields are requires and therefore
         # -- must exist.
@@ -557,14 +557,14 @@ def _get_fpgas_cli(
     assert apio_ctx.definitions is not None
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the fpgas section
-    section: Dict[str, Any] = {}
+    section: dict[str, Any] = {}
     for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
         section[fpga_id] = proto_util.proto_to_json_dict(fpga_definition)
 
@@ -620,14 +620,14 @@ def _get_programmers_cli(
     assert apio_ctx.definitions is not None
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the 'programmers' section.
-    section: Dict[str, Any] = {}
+    section: dict[str, Any] = {}
     for (
         programmer_id,
         programmer_definition,
@@ -690,21 +690,21 @@ def _get_examples_cli(
     examples: list[ExampleInfo] = Examples(apio_ctx).get_examples_infos()
 
     # -- Group examples by boards
-    boards_examples: Dict[str, list[ExampleInfo]] = {}
+    boards_examples: dict[str, list[ExampleInfo]] = {}
     for example in examples:
         board_examples = boards_examples.get(example.board_id, [])
         board_examples.append(example)
         boards_examples[example.board_id] = board_examples
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Generate the 'examples' section.
-    section: Dict[str, Any] = {}
+    section: dict[str, Any] = {}
     for board, board_examples in boards_examples.items():
         board_dict = {}
         # -- Generate board examples
@@ -734,9 +734,9 @@ class CmdInfo:
     children: list[Self]
 
 
-def scan_children(cmd_cli) -> Dict:
+def scan_children(cmd_cli) -> dict:
     """Return a dict describing this command subtree."""
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
 
     # -- Sanity check
     assert isinstance(result, dict), type(result)
@@ -750,7 +750,7 @@ def scan_children(cmd_cli) -> Dict:
     subgroups: list[ApioSubgroup] = cmd_cli.subgroups
 
     # -- Create the dict for the command subgroups.
-    subcommands_dict: Dict[str, Any] = {}
+    subcommands_dict: dict[str, Any] = {}
     result["commands"] = subcommands_dict
 
     # -- Iterate the subgroups and populate them. We flaten the subcommands
@@ -821,13 +821,13 @@ def _get_commands_cli(
     )
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
-    section_dict: Dict[str, Any] = {}
+    section_dict: dict[str, Any] = {}
     section_dict["apio"] = scan_children(top_cli)
     top_dict["commands"] = section_dict
 
@@ -882,14 +882,14 @@ def _get_packages_cli(
     package_manager = apio_ctx.package_manager
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:
         top_dict["timestamp"] = timestamp
 
     # -- Packages section
-    section_dict: Dict[str, Any] = {}
+    section_dict: dict[str, Any] = {}
     top_dict["packages"] = section_dict
 
     for package_name in package_manager.required_packages:
@@ -952,7 +952,7 @@ def _scan_devices_cli(
     )
 
     # -- The top dict that we will emit as json.
-    top_dict: Dict[str, Any] = {}
+    top_dict: dict[str, Any] = {}
 
     # -- Append user timestamp if specified.
     if timestamp:

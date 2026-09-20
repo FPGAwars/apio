@@ -11,7 +11,7 @@ import os
 import json
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Dict, Tuple, Any
+from typing import Tuple, Any
 from pathlib import Path
 import shutil
 from apio.common.apio_console import cout, cstyle, fatal_error
@@ -107,7 +107,7 @@ class PackageManager:
     def __init__(
         self,
         remote_config: RemoteConfig,
-        required_packages: Dict,
+        required_packages: dict,
         platform: ApioPlatform,
         apio_home_dir: Path,
         packages_dir: Path,
@@ -135,7 +135,7 @@ class PackageManager:
 
         # -- Initialized installed packages, a copy of
         # -- installed-packages.json.
-        self.installed_packages: Dict[str, Any] = {}
+        self.installed_packages: dict[str, Any] = {}
 
         # -- Cache the packages index file path
         # -- Ex. '/home/obijuan/.apio/packages/installed_packages.json'
@@ -480,7 +480,7 @@ class PackageManager:
             # -- Delete.
             file_path.unlink()
 
-    def read_package_build_info(self, package_name: str) -> Dict[str, Any]:
+    def read_package_build_info(self, package_name: str) -> dict[str, Any]:
         """Returns the BUILD-INFO.json of the package as a dict. Fatal
         error if doesn't exist or can't parse."""
 
@@ -706,7 +706,7 @@ class PackageManager:
             # self._save()
             self._save_installed_packages()
 
-    def get_required_package_info(self, package_name: str) -> Dict:
+    def get_required_package_info(self, package_name: str) -> dict:
         """Returns the information of the package with given name.
         The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.

@@ -1,4 +1,4 @@
-from typing import  Set, Dict
+from typing import  Set
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -161,7 +161,7 @@ def parse_module(
     return module
 
 
-def parse_design(yosys_json: Dict) -> Design:
+def parse_design(yosys_json: dict) -> Design:
 
     # Extract the json dict of the top module.
     modules_json = yosys_json["modules"]

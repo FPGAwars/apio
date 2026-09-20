@@ -10,7 +10,7 @@
 from datetime import date
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Dict, Tuple
+from typing import Tuple
 import click
 from rich.table import Table
 from rich import box
@@ -45,7 +45,7 @@ class Entry:
         return (util.fpga_arch_sort_key(self.fpga_arch), self.fpga.lower())
 
 
-def _get_fpga_arch_params(fpga_definition: FpgaDefinition) -> Tuple[str, Dict]:
+def _get_fpga_arch_params(fpga_definition: FpgaDefinition) -> Tuple[str, dict]:
     """Extracts the arch specific params of an fpga, Returns a tuple
     with the field name and the field value."""
     fpga_dict = proto_util.proto_to_json_dict(fpga_definition)
@@ -61,7 +61,7 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> list[Entry]:
     assert apio_ctx.definitions is not None
 
     # -- Collect a sparse dict with fpga ids to board count.
-    boards_counts: Dict[str, int] = {}
+    boards_counts: dict[str, int] = {}
     for board_definition in apio_ctx.definitions.boards.values():
         proto_util.check_is_required(board_definition, "fpga_id")
         fpga_id = board_definition.fpga_id

@@ -11,7 +11,7 @@ import shutil
 import tempfile
 import contextlib
 from pathlib import Path, PurePosixPath
-from typing import Union, cast, Dict, Any, Tuple
+from typing import Union, cast, Any, Tuple
 import os
 from urllib.parse import urlparse
 from pprint import pprint
@@ -285,7 +285,7 @@ class ApioSandbox:
                 assert bad_word not in lower_case_output, bad_word
 
     def restore_system_env(
-        self, original_env: Dict[str, str], scope: str
+        self, original_env: dict[str, str], scope: str
     ) -> None:
         """Overwrites the existing sys.environ with the given dict. Vars
         that are not in the dict are deleted and vars that have a different
@@ -355,7 +355,7 @@ class ApioSandbox:
     def write_json_file(
         self,
         file: Union[str, Path],
-        json_data: Dict[str, Dict],
+        json_data: dict[str, dict],
         exists_ok=False,
     ):
         """Write a dict to given json file. 'file' can be a string or a
@@ -364,7 +364,7 @@ class ApioSandbox:
             file, json.dumps(json_data, indent=2), exists_ok=exists_ok
         )
 
-    def read_json_file(self, file: Union[str, Path]) -> Dict[str, Any]:
+    def read_json_file(self, file: Union[str, Path]) -> dict[str, Any]:
         """Read a json file. 'file' can be a string or a Path."""
         json_text = self.read_file_text(file)
         json_data = json.loads(json_text)
@@ -372,7 +372,7 @@ class ApioSandbox:
 
     def write_apio_ini(
         self,
-        sections: Dict[str, Dict[str, str]] | None = None,
+        sections: dict[str, dict[str, str]] | None = None,
     ):
         """Write in the current directory an apio.ini file with given
         section. If an apio.ini file already exists, overwrite it."""
@@ -532,7 +532,7 @@ class ApioRunner:
         assert self._sandbox is None, "Already in a sandbox."
 
         # -- Snapshot the system env.
-        original_env: Dict[str, str] = os.environ.copy()
+        original_env: dict[str, str] = os.environ.copy()
 
         # -- Snapshot the current directory.
         original_cwd = os.getcwd()

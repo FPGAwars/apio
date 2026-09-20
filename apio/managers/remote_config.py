@@ -11,7 +11,7 @@ import json
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 from pathlib import Path
 import requests
 from jsonschema import validate
@@ -227,7 +227,7 @@ class RemoteConfig:
             cout(f"Remote config url: {self.remote_config_url}")
 
         # -- Start with no remote config.
-        self._cached_remote_config: Dict[str, Any] | None = None
+        self._cached_remote_config: dict[str, Any] | None = None
 
         # -- Path to the local file with the cached remote config.
         self._cached_remote_config_path = (
@@ -317,14 +317,14 @@ class RemoteConfig:
                 self._fetch_and_update_remote_config(error_is_fatal=False)
 
     @property
-    def data(self) -> Dict:
+    def data(self) -> dict:
         """Returns the remote config that is applicable for this invocation.
         Should not called if the context was initialized with NO_CONFIG."""
         assert self._cached_remote_config is not None
         return self._cached_remote_config.get("remote-config", {})
 
     @property
-    def metadata(self) -> Dict:
+    def metadata(self) -> dict:
         """Returns the remote config metadata. Should not be called
         if the context was initialized with NO_CONFIG."""
         assert self._cached_remote_config is not None
@@ -483,7 +483,7 @@ class RemoteConfig:
 
         # -- Append remote config metadata. This also clear the
         # -- "refresh-failure-on" field if exists.
-        metadata_dict: Dict[str, Any] = {}
+        metadata_dict: dict[str, Any] = {}
         metadata_dict["loaded-by"] = util.get_apio_version_str()
         metadata_dict["loaded-at"] = get_datetime_stamp()
         metadata_dict["loaded-from"] = self.remote_config_url
@@ -493,7 +493,7 @@ class RemoteConfig:
         self._save()
 
     def _check_downloaded_remote_config(
-        self, remote_config: Dict, error_is_fatal: bool
+        self, remote_config: dict, error_is_fatal: bool
     ) -> bool:
         """Check the downloaded remote config has a valid structure."""
         try:

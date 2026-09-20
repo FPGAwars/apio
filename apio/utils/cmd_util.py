@@ -10,7 +10,7 @@
 """Utility functionality for apio click commands."""
 
 from dataclasses import dataclass
-from typing import Dict, Union
+from typing import Union
 import click
 from click.formatting import HelpFormatter
 from apio.common import apio_console
@@ -47,10 +47,10 @@ def fatal_usage_error(cmd_ctx: click.Context, msg: str) -> None:
 
 def _get_all_params_definitions(
     cmd_ctx: click.Context,
-) -> Dict[str, Union[click.Option, click.Argument]]:
+) -> dict[str, Union[click.Option, click.Argument]]:
     """Return a mapping from param id to param obj, for all options and
     arguments that are defined for the command."""
-    result: Dict[str, Union[click.Option, click.Argument]] = {}
+    result: dict[str, Union[click.Option, click.Argument]] = {}
     for param_obj in cmd_ctx.command.get_params(cmd_ctx):
         assert isinstance(param_obj, (click.Option, click.Argument)), type(
             param_obj
