@@ -57,6 +57,12 @@ Verible formatter directives:
 ... untouched code ...
 // verilog_format: on[/code]
 
+Another useful option provides a workaround for the Verible formatter \
+error 'Some token partitions failed to complete within the search limit':
+
+[code]format-verible-options =
+    --max_search_states=2000000[/code]
+
 For a full list of Verible formatter flags, refer to the documentation page \
 online or use the command 'apio raw -- verible-verilog-format --helpfull'.
 """
