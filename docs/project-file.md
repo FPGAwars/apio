@@ -178,6 +178,7 @@ underlying Verible formatter.
 format-verible-options =
     --column_limit=80
     --indentation_spaces=4
+    --line_terminator LF
 ```
 
 For the list of the Verible formatter options, run the command `apio 

@@ -36,7 +36,18 @@ which can be configured using the `format-verible-options` setting in `apio.ini`
 format-verible-options =
     --column_limit=80
     --indentation_spaces=4
+    --line_terminator LF
 ```
+
+Another useful option provides a workaround for the Verible formatter
+error *"Some token partitions failed to complete within the search
+limit"*:
+
+```
+format-verible-options =
+    --max_search_states=2000000
+```
+
 
 For a full list of Verible formatter flags, refer to the documentation
 page online or use the command `apio raw -- verible-verilog-format --helpfull`.
