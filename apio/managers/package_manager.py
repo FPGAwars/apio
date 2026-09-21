@@ -313,7 +313,7 @@ class PackageManager:
         # -- If the packages are installed we are done, we are done.
         if installed_ok:
             # -- Final sanity check of the packages.
-            self.check_packages()
+            self.check_packages_post_install()
             # -- Installed ok.
             return
 
@@ -343,7 +343,7 @@ class PackageManager:
             )
 
         # -- Final sanity check of the packages.
-        self.check_packages()
+        self.check_packages_post_install()
 
     def install_package(
         self,
@@ -364,6 +364,10 @@ class PackageManager:
         Returns normally if no error, exits the program with an error status
         and a user message if an error is detected.
         """
+
+        # -- Force verbose if debug.
+        if is_debug(1):
+            verbose = True
 
         # -- Caller is responsible to check check that package name is valid
         # -- on this platform.
@@ -392,28 +396,23 @@ class PackageManager:
         # -- If not forcing and the target version already installed then
         # -- nothing to do and we leave quietly.
         if not force_reinstall:
-            # -- Get the version of the installed package, None if not
-            # -- installed.
-            installed_version, package_platform_id, *_ = (
-                self.get_installed_package_info(package_name)
+            # -- Get the package status
+            package_status = self.classify_required_package_status(
+                package_name
             )
 
             if verbose:
                 cout(
-                    f"Installed version: {installed_version} "
-                    f"({package_platform_id})"
+                    f"Package {package_name} status is"
+                    + f" '{package_status.value}'"
                 )
 
-            # -- If the installed and the target versions are the same then
-            # -- nothing to do.
-            if (
-                target_version == installed_version
-                and package_platform_id == self.platform.id
-            ):
+            # -- If the package is OK then nothing to do.
+            if package_status.is_ok:
                 if verbose:
                     cout(
-                        f"Version {target_version} ({package_platform_id}) "
-                        "already installed",
+                        f"Package {package_name} version {target_version} "
+                        + "is already installed OK",
                         style=SUCCESS,
                     )
                 return
@@ -527,7 +526,7 @@ class PackageManager:
         build_info = self.read_package_build_info("oss-cad-suite")
         return build_info["yosys-release-tag"]
 
-    def check_packages(self):
+    def check_packages_post_install(self):
         """Called after the Apio packages were installed or fixed and are
         believed to be correct. Performs additional validation of the apio
         packages and exits with an error on any error."""
