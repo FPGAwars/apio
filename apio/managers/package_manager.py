@@ -9,6 +9,7 @@ Used by the 'apio packages' command.
 
 import os
 import json
+from enum import Enum, unique
 from datetime import datetime
 from dataclasses import dataclass
 from typing import Any
@@ -23,69 +24,88 @@ from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.remote_config import RemoteConfig, PackageRemoteConfig
 
 
+@unique
+class RequiredPackageStatus(Enum):
+    """Represents the classification of a required package status."""
+
+    # -- NOTE: The string values here are using facing by the
+    # -- 'apio packages list' command.
+
+    PACKAGE_UNINSTALLED = "Uninstalled"
+    PACKAGE_DIR_MISSING = "Package dir missing"
+    PACKAGE_DIR_IS_A_FILE = "Package dir is a file"
+    PACKAGE_VERSION_MISMATCH = "Version mismatch"
+    PACKAGE_PLATFORM_MISMATCH = "Platform mismatch"
+    PACKAGE_PLATFORM_VERSION_MISMATCH = "Platform ver mismatch"
+    PACKAGE_URL_MISMATCH = "Source URL mismatch"
+    PACKAGE_OK = "OK"
+
+    @property
+    def is_ok(self) -> bool:
+        """Returns True if the status is of a legit package."""
+        return self == self.PACKAGE_OK
+
+    @property
+    def is_inconsistency(self) -> bool:
+        """Is it an inconsistency that requires fixing before installing the
+        uninstalled packages."""
+        return self not in (self.PACKAGE_UNINSTALLED, self.PACKAGE_OK)
+
+
+@unique
+class OrphanType(Enum):
+    """Represents the types of orphans (leftovers items)."""
+
+    # -- NOTE: The string values here are using facing by the
+    # -- 'apio packages list' command.
+
+    # -- Non required package in installed packages index, potentially
+    # -- it also has an entry with same name in the packages folder..
+    ORPHAN_PACKAGE = "Orphan package"
+    # -- Package dir that doesn't match a required or an orphan package.
+    ORPHAN_FILE = "Orphan file"
+    # -- A file in the packages dir that doesn't match a name of an orphan
+    # -- package.
+    ORPHAN_DIR = "Orphan dir"
+
+
 @dataclass
-class PackageScanResults:
+class PackagesScanResults:
     """Represents results of packages scan."""
 
-    # -- Normal and Error. Packages in required_packages that are installed
-    # -- regardless if the version matches or not.
-    installed_ok_package_names: list[str]
-    # -- Error. Packages in required_packages that are installed but with
-    # -- version mismatch.
-    bad_version_package_names: list[str]
-    # -- Normal. Packages in required_packages that are uninstalled properly.
-    uninstalled_package_names: list[str]
-    # -- Error. Packages in required_packages with broken installation. E.g,
-    # -- registered in installed packages but the package directory is missing.
-    broken_package_names: list[str]
-    # -- Error. Packages that are in installed packages but are not
-    # -- in required_packages.
-    orphan_package_names: list[str]
-    # -- Error. Basenames of directories in packages dir that don't match
-    # -- folder_name of packages in required_packages.
-    orphan_dir_names: list[str]
-    # -- Error. Basenames of all files in packages directory. That directory is
-    # -- expected to contain only directories for packages.a
-    orphan_file_names: list[str]
+    # -- Names and statuses of required packages.
+    required_packages: dict[str, RequiredPackageStatus]
+
+    # -- Name and types of package, dir, and file orphans.
+    orphans: dict[str, OrphanType]
 
     def packages_installed_ok(self) -> bool:
-        """Returns true if all packages are installed ok, regardless of
-        other fixable errors."""
-        return (
-            len(self.bad_version_package_names) == 0
-            and len(self.uninstalled_package_names) == 0
-            and len(self.broken_package_names) == 0
-        )
+        """Returns true if all the required packages are installed ok,
+        regardless of other fixable errors."""
+        return all(status.is_ok for status in self.required_packages.values())
 
-    def num_errors_to_fix(self) -> int:
-        """Returns the number of errors that required , having a non installed
-        packages is not considered an error that need to be fix."""
-        return (
-            len(self.bad_version_package_names)
-            + len(self.broken_package_names)
-            + len(self.orphan_package_names)
-            + len(self.orphan_dir_names)
-            + len(self.orphan_file_names)
+    def num_inconsistencies_to_fix(self) -> int:
+        """Returns the number of inconsistencies that require fixing before
+        installing any missing package."""
+        required_packages_errors = sum(
+            1
+            for status in self.required_packages.values()
+            if not status.is_inconsistency
         )
+        orphans_errors = len(self.orphans)
+        return required_packages_errors + orphans_errors
 
     def is_all_ok(self) -> bool:
         """Return True if all packages are installed properly with no
         issues."""
-        return (
-            not self.num_errors_to_fix() and not self.uninstalled_package_names
-        )
+        return self.packages_installed_ok() and len(self.orphans) == 0
 
     def dump(self):
         """Dump the content of this object. For debugging."""
         cout()
         cout("Package scan results:")
-        cout(f"  Installed     {self.installed_ok_package_names}")
-        cout(f"  bad version   {self.bad_version_package_names}")
-        cout(f"  Uninstalled   {self.uninstalled_package_names}")
-        cout(f"  Broken        {self.broken_package_names}")
-        cout(f"  Orphan ids    {self.orphan_package_names}")
-        cout(f"  Orphan dirs   {self.orphan_dir_names}")
-        cout(f"  Orphan files  {self.orphan_file_names}")
+        cout(f"  required  {self.required_packages}")
+        cout(f"  orphans   {self.orphans}")
 
 
 def get_datetime_stamp(dt: datetime | None = None) -> str:
@@ -144,7 +164,7 @@ class PackageManager:
         # -- Read the installed packages file, if exists.
         self._maybe_load_installed_packages_file()
 
-    def package_dir(self, package_name) -> Path:
+    def required_package_dir(self, package_name: str) -> Path:
         """Return the local root directory of the package with given name"""
         # -- Validate the package name
         assert package_name in self.required_packages, package_name
@@ -238,37 +258,40 @@ class PackageManager:
         # -- Return the destination path
         return filepath
 
-    def _delete_package_dir(self, package_name: str, verbose: bool) -> bool:
-        """Delete the directory of the package with given name.  Returns
-        True if the packages existed. Exits with an error message on error."""
-        package_dir = self.packages_dir / package_name
+    def _delete_package_dir(self, package_name: str, verbose: bool) -> None:
+        """Delete the directory of the package with given name."""
+        package_path = self.packages_dir / package_name
 
-        dir_found = package_dir.is_dir()
-        if dir_found:
-            if verbose:
-                cout(f"Deleting {str(package_dir)}")
+        # -- If doesn't exist, ignore silently.
+        if not package_path.exists():
+            return
 
+        if verbose:
+            cout(f"Deleting {str(package_path)}")
+
+        if package_path.is_dir():
             # -- Sanity check the path and delete.
-            assert "packages" in str(package_dir).lower(), package_dir
-            shutil.rmtree(package_dir)
+            assert "packages" in str(package_path).lower(), package_path
+            shutil.rmtree(package_path)
+        else:
+            package_path.unlink()
 
-        if package_dir.exists():
+        # -- Confirm
+        if package_path.exists():
             fatal_error(
-                f"Directory deletion failed: {str(package_dir.absolute())}"
+                f"Package dir deletion failed: {str(package_path.absolute())}"
             )
 
-        return dir_found
-
-    def scan_and_fix_packages(self) -> bool:
+    def scan_and_fix_inconsistencies(self) -> bool:
         """Scan the packages and fix if there are errors. Returns true
         if the packages are installed ok."""
 
         # -- Scan the packages.
-        scan = self.scan_packages()
+        scan: PackagesScanResults = self.scan_packages()
 
         # -- If there are fixable errors, fix them.
-        if scan.num_errors_to_fix() > 0:
-            self._fix_packages(scan)
+        if scan.num_inconsistencies_to_fix() > 0:
+            self._fix_inconsistencies(scan)
 
         # -- Return a flag that indicates if all packages are installed ok. We
         # -- use a scan from before the fixing but the fixing does not touch
@@ -285,7 +308,7 @@ class PackageManager:
         # -- Scan and fix broken package.
         # -- Since this is a on-the-fly operation, we don't require a fresh
         # -- remote config file for required packages versions.
-        installed_ok = self.scan_and_fix_packages()
+        installed_ok = self.scan_and_fix_inconsistencies()
 
         # -- If the packages are installed we are done, we are done.
         if installed_ok:
@@ -371,7 +394,7 @@ class PackageManager:
         if not force_reinstall:
             # -- Get the version of the installed package, None if not
             # -- installed.
-            installed_version, package_platform_id = (
+            installed_version, package_platform_id, *_ = (
                 self.get_installed_package_info(package_name)
             )
 
@@ -443,48 +466,47 @@ class PackageManager:
         # -- Inform the user!
         cout(f"Package '{package_name}' installed successfully", style=SUCCESS)
 
-    def _fix_packages(self, scan: "PackageScanResults") -> None:
-        """If the package scan result contains errors, fix them."""
+    def _fix_inconsistencies(self, scan: PackagesScanResults) -> None:
+        """If the package scan result contains errors, fix them. This
+        does not install missing packages, just fixing inconsistencies."""
 
-        for package_name in scan.bad_version_package_names:
-            cout(f"Uninstalling incompatible version of '{package_name}'")
-            self._delete_package_dir(package_name, verbose=False)
-            self.remove_package(package_name)
+        for package_name, package_status in scan.required_packages.items():
+            if package_status.is_inconsistency:
+                cout(f"Uninstalling broken package '{package_name}'")
+                self._delete_package_dir(package_name, verbose=False)
+                self.remove_package(package_name)
 
-        for package_name in scan.broken_package_names:
-            cout(f"Uninstalling broken package '{package_name}'")
-            self._delete_package_dir(package_name, verbose=False)
-            self.remove_package(package_name)
+        for orphan_name, orphan_type in scan.orphans.items():
+            # -- Delete an unknown entry in the installed packages index.
+            if orphan_type == orphan_type.ORPHAN_PACKAGE:
+                cout(f"Uninstalling unknown package '{orphan_name}'")
+                self.remove_package(orphan_name)
 
-        for package_name in scan.orphan_package_names:
-            cout(f"Uninstalling unknown package '{package_name}'")
-            self.remove_package(package_name)
+            # -- Delete an unknown dir in the package dir.
+            elif orphan_type == orphan_type.ORPHAN_DIR:
+                cout(f"Deleting unknown package dir '{orphan_name}'")
+                dir_path = self.packages_dir / orphan_name
+                assert "packages" in str(dir_path).lower(), dir_path
+                shutil.rmtree(dir_path)
 
-        for dir_name in scan.orphan_dir_names:
-            cout(f"Deleting unknown package dir '{dir_name}'")
-            # -- Sanity check. Since package_manager.packages_dir is guaranteed
-            # -- to include the word packages, this can fail only due to
-            # -- programming error.
-            dir_path = self.packages_dir / dir_name
-            assert "packages" in str(dir_path).lower(), dir_path
-            # -- Delete.
-            shutil.rmtree(dir_path)
+            # -- Delete an unknown file in the packages dir.
+            elif orphan_type == orphan_type.ORPHAN_FILE:
+                cout(f"Deleting unknown package file '{orphan_name}'")
+                file_path = self.packages_dir / orphan_name
+                assert "packages" in str(file_path).lower(), dir_path
+                file_path.unlink()
 
-        for file_name in scan.orphan_file_names:
-            cout(f"Deleting unknown package file '{file_name}'")
-            # -- Sanity check. Since package_manager.packages_dir is guaranteed
-            # -- to include the word packages, this can fail only due to
-            # -- programming error.
-            file_path = self.packages_dir / file_name
-            assert "packages" in str(file_path).lower(), dir_path
-            # -- Delete.
-            file_path.unlink()
+            # -- Unexpected orphan type.
+            else:
+                raise ValueError(f"Unknown orphan type: {orphan_type}")
 
     def read_package_build_info(self, package_name: str) -> dict[str, Any]:
         """Returns the BUILD-INFO.json of the package as a dict. Fatal
         error if doesn't exist or can't parse."""
 
-        build_info_path = self.package_dir(package_name) / "BUILD-INFO.json"
+        build_info_path = (
+            self.required_package_dir(package_name) / "BUILD-INFO.json"
+        )
 
         # pylint: disable=broad-exception-caught
 
@@ -529,97 +551,105 @@ class PackageManager:
                 + "bad remote configuration by the Apio team.",
             )
 
-    def package_version_ok(
-        self,
-        package_name: str,
-    ) -> bool:
-        """Return true if the package is both in installed packages and in
-        required packages and its version in the installed packages meet the
-        requirements in the config.jsonc file. Otherwise return false."""
+    def classify_required_package_status(
+        self, name: str
+    ) -> RequiredPackageStatus:
+        """Classify existing or missing entry under the package directory."""
 
-        # If this package is not applicable to this platform, return False.
-        if package_name not in self.required_packages:
-            return False
+        # pylint: disable=too-many-return-statements
 
-        # -- If the current version is not available, the package is not
-        # -- installed.
-        current_ver, package_platform_id = self.get_installed_package_info(
-            package_name
-        )
-        if not current_ver or package_platform_id != self.platform.id:
-            return False
+        # -- Check tha the package is a required one.
+        assert name in self.required_packages, name
 
-        # -- Get the package remote config.
+        # -- Construct the package path.
+        package_path: Path = self.required_package_dir(name)
+
+        if name not in self.installed_packages:
+            return RequiredPackageStatus.PACKAGE_UNINSTALLED
+
+        if not package_path.exists():
+            return RequiredPackageStatus.PACKAGE_DIR_MISSING
+
+        if not package_path.is_dir():
+            return RequiredPackageStatus.PACKAGE_DIR_IS_A_FILE
+
+        # -- Get installed package info or "" if not installed.
+        (
+            installed_version,
+            installed_platform_id,
+            installed_platform_version,
+            installed_src_url,
+        ) = self.get_installed_package_info(name)
+
+        # -- Get the package's remote config
         package_config: PackageRemoteConfig = (
-            self.remote_config.get_package_config(package_name)
+            self.remote_config.get_package_config(name)
         )
 
-        # -- Compare to the required version. We expect the two version to be
-        # -- normalized and ths a string comparison is sufficient.
-        return current_ver == package_config.release_version
+        if (
+            not installed_version
+            or installed_version != package_config.release_version
+        ):
+            return RequiredPackageStatus.PACKAGE_VERSION_MISMATCH
 
-    def scan_packages(self) -> PackageScanResults:
+        if (
+            not installed_platform_id
+            or installed_platform_id != self.platform.id
+        ):
+            return RequiredPackageStatus.PACKAGE_PLATFORM_MISMATCH
+
+        if installed_platform_version != util.get_apio_version_str():
+            return RequiredPackageStatus.PACKAGE_PLATFORM_VERSION_MISMATCH
+
+        true_src_url = self._construct_package_download_url(package_config)
+
+        if installed_src_url != true_src_url:
+            return RequiredPackageStatus.PACKAGE_URL_MISMATCH
+
+        return RequiredPackageStatus.PACKAGE_OK
+
+    def scan_packages(self) -> PackagesScanResults:
         """Scans the available and installed packages and returns
         the findings as a PackageScanResults object."""
 
-        # pylint: disable=too-many-branches
+        result = PackagesScanResults({}, {})
 
-        # Initialize the result with empty data.
-        result = PackageScanResults([], [], [], [], [], [], [])
+        # -- Scan the required packages.
+        for package_name in self.required_packages:
+            package_status: RequiredPackageStatus = (
+                self.classify_required_package_status(package_name)
+            )
+            result.required_packages[package_name] = package_status
 
-        # -- A helper set that we populate with the 'folder_name' values of the
-        # -- all the packages for this platform.
-        platform_folder_names = set()
-
-        # -- Scan packages ids in required_packages and populate
-        # -- the installed/uninstall/broken packages lists.
-        for package_name in self.required_packages.keys():
-            # -- Collect package's folder names in a set. For a later use.
-            platform_folder_names.add(package_name)
-
-            # -- Classify the package as one of four cases.
-            in_installed_packages = package_name in self.installed_packages
-            package_dir = self.packages_dir / package_name
-            has_dir = package_dir.is_dir()
-            version_ok = self.package_version_ok(package_name)
-            if in_installed_packages and has_dir:
-                if version_ok:
-                    # Case 1: Package installed ok.
-                    result.installed_ok_package_names.append(package_name)
-                else:
-                    # -- Case 2: Package installed but version mismatch.
-                    result.bad_version_package_names.append(package_name)
-            elif not in_installed_packages and not has_dir:
-                # -- Case 3: Package not installed.
-                result.uninstalled_package_names.append(package_name)
-            else:
-                # -- Case 4: Package is broken.
-                result.broken_package_names.append(package_name)
-
-        # -- Scan the installed packages and mark the non required one as
-        # -- orphans
+        # -- Scan the installed packages and identify orphan packages.
         for package_name in self.installed_packages:
             if package_name not in self.required_packages:
-                result.orphan_package_names.append(package_name)
+                result.orphans[package_name] = OrphanType.ORPHAN_PACKAGE
 
         # -- Scan the packages directory and identify orphan dirs and files.
         for path in self.packages_dir.glob("*"):
             base_name = os.path.basename(path)
+            assert isinstance(base_name, str), type(base_name)
+
+            # -- Ignore the installed packages index file.
+            if base_name == "installed_packages.json":
+                continue
+
+            # -- I the dir entry is of a required or orphan package, skip it,
+            # -- it will be covered by the package handling.
+            if (
+                base_name in result.required_packages
+                or base_name in result.orphans
+            ):
+                continue
+
+            # -- Classify the orphan as a dir or file.
             if path.is_dir():
-                if base_name not in platform_folder_names:
-                    result.orphan_dir_names.append(base_name)
+                result.orphans[base_name] = OrphanType.ORPHAN_DIR
             else:
-                # -- Skip the packages installed file, so we don't consider it
-                # -- as an orphan file.
-                # TODO Make this a const.
-                if base_name == "installed_packages.json":
-                    continue
-                result.orphan_file_names.append(base_name)
+                result.orphans[base_name] = OrphanType.ORPHAN_FILE
 
-        # -- Return results
-        if is_debug(1):
-            result.dump()
-
+        # -- All done
         return result
 
     def _maybe_load_installed_packages_file(self):
@@ -674,14 +704,33 @@ class PackageManager:
             cout("Saved installed packages index:", style=EMPH3)
             cout(json.dumps(self.installed_packages, indent=2))
 
-    def get_installed_package_info(self, package_name: str) -> tuple[str, str]:
+    def get_installed_package_version(self, package_name: str) -> str:
+        """Return the version of the given installed package. Fatal error
+        if the package is not installed have its info is corrupt.
+        """
+        package_info = self.installed_packages.get(package_name)
+        assert package_info is not None, package_name
+        package_version = package_info.get("version")
+        assert package_version is not None
+        return package_version
+
+    def get_installed_package_info(
+        self, package_name: str
+    ) -> tuple[str, str, str, str]:
         """Return (package_version, platform_id) of the given installed
         package. Values are replaced with "" if not installed or a value is
         missing."""
         package_info = self.installed_packages.get(package_name, {})
         package_version = package_info.get("version", "")
         platform_id = package_info.get("platform", "")
-        return (package_version, platform_id)
+        platform_version = package_info.get("loaded-by", "")
+        package_source_url = package_info.get("loaded-from", "")
+        return (
+            package_version,
+            platform_id,
+            platform_version,
+            package_source_url,
+        )
 
     def add_package(self, name: str, version: str, platform_id: str, url: str):
         """Add a package to the installed packages and save."""
@@ -706,7 +755,7 @@ class PackageManager:
             # self._save()
             self._save_installed_packages()
 
-    def get_required_package_info(self, package_name: str) -> dict:
+    def get_required_package_spec(self, package_name: str) -> dict:
         """Returns the information of the package with given name.
         The information is a JSON dict originated at packages.json().
         Exits with an error message if the package is not defined.

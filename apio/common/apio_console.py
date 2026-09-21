@@ -332,7 +332,7 @@ def fatal_error(
             traceback.print_exception(cause)
     else:
         cout(
-            "For debugging information, set env var APIO_DEBUG=1.",
+            "Hint: For debugging information, set env var APIO_DEBUG=1.",
             style=INFO,
         )
 

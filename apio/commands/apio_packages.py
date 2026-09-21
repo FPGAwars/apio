@@ -8,13 +8,15 @@
 """Implementation of 'apio packages' command"""
 
 import sys
-from dataclasses import dataclass
 import click
 from rich.table import Table
 from rich import box
 from apio.common.apio_console import cout, ctable, fatal_error
 from apio.common.apio_styles import INFO, BORDER, ERROR, SUCCESS
 from apio.commands import options
+from apio.managers.package_manager import (
+    PackagesScanResults,
+)
 from apio.utils.cmd_util import (
     ApioGroup,
     ApioSubgroup,
@@ -29,34 +31,16 @@ from apio.apio_context import (
 )
 
 
-@dataclass(frozen=True)
-class RequiredPackageRow:
-    """Information of a row of a required package."""
-
-    # -- Package name
-    name: str
-    # -- The status column text value.
-    status: str
-    # -- The style to use for the row.
-    style: str | None
-
-
-def print_packages_report(apio_ctx: ApioContext) -> bool:
+def print_packages_report2(apio_ctx: ApioContext) -> bool:
     """A common function to print the state of the packages.
     Returns True if the packages are OK.
     """
 
     # -- Scan the packages
     # scan = packages.scan_packages(apio_ctx.package_manager)
-    scan = apio_ctx.package_manager.scan_packages()
+    scan: PackagesScanResults = apio_ctx.package_manager.scan_packages()
 
-    # -- Shortcuts to reduce clutter.
-    get_installed_package_info = (
-        apio_ctx.package_manager.get_installed_package_info
-    )
-    get_required_package_info = (
-        apio_ctx.package_manager.get_required_package_info
-    )
+    # ===== Required Packages Table =====
 
     table = Table(
         show_header=True,
@@ -70,62 +54,40 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
 
     table.add_column("PACKAGE NAME", no_wrap=True)
     table.add_column("VERSION", no_wrap=True)
-    table.add_column("PLATFORM", no_wrap=True)
+    # table.add_column("PLATFORM", no_wrap=True)
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
-    required_packages_rows: dict[str, RequiredPackageRow] = {}
+    for package_name, package_status in scan.required_packages.items():
 
-    # -- Collect rows of required packages that are installed OK.
-    for package_name in scan.installed_ok_package_names:
-        assert package_name not in required_packages_rows
-        required_packages_rows[package_name] = RequiredPackageRow(
-            package_name, "OK", None
+        # -- Collect additional info about the package.
+        package_manager = apio_ctx.package_manager
+        installed_version, *_ = package_manager.get_installed_package_info(
+            package_name
+        )
+        package_info = package_manager.get_required_package_spec(package_name)
+
+        # -- Determine row color
+        row_style = (
+            ERROR
+            if package_status.is_inconsistency
+            else INFO if not package_status.is_ok else None
         )
 
-    # -- Collect rows of required packages that are uninstalled.
-    for package_name in scan.uninstalled_package_names:
-        assert package_name not in required_packages_rows
-        required_packages_rows[package_name] = RequiredPackageRow(
-            package_name, "Uninstalled", INFO
-        )
-
-    # -- Collect rows of required packages have version or platform mismatch.
-    for package_name in scan.bad_version_package_names:
-        assert package_name not in required_packages_rows
-        required_packages_rows[package_name] = RequiredPackageRow(
-            package_name, "Mismatch", ERROR
-        )
-
-    # -- Collect rows of required packages that are broken.
-    for package_name in scan.broken_package_names:
-        assert package_name not in required_packages_rows
-        required_packages_rows[package_name] = RequiredPackageRow(
-            package_name, "Broken", ERROR
-        )
-
-    # -- Add the required packages rows to the table, in the order that they
-    # -- are statically defined in the remote config file.
-    assert set(required_packages_rows.keys()) == (
-        apio_ctx.required_packages.keys()
-    )
-    for package_name in apio_ctx.required_packages:
-        row_info = required_packages_rows[package_name]
-        version, platform_id = get_installed_package_info(package_name)
-        info = get_required_package_info(package_name)
-        description = info["description"]
+        # -- Add a table row for the package.
         table.add_row(
             package_name,
-            version,
-            platform_id,
-            description,
-            row_info.status,
-            style=row_info.style,
+            installed_version,
+            package_info["description"],
+            package_status.value,
+            style=row_style,
         )
 
     # -- Render table.
     cout()
     ctable(table)
+
+    # ===== Orphans Table =====
 
     # -- Define errors table.
     table = Table(
@@ -143,14 +105,8 @@ def print_packages_report(apio_ctx: ApioContext) -> bool:
     table.add_column("NAME", no_wrap=True, min_width=15)
 
     # -- Add rows.
-    for package_name in scan.orphan_package_names:
-        table.add_row("Orphan package", package_name)
-
-    for name in sorted(scan.orphan_dir_names):
-        table.add_row("Orphan dir", name)
-
-    for name in sorted(scan.orphan_file_names):
-        table.add_row("Orphan file", name)
+    for orphan_name, orphan_type in scan.orphans.items():
+        table.add_row(orphan_name, orphan_type.value)
 
     # -- Render the table, unless empty.
     if table.row_count:
@@ -219,11 +175,9 @@ def _install_cli(
         packages_policy=PackagesPolicy.IGNORE_PACKAGES,
     )
 
-    # cout(f"Platform id '{apio_ctx.platform_id}'")
-
     # -- First thing, fix broken packages, if any. This forces fetching
     # -- of the latest remote config file.
-    apio_ctx.package_manager.scan_and_fix_packages()
+    apio_ctx.package_manager.scan_and_fix_inconsistencies()
 
     # -- Install the packages, one by one.
     for package in apio_ctx.required_packages:
@@ -235,7 +189,7 @@ def _install_cli(
 
     # -- If verbose, print a full report.
     if verbose:
-        package_ok = print_packages_report(apio_ctx)
+        package_ok = print_packages_report2(apio_ctx)
         if not package_ok:
             sys.exit(1)
 
@@ -303,7 +257,7 @@ def _list_cli(check: bool):
     )
 
     # -- Print packages report.
-    packages_ok = print_packages_report(apio_ctx)
+    packages_ok = print_packages_report2(apio_ctx)
 
     # -- Handle check failure
     if check and not packages_ok:
