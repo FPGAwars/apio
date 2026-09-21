@@ -209,7 +209,7 @@ def _install_cli(
 
     # -- We believe that we have the exactly the correct packages
     # -- installed. Perform a few final checks.
-    apio_ctx.package_manager.check_packages()
+    apio_ctx.package_manager.check_packages_post_install()
 
 
 # ------ apio packages list
