@@ -36,7 +36,7 @@ class RequiredPackageStatus(Enum):
     PACKAGE_DIR_IS_A_FILE = "Package dir is a file"
     PACKAGE_VERSION_MISMATCH = "Version mismatch"
     PACKAGE_PLATFORM_MISMATCH = "Platform mismatch"
-    PACKAGE_PLATFORM_VERSION_MISMATCH = "Platform ver mismatch"
+    PACKAGE_APIO_VERSION_MISMATCH = "Apio version mismatch"
     PACKAGE_URL_MISMATCH = "Source URL mismatch"
     PACKAGE_OK = "OK"
 
@@ -598,7 +598,7 @@ class PackageManager:
             return RequiredPackageStatus.PACKAGE_PLATFORM_MISMATCH
 
         if installed_platform_version != util.get_apio_version_str():
-            return RequiredPackageStatus.PACKAGE_PLATFORM_VERSION_MISMATCH
+            return RequiredPackageStatus.PACKAGE_APIO_VERSION_MISMATCH
 
         true_src_url = self._construct_package_download_url(package_config)
 
