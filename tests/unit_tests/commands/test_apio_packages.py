@@ -19,12 +19,18 @@ def test_packages(apio_runner: ApioRunner):
         assert "apio packages list" in cunstyle(result.output)
         assert result.output != cunstyle(result.output)  # Colored.
 
+
+def test_packages_list(apio_runner: ApioRunner):
+    """Test "apio packages" with different parameters"""
+
+    with apio_runner.in_sandbox() as sb:
+
         # -- Execute "apio packages list"
         result = sb.invoke_apio_cmd(apio, ["packages", "list"])
         sb.assert_result_ok(result)
 
 
-def test_packages_slow(apio_runner: ApioRunner):
+def test_packages_install(apio_runner: ApioRunner):
     """Tests listing, installation and uninstallation of packages."""
 
     with apio_runner.in_sandbox() as sb:

@@ -167,7 +167,7 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
 
     # -- Get the version of the 'definitions' package use. At this point it's
     # -- expected to be installed.
-    def_version, _ = apio_ctx.package_manager.get_installed_package_info(
+    def_version = apio_ctx.package_manager.get_installed_package_version(
         "definitions"
     )
 

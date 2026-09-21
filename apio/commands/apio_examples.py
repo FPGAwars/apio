@@ -121,8 +121,8 @@ def list_examples_docs_format(apio_ctx: ApioContext):
 
     # -- Get the version of the 'definitions' package use. At this point it's
     # -- expected to be installed.
-    def_version, _ = apio_ctx.package_manager.get_installed_package_info(
-        "definitions"
+    definitions_package_version = (
+        apio_ctx.package_manager.get_installed_package_version("definitions")
     )
 
     # -- Get list of examples.
@@ -145,7 +145,7 @@ def list_examples_docs_format(apio_ctx: ApioContext):
     cwrite("\n# Apio Examples\n")
     cwrite(
         f"\nThis markdown page was generated automatically on {today_str} "
-        f"from version `{def_version}` of the Apio definitions package.\n"
+        f"from version `{definitions_package_version}` of the Apio definitions package.\n"
     )
     cwrite(
         "\n> Apio project examples can be submitted to the "
