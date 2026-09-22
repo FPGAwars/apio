@@ -96,10 +96,18 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
         # -- Break the clk net name into parts
         name_parts = clk_net.split("$")
 
-        # -- Extract the user net name part. The location depends on the
-        # -- architecture.
+        # -- Extract the user net name. ECP5 keeps part [2]
+        # -- (`$glbnet$MY_CLK$TRELLIS_IO_IN`). A net that starts with `$`
+        # -- (a pad clock of the new nextpnr-xilinx is `$iopadmap$clk`) uses
+        # -- the last non-empty part. Anything else, including ice40
+        # -- (`MY_CLK$SB_IO_IN_$glb_clk`), keeps part [0].
         if is_ecp5:
             name = name_parts[2]
+        elif clk_net.startswith("$"):
+            name = next(
+                (part for part in reversed(name_parts) if part),
+                "",
+            )
         else:
             name = name_parts[0]
 
