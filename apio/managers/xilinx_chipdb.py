@@ -9,6 +9,7 @@
 
 import json
 from pathlib import Path
+from typing import Any
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_styles import INFO, EMPH1
@@ -25,10 +26,46 @@ from apio.utils import util
 PARTS_INDEX_FILE_NAME = "XILINX-PARTS-INDEX.json"
 
 
-# -- The expected version of the parts index schema. This stored
-# -- in the "schema" field at the top level. If the schema changes, we
-# -- may need to adapt the code below.
-EXPECTED_SCHEMA_VERSION = 5
+# -- The expected version of the parts index schema, stored in the
+# -- top-level "schema" field. Apio does not choose an engine at run
+# -- time: this number is the contract with the installed package.
+# --
+# -- Schema 6 is the current (legacy) nextpnr-xilinx. The command line stays
+# -- `nextpnr-xilinx --chipdb <file> --xdc ...`, one chipdb file per
+# -- base part, and the entry fields are those of schema 5. There is
+# -- no "pnr" field.
+# --
+# -- Schema 7 will be the new nextpnr-xilinx, installed under the same
+# -- name, one chipdb file per die, and the command line
+# -- `--device <part> --chipdb <file> -o xdc=... -o fasm=... --report`.
+# -- That lands in a later commit, which raises this constant, changes
+# -- the command line, and moves the apio-1.7.x.jsonc tag with it.
+EXPECTED_SCHEMA_VERSION = 6
+
+
+def _parts_index_path(apio_ctx: ApioContext) -> Path:
+    """Path of the parts index inside the installed openxc7 package."""
+    return apio_ctx.get_package_dir("openxc7") / PARTS_INDEX_FILE_NAME
+
+
+def read_xilinx_parts_index(apio_ctx: ApioContext) -> dict[str, Any]:
+    """Open the openxc7 parts index and check that its schema is the one
+    this apio reads."""
+
+    parts_index_path = _parts_index_path(apio_ctx)
+    with open(parts_index_path, encoding="utf-8") as f:
+        json_data = json.load(f)
+
+    # -- Verify that the index has a schema version we understand.
+    actual_schema_version = (
+        json_data["schema"] if "schema" in json_data else "Unknown"
+    )
+    if actual_schema_version != EXPECTED_SCHEMA_VERSION:
+        fatal_error(
+            f"Unexpected schema version {actual_schema_version}, "
+            f"expected {EXPECTED_SCHEMA_VERSION}"
+        )
+    return json_data
 
 
 def chipdb_file_on_demand(
@@ -54,24 +91,12 @@ def chipdb_file_on_demand(
         cout(f"Deleting a leftover chipdb archive {path.name}", style=INFO)
         path.unlink()
 
-    # -- Read the xilinx parts index from the file PARTS_INDEX.json at the
-    # -- root of the openxc7 package.
-    openxc7_dir = apio_ctx.get_package_dir("openxc7")
-    parts_index_path = openxc7_dir / PARTS_INDEX_FILE_NAME
-    with open(parts_index_path, encoding="utf-8") as f:
-        json_data = json.load(f)
+    # -- Read the xilinx parts index and check its schema.
+    json_data = read_xilinx_parts_index(apio_ctx)
+    parts_index_path = _parts_index_path(apio_ctx)
 
-    # -- Verify that the index has a schema version we understand.
-    actual_schema_version = (
-        json_data["schema"] if "schema" in json_data else "Unknown"
-    )
-    if actual_schema_version != EXPECTED_SCHEMA_VERSION:
-        fatal_error(
-            f"Unexpected schema version {actual_schema_version}, "
-            f"expected {EXPECTED_SCHEMA_VERSION}"
-        )
-
-    # -- Lookup part information using yosys_part as a key.
+    # -- Lookup part information using yosys_part as a key. A missing
+    # -- part is a fatal error that names it. There is no default.
     parts = json_data["parts"]
     if yosys_part not in parts:
         fatal_error(

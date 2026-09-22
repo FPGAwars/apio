@@ -212,7 +212,7 @@ nextpnr-extra-options =
 ```
 
 > Some architectures use variants of nextpnr such as
-> `nextpnr-ecp4` or `nextpnr-himbaechel`. This option applies to them as well.
+> `nextpnr-ecp5` or `nextpnr-himbaechel`. This option applies to them as well.
 
 ### programmer-cmd
 
