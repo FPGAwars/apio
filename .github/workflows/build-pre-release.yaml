@@ -181,6 +181,7 @@ jobs:
           json-file: BUILD-INFO.json
           mappings: >-
             APIO_VERSION  apio-cli-version
+            REPO          repo
             REPO_COMMIT   repo-commit
             RELEASE_TAG   release-tag
             PACKAGE_TAG   package-tag
