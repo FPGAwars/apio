@@ -355,7 +355,7 @@ class ApioSandbox:
     def write_json_file(
         self,
         file: str | Path,
-        json_data: dict[str, dict],
+        json_data: dict[str, Any],
         exists_ok=False,
     ):
         """Write a dict to given json file. 'file' can be a string or a

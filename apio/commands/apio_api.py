@@ -20,6 +20,7 @@ from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, fatal_error
 from apio.common import proto_util
+from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.common.debug_util import is_under_vscode_debugger
 from apio.common.common_util import get_project_source_files
 from apio.utils import (
@@ -280,6 +281,7 @@ def _get_build_report_cli(
         top_dict["timestamp"] = timestamp
 
     section_dict: dict[str, Any] = {}
+    section_dict["arch"] = ApioArch.Name(report.arch)
     section_dict["env"] = apio_ctx.project.env_name
 
     resources_dict: dict[str, Any] = {}
