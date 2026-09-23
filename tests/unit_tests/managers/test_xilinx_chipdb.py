@@ -43,30 +43,29 @@ def _context() -> ApioContext:
 
 
 def _entry() -> dict:
-    """One generated part. Schema 6 has no pnr field."""
+    """One generated part. Schema 7 names one chipdb file per die."""
     return {
         "family": "artix7",
         "base-part": "xc7a35tcsg324",
         "speed": "1",
         "generated": True,
-        "chipdb": "chipdb-xc7a35tcsg324.bin",
+        "chipdb": "chipdb-xc7a50t.bin",
     }
 
 
-def _document(parts: dict, schema: int = 6) -> dict:
+def _document(parts: dict, schema: int = 7) -> dict:
     """A minimal parts index."""
     return {"schema": schema, "parts": parts}
 
 
-def test_schema_6_is_accepted(apio_runner: ApioRunner):
-    """A schema 6 index with no pnr field is accepted."""
+def test_schema_7_is_accepted(apio_runner: ApioRunner):
+    """A schema 7 index is accepted."""
     with apio_runner.in_sandbox() as sb:
         _write_index(sb, _document({_PART: _entry()}))
         apio_ctx = _context()
         document = read_xilinx_parts_index(apio_ctx)
-        assert document["schema"] == 6
-        assert _PART in document["parts"]
-        assert "pnr" not in document["parts"][_PART]
+        assert document["schema"] == 7
+        assert document["parts"][_PART]["chipdb"] == "chipdb-xc7a50t.bin"
 
 
 def test_absent_part_is_fatal(apio_runner: ApioRunner):
@@ -81,20 +80,21 @@ def test_absent_part_is_fatal(apio_runner: ApioRunner):
         assert _PART in log.out
 
 
-def test_schema_5_is_rejected(apio_runner: ApioRunner):
-    """A schema 5 index is rejected by the shared reader, including when
-    the chipdb fetch is what opens it."""
+@pytest.mark.parametrize("schema", [6, 5])
+def test_older_schema_is_rejected(apio_runner: ApioRunner, schema: int):
+    """A schema 6 or 5 index is rejected by the shared reader, including
+    when the chipdb fetch is what opens it."""
     with apio_runner.in_sandbox() as sb:
-        _write_index(sb, _document({_PART: _entry()}, schema=5))
+        _write_index(sb, _document({_PART: _entry()}, schema=schema))
         apio_ctx = _context()
         with apio_runner.with_logger() as log:
             with pytest.raises(SystemExit) as e:
                 read_xilinx_parts_index(apio_ctx)
         assert e.value.code == 1
-        assert "expected 6" in log.out
+        assert f"Unexpected schema version {schema}, expected 7" in log.out
 
         with apio_runner.with_logger() as log:
             with pytest.raises(SystemExit) as e:
                 chipdb_file_on_demand(apio_ctx, _PART)
         assert e.value.code == 1
-        assert "expected 6" in log.out
+        assert f"Unexpected schema version {schema}, expected 7" in log.out

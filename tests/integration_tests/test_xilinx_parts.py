@@ -31,7 +31,7 @@ def test_fpgas_yosys_part_num(apio_runner: ApioRunner):
             apio_ctx.get_package_dir("openxc7") / "XILINX-PARTS-INDEX.json"
         )
         index_data = json.loads(index_path.read_text(encoding="utf-8"))
-        assert index_data["schema"] == 6, index_data["schema"]
+        assert index_data["schema"] == 7, index_data["schema"]
         parts = index_data["parts"]
 
         # -- Iterate FPGA definitions and verify

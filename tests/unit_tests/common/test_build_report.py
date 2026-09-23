@@ -1,5 +1,6 @@
 """Test for build_report.py."""
 
+import json
 from pathlib import Path
 import pytest
 from tests.conftest import ApioRunner
@@ -130,6 +131,55 @@ def test_non_ecp5_read_build_report(apio_runner: ApioRunner):
             ],
             clocks=[ClockReport(name="MY_CLK", fmax_mhz=194.363)],
         )
+
+
+# -- Trimmed from a real report of the new nextpnr-xilinx for a blinky
+# -- on xc7a35tcsg324. The pad clock net is `$iopadmap$clk`. PSEUDO_GND
+# -- is 1 of 1 on that engine.
+NEW_NEXTPNR_XILINX_XC7A35TCSG324 = {
+    "utilization": {
+        "BUFGCTRL": {"available": 32, "used": 1},
+        "PSEUDO_GND": {"available": 1, "used": 1},
+        "SLICE_LUTX": {"available": 65200, "used": 48},
+    },
+    "fmax": {
+        "$iopadmap$clk": {
+            "achieved": 398.88311767578125,
+            "constraint": 12,
+        }
+    },
+}
+
+
+def _resource(name: str, available: int, used: int) -> ResourceReport:
+    """One resource row, with the percentage the parser computes."""
+    return ResourceReport(
+        name=name,
+        available=available,
+        used=used,
+        percentage=100 * used / available,
+    )
+
+
+def test_new_nextpnr_xilinx_pad_clock_uses_the_last_net_part(apio_runner):
+    """`$iopadmap$clk` reports as `clk`, not as an empty name."""
+    with apio_runner.in_sandbox() as sb:
+        file_path = Path("_build/default/hardware.pnr")
+        sb.write_file(file_path, json.dumps(NEW_NEXTPNR_XILINX_XC7A35TCSG324))
+
+        build_report = read_build_report(file_path)
+
+        assert build_report == BuildReport(
+            resources=[
+                _resource("BUFGCTRL", 32, 1),
+                _resource("PSEUDO_GND", 1, 1),
+                _resource("SLICE_LUTX", 65200, 48),
+            ],
+            clocks=[
+                ClockReport(name="clk", fmax_mhz=398.88311767578125),
+            ],
+        )
+        assert build_report.clocks[0].name != ""
 
 
 def test_hardware_pnr_reading_failure(apio_runner: ApioRunner):

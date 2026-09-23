@@ -77,6 +77,12 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     # -- one resource name.
     is_ecp5 = any("TRELLIS" in key for key in json_dict["utilization"])
 
+    # -- Xilinx (nextpnr-xilinx) names its resources SLICE_*. Its pad clock
+    # -- net is `$iopadmap$clk`, so the user name is the last net part.
+    is_xilinx = any(
+        key.startswith("SLICE_") for key in json_dict["utilization"]
+    )
+
     # -- Collect resources
     resources: list[ResourceReport] = []
     for resource_name, vals in json_dict["utilization"].items():
@@ -96,10 +102,17 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
         # -- Break the clk net name into parts
         name_parts = clk_net.split("$")
 
-        # -- Extract the user net name part. The location depends on the
-        # -- architecture.
+        # -- Extract the user net name. ECP5 keeps part [2]
+        # -- (`$glbnet$MY_CLK$TRELLIS_IO_IN`). Xilinx keeps the last
+        # -- non-empty part (`$iopadmap$clk`). Anything else, including
+        # -- ice40 (`MY_CLK$SB_IO_IN_$glb_clk`), keeps part [0].
         if is_ecp5:
             name = name_parts[2]
+        elif is_xilinx:
+            name = next(
+                (part for part in reversed(name_parts) if part),
+                "",
+            )
         else:
             name = name_parts[0]
 

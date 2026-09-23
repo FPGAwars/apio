@@ -27,20 +27,12 @@ PARTS_INDEX_FILE_NAME = "XILINX-PARTS-INDEX.json"
 
 
 # -- The expected version of the parts index schema, stored in the
-# -- top-level "schema" field. Apio does not choose an engine at run
-# -- time: this number is the contract with the installed package.
+# -- top-level "schema" field. This number is the contract with the
+# -- installed openxc7 package: any other version is rejected.
 # --
-# -- Schema 6 is the current (legacy) nextpnr-xilinx. The command line stays
-# -- `nextpnr-xilinx --chipdb <file> --xdc ...`, one chipdb file per
-# -- base part, and the entry fields are those of schema 5. There is
-# -- no "pnr" field.
-# --
-# -- Schema 7 will be the new nextpnr-xilinx, installed under the same
-# -- name, one chipdb file per die, and the command line
-# -- `--device <part> --chipdb <file> -o xdc=... -o fasm=... --report`.
-# -- That lands in a later commit, which raises this constant, changes
-# -- the command line, and moves the apio-1.7.x.jsonc tag with it.
-EXPECTED_SCHEMA_VERSION = 6
+# -- In schema 7 there is one chipdb file per die, and the index entry
+# -- of each part names the file that part uses.
+EXPECTED_SCHEMA_VERSION = 7
 
 
 def _parts_index_path(apio_ctx: ApioContext) -> Path:
