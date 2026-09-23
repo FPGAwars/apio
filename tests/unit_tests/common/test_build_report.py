@@ -150,22 +150,6 @@ NEW_NEXTPNR_XILINX_XC7A35TCSG324 = {
     },
 }
 
-# -- Trimmed from a real nextpnr-xilinx report of the same blinky.
-# -- The pad clock net is `clk`. PSEUDO_GND is 1 of 18055.
-LEGACY_XC7A35TCSG324 = {
-    "utilization": {
-        "BUFGCTRL": {"available": 32, "used": 1},
-        "PSEUDO_GND": {"available": 18055, "used": 1},
-        "SLICE_LUTX": {"available": 65200, "used": 48},
-    },
-    "fmax": {
-        "clk": {
-            "achieved": 453.93,
-            "constraint": 12.0,
-        }
-    },
-}
-
 
 def _resource(name: str, available: int, used: int) -> ResourceReport:
     """One resource row, with the percentage the parser computes."""
@@ -196,24 +180,6 @@ def test_new_nextpnr_xilinx_pad_clock_uses_the_last_net_part(apio_runner):
             ],
         )
         assert build_report.clocks[0].name != ""
-
-
-def test_legacy_xilinx_pad_clock_keeps_its_name(apio_runner: ApioRunner):
-    """A legacy report whose clock net is `clk` still reports `clk`."""
-    with apio_runner.in_sandbox() as sb:
-        file_path = Path("_build/default/hardware.pnr")
-        sb.write_file(file_path, json.dumps(LEGACY_XC7A35TCSG324))
-
-        build_report = read_build_report(file_path)
-
-        assert build_report == BuildReport(
-            resources=[
-                _resource("BUFGCTRL", 32, 1),
-                _resource("PSEUDO_GND", 18055, 1),
-                _resource("SLICE_LUTX", 65200, 48),
-            ],
-            clocks=[ClockReport(name="clk", fmax_mhz=453.93)],
-        )
 
 
 def test_hardware_pnr_reading_failure(apio_runner: ApioRunner):
