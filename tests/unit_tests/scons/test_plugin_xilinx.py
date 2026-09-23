@@ -2,6 +2,8 @@
 Tests of the scons plugin_xilinx.py place and route builder.
 """
 
+from pathlib import Path
+
 from google.protobuf import text_format
 from tests.unit_tests.scons.testing import make_test_apio_env
 from tests.conftest import ApioRunner
@@ -58,7 +60,7 @@ def test_pnr_builder(apio_runner: ApioRunner):
     assert "-o xdc=arty.xdc" in action
     assert "-o fasm=$TARGET" in action
     assert "--json $SOURCE" in action
-    assert "--report _build/default/hardware.pnr" in action
+    assert f"--report {Path('_build', 'default', 'hardware.pnr')}" in action
     assert action.split()[-1] == "-q"
     assert "--xdc" not in action
     assert "--fasm" not in action
