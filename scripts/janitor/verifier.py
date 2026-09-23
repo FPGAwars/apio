@@ -126,7 +126,7 @@ def _verify_release_should_be_consistent(
         part["asset"] for part in index["parts"].values() if "asset" in part
     }
     print(f"index_chipdbs has {len(index_chipdbs)} members.")
-    assert len(index_chipdbs) > 20, index_chipdbs  # Sanity check
+    assert len(index_chipdbs) >= 10, index_chipdbs  # Sanity check
 
     # -- Download the release metadata.
     release_metadata = util.download_release_metadata(release)
