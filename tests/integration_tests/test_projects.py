@@ -13,6 +13,7 @@ from apio.commands.apio import apio_top_cli as apio
 def _test_project(
     apio_runner: ApioRunner,
     *,
+    arch: str,
     remote_proj_dir: bool,
     example: str,
     testbench_file: str,
@@ -25,6 +26,7 @@ def _test_project(
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-statements
+    # pylint: disable=too-many-locals
 
     # -- Extract the base name of the testbench file
     testbench, _ = os.path.splitext(testbench_file)
@@ -105,6 +107,14 @@ def _test_project(
         assert "yosys -p" in result.output
         assert "-DSYNTHESIZE" in result.output
         assert "-DAPIO_SIM" not in result.output
+
+        # -- 'apio api get-build-report -o _build_report.json'
+        args = ["api", "get-build-report", "-o", "_build_report.json"]
+        result = sb.invoke_apio_cmd(apio, args)
+        sb.assert_result_ok(result)
+        build_report = sb.read_json_file("_build_report.json")
+        assert build_report["build-report"]["arch"] == arch
+        Path("_build_report.json").unlink()
 
         # -- 'apio lint'
         args = ["lint"] + proj_arg
@@ -271,6 +281,7 @@ def test_project_ice40_local_dir(apio_runner: ApioRunner):
     dir."""
     _test_project(
         apio_runner,
+        arch="ice40",
         remote_proj_dir=False,
         example="alhambra-ii/bcd-counter",
         testbench_file="main_tb.v",
@@ -284,6 +295,7 @@ def test_project_ice40_remote_dir(apio_runner: ApioRunner):
     the -p option."""
     _test_project(
         apio_runner,
+        arch="ice40",
         remote_proj_dir=True,
         example="alhambra-ii/bcd-counter",
         testbench_file="main_tb.v",
@@ -297,6 +309,7 @@ def test_project_ice40_system_verilog(apio_runner: ApioRunner):
     verilog files."""
     _test_project(
         apio_runner,
+        arch="ice40",
         remote_proj_dir=False,
         example="alhambra-ii/bcd-counter-sv",
         testbench_file="main_tb.sv",
@@ -309,6 +322,7 @@ def test_project_ecp5_local_dir(apio_runner: ApioRunner):
     """Tests building and testing an ecp5 project as the current working dir"""
     _test_project(
         apio_runner,
+        arch="ecp5",
         remote_proj_dir=False,
         example="colorlight-5a-75b-v8/ledon",
         testbench_file="ledon_tb.v",
@@ -321,6 +335,7 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
     """Tests building and testing an ecp5 project from a remote directory."""
     _test_project(
         apio_runner,
+        arch="ecp5",
         remote_proj_dir=True,
         example="colorlight-5a-75b-v8/ledon",
         testbench_file="ledon_tb.v",
@@ -334,6 +349,7 @@ def test_project_ecp5_system_verilog(apio_runner: ApioRunner):
     verilog files."""
     _test_project(
         apio_runner,
+        arch="ecp5",
         remote_proj_dir=False,
         example="colorlight-5a-75b-v8/ledon-sv",
         testbench_file="ledon_tb.sv",
@@ -346,6 +362,7 @@ def test_project_gowin_local_dir(apio_runner: ApioRunner):
     """Tests building and testing a gowin project as the current working dir"""
     _test_project(
         apio_runner,
+        arch="gowin",
         remote_proj_dir=False,
         example="sipeed-tang-nano-9k/blinky",
         testbench_file="blinky_tb.v",
@@ -358,6 +375,7 @@ def test_project_gowin_remote_dir(apio_runner: ApioRunner):
     """Tests building and testing a gowin project from a remote directory."""
     _test_project(
         apio_runner,
+        arch="gowin",
         remote_proj_dir=True,
         example="sipeed-tang-nano-9k/blinky",
         testbench_file="blinky_tb.v",
@@ -371,6 +389,7 @@ def test_project_gowin_system_verilog(apio_runner: ApioRunner):
     verilog files."""
     _test_project(
         apio_runner,
+        arch="gowin",
         remote_proj_dir=False,
         example="sipeed-tang-nano-9k/blinky-sv",
         testbench_file="blinky_tb.sv",
@@ -384,6 +403,7 @@ def test_project_xilinx_local_dir(apio_runner: ApioRunner):
     dir."""
     _test_project(
         apio_runner,
+        arch="xilinx",
         remote_proj_dir=False,
         example="basys3/ledon",
         testbench_file="ledon_tb.v",
@@ -397,6 +417,7 @@ def test_project_xilinx_remote_dir(apio_runner: ApioRunner):
     the -p option."""
     _test_project(
         apio_runner,
+        arch="xilinx",
         remote_proj_dir=True,
         example="basys3/ledon",
         testbench_file="ledon_tb.v",

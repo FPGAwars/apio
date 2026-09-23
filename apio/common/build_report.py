@@ -10,9 +10,11 @@
 """Utilities related to the build report file hardware.pnr."""
 
 import json
+from typing import Any
 from dataclasses import dataclass
 from pathlib import Path
 from apio.common.apio_console import fatal_error
+from apio.common.proto.apio_common_pb2 import ApioArch
 
 
 @dataclass(frozen=True)
@@ -37,8 +39,68 @@ class ClockReport:
 class BuildReport:
     """Represents FPGA resources utilization and clocks speeds."""
 
+    arch: ApioArch
     resources: list[ResourceReport]
     clocks: list[ClockReport]
+
+
+def _identify_build_architecture(json_dict: dict[str, Any]) -> ApioArch:
+    """Given the content of the nextpnr json output file hardware.pnr,
+    identify the architecture of the build."""
+
+    # -- A set of patterns and their matching architectures.
+    patterns = {
+        "ICESTORM": ApioArch.ice40,
+        "TRELLIS": ApioArch.ecp5,
+        "IOLOGICI": ApioArch.gowin,
+        "SLICE": ApioArch.xilinx,
+    }
+
+    # -- Collect all archs whose patterns match.
+    matches: list[ApioArch] = []
+    for pattern, arch in patterns.items():
+        for key in json_dict["utilization"]:
+            if pattern in key:
+                matches.append(arch)
+                break
+
+    # -- Error if we got none or more than 1.
+    if len(matches) != 1:
+        fatal_error(f"Expected exactly 1 arch match, found: {matches}")
+
+    # -- Found it.
+    return matches[0]
+
+
+def _parse_clk_net_name(clk_net: str, arch: ApioArch) -> str:
+    """Given a clock net as it appears in the nextpnr file hardware.pnr,
+    extracts and returns a user friendly clock name. The parsing of the
+    clock net depends ont the fpga architecture of the build."""
+
+    # -- Break the clk net name into parts
+    name_parts = clk_net.split("$")
+
+    # -- Handle ICE40
+    if arch == ApioArch.ice40:
+        return name_parts[0].rstrip("_")
+
+    # -- Handle ECP5
+    if arch == ApioArch.ecp5:
+        return name_parts[2]
+
+    # -- Handle Gowin
+    if arch == ApioArch.gowin:
+        return name_parts[0].removesuffix("_IBUF_I_O")
+
+    # -- Handle Xilinx
+    if arch == ApioArch.xilinx:
+        return next(
+            (part for part in reversed(name_parts) if part),
+            "",
+        )
+
+    # -- Handle unknown architecture.
+    fatal_error(f"Unexpected FPGA architecture: {arch}")
 
 
 def read_build_report(pnr_json_file_path: Path) -> BuildReport:
@@ -72,16 +134,8 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
             f"Failed parsing json file: {str(pnr_json_file_path)}", cause=e
         )
 
-    # -- ECP5 (TRELLIS project) has a slightly different format of internal
-    # -- net name. We detect it by the existence of "TRELLIS" in at least
-    # -- one resource name.
-    is_ecp5 = any("TRELLIS" in key for key in json_dict["utilization"])
-
-    # -- Xilinx (nextpnr-xilinx) names its resources SLICE_*. Its pad clock
-    # -- net is `$iopadmap$clk`, so the user name is the last net part.
-    is_xilinx = any(
-        key.startswith("SLICE_") for key in json_dict["utilization"]
-    )
+    # -- Identify the FPGA arch of the build.
+    arch = _identify_build_architecture(json_dict)
 
     # -- Collect resources
     resources: list[ResourceReport] = []
@@ -99,26 +153,8 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     # -- Collect clocks
     clocks: list[ClockReport] = []
     for clk_net, vals in json_dict["fmax"].items():
-        # -- Break the clk net name into parts
-        name_parts = clk_net.split("$")
-
-        # -- Extract the user net name. ECP5 keeps part [2]
-        # -- (`$glbnet$MY_CLK$TRELLIS_IO_IN`). Xilinx keeps the last
-        # -- non-empty part (`$iopadmap$clk`). Anything else, including
-        # -- ice40 (`MY_CLK$SB_IO_IN_$glb_clk`), keeps part [0].
-        if is_ecp5:
-            name = name_parts[2]
-        elif is_xilinx:
-            name = next(
-                (part for part in reversed(name_parts) if part),
-                "",
-            )
-        else:
-            name = name_parts[0]
-
-        # -- Remove trailing '_'. Otherwise, on alhambra-ii/pll example, the
-        # -- internal clock 'sys_clk' is reported as 'sys_clk_'.
-        name = name.rstrip("_")
+        # -- Extract a user friendly clock name.
+        name = _parse_clk_net_name(clk_net, arch)
 
         # -- Extract max speed
         fmax_mhz = vals["achieved"]
@@ -129,5 +165,5 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     # -- Sort clocks alphabetically, case insensitive.
     clocks.sort(key=lambda r: r.name.lower())
 
-    result = BuildReport(resources, clocks)
+    result = BuildReport(arch, resources, clocks)
     return result
