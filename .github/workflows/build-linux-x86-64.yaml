@@ -14,9 +14,9 @@ env:
 
 jobs:
   build:
-    # As of Nov 2025, using here ubuntu-latest results in ubuntu 24.04.03
-    # which uses glibc 2.39 which results in library mismatch on older
-    # ubuntu with glibc 2.39. That's why we limit to 22.04 which should
+    # As of Nov 2025, using here ubuntu 'latest' results in ubuntu 24.04.03
+    # or higher which uses glibc 2.39 which results in library mismatch on
+    # older ubuntu with glibc 2.39. That's why we limit to 22.04 which should
     # be forward compatible with 24.04.03.
     runs-on: ubuntu-22.04
 

@@ -171,7 +171,7 @@ jobs:
 
       # Build the windows installer.
       - name: Run innosetup
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.9
         with:
           path: innosetup.iss
 

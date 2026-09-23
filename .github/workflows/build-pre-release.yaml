@@ -32,7 +32,7 @@ jobs:
   # ----- Parameters collection job
 
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     # outputs:
     #   python_version: ${{ steps.set-output.outputs.python_version }}
@@ -149,7 +149,7 @@ jobs:
         build-pypi-package,
       ]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
 
