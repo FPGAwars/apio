@@ -101,9 +101,9 @@ jobs:
           mv _pytest-coverage site/coverage
 
       - name: Upload new site
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
