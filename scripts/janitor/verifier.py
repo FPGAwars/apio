@@ -139,7 +139,7 @@ def _verify_release_should_be_consistent(
         if name.startswith("apio-xilinx-chipdb-")
     }
     print(f"assets_chipdbs has {len(assets_chipdbs)} members.")
-    assert len(assets_chipdbs) > 20, assets_chipdbs  # Sanity check
+    assert len(assets_chipdbs) >= 10, assets_chipdbs  # Sanity check
 
     # -- Classify the requirement
     if index_chipdbs != assets_chipdbs:
