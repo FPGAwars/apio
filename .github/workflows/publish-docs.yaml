@@ -18,7 +18,7 @@ on:
 
 jobs:
   publish-mkdocs-docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     environment: github-pages
 
