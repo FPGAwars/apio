@@ -80,18 +80,6 @@ jobs:
           prefix: pypi
           release_tag: ${{env.RELEASE_TAG}}
 
-      - name: Append Apio release info to pyproject.toml
-        run: |
-          cat >> ./_apio-repo/pyproject.toml << 'EOF'
-
-          [tool.apio-release]
-          repo = "${{ env.APIO_REPO }}"
-          tag = "${{ env.RELEASE_TAG }}"
-          commit = "${{ env.APIO_COMMIT }}"
-          EOF
-
-          cat -n _apio-repo/pyproject.toml
-
       - name: Copy build info to apio
         run: |
           cp ./BUILD-INFO.json ./_apio-repo/apio
