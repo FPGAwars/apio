@@ -6,14 +6,13 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
-import os
 import platform
 from dataclasses import dataclass
 from enum import Enum, unique
 from pathlib import Path
 import json5
 from apio.common.apio_console import cout, cstyle, fatal_error
-from apio.common.apio_styles import INFO, EMPH1, EMPH2, EMPH3
+from apio.common.apio_styles import INFO, EMPH1
 from apio.common.common_util import env_build_path
 from apio.managers.profile import Profile
 from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
@@ -22,6 +21,7 @@ from apio.utils.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
 from apio.managers.package_manager import PackageManager
 from apio.managers.apio_definitions import ApioDefinitions
+from apio.managers.tools_runtime_env import ToolsRuntimeEnv
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
@@ -105,10 +105,9 @@ class ApioContext:
         "package_manager",
         "platform",
         "platform_id",
-        "scons_shell_id",
+        "tools_runtime_env",
         "all_packages",
         "required_packages",
-        "env_was_already_set",
         "_project_dir",
         "_project",
         "_project_resources",
@@ -172,11 +171,6 @@ class ApioContext:
         if env_arg is not None:
             assert project_policy == ProjectPolicy.PROJECT_REQUIRED
 
-        # -- A flag to indicate if the system env was already set in this
-        # -- apio session. Used to avoid multiple repeated settings that
-        # -- make the path longer and longer.
-        self.env_was_already_set = False
-
         # -- Determine if we need to load the project, and if so, set
         # -- self._project_dir to the project dir, otherwise, leave it None.
         self._project_dir: Path | None = None
@@ -237,10 +231,6 @@ class ApioContext:
         # -- Get the underlying platform information.
         self.platform: ApioPlatform = apio_platforms.get_apio_platform()
         self.platform_id: str = self.platform.id
-
-        # -- Determine the shell id that scons will use.
-        # -- See _determine_scons_shell_id() for possible values.
-        self.scons_shell_id = self._determine_scons_shell_id(self.platform)
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource_file(
@@ -310,7 +300,7 @@ class ApioContext:
             assert self.has_project, "init(): project not loaded"
             # -- Inform the user about the active env, if needed..
             if report_env:
-                self.report_env()
+                self.report_project_env()
             # -- Collect and validate the project resources.
             # -- The project is already validated to have the required "board.
             self._project_resources = collect_project_resources(
@@ -320,7 +310,12 @@ class ApioContext:
         else:
             assert not self.has_project, "init(): project loaded"
 
-    def report_env(self):
+        # -- Set the tools runtime env manager
+        self.tools_runtime_env = ToolsRuntimeEnv(
+            self.required_packages, self.platform, util.is_pyinstaller_app()
+        )
+
+    def report_project_env(self):
         """Report to the user the env and board used. Asserts that the
         project is loaded."""
         # -- Do not call if project is not loaded.
@@ -482,41 +477,6 @@ class ApioContext:
         return tmp_dir
 
     @staticmethod
-    def _determine_scons_shell_id(apio_platform: ApioPlatform) -> str:
-        """
-        Returns a simplified string name of the shell that SCons will use
-        for executing shell-dependent commands. See code below for possible
-        values.
-        """
-
-        # pylint: disable=too-many-return-statements
-
-        # -- Handle windows.
-        if apio_platform.is_windows:
-            comspec = os.environ.get("COMSPEC", "").lower()
-            if "powershell.exe" in comspec or "pwsh.exe" in comspec:
-                return "powershell"
-            if "cmd.exe" in comspec:
-                return "cmd"
-            return "unknown"
-
-        # -- Handle the rest (macOS, Linux, etc.)
-        shell_path = os.environ.get("SHELL", "").lower()
-        if "bash" in shell_path:
-            return "bash"
-        if "zsh" in shell_path:
-            return "zsh"
-        if "fish" in shell_path:
-            return "fish"
-        if "dash" in shell_path:
-            return "dash"
-        if "ksh" in shell_path:
-            return "ksh"
-        if "csh" in shell_path or "tcsh" in shell_path:
-            return "cshell"
-        return "unknown"
-
-    @staticmethod
     def _select_required_packages_for_platform(
         all_packages: dict[str, dict],
         platform_id: str,
@@ -574,121 +534,3 @@ class ApioContext:
     def is_windows(self) -> bool:
         """Returns True iff underlying platform is a Windows."""
         return self.platform.is_windows
-
-    def _get_env_mutations_for_packages(self) -> EnvMutations:
-        """Collects the env mutation for each of the defined packages,
-        in the order they are defined."""
-
-        unset_vars: list[str] = []
-        paths: list[str] = []
-        set_vars: dict[str, str] = {}
-        for _, package_config in self.required_packages.items():
-            # -- Get the json 'env' section. We require it, even if it's empty,
-            # -- for clarity reasons.
-            assert "env" in package_config
-            package_env = package_config["env"]
-
-            # -- Collect the env vars to delete.
-            delete_env_vars_section = package_env.get("delete-env-vars", [])
-            for var_name in delete_env_vars_section:
-                # -- Detect duplicates.
-                assert var_name not in unset_vars, var_name
-                unset_vars.append(var_name)
-
-            # -- Collect the path values.
-            package_paths = package_env.get("add-to-path", [])
-            paths.extend(package_paths)
-
-            # -- Collect the env vars to add (name, value) pairs.
-            add_env_vars_section = package_env.get("add-env-vars", {})
-            for var_name, var_value in add_env_vars_section.items():
-                # -- Detect duplicates.
-                assert var_name not in set_vars, var_name
-                set_vars[var_name] = var_value
-
-        return EnvMutations(unset_vars, paths, set_vars)
-
-    def _dump_env_mutations(self, mutations: EnvMutations) -> None:
-        """Dumps a user friendly representation of the env mutations."""
-        cout("Environment settings:", style=EMPH2)
-
-        # -- Print PATH mutations.
-        windows = self.is_windows
-
-        # -- Print unset vars.
-        for name in mutations.unset_vars:
-            styled_name = cstyle(name, style=EMPH3)
-            if windows:
-                cout(f"  set {styled_name}=")
-            else:
-                cout(f"  unset {styled_name}")
-
-        # -- Dump paths.
-        for p in reversed(mutations.paths):
-            styled_name = cstyle("PATH", style=EMPH3)
-            if windows:
-                cout(f"  set {styled_name}={p};%PATH%")
-            else:
-                cout(f'  {styled_name}="{p}:$PATH"')
-
-        # -- Print set vars.
-        for name, val in mutations.set_vars.items():
-            styled_name = cstyle(name, style=EMPH3)
-            if windows:
-                cout(f"  set {styled_name}={val}")
-            else:
-                cout(f'  {styled_name}="{val}"')
-
-    def _apply_env_mutations(self, mutations: EnvMutations) -> None:
-        """Apply a given set of env mutations, while preserving their order."""
-
-        # -- Apply the unset var mutations
-        for name in mutations.unset_vars:
-            os.environ.pop(name, None)
-
-        # -- Apply the path mutations, while preserving order.
-        # -- NOTE: We treat the old path items as a single items.
-        old_val = os.environ["PATH"]
-        items = mutations.paths + [old_val]
-        new_val = os.pathsep.join(items)
-        os.environ["PATH"] = new_val
-
-        # -- Apply the set var mutations
-        for name, value in mutations.set_vars.items():
-            os.environ[name] = value
-
-    def set_env_for_packages(
-        self, *, quiet: bool = False, verbose: bool = False
-    ) -> None:
-        """Sets the environment variables for using all the that are
-        available for this platform, even if currently not installed.
-
-        The function sets the environment only on first call and in latter
-        calls skips the operation silently.
-
-        If quite is set, no output is printed. When verbose is set, additional
-        output such as the env vars mutations are printed, otherwise, a minimal
-        information is printed to make the user aware that they commands they
-        see are executed in a modified env settings.
-        """
-
-        # -- If this fails, this is a programming error. Quiet and verbose
-        # -- cannot be combined.
-        assert not (quiet and verbose), "Can't have both quite and verbose."
-
-        # -- Collect the env mutations for all packages.
-        mutations = self._get_env_mutations_for_packages()
-
-        if verbose:
-            self._dump_env_mutations(mutations)
-
-        # -- If this is the first call in this apio invocation, apply the
-        # -- mutations. These mutations are temporary for the lifetime of this
-        # -- process and does not affect the user's shell environment.
-        # -- The mutations are also inherited by child processes such as the
-        # -- scons processes.
-        if not self.env_was_already_set:
-            self._apply_env_mutations(mutations)
-            self.env_was_already_set = True
-            if not verbose and not quiet:
-                cout("Setting shell vars.")

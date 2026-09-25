@@ -142,7 +142,9 @@ def _system_cli():
     table.add_row("Is Darwin", str(platform.is_darwin))
     table.add_row("Is Linux", str(platform.is_linux))
     table.add_row("Is Windows", str(platform.is_windows))
-    table.add_row("Scons shell id", apio_ctx.scons_shell_id)
+    table.add_row(
+        "Scons shell id", apio_ctx.tools_runtime_env.scons_shell_id()
+    )
     table.add_row("VSCode debugger", str(is_under_vscode_debugger()))
     table.add_row("Pyinstaller", str(util.is_pyinstaller_app()))
     table.add_row(

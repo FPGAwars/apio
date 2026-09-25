@@ -101,7 +101,7 @@ def cli(
     )
 
     # -- Set the shell env.
-    apio_ctx.set_env_for_packages()
+    apio_ctx.tools_runtime_env.set_env_for_tools()
 
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
