@@ -160,9 +160,11 @@ def cli(
         packages_policy=PackagesPolicy.ENSURE_PACKAGES,
     )
 
-    # -- Set the env for packages. If verbose, also dumping the env changes
+    # -- Set the env for the tools. If verbose, also dumping the env changes
     # -- in a user friendly way.
-    apio_ctx.set_env_for_packages(quiet=not verbose, verbose=verbose)
+    apio_ctx.tools_runtime_env.set_env_for_tools(
+        quiet=not verbose, verbose=verbose
+    )
 
     # -- If no command, we are done.
     if not cmd:

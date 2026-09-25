@@ -113,7 +113,7 @@ def cli(
         cmd_options.append("--verbose")
 
     # -- Prepare the packages for use.
-    apio_ctx.set_env_for_packages(quiet=not verbose)
+    apio_ctx.tools_runtime_env.set_env_for_tools(quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
     _files: list[str] = list(files)

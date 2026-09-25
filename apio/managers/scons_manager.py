@@ -300,7 +300,7 @@ class SConsManager:
                 theme_name=apio_console.current_theme_name(),
                 yosys_path=oss_define_consts["YOSYS_LIB"],
                 trellis_path=oss_define_consts["TRELLIS"],
-                scons_shell_id=apio_ctx.scons_shell_id,
+                scons_shell_id=apio_ctx.tools_runtime_env.scons_shell_id(),
                 xilinx_prjxray_db_path=openxc7_define_consts["PRJXRAY_DB_DIR"],
             )
         )
@@ -371,7 +371,7 @@ class SConsManager:
         # -- We set the env variables also for a command such as 'clean'
         # -- which doesn't use the packages, to satisfy the required env
         # -- variables of the scons arg parser.
-        apio_ctx.set_env_for_packages()
+        apio_ctx.tools_runtime_env.set_env_for_tools()
 
         if is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
