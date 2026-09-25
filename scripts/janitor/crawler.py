@@ -172,13 +172,13 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
     )
 
     with urlopen(req, context=util.SSL_REQUEST_CONTEXT, timeout=30) as r:
-        data = json.load(r)
+        json_data = json.load(r)
 
     releases: dict[str, VscodeReleaseCrawl] = {}
     skipped_versions: list[str] = []
     default_version = None
 
-    for rel in data["results"][0]["extensions"][0]["versions"]:
+    for rel in json_data["results"][0]["extensions"][0]["versions"]:
 
         version_str = rel["version"]
 
@@ -187,12 +187,12 @@ def _crawl_vscode_marketplace() -> VscodeMarketplaceCrawl:
             print(f"Skipping vscode release {version_str:8} (ignore list)")
             continue
 
-        is_prerelease = any(
+        is_microsoft_prerelease = any(
             p.get("key") == _MICROSOFT_PRE_RELEASE
             and str(p.get("value")).lower() == "true"
             for p in rel.get("properties") or []
         )
-        if is_prerelease:
+        if is_microsoft_prerelease:
             skipped_versions.append(version_str)
             print(f"Skipping vscode version {version_str:8} (pre-release)")
             continue
