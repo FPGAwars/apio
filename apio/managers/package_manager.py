@@ -87,13 +87,14 @@ class PackagesScanResults:
     def num_inconsistencies_to_fix(self) -> int:
         """Returns the number of inconsistencies that require fixing before
         installing any missing package."""
-        required_packages_errors = sum(
+        required_packages_inconsistencies = sum(
             1
             for status in self.required_packages.values()
-            if not status.is_inconsistency
+            if status.is_inconsistency
         )
+        # -- All orphan errors are considered to be inconsistencies.
         orphans_errors = len(self.orphans)
-        return required_packages_errors + orphans_errors
+        return required_packages_inconsistencies + orphans_errors
 
     def is_all_ok(self) -> bool:
         """Return True if all packages are installed properly with no
@@ -649,6 +650,9 @@ class PackageManager:
                 result.orphans[base_name] = OrphanType.ORPHAN_FILE
 
         # -- All done
+        if is_debug(1):
+            result.dump()
+
         return result
 
     def _maybe_load_installed_packages_file(self):
