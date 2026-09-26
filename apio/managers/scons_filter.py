@@ -157,7 +157,7 @@ class SconsFilter:
         # self._iceprog_detector = IceProgRangeDetector()
 
         # -- We cache the values to avoid reevaluating sys env.
-        self._is_debug = is_debug(1)
+        self._is_debug = is_debug(3)
         self._is_verbose_debug = is_debug(5)
 
         # -- Accumulates string pieces until we write and flush them. This

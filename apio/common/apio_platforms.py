@@ -15,26 +15,6 @@ from dataclasses import dataclass
 from apio.utils import env_options
 from apio.common.apio_console import fatal_error
 
-# # -- The list of supported platforms and their attribute. The fields match
-# # -- the dataclass ApioPlatform below.
-# _SUPPORTED_PLATFORMS = {
-#     "darwin-arm64": {
-#         "type": "Mac OSX",
-#         "variant": "ARM 64 bit (Apple Silicon)",
-#         "is_darwin": True,
-#     },
-#     "linux-x86-64": {
-#         "type": "Linux",
-#         "variant": "X86 64 bit",
-#         "is_linux": True,
-#     },
-#     "windows-amd64": {
-#         "type": "Windows",
-#         "variant": "x86 64 bit",
-#         "is_windows": True,
-#     },
-# }
-
 
 @dataclass(frozen=True)
 class ApioPlatform:
@@ -71,14 +51,6 @@ class ApioPlatform:
         assert ("windows" in self.id) == self.is_windows, self.id
 
 
-# -- The supported platforms as a dict with platform id as keys and
-# -- ApioPlatform as values. It is constructed from the values in
-# -- _SUPPORTED_PLATFORMS.
-# _APIO_PLATFORMS: dict[str, ApioPlatform] = {
-#     id: ApioPlatform(id=id, **fields)
-#     for id, fields in _SUPPORTED_PLATFORMS.items()
-# }
-
 # -- The list of supported platforms and their attribute.
 _APIO_PLATFORMS_DICT = {
     "darwin-arm64": ApioPlatform(
@@ -100,13 +72,6 @@ _APIO_PLATFORMS_DICT = {
         is_windows=True,
     ),
 }
-
-# -- Same set of platforms, but keyed by platform id.
-# _APIO_PLATFORMS_DICT: dict[str, ApioPlatform] = {
-#     p.id: p for p in _APIO_PLATFORMS_LIST
-# }
-
-# assert len(_APIO_PLATFORMS_LIST) == len(_APIO_PLATFORMS_DICT)
 
 
 def _determine_system_platform_id() -> str:
@@ -159,7 +124,7 @@ def get_apio_platform() -> ApioPlatform:
     return _APIO_PLATFORMS_DICT[platform_id]
 
 
-def get_all_apio_platforms() -> dict[str, ApioPlatform]:
+def get_apio_platforms() -> dict[str, ApioPlatform]:
     """Return a dict with all supported platforms."""
     return _APIO_PLATFORMS_DICT.copy()
 

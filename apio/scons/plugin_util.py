@@ -30,6 +30,7 @@ from apio.common.common_util import (
     PROJECT_BUILD_PATH,
     has_testbench_name,
     is_source_file,
+    cmd_in_env,
 )
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, ctable, fatal_error
@@ -365,7 +366,7 @@ class TestbenchInfo:
         return basename(self.testbench_path)
 
 
-def detached_action(api_env: ApioEnv, cmd: list[str]) -> Action:
+def detached_action(apio_env: ApioEnv, cmd: list[str]) -> Action:
     """
     Launch the given command, given as a list of tokens, in a detached
     (non blocking) mode.
@@ -384,30 +385,37 @@ def detached_action(api_env: ApioEnv, cmd: list[str]) -> Action:
         # -- and stderr= lines to see the output and error messages from the
         # -- commands.
 
+        tools_env = apio_env.scons_env["ENV"]
+
         # -- Handle the case of Window.
-        if api_env.is_windows:
+        if apio_env.apio_platform.is_windows:
             detached_flag = getattr(subprocess, "DETACHED_PROCESS", 0)
             group_flag = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
             creationflags = detached_flag | group_flag
 
+            # apio:subprocess
             subprocess.Popen(
-                cmd,
+                cmd_in_env(cmd, tools_env),
                 creationflags=creationflags,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 close_fds=True,
                 shell=False,
+                env=tools_env,
             )
             return 0
 
         # -- Handle the rest (macOS and Linux)
+
+        # apio:subprocess
         subprocess.Popen(
-            cmd,
+            cmd_in_env(cmd, tools_env),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             close_fds=True,
             start_new_session=True,
             shell=False,
+            env=tools_env,
         )
         return 0
 
@@ -476,7 +484,7 @@ def gtkwave_target(
         # -- The time penalty is negligible.
         # -- With the stock oss-cad-suite windows package, this is done in the
         # -- environment.bat script.
-        if apio_env.is_windows:
+        if apio_env.apio_platform.is_windows:
             actions.append("gdk-pixbuf-query-loaders --update-cache")
 
         # -- The actual wave viewer command.

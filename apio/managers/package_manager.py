@@ -20,7 +20,7 @@ from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
-from apio.utils.apio_platforms import ApioPlatform
+from apio.common.apio_platforms import ApioPlatform
 from apio.managers.remote_config import RemoteConfig, PackageRemoteConfig
 
 

@@ -2,7 +2,7 @@
 Tests of apio_platforms.py
 """
 
-from apio.utils import apio_platforms
+from apio.common import apio_platforms
 
 
 def test_platforms():
@@ -12,7 +12,7 @@ def test_platforms():
     # platforms_list = apio_platforms._APIO_PLATFORMS_LIST
 
     # -- Get the dict of ApioPlatform
-    platforms_dict = apio_platforms.get_all_apio_platforms()
+    platforms_dict = apio_platforms.get_apio_platforms()
 
     # -- Sanity check, sizes should be the same.
     # assert len(platforms_list) == len(platforms_dict)

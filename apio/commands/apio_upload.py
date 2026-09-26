@@ -100,9 +100,6 @@ def cli(
         env_arg=env,
     )
 
-    # -- Set the shell env.
-    apio_ctx.tools_runtime_env.set_env_for_tools()
-
     # -- Get the programmer command.
     programmer_cmd = construct_programmer_cmd(
         apio_ctx, serial_port_flag=serial_port, serial_num_flag=serial_num

@@ -12,10 +12,15 @@ scons (child) process."""
 
 import os
 import sys
+import shutil
+from collections.abc import MutableMapping
 from pathlib import Path
 from glob import glob
 from typing import Any
 import debugpy
+from apio.common.apio_console import cout, fatal_error, cwarning
+from apio.common.apio_styles import EMPH3
+from apio.common.debug_util import is_debug
 
 # -- A list with the file extensions of the source files.
 SRC_SUFFIXES = [".v", ".sv"]
@@ -130,3 +135,51 @@ def get_project_source_files() -> tuple[list[str], list[str]]:
             synth_srcs.append(file)
 
     return (synth_srcs, test_srcs)
+
+
+def dump_env(msg: str, env: MutableMapping[str, str]) -> None:
+    """Dump a given env dict."""
+    cout()
+    cout(msg, style=EMPH3)
+    for key in sorted(env, key=str.casefold):
+        cout(f"* {key}={env[key]}")
+    cout("----\n", style=EMPH3)
+
+
+def cmd_in_env(
+    cmd: list[str], env: MutableMapping[str, str], *, strict: bool = True
+) -> list[str]:
+    """Given a subprocess command in a form of list parts, and an env for
+    that subprocess, change the first part of the command for the full
+     path of that program using the env PATH. This is useful for windows
+     where the command is searched with the parent env and not with the
+     subprocess env."""
+    assert isinstance(cmd, list)
+    assert len(cmd) > 0
+
+    # -- Search the command in the env path.
+    cmd_abs_path = shutil.which(cmd[0], path=env.get("PATH"))
+
+    # -- Make a fresh copy of the list
+    result = cmd.copy()
+
+    if cmd_abs_path is None:
+        # -- handle the case where the command was not found in PATH.
+        msg = f"Command {cmd[0]} not found in env."
+        if strict:
+            fatal_error(msg)
+        else:
+            cwarning(msg)
+
+    else:
+        # -- Command found, replace the command with the full path
+        result[0] = cmd_abs_path
+
+    # -- Dump for debugging
+    if is_debug(1):
+        cout("cmd_in_env():", style=EMPH3)
+        cout(f"  Before: {str(cmd)}")
+        cout(f"  After: {str(result)}")
+
+    # -- All done.
+    return result

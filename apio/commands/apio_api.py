@@ -19,7 +19,7 @@ import click
 from apio.commands import options
 from apio.managers.examples import Examples, ExampleInfo
 from apio.common.apio_console import cout, fatal_error
-from apio.common import proto_util
+from apio.common import proto_util, apio_platforms
 from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.common.debug_util import is_under_vscode_debugger
 from apio.common.common_util import get_project_source_files
@@ -28,7 +28,6 @@ from apio.utils import (
     usb_util,
     serial_util,
     util,
-    apio_platforms,
     env_options,
 )
 from apio.utils.usb_util import UsbDevice
@@ -180,9 +179,7 @@ def _get_system_cli(
     section_dict["is-linux"] = platform.is_linux
     section_dict["is-windows"] = platform.is_windows
     # section_dict["scons-shell-id"] = apio_ctx.scons_shell_id
-    section_dict["scons-shell-id"] = (
-        apio_ctx.tools_runtime_env.scons_shell_id()
-    )
+    section_dict["scons-shell-id"] = apio_ctx.scons_shell_id()
     section_dict["vscode-debugger"] = str(is_under_vscode_debugger()).lower()
     section_dict["pyinstaller"] = str(util.is_pyinstaller_app()).lower()
     section_dict["apio-python_package"] = str(

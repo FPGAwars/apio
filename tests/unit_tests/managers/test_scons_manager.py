@@ -48,13 +48,15 @@ fpga_info {
 }
 environment {
   platform_id: "TBD"
-  is_windows: true  # TBD
   terminal_mode: FORCE_TERMINAL
   theme_name: "light"
   yosys_path: "TBD"
   trellis_path: "TBD"
   scons_shell_id: ""
   xilinx_prjxray_db_path: "TBD"
+  tools_env_mutations {
+    pyinstaller_linux_fix: false
+  }
 }
 apio_env_params {
   env_name: "default"
@@ -86,12 +88,14 @@ verbosity {
 }
 environment {
   platform_id: "TBD"
-  is_windows: true  # TBD
   terminal_mode: FORCE_TERMINAL
   theme_name: "light"
   yosys_path: "TBD"
   trellis_path: "TBD"
   scons_shell_id: ""
+  tools_env_mutations {
+    pyinstaller_linux_fix: false
+  }
 }
 apio_env_params {
   env_name: "default"
@@ -130,20 +134,21 @@ def test_default_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED1, SconsParams())
         expected.timestamp = scons_params.timestamp
-        expected.environment.platform_id = apio_ctx.platform_id
-        expected.environment.is_windows = apio_ctx.is_windows
+        expected.environment.platform_id = apio_ctx.platform.id
+        # expected.environment.is_windows = apio_ctx.is_windows
         expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.environment.scons_shell_id = (
-            apio_ctx.tools_runtime_env.scons_shell_id()
-        )
+        expected.environment.scons_shell_id = apio_ctx.scons_shell_id()
 
         expected.environment.xilinx_prjxray_db_path = str(
             sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
+        )
+        expected.environment.tools_env_mutations.CopyFrom(
+            apio_ctx.get_env_mutations_for_tools()
         )
 
         # -- Compare actual to expected values.
@@ -178,20 +183,22 @@ def test_explicit_params(apio_runner: ApioRunner):
         # -- Construct the expected value. We fill in non deterministic values.
         expected = text_format.Parse(EXPECTED2, SconsParams())
         expected.timestamp = scons_params.timestamp
-        expected.environment.platform_id = apio_ctx.platform_id
-        expected.environment.is_windows = apio_ctx.is_windows
+        expected.environment.platform_id = apio_ctx.platform.id
+        # expected.environment.is_windows = apio_ctx.is_windows
         expected.environment.yosys_path = str(
             sb.packages_dir / "oss-cad-suite/share/yosys"
         )
         expected.environment.trellis_path = str(
             sb.packages_dir / "oss-cad-suite/share/trellis"
         )
-        expected.environment.scons_shell_id = (
-            apio_ctx.tools_runtime_env.scons_shell_id()
-        )
+        expected.environment.scons_shell_id = apio_ctx.scons_shell_id()
 
         expected.environment.xilinx_prjxray_db_path = str(
             sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
+        )
+
+        expected.environment.tools_env_mutations.CopyFrom(
+            apio_ctx.get_env_mutations_for_tools()
         )
 
         # -- Compare actual to expected values.

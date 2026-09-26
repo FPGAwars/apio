@@ -97,24 +97,24 @@ class Verbosity(_message.Message):
     def __init__(self, all: bool = ..., synth: bool = ..., pnr: bool = ...) -> None: ...
 
 class Environment(_message.Message):
-    __slots__ = ("platform_id", "is_windows", "terminal_mode", "theme_name", "yosys_path", "trellis_path", "scons_shell_id", "xilinx_prjxray_db_path")
+    __slots__ = ("platform_id", "terminal_mode", "theme_name", "yosys_path", "trellis_path", "scons_shell_id", "xilinx_prjxray_db_path", "tools_env_mutations")
     PLATFORM_ID_FIELD_NUMBER: _ClassVar[int]
-    IS_WINDOWS_FIELD_NUMBER: _ClassVar[int]
     TERMINAL_MODE_FIELD_NUMBER: _ClassVar[int]
     THEME_NAME_FIELD_NUMBER: _ClassVar[int]
     YOSYS_PATH_FIELD_NUMBER: _ClassVar[int]
     TRELLIS_PATH_FIELD_NUMBER: _ClassVar[int]
     SCONS_SHELL_ID_FIELD_NUMBER: _ClassVar[int]
     XILINX_PRJXRAY_DB_PATH_FIELD_NUMBER: _ClassVar[int]
+    TOOLS_ENV_MUTATIONS_FIELD_NUMBER: _ClassVar[int]
     platform_id: str
-    is_windows: bool
     terminal_mode: TerminalMode
     theme_name: str
     yosys_path: str
     trellis_path: str
     scons_shell_id: str
     xilinx_prjxray_db_path: str
-    def __init__(self, platform_id: _Optional[str] = ..., is_windows: bool = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ..., xilinx_prjxray_db_path: _Optional[str] = ...) -> None: ...
+    tools_env_mutations: _apio_common_pb2.EnvMutations
+    def __init__(self, platform_id: _Optional[str] = ..., terminal_mode: _Optional[_Union[TerminalMode, str]] = ..., theme_name: _Optional[str] = ..., yosys_path: _Optional[str] = ..., trellis_path: _Optional[str] = ..., scons_shell_id: _Optional[str] = ..., xilinx_prjxray_db_path: _Optional[str] = ..., tools_env_mutations: _Optional[_Union[_apio_common_pb2.EnvMutations, _Mapping]] = ...) -> None: ...
 
 class ApioEnvParams(_message.Message):
     __slots__ = ("env_name", "board_id", "top_module", "defines", "yosys_extra_options", "nextpnr_extra_options", "gtkwave_extra_options", "verilator_extra_options", "constraint_file")
