@@ -42,7 +42,7 @@ def _read_xilinx_parts_index(parts_index_path: Path) -> dict[str, Any]:
     """Open the openxc7 parts index and check that its schema is the one
     this apio reads."""
 
-    # parts_index_path = _parts_index_path(apio_ctx)
+    # -- Read and parse the JSON file.
     with open(parts_index_path, encoding="utf-8") as f:
         json_data = json.load(f)
 
