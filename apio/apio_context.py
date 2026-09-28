@@ -6,22 +6,23 @@
 # -- Author Jesús Arroyo
 # -- License GPLv2
 
+import os
 import platform
-from dataclasses import dataclass
 from enum import Enum, unique
 from pathlib import Path
 import json5
+from apio.common import tools_runtime_env, apio_platforms
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1
 from apio.common.common_util import env_build_path
+from apio.common.proto.apio_common_pb2 import EnvMutations
 from apio.managers.profile import Profile
 from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
-from apio.utils import util, env_options, apio_platforms
-from apio.utils.apio_platforms import ApioPlatform
+from apio.utils import util, env_options
+from apio.common.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
 from apio.managers.package_manager import PackageManager
 from apio.managers.apio_definitions import ApioDefinitions
-from apio.managers.tools_runtime_env import ToolsRuntimeEnv
 from apio.utils.resource_util import (
     ProjectResources,
     collect_project_resources,
@@ -46,20 +47,6 @@ PACKAGES_JSONC = "packages.jsonc"
 # -----------------------------------------
 # -- General config information.
 CONFIG_JSONC = "config.jsonc"
-
-
-@dataclass(frozen=True)
-class EnvMutations:
-    """Contains mutations to the system env."""
-
-    # -- List of env vars to unset.
-    unset_vars: list[str]
-
-    # -- PATH items to add.
-    paths: list[str]
-
-    # -- Dict with env vars name/value to set.
-    set_vars: dict[str, str]
 
 
 @unique
@@ -104,8 +91,6 @@ class ApioContext:
         "remote_config",
         "package_manager",
         "platform",
-        "platform_id",
-        "tools_runtime_env",
         "all_packages",
         "required_packages",
         "_project_dir",
@@ -230,7 +215,6 @@ class ApioContext:
 
         # -- Get the underlying platform information.
         self.platform: ApioPlatform = apio_platforms.get_apio_platform()
-        self.platform_id: str = self.platform.id
 
         # -- Read the apio packages information
         self.all_packages = self._load_resource_file(
@@ -246,7 +230,7 @@ class ApioContext:
         # -- The subset of packages that are applicable to this platform.
         self.required_packages = self._select_required_packages_for_platform(
             self.all_packages,
-            self.platform_id,
+            self.platform.id,
         )
 
         # -- Instantiate the package manager. All self.* args were already
@@ -309,11 +293,6 @@ class ApioContext:
             )
         else:
             assert not self.has_project, "init(): project loaded"
-
-        # -- Set the tools runtime env manager
-        self.tools_runtime_env = ToolsRuntimeEnv(
-            self.required_packages, self.platform, util.is_pyinstaller_app()
-        )
 
     def report_project_env(self):
         """Report to the user the env and board used. Asserts that the
@@ -487,10 +466,10 @@ class ApioContext:
         """
 
         # -- Dict of all supported platforms.
-        all_apio_platforms = apio_platforms.get_all_apio_platforms()
+        platforms_dict = apio_platforms.get_apio_platforms()
 
         # -- If fails, this is a programming error.
-        assert platform_id in all_apio_platforms, platform
+        assert platform_id in platforms_dict, platform
 
         # -- Final dict with the output packages
         filtered_packages = {}
@@ -505,13 +484,13 @@ class ApioContext:
             # -- available. The package is available on all platforms unless
             # -- restricted by the ""restricted-to-platforms" field.
             required_for_platforms = package_info.get(
-                "restricted-to-platforms", all_apio_platforms.keys()
+                "restricted-to-platforms", platforms_dict.keys()
             )
 
             # -- Sanity check that all platform ids are valid. If fails it's
             # -- a programming error.
             for p in required_for_platforms:
-                assert p in all_apio_platforms, platform
+                assert p in platforms_dict, platform
 
             # -- If available for 'platform_id', add it.
             if platform_id in required_for_platforms:
@@ -534,3 +513,72 @@ class ApioContext:
     def is_windows(self) -> bool:
         """Returns True iff underlying platform is a Windows."""
         return self.platform.is_windows
+
+    def get_env_mutations_for_tools(self) -> EnvMutations:
+        """Get the environment mutations for the tools that apio runs in
+        a sub process.
+        """
+
+        return tools_runtime_env.get_env_mutations_for_tools(
+            self.required_packages, self.platform, util.is_pyinstaller_app()
+        )
+
+    def get_env_for_tools(
+        self,
+        *,
+        quiet: bool = False,
+        verbose: bool = False,
+    ) -> dict[str, str]:
+        """Return the env to pass to tools subprocesses such as Yosys.
+
+        If quite is set, no output is printed. When verbose is set, additional
+        output such as the env vars mutations are printed, otherwise, a minimal
+        information is printed to make the user aware that they commands they
+        see are executed in a modified env settings.
+        """
+
+        # -- If this fails, this is a programming error. Quiet and verbose
+        # -- cannot be combined.
+        assert not (quiet and verbose), "Can't have both quite and verbose."
+
+        # -- Collect the env mutations from all packages.
+        mutations = self.get_env_mutations_for_tools()
+
+        if verbose:
+            tools_runtime_env.show_env_mutations(mutations, self.platform)
+
+        # -- Make an independent copy of os.environ.
+        env: dict[str, str] = os.environ.copy()
+
+        # -- Apply the mutations to the copy.
+        if not verbose and not quiet:
+            cout("Setting shell vars.")
+
+        tools_runtime_env.apply_env_mutations(mutations, env)
+
+        # -- All done.
+        return env
+
+    def get_env_for_scons(self) -> dict[str, str]:
+        """Return the env to pass to the scons subprocess."""
+
+        # -- Collect the env mutations from all packages.
+        mutations = tools_runtime_env.get_env_mutations_for_scons(
+            self.platform, util.is_pyinstaller_app()
+        )
+
+        # -- Make an independent copy of os.environ.
+        env: dict[str, str] = os.environ.copy()
+
+        tools_runtime_env.apply_env_mutations(mutations, env)
+
+        # -- All done.
+        return env
+
+    def scons_shell_id(self) -> str:
+        """
+        Returns a simplified string name of the shell that SCons will use
+        for executing shell-dependent commands. See code below for possible
+        values.
+        """
+        return tools_runtime_env.scons_shell_id(self.platform)

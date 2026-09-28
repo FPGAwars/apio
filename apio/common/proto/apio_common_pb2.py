@@ -26,13 +26,17 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#apio/common/proto/apio-common.proto\x12\x11\x61pio.common.proto*6\n\x08\x41pioArch\x12\t\n\x05ice40\x10\x01\x12\x08\n\x04\x65\x63p5\x10\x02\x12\t\n\x05gowin\x10\x03\x12\n\n\x06xilinx\x10\x04')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#apio/common/proto/apio-common.proto\x12\x11\x61pio.common.proto\"(\n\tNameValue\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\"\x86\x01\n\x0c\x45nvMutations\x12\x12\n\nunset_vars\x18\x01 \x03(\t\x12\x13\n\x0b\x61\x64\x64_to_path\x18\x02 \x03(\t\x12.\n\x08set_vars\x18\x03 \x03(\x0b\x32\x1c.apio.common.proto.NameValue\x12\x1d\n\x15pyinstaller_linux_fix\x18\x04 \x02(\x08*6\n\x08\x41pioArch\x12\t\n\x05ice40\x10\x01\x12\x08\n\x04\x65\x63p5\x10\x02\x12\t\n\x05gowin\x10\x03\x12\n\n\x06xilinx\x10\x04')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'apio.common.proto.apio_common_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_APIOARCH']._serialized_start=58
-  _globals['_APIOARCH']._serialized_end=112
+  _globals['_APIOARCH']._serialized_start=237
+  _globals['_APIOARCH']._serialized_end=291
+  _globals['_NAMEVALUE']._serialized_start=58
+  _globals['_NAMEVALUE']._serialized_end=98
+  _globals['_ENVMUTATIONS']._serialized_start=101
+  _globals['_ENVMUTATIONS']._serialized_end=235
 # @@protoc_insertion_point(module_scope)

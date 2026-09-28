@@ -24,7 +24,7 @@ from rich.progress import track
 import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror, console, fatal_error
-from apio.common.debug_util import is_debug
+from apio.common.common_util import cmd_in_env
 
 # ----------------------------------------
 # -- Constants
@@ -178,13 +178,16 @@ class CommandResult:
 
 
 def exec_command(
-    cmd: list[str], stdout: AsyncPipe, stderr: AsyncPipe
+    cmd: list[str],
+    stdout: AsyncPipe,
+    stderr: AsyncPipe,
+    env: dict[str, str],
 ) -> CommandResult:
     """Execute the given command using async stdout/stderr..
 
     NOTE: When running on windows, this function does not support
-    privilege elevation, to achieve that, use os.system() instead, as
-    done in drivers.py
+    privilege elevation, to achieve that invoke the subprocess as a shell
+    command as done in drivers.py
 
     INPUTS:
         cmd:    list of command token (strings)
@@ -200,11 +203,17 @@ def exec_command(
     assert isinstance(cmd[0], str)
     assert isinstance(stdout, AsyncPipe)
     assert isinstance(stderr, AsyncPipe)
+    assert env is not None
 
     # -- Execute the command
     try:
+        # apio:subprocess
         with subprocess.Popen(
-            cmd, stdout=stdout.fileno(), stderr=stderr.fileno(), shell=False
+            cmd_in_env(cmd, env),
+            stdout=stdout.fileno(),
+            stderr=stderr.fileno(),
+            shell=False,
+            env=env,
         ) as proc:
 
             # -- Wait for completion.
@@ -517,28 +526,6 @@ def fpga_arch_sort_key(fpga_arch: str) -> Any:
     # -- Construct the key, unknown architectures list at the end by
     # -- lexicographic order.
     return (primary_key, fpga_arch)
-
-
-def subprocess_call(
-    cmd: list[str],
-) -> int:
-    """A helper for running subprocess.call. Exit if an error."""
-
-    if is_debug(1):
-        cout(f"subprocess_call: {cmd}")
-
-    # -- Invoke the command.
-    exit_code = subprocess.call(cmd, shell=False)
-
-    if is_debug(1):
-        cout(f"subprocess_call: exit code is {exit_code}")
-
-    # -- If ok, return.
-    if exit_code == 0:
-        return exit_code
-
-    # -- Here when error
-    fatal_error(f"Command failed: {cmd}")
 
 
 @contextmanager

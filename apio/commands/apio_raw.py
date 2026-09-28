@@ -19,6 +19,7 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
+from apio.common.common_util import cmd_in_env
 from apio.commands import options
 from apio.utils import cmd_util
 from apio.utils.cmd_util import ApioCommand
@@ -27,7 +28,7 @@ from apio.utils.cmd_util import ApioCommand
 
 
 def _run_raw_command(
-    arg_list: list[str], is_windows: bool, verbose: bool
+    arg_list: list[str], is_windows: bool, verbose: bool, env: dict[str, str]
 ) -> int:
     """
     Runs a command and returns its exit code.
@@ -52,6 +53,9 @@ def _run_raw_command(
     if not arg_list:
         return 0  # nothing to run
 
+    # -- Use a absolute path based on env's PATH.
+    arg_list = cmd_in_env(arg_list, env, strict=False)
+
     # -- Join the args with proper quotes for the native shell.
     if is_windows:
         cmd_str = subprocess.list2cmdline(arg_list)
@@ -62,7 +66,8 @@ def _run_raw_command(
     if verbose:
         cout(f"\n---- Executing: [{cmd_str}]")
 
-    return subprocess.call(cmd_str, shell=True)
+    # apio:subprocess
+    return subprocess.call(cmd_str, shell=True, env=env)
 
 
 # -- Text in the rich-text format of the python rich library.
@@ -162,9 +167,7 @@ def cli(
 
     # -- Set the env for the tools. If verbose, also dumping the env changes
     # -- in a user friendly way.
-    apio_ctx.tools_runtime_env.set_env_for_tools(
-        quiet=not verbose, verbose=verbose
-    )
+    tools_env = apio_ctx.get_env_for_tools(quiet=not verbose, verbose=verbose)
 
     # -- If no command, we are done.
     if not cmd:
@@ -174,7 +177,12 @@ def cli(
     arg_list: list[str] = list(cmd)
 
     # -- Invoke the command.
-    exit_code = _run_raw_command(arg_list, apio_ctx.is_windows, verbose)
+    exit_code = _run_raw_command(
+        arg_list,
+        apio_ctx.is_windows,
+        verbose,
+        tools_env,
+    )
 
     if verbose:
         cout("----\n")

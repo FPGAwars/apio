@@ -20,7 +20,7 @@ from apio.scons.plugin_gowin import PluginGowin
 from apio.scons.plugin_xilinx import PluginXilinx
 from apio.common.proto.apio_common_pb2 import ApioArch
 from apio.common.proto.apio_scons_pb2 import SimParams, SconsParams
-from apio.common import apio_console, proto_util
+from apio.common import apio_console, proto_util, apio_platforms
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase
 from apio.common import rich_lib_windows
@@ -75,8 +75,11 @@ class SconsHandler:
         assert params.timestamp == timestamp
 
         # -- If running on windows, apply the lib library workaround
-        proto_util.check_is_required(params, "environment.is_windows")
-        if params.environment.is_windows:
+        proto_util.check_is_required(params, "environment.platform_id")
+        apio_platform = apio_platforms.get_apio_platforms()[
+            params.environment.platform_id
+        ]
+        if apio_platform.is_windows:
             rich_lib_windows.apply_workaround()
 
         # -- Set terminal mode and theme to match the apio process.
@@ -90,6 +93,9 @@ class SconsHandler:
 
         # -- Create the apio environment.
         apio_env = ApioEnv(COMMAND_LINE_TARGETS, params)
+
+        # -- Sanity check that we are consistent on the ApioPlatform selection.
+        assert apio_env.apio_platform is apio_platform
 
         # -- Select the plugin.
         proto_util.check_is_required(params, "arch")

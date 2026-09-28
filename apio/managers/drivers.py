@@ -168,7 +168,7 @@ class Drivers:
             self._ftdi_install_windows()
         else:
             fatal_error(
-                f"Unexpected platform type '{self.apio_ctx.platform_id}'."
+                f"Unexpected platform type '{self.apio_ctx.platform.id}'."
             )
 
     def ftdi_uninstall(self):
@@ -180,7 +180,7 @@ class Drivers:
         elif self.apio_ctx.is_windows:
             self._ftdi_uninstall_windows()
         else:
-            fatal_error(f"Unexpected platform '{self.apio_ctx.platform_id}'.")
+            fatal_error(f"Unexpected platform '{self.apio_ctx.platform.id}'.")
 
     def serial_install(self):
         """Installs the serial driver. Function is platform dependent."""
@@ -192,7 +192,7 @@ class Drivers:
         elif self.apio_ctx.is_windows:
             self._serial_install_windows()
         else:
-            fatal_error(f"Unexpected platform '{self.apio_ctx.platform_id}'.")
+            fatal_error(f"Unexpected platform '{self.apio_ctx.platform.id}'.")
 
     def serial_uninstall(self):
         """Uninstalls the serial driver. Function is platform dependent."""
@@ -205,7 +205,7 @@ class Drivers:
         elif self.apio_ctx.is_windows:
             self._serial_uninstall_windows()
         else:
-            fatal_error(f"Unknown platform '{self.apio_ctx.platform_id}'.")
+            fatal_error(f"Unknown platform '{self.apio_ctx.platform.id}'.")
 
     def _ftdi_install_linux(self):
         """Drivers install on Linux. It copies the .rules file into
@@ -380,6 +380,7 @@ class Drivers:
         if os.environ.get("SUDO_ASKPASS"):
             sudo_cmd.append("-A")
 
+        # apio:subprocess
         exit_code = subprocess.call(sudo_cmd + ["sh", "-c", script])
         if exit_code == 0:
             return 0
@@ -417,6 +418,8 @@ class Drivers:
         access to the serial port)."""
 
         # -- Get the current groups of the user
+
+        # apio:subprocess
         groups = subprocess.check_output("groups")
 
         # -- True if it does not belong to the dialout group yet.
@@ -461,17 +464,21 @@ class Drivers:
             shutil.copyfile(zadig_ini_src, "zadig.ini")
 
             # -- Zadig exe file with full path:
-            zadig_exe = drivers_base_dir / "bin" / "zadig.exe"
+            zadig_abs_path = drivers_base_dir / "bin" / "zadig.exe"
+            assert zadig_abs_path.is_absolute(), zadig_abs_path
 
             # -- Show messages for the user
             cout("", "Launching zadig.exe.")
             cmarkdown(FTDI_INSTALL_INSTRUCTIONS_WINDOWS)
 
             # -- Execute Zadig.
-            # -- We execute it using os.system() rather than by
+            # -- We execute it using a shell, rather than by
             # -- util.exec_command() because zadig required permissions
             # -- elevation.
-            exit_code = os.system(str(zadig_exe))
+
+            # apio:subprocess
+            # exit_code = os.system(str(zadig_exe))
+            exit_code = subprocess.call(str(zadig_abs_path), shell=True)
 
             if exit_code != 0:
                 fatal_error("Zadig failed")
@@ -484,7 +491,10 @@ class Drivers:
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
         # -- elevation.
-        exit_code = os.system("mmc devmgmt.msc")
+
+        # apio:subprocess
+        # exit_code = os.system("mmc devmgmt.msc")
+        exit_code = subprocess.call("mmc devmgmt.msc", shell=True)
 
         if exit_code != 0:
             fatal_error("Device Manager invocation failed.")
@@ -498,12 +508,18 @@ class Drivers:
         cout("", "Launching the interactive Serial Installer.")
         cmarkdown(SERIAL_INSTALL_INSTRUCTIONS_WINDOWS)
 
-        # -- We launch the device manager using os.system() rather than with
+        # -- We launch the device manager using shell rather than with
         # -- util.exec_command() because util.exec_command() does not support
         # -- elevation.
-        exit_code = os.system(
-            str(Path(drivers_bin_dir) / "serial_install.exe")
-        )
+
+        serial_installer_abs_path = drivers_bin_dir / "serial_install.exe"
+        assert serial_installer_abs_path.is_absolute, serial_installer_abs_path
+
+        # apio:subprocess
+        # exit_code = os.system(
+        #     str(Path(drivers_bin_dir) / "serial_install.exe")
+        # )
+        exit_code = subprocess.call(str(serial_installer_abs_path), shell=True)
 
         if exit_code != 0:
             fatal_error("Interactive Serial Installer failed.")
@@ -517,6 +533,10 @@ class Drivers:
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
         # -- elevation.
-        exit_code = os.system("mmc devmgmt.msc")
+
+        # apio:subprocess
+        # exit_code = os.system("mmc devmgmt.msc")
+        exit_code = subprocess.call("mmc devmgmt.msc", shell=True)
+
         if exit_code != 0:
             fatal_error("The interactive Device Manager failed.")

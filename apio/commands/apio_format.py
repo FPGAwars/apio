@@ -8,12 +8,17 @@
 """Implementation of 'apio format' command"""
 
 import os
+import subprocess
 from pathlib import Path
 from glob import glob
 import click
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import EMPH3, SUCCESS
-from apio.common.common_util import PROJECT_BUILD_PATH, sort_files
+from apio.common.common_util import (
+    PROJECT_BUILD_PATH,
+    sort_files,
+    cmd_in_env,
+)
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -94,6 +99,8 @@ def cli(
     files to format.
     """
 
+    # pylint: disable=too-many-locals
+
     # -- Create an apio context with a project object.
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.PROJECT_REQUIRED,
@@ -113,7 +120,7 @@ def cli(
         cmd_options.append("--verbose")
 
     # -- Prepare the packages for use.
-    apio_ctx.tools_runtime_env.set_env_for_tools(quiet=not verbose)
+    tools_env = apio_ctx.get_env_for_tools(quiet=not verbose)
 
     # -- Convert the tuple with file names into a list.
     _files: list[str] = list(files)
@@ -164,18 +171,26 @@ def cli(
 
         # -- Construct the formatter command line.
         command = (
-            "verible-verilog-format --nofailsafe_success --inplace "
-            f' {" ".join(cmd_options)} "{f}"'
+            ["verible-verilog-format", "--nofailsafe_success", "--inplace"]
+            + cmd_options
+            + [f]
         )
         if verbose:
-            cout(command)
+            cout(str(command))
 
         # -- Remember bytes  before
         bytes_before = path.read_bytes()
 
         # -- Execute the formatter command line.
-        exit_code = os.system(command)
-        if exit_code != 0:
+
+        # apio:subprocess
+        result = subprocess.run(
+            cmd_in_env(command, tools_env),
+            shell=False,
+            check=False,
+            env=tools_env,
+        )
+        if result.returncode != 0:
             fatal_error(f"Formatting of '{f}' failed")
 
         # -- Report

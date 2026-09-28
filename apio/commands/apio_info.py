@@ -17,9 +17,9 @@ from rich import box
 from rich import markup
 from rich.color import ANSI_COLOR_NAMES
 from apio.common.apio_styles import BORDER, EMPH1, EMPH2, EMPH3, INFO
-from apio.common import proto_util
+from apio.common import proto_util, apio_platforms
 from apio.common.debug_util import is_under_vscode_debugger
-from apio.utils import util, apio_platforms, env_options
+from apio.utils import util, env_options
 from apio.commands import options
 from apio.apio_context import (
     ApioContext,
@@ -142,9 +142,7 @@ def _system_cli():
     table.add_row("Is Darwin", str(platform.is_darwin))
     table.add_row("Is Linux", str(platform.is_linux))
     table.add_row("Is Windows", str(platform.is_windows))
-    table.add_row(
-        "Scons shell id", apio_ctx.tools_runtime_env.scons_shell_id()
-    )
+    table.add_row("Scons shell id", apio_ctx.scons_shell_id())
     table.add_row("VSCode debugger", str(is_under_vscode_debugger()))
     table.add_row("Pyinstaller", str(util.is_pyinstaller_app()))
     table.add_row(
@@ -338,10 +336,10 @@ def _platforms_cli():
     for (
         platform_id,
         apio_platform,
-    ) in apio_platforms.get_all_apio_platforms().items():
+    ) in apio_platforms.get_apio_platforms().items():
 
         # -- Mark the current platform.
-        if platform_id == apio_ctx.platform_id:
+        if platform_id == apio_ctx.platform.id:
             style = EMPH3
             marker = "* "
         else:

@@ -14,10 +14,11 @@ from typing import Any
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
+from apio.common import apio_platforms, tools_runtime_env
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout
 from apio.common.apio_styles import EMPH3
-from apio.common.common_util import env_build_path
+from apio.common.common_util import env_build_path, dump_env
 from apio.common.proto.apio_scons_pb2 import SconsParams
 
 
@@ -33,6 +34,11 @@ class ApioEnv:
         self.command_line_targets = command_line_targets
         self.params = scons_params
 
+        # -- Map platform id to an ApioPlatform object.
+        self.apio_platform = apio_platforms.get_apio_platforms()[
+            self.params.environment.platform_id
+        ]
+
         # -- Create the base target.
         self.target = str(self.env_build_path / "hardware")
 
@@ -46,10 +52,29 @@ class ApioEnv:
         #
         # -- Note that DefaultEnvironment is a funny function that replaces
         # -- itself with _fetch_DefaultEnvironment() after the first call.
-        SCons.Defaults.DefaultEnvironment(ENV=os.environ, tools=[])
+        # SCons.Defaults.DefaultEnvironment(ENV=os.environ, tools=[])
+        SCons.Defaults.DefaultEnvironment(tools=[])
 
-        # -- Create the underlying scons env.
-        self.scons_env = SConsEnvironment(ENV=os.environ, tools=[])
+        # -- Compute tools env.
+        tools_env = os.environ.copy()
+
+        if is_debug(2):
+            dump_env("*** Original scons env:", tools_env)
+
+        tools_runtime_env.apply_env_mutations(
+            self.params.environment.tools_env_mutations, tools_env
+        )
+
+        if is_debug(2):
+            dump_env("*** Tools env:", tools_env)
+
+        # -- Create the underlying scons env with the tools env.
+        self.scons_env = SConsEnvironment(ENV=tools_env, tools=[])
+
+        # -- Sanity checks
+        assert self.scons_env is not SCons.Defaults.DefaultEnvironment()
+        assert SCons.Defaults.DefaultEnvironment()["TOOLS"] == []
+        assert self.scons_env["TOOLS"] == []
 
         # -- Set the location of the scons incremental build database.
         # -- By default it would be stored in project root dir.
@@ -60,7 +85,7 @@ class ApioEnv:
         # Extra info for debugging.
         if is_debug(2):
             cout(f"command_line_targets: {command_line_targets}")
-            self.dump_env_vars()
+            self.dump_scons_env_vars()
 
     @property
     def env_name(self):
@@ -72,16 +97,6 @@ class ApioEnv:
         """Returns a relative path from the project dir to the env build
         dir."""
         return env_build_path(self.env_name)
-
-    @property
-    def is_windows(self):
-        """Returns True if we run on windows."""
-        return self.params.environment.is_windows
-
-    @property
-    def platform_id(self):
-        """Returns the platform id."""
-        return self.params.environment.platform_id
 
     @property
     def scons_shell_id(self):
@@ -137,8 +152,10 @@ class ApioEnv:
             self.scons_env.AlwaysBuild(target)
         return target
 
-    def dump_env_vars(self) -> None:
-        """Prints a list of the environment variables. For debugging."""
+    def dump_scons_env_vars(self) -> None:
+        """Prints a list of the environment variables of the scons environment.
+        This can be different from the environment of this Apio scons
+        process. For debugging."""
         sc = self.scons_env
         dictionary: dict = sc.Dictionary()
         keys = list(dictionary.keys())

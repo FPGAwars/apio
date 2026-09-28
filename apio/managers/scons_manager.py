@@ -276,7 +276,6 @@ class SConsManager:
             assert result.verbosity.IsInitialized(), result
 
         # -- Populate the Environment params.
-        assert apio_ctx.platform_id, "Missing platform_id in apio context"
         oss_define_consts = apio_ctx.all_packages["oss-cad-suite"]["env"][
             "define-consts"
         ]
@@ -288,10 +287,13 @@ class SConsManager:
         ]
         assert "PRJXRAY_DB_DIR" in openxc7_define_consts, openxc7_define_consts
 
+        # -- Mutations that scons should apply to the env of teh tools it
+        # -- invokes.
+        tools_env_mutations = apio_ctx.get_env_mutations_for_tools()
+
         result.environment.MergeFrom(
             Environment(
-                platform_id=apio_ctx.platform_id,
-                is_windows=apio_ctx.is_windows,
+                platform_id=apio_ctx.platform.id,
                 terminal_mode=(
                     FORCE_TERMINAL
                     if apio_console.is_terminal()
@@ -300,8 +302,9 @@ class SConsManager:
                 theme_name=apio_console.current_theme_name(),
                 yosys_path=oss_define_consts["YOSYS_LIB"],
                 trellis_path=oss_define_consts["TRELLIS"],
-                scons_shell_id=apio_ctx.tools_runtime_env.scons_shell_id(),
+                scons_shell_id=apio_ctx.scons_shell_id(),
                 xilinx_prjxray_db_path=openxc7_define_consts["PRJXRAY_DB_DIR"],
+                tools_env_mutations=tools_env_mutations,
             )
         )
         assert result.environment.IsInitialized(), result
@@ -367,11 +370,6 @@ class SConsManager:
         # -- Pass to the scons process the timestamp of the scons params we
         # -- pass via a file. This is for verification purposes only.
         variables += [f"timestamp={scons_params.timestamp}"]
-
-        # -- We set the env variables also for a command such as 'clean'
-        # -- which doesn't use the packages, to satisfy the required env
-        # -- variables of the scons arg parser.
-        apio_ctx.tools_runtime_env.set_env_for_tools()
 
         if is_debug(1):
             cout("\nSCONS CALL:", style=EMPH3)
@@ -441,6 +439,7 @@ class SConsManager:
             cmd,
             stdout=util.AsyncPipe(scons_filter.on_stdout_line),
             stderr=util.AsyncPipe(scons_filter.on_stderr_line),
+            env=apio_ctx.get_env_for_scons(),
         )
 
         # -- Is there an error? True/False

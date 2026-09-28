@@ -85,17 +85,12 @@ def make_test_apio_env(
     *,
     targets: list[str] | None = None,
     platform_id: str | None = None,
-    is_windows: bool | None = None,
-    # debug_level: int = 0,
     apio_env_params: ApioEnvParams | None = None,
     target_params: TargetParams | None = None,
 ) -> ApioEnv:
     """Creates a fresh apio env for testing. The env is created
     with the current directory as the root dir.
     """
-
-    # -- Specify both or nether.
-    assert (platform_id is None) == (is_windows is None)
 
     # -- Bring scons to a starting state.
     SconsHacks.reset_scons_state()
@@ -109,8 +104,6 @@ def make_test_apio_env(
     # -- Apply user overrides.
     if platform_id is not None:
         scons_params.environment.platform_id = platform_id
-    if is_windows is not None:
-        scons_params.environment.is_windows = is_windows
     if apio_env_params is not None:
         scons_params.apio_env_params.MergeFrom(apio_env_params)
     if target_params is not None:

@@ -2,7 +2,7 @@
 
 import pytest
 from tests.conftest import ApioRunner
-from apio.utils import apio_platforms
+from apio.common import apio_platforms
 from apio.commands.apio import apio_top_cli as apio
 
 # TODO: add a test for ubuntu

@@ -75,24 +75,26 @@ message Verbosity {
 message Environment {
   // The underlying platform id as it defined in apio_platforms.py.
   required string platform_id = 1;
-  required bool is_windows = 2;
 
   // The terminal mode to apply to apio_console.
-  required TerminalMode terminal_mode = 3;
+  required TerminalMode terminal_mode = 2;
 
   // The apio_console theme name.
-  required string theme_name = 4;
+  required string theme_name = 3;
 
   // Paths to oss-cad-suite libraries.
-  required string yosys_path = 5;
-  required string trellis_path = 6;
+  required string yosys_path = 4;
+  required string trellis_path = 5;
 
   // The default shell id. This is the shell that scons
   // is expected to use. See ApioContext for values.
-  required string scons_shell_id = 7;
+  required string scons_shell_id = 6;
 
   //-- Path to the xilinx prjxray_db, located in the openxc7 apio package.
-  required string xilinx_prjxray_db_path = 8;
+  required string xilinx_prjxray_db_path = 7;
+
+  //-- System env mutations for the tools that will run in a subprocess.
+  required EnvMutations tools_env_mutations = 9;
 }
 
 // Information about the expanded active env from apio.ini.
