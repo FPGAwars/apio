@@ -114,7 +114,7 @@ def cout(*args, markup=False, highlight=False, **kwargs):
 
 def announce_task(task_name: str) -> None:
     """Prints a message saying that the task is starting."""
-    cout(f"Executing Apio task: {task_name}", style="magenta bold")
+    cout(f"Executing Apio dev task: {task_name}", style="magenta bold")
 
 
 def get_repo_root() -> Path:
