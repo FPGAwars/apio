@@ -22,6 +22,7 @@ from apio.managers.downloader import FileDownloader
 from apio.utils import util
 from apio.common.apio_platforms import ApioPlatform
 from apio.managers.remote_config import RemoteConfig, PackageRemoteConfig
+from apio.common.proto.apio_resources_pb2 import ApioPackageSpec
 
 
 @unique
@@ -128,7 +129,7 @@ class PackageManager:
     def __init__(
         self,
         remote_config: RemoteConfig,
-        required_packages: dict,
+        required_packages: dict[str, ApioPackageSpec],
         platform: ApioPlatform,
         apio_home_dir: Path,
         packages_dir: Path,
@@ -758,9 +759,9 @@ class PackageManager:
             # self._save()
             self._save_installed_packages()
 
-    def get_required_package_spec(self, package_name: str) -> dict:
+    def get_required_package_spec(self, package_name: str) -> ApioPackageSpec:
         """Returns the information of the package with given name.
-        The information is a JSON dict originated at packages.json().
+        The information is a proto buffer originated at packages.json().
         Exits with an error message if the package is not defined.
         """
         package_info = self.required_packages.get(package_name, None)

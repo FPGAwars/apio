@@ -9,6 +9,7 @@ and custom boards, fpgas, and programmers definitions."""
 
 
 import re
+from dataclasses import dataclass
 from pathlib import Path
 import json5
 from apio.common import proto_util
@@ -272,3 +273,53 @@ class ApioDefinitions:
 
         # -- Return the object for the resource
         return json_dict
+
+
+@dataclass(frozen=True)
+class ProjectDefinitions:
+    """Contains the definitions of the current project."""
+
+    board_id: str
+    board_definition: BoardDefinition
+    fpga_id: str
+    fpga_definition: FpgaDefinition
+    programmer_id: str
+    programmer_definition: ProgrammerDefinition
+
+
+def collect_project_definitions(
+    board_id: str,
+    definitions: ApioDefinitions,
+) -> ProjectDefinitions:
+    """Collect the board, fpga, and programmer definitions used by a project.
+    Since the definitions may be custom definition defined by the user, we
+    need to have a user friendly error handling and reporting."""
+
+    # -- Get the board definition.
+    board_definition = definitions.boards.get(board_id, None)
+    if board_definition is None:
+        fatal_error(f"Unknown board id '{board_id}'.")
+
+    # -- We assume below that these fields are required.
+    proto_util.check_is_required(board_definition, "fpga_id", "programmer.id")
+
+    # -- Get fpga id and definition.
+    fpga_id = board_definition.fpga_id
+    fpga_definition = definitions.fpgas[fpga_id]
+
+    # -- Get programmer id and info.
+    programmer_id = board_definition.programmer.id
+    programmer_definition = definitions.programmers[programmer_id]
+
+    # -- Create the project definitions bundle.
+    project_resources = ProjectDefinitions(
+        board_id,
+        board_definition,
+        fpga_id,
+        fpga_definition,
+        programmer_id,
+        programmer_definition,
+    )
+
+    # -- All done
+    return project_resources

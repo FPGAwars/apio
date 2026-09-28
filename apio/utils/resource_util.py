@@ -1,139 +1,163 @@
 """Utilities related to the Apio resource files."""
 
-from dataclasses import dataclass
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
+from pathlib import Path
+import json5
+from apio.utils import util
 from apio.common.apio_console import fatal_error
 from apio.common import proto_util
-from apio.managers.apio_definitions import ApioDefinitions
-from apio.common.proto.apio_definitions_pb2 import (
-    BoardDefinition,
-    FpgaDefinition,
-    ProgrammerDefinition,
+from apio.common.proto.apio_resources_pb2 import (
+    ApioConfig,
+    ApioPackageSpec,
 )
 
 
-@dataclass(frozen=True)
-class ProjectResources:
-    """Contains the resources of the current project."""
+# -- The resources dir under the Apio package.
+RESOURCES_DIR = "resources"
 
-    board_id: str
-    board_definition: BoardDefinition
-    fpga_id: str
-    fpga_definition: FpgaDefinition
-    programmer_id: str
-    programmer_definition: ProgrammerDefinition
+# -- The name of the Apio config file.
+CONFIG_JSONC = "config.jsonc"
+
+# -- The name of the packages specification file.
+PACKAGES_JSONC = "packages.jsonc"
 
 
-# -- JSON schema for validating config.jsonc.
-CONFIG_SCHEMA = {
-    "type": "object",
-    "required": [
-        "remote-config-ttl-days",
-        "remote-config-retry-minutes",
-        "remote-config-url",
-    ],
-    "properties": {
-        "remote-config-ttl-days": {"type": "integer", "minimum": 1},
-        "remote-config-retry-minutes": {"type": "integer", "minimum": 0},
-        "remote-config-url": {"type": "string"},
-    },
-    "additionalProperties": False,
-}
+def read_apio_config_file() -> ApioConfig:
+    """Read and validate the config.json resource file."""
 
+    # pylint: disable=broad-exception-caught
 
-# -- JSON schema for validating packages.jsonc.
-PACKAGES_SCHEMA = {
-    "type": "object",
-    "patternProperties": {
-        "^[a-z0-9_-]+$": {  # package names like "oss-cad-suite"
-            "type": "object",
-            "required": ["description", "env"],
-            "properties": {
-                "description": {"type": "string"},
-                "restricted-to-platforms": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
-                "env": {
-                    "type": "object",
-                    "properties": {
-                        "add-to-path": {
-                            "type": "array",
-                            "items": {"type": "string"},
-                        },
-                        "delete-env-vars": {
-                            "type": "array",
-                            "items": {"type": "string"},
-                        },
-                        "add-env-vars": {
-                            "type": "object",
-                            "additionalProperties": {"type": "string"},
-                        },
-                        "define-consts": {
-                            "type": "object",
-                            "additionalProperties": {"type": "string"},
-                        },
-                    },
-                    "additionalProperties": False,
-                },
-            },
-            "additionalProperties": False,
-        }
-    },
-    "additionalProperties": False,
-}
+    # -- Find config file path within the Apio package
+    resources_dir = util.get_path_in_apio_package(RESOURCES_DIR)
+    filepath = resources_dir / CONFIG_JSONC
 
-
-def validate_config(config: dict) -> None:
-    """Check the config resource from config.jsonc."""
+    # -- Read the and parse the jsonc file
     try:
-        validate(instance=config, schema=CONFIG_SCHEMA)
-    except ValidationError as e:
-        fatal_error("Invalid config.", cause=e)
+        jsonc_text = filepath.read_text(encoding="utf-8")
+        json_dict = json5.loads(jsonc_text)
 
+    except Exception as e:
+        fatal_error(
+            f"Failed to read json resource file {CONFIG_JSONC}", cause=e
+        )
 
-def validate_packages(packages: dict) -> None:
-    """Check the packages resource from packages.jsonc."""
-    try:
-        validate(instance=packages, schema=PACKAGES_SCHEMA)
-    except ValidationError as e:
-        fatal_error("Invalid packages resource.", cause=e)
-
-
-def collect_project_resources(
-    board_id: str,
-    definitions: ApioDefinitions,
-) -> ProjectResources:
-    """Collect and validate the resources used by a project. Since the
-    resources may be custom resources defined by the user, we need to
-    have a user friendly error handling and reporting."""
-
-    # -- Get the board definition.
-    board_definition = definitions.boards.get(board_id, None)
-    if board_definition is None:
-        fatal_error(f"Unknown board id '{board_id}'.")
-
-    # -- We assume below that these fields are required.
-    proto_util.check_is_required(board_definition, "fpga_id", "programmer.id")
-
-    # -- Get fpga id and definition.
-    fpga_id = board_definition.fpga_id
-    fpga_definition = definitions.fpgas[fpga_id]
-
-    # -- Get programmer id and info.
-    programmer_id = board_definition.programmer.id
-    programmer_definition = definitions.programmers[programmer_id]
-
-    # -- Create the project resources bundle.
-    project_resources = ProjectResources(
-        board_id,
-        board_definition,
-        fpga_id,
-        fpga_definition,
-        programmer_id,
-        programmer_definition,
+    # -- Convert to proto
+    apio_config: ApioConfig = proto_util.proto_from_json_dict(
+        json_dict,
+        ApioConfig,
+        "Failed to parse apio config as a protocol buffer",
     )
 
+    # -- Validate
+    assert apio_config.remote_config_ttl_days >= 1, apio_config
+    assert apio_config.remote_config_retry_minutes >= 0, apio_config
+
     # -- All done
-    return project_resources
+    return apio_config
+
+
+def _expand_env_values(template: str, apio_packages_dir: Path) -> str:
+    """Fills a packages env value template as they appear in
+    packages.jsonc. Currently it recognizes only a single place holder
+    '%p' representing the package absolute path. The '%p" can appear only
+    at the beginning of the template.
+
+    E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
+
+    NOTE: This format is very basic but is sufficient for the current
+    needs. If needed, extend or modify it.
+    """
+
+    # Case 1: No place holder -> no change.
+    if "%p" not in template:
+        return template
+
+    # Case 2: The template contains only the placeholder.
+    if template == "%p":
+        return str(apio_packages_dir)
+
+    # Case 3: The place holder is the prefix of the template's path.
+    if template.startswith("%p/"):
+        return str(apio_packages_dir / template[3:])
+
+    # Case 4: Unsupported.
+    raise RuntimeError(f"Invalid env template: [{template}]")
+
+
+def _resolve_package_envs(
+    packages_: dict[str, dict], apio_packages_dir: Path
+) -> None:
+    """Resolve in-place the path and var value templates in the
+    given packages dictionary. For example, %p is replaced with
+    the package's absolute path."""
+
+    for package_name, package_config in packages_.items():
+
+        # -- Get the package root dir.
+        package_path = apio_packages_dir / package_name
+
+        # -- Get the json 'env' section. We require it, even if empty,
+        # -- for clarity reasons.
+        assert "env" in package_config
+        package_env = package_config["env"]
+
+        # -- NOTE: There is no need to expand values in the "unset-env"
+        # -- section since it contains env names only.
+
+        # -- Expand the values in the "add-to-path" section, if any.
+        add_to_path_section = package_env.get("add-to-path", [])
+        for i, path_template in enumerate(add_to_path_section):
+            add_to_path_section[i] = _expand_env_values(
+                path_template, package_path
+            )
+
+        # -- Expand the values in the "add-env-vars" section, if any.
+        add_env_vars_section = package_env.get("add-env-vars", {})
+        for var_name, var_value in add_env_vars_section.items():
+            add_env_vars_section[var_name] = _expand_env_values(
+                var_value, package_path
+            )
+
+        # -- Expand the values in the "define-consts" section, if any.
+        define_consts_section = package_env.get("define-consts", {})
+        for const_name, const_value in define_consts_section.items():
+            define_consts_section[const_name] = _expand_env_values(
+                const_value, package_path
+            )
+
+
+def read_apio_packages_file(packages_dir: Path) -> dict[str, ApioPackageSpec]:
+    """Read and validate the packages.json resource file. This
+    expands the path placeholder in the env fields."""
+
+    # pylint: disable=broad-exception-caught
+
+    # -- Find config file path within the Apio package
+    resources_dir = util.get_path_in_apio_package(RESOURCES_DIR)
+    filepath = resources_dir / PACKAGES_JSONC
+
+    # -- Read the and parse the jsonc file
+    try:
+        jsonc_text = filepath.read_text(encoding="utf-8")
+        json_dict = json5.loads(jsonc_text)
+
+    except Exception as e:
+        fatal_error(
+            f"Failed to read json resource file {PACKAGES_JSONC}", cause=e
+        )
+
+    # -- Resolve in place the placeholders in the env templates.
+    _resolve_package_envs(json_dict, packages_dir)
+
+    # -- Convert to a dict of proto
+    packages: dict[str, ApioPackageSpec] = {}
+    for name, spec_dict in json_dict.items():
+
+        spec_proto: ApioPackageSpec = proto_util.proto_from_json_dict(
+            spec_dict,
+            ApioPackageSpec,
+            f"Failed to parse package {name} spec as a protocol buffer",
+        )
+        packages[name] = spec_proto
+
+    # -- All done
+    return packages

@@ -1,0 +1,43 @@
+// Protocol buffers definitions for the config and packages resources
+
+// IMPORTANT: After making changes in this file, run the repo task
+// 'invoke update-protos' to propagate them to the python stubs.
+//  Otherwise they do not take affect.
+
+// Using proto2 for features such as 'has' and 'required'.
+syntax = "proto2";
+
+package apio.common.proto;
+
+// ====================== Config specification ============================
+
+// The general configuration of Apio.
+// See apio/resources/config.jsonc for details.
+message ApioConfig {
+    required int32 remote_config_ttl_days = 1
+        [json_name = "remote-config-ttl-days"];
+    required int32 remote_config_retry_minutes = 2
+        [json_name = "remote-config-retry-minutes"];
+    required string remote_config_url = 3 
+        [json_name = "remote-config-url"];
+}
+
+// ====================== Package specification ===========================
+
+// The system environment related specification of an Apio package.
+// See apio/resources/packages.jsonc for details.
+message ApioPackageEnvSpec {
+    repeated string add_to_path = 2 [json_name = "add-to-path"];
+    repeated string delete_env_vars = 1 [json_name = "delete-env-vars"];
+    map<string, string> add_env_vars = 3 [json_name = "add-env-vars"];
+    map<string, string> define_consts = 4 [json_name = "define-consts"];
+}
+
+// The specification of a single Apio package.
+// See apio/resources/packages.jsonc for details.
+message ApioPackageSpec {
+    required string description = 1;
+    repeated string restricted_to_platforms = 2
+        [json_name = "restricted-to-platforms"];
+    required ApioPackageEnvSpec env = 3;
+}

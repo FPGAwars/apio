@@ -7,7 +7,7 @@
 # -- License GPLv2
 
 import os
-import platform
+
 from enum import Enum, unique
 from pathlib import Path
 import json5
@@ -19,34 +19,19 @@ from apio.common.proto.apio_common_pb2 import EnvMutations
 from apio.managers.profile import Profile
 from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
 from apio.utils import util, env_options
+from apio.common.proto.apio_resources_pb2 import ApioConfig, ApioPackageSpec
 from apio.common.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
 from apio.managers.package_manager import PackageManager
-from apio.managers.apio_definitions import ApioDefinitions
-from apio.utils.resource_util import (
-    ProjectResources,
-    collect_project_resources,
-    validate_config,
-    validate_packages,
+from apio.managers.apio_definitions import (
+    ApioDefinitions,
+    ProjectDefinitions,
+    collect_project_definitions,
 )
-
-# ---------- RESOURCES
-RESOURCES_DIR = "resources"
-
-
-# ---------------------------------------
-# ---- File: resources/packages.jsonc
-# --------------------------------------
-# -- This file contains all the information regarding the available apio
-# -- packages: Repository, version, name...
-PACKAGES_JSONC = "packages.jsonc"
-
-
-# -----------------------------------------
-# ---- File: resources/config.jsonc
-# -----------------------------------------
-# -- General config information.
-CONFIG_JSONC = "config.jsonc"
+from apio.utils.resource_util import (
+    read_apio_config_file,
+    read_apio_packages_file,
+)
 
 
 @unique
@@ -183,12 +168,8 @@ class ApioContext:
             self.apio_home_dir
         )
 
-        # -- Get the jsonc source dirs.
-        resources_dir = util.get_path_in_apio_package(RESOURCES_DIR)
-
         # -- Read and validate the config information
-        self.config = self._load_resource_file(CONFIG_JSONC, resources_dir)
-        validate_config(self.config)
+        self.config: ApioConfig = read_apio_config_file()
 
         # -- Read the user profile from ~/.apio/profile.json.
         self.profile = Profile(
@@ -198,39 +179,33 @@ class ApioContext:
         # -- Read remote config information, from local cache or remotely..
         remote_config_url = env_options.get(
             env_options.APIO_REMOTE_CONFIG_URL,
-            default=self.config["remote-config-url"],
+            default=self.config.remote_config_url,
         )
-        remote_config_ttl_days = self.config["remote-config-ttl-days"]
-        remote_config_retry_minutes = self.config[
-            "remote-config-retry-minutes"
-        ]
+        assert isinstance(remote_config_url, str), remote_config_url
 
         self.remote_config = RemoteConfig(
             self.apio_home_dir,
-            str(remote_config_url),
-            remote_config_ttl_days,
-            remote_config_retry_minutes,
+            remote_config_url,
+            self.config.remote_config_ttl_days,
+            self.config.remote_config_retry_minutes,
             remote_config_policy,
         )
 
         # -- Get the underlying platform information.
         self.platform: ApioPlatform = apio_platforms.get_apio_platform()
 
-        # -- Read the apio packages information
-        self.all_packages = self._load_resource_file(
-            PACKAGES_JSONC, resources_dir
-        )
-        validate_packages(self.all_packages)
-
-        # -- Expand in place the env templates in all_packages.
-        ApioContext._resolve_package_envs(
-            self.all_packages, self.apio_packages_dir
+        # -- Read the apio packages information. This method also expands the
+        # -- env path placeholders.
+        self.all_packages: dict[str, ApioPackageSpec] = (
+            read_apio_packages_file(self.apio_packages_dir)
         )
 
         # -- The subset of packages that are applicable to this platform.
-        self.required_packages = self._select_required_packages_for_platform(
-            self.all_packages,
-            self.platform.id,
+        self.required_packages: dict[str, ApioPackageSpec] = (
+            self._select_required_packages_for_platform(
+                self.all_packages,
+                self.platform.id,
+            )
         )
 
         # -- Instantiate the package manager. All self.* args were already
@@ -271,7 +246,7 @@ class ApioContext:
         # -- If we determined that we need to load the project, load the
         # -- apio.ini data.
         self._project: Project | None = None
-        self._project_resources: ProjectResources | None = None
+        self._project_resources: ProjectDefinitions | None = None
 
         if self._project_dir:
             # -- If we have a project, we must also have definitions.
@@ -287,7 +262,7 @@ class ApioContext:
                 self.report_project_env()
             # -- Collect and validate the project resources.
             # -- The project is already validated to have the required "board.
-            self._project_resources = collect_project_resources(
+            self._project_resources = collect_project_definitions(
                 self._project.get_str_option("board"),
                 self.definitions,
             )
@@ -334,7 +309,7 @@ class ApioContext:
         return self._project
 
     @property
-    def project_resources(self) -> ProjectResources:
+    def project_resources(self) -> ProjectDefinitions:
         """Return the project resources. Should be called only if
         has_project() is True."""
         # -- Failure here is a programming error, not a user error.
@@ -372,76 +347,6 @@ class ApioContext:
         # -- Return the object for the resource
         return json_dict
 
-    @staticmethod
-    def _expand_env_values(template: str, package_path: Path) -> str:
-        """Fills a packages env value template as they appear in
-        packages.jsonc. Currently it recognizes only a single place holder
-        '%p' representing the package absolute path. The '%p" can appear only
-        at the beginning of the template.
-
-        E.g. '%p/bin' -> '/users/user/.apio/packages/drivers/bin'
-
-        NOTE: This format is very basic but is sufficient for the current
-        needs. If needed, extend or modify it.
-        """
-
-        # Case 1: No place holder -> no change.
-        if "%p" not in template:
-            return template
-
-        # Case 2: The template contains only the placeholder.
-        if template == "%p":
-            return str(package_path)
-
-        # Case 3: The place holder is the prefix of the template's path.
-        if template.startswith("%p/"):
-            return str(package_path / template[3:])
-
-        # Case 4: Unsupported.
-        raise RuntimeError(f"Invalid env template: [{template}]")
-
-    @staticmethod
-    def _resolve_package_envs(
-        packages_: dict[str, dict], packages_dir: Path
-    ) -> None:
-        """Resolve in-place the path and var value templates in the
-        given packages dictionary. For example, %p is replaced with
-        the package's absolute path."""
-
-        for package_name, package_config in packages_.items():
-
-            # -- Get the package root dir.
-            package_path = packages_dir / package_name
-
-            # -- Get the json 'env' section. We require it, even if empty,
-            # -- for clarity reasons.
-            assert "env" in package_config
-            package_env = package_config["env"]
-
-            # -- NOTE: There is no need to expand values in the "unset-env"
-            # -- section since it contains env names only.
-
-            # -- Expand the values in the "add-to-path" section, if any.
-            add_to_path_section = package_env.get("add-to-path", [])
-            for i, path_template in enumerate(add_to_path_section):
-                add_to_path_section[i] = ApioContext._expand_env_values(
-                    path_template, package_path
-                )
-
-            # -- Expand the values in the "add-env-vars" section, if any.
-            add_env_vars_section = package_env.get("add-env-vars", {})
-            for var_name, var_value in add_env_vars_section.items():
-                add_env_vars_section[var_name] = (
-                    ApioContext._expand_env_values(var_value, package_path)
-                )
-
-            # -- Expand the values in the "define-consts" section, if any.
-            define_consts_section = package_env.get("define-consts", {})
-            for const_name, const_value in define_consts_section.items():
-                define_consts_section[const_name] = (
-                    ApioContext._expand_env_values(const_value, package_path)
-                )
-
     def get_package_dir(self, package_name: str) -> Path:
         """Returns the root path of a package with given name."""
 
@@ -457,47 +362,42 @@ class ApioContext:
 
     @staticmethod
     def _select_required_packages_for_platform(
-        all_packages: dict[str, dict],
+        all_packages: dict[str, ApioPackageSpec],
         platform_id: str,
-    ) -> dict:
-        """Given a dictionary with the packages.jsonc packages infos,
-        returns subset dictionary with packages that are available for
-        'platform_id'.
+    ) -> dict[str, ApioPackageSpec]:
+        """Given a dictionary with the apio packages spec, return the subset
+        that is used by the given platform_id.
         """
 
         # -- Dict of all supported platforms.
-        platforms_dict = apio_platforms.get_apio_platforms()
+        all_platform_ids = apio_platforms.get_apio_platforms().keys()
 
         # -- If fails, this is a programming error.
-        assert platform_id in platforms_dict, platform
+        assert platform_id in all_platform_ids, platform_id
 
-        # -- Final dict with the output packages
-        filtered_packages = {}
-
-        # -- Check all the packages
-        for package_name in all_packages.keys():
-
-            # -- Get the package info.
-            package_info = all_packages[package_name]
-
+        # -- Collect the packages that are required for platform_id
+        result: dict[str, ApioPackageSpec] = {}
+        for package_name, package_spec in all_packages.items():
             # -- Get the list of platforms ids on which this package is
             # -- available. The package is available on all platforms unless
-            # -- restricted by the ""restricted-to-platforms" field.
-            required_for_platforms = package_info.get(
-                "restricted-to-platforms", platforms_dict.keys()
+            # -- restricted by the "restricted-to-platforms" field.
+            package_platforms: list[str] = list(
+                package_spec.restricted_to_platforms
             )
+            if len(package_platforms) == 0:
+                package_platforms.extend(all_platform_ids)
 
             # -- Sanity check that all platform ids are valid. If fails it's
             # -- a programming error.
-            for p in required_for_platforms:
-                assert p in platforms_dict, platform
+            for p in package_platforms:
+                assert p in all_platform_ids, p
 
-            # -- If available for 'platform_id', add it.
-            if platform_id in required_for_platforms:
-                filtered_packages[package_name] = all_packages[package_name]
+            # -- Select the package if it matches the platform.
+            if platform_id in package_platforms:
+                result[package_name] = package_spec
 
-        # -- Return the subset dict with the packages for 'platform_id'.
-        return filtered_packages
+        # -- All done
+        return result
 
     @property
     def is_linux(self) -> bool:
