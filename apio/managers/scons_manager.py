@@ -250,10 +250,7 @@ class SConsManager:
                     "yosys_part",
                     "speed",
                 )
-                # -- Get a path to the chipdb file for this yosys part.
-                # -- If it doesn't exist, it is fetched on the fly from
-                # -- the release of the installed openxc7 package.
-                chipdb_file_path = xilinx_chipdb.chipdb_file_on_demand(
+                chipdb_file_path = xilinx_chipdb.chipdb_file_for_part(
                     apio_ctx, xilinx_params.yosys_part
                 )
                 result.fpga_info.xilinx_params.MergeFrom(
