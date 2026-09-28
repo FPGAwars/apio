@@ -180,8 +180,8 @@ def _get_system_cli(
     section_dict["is-windows"] = platform.is_windows
     # section_dict["scons-shell-id"] = apio_ctx.scons_shell_id
     section_dict["scons-shell-id"] = apio_ctx.scons_shell_id()
-    section_dict["vscode-debugger"] = str(is_under_vscode_debugger()).lower()
-    section_dict["pyinstaller"] = str(util.is_pyinstaller_app()).lower()
+    section_dict["vscode-debugger"] = is_under_vscode_debugger()
+    section_dict["pyinstaller"] = util.is_pyinstaller_app()
     section_dict["apio-python_package"] = str(
         util.get_path_in_apio_package("")
     )
