@@ -128,13 +128,13 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     # -- RELEASE_SHOULD_BE_STABLE requirement in a repo that is checked
     # -- for consistency. As for Sep 2026, only the openxc7 repo is checked
     # -- for consistency.
-    for release in releases_in_use:
-        if consts.APIO_REPOS[release.repo].check_consistency:
-            requirements.add_by_ref(
-                req_type=RequirementType.RELEASE_SHOULD_BE_CONSISTENT,
-                release_ref=release,
-                notes=["[Analyzer] Consistency checks enabled for repo."],
-            )
+    # for release in releases_in_use:
+    #     if consts.APIO_REPOS[release.repo].check_consistency:
+    #         requirements.add_by_ref(
+    #             req_type=RequirementType.RELEASE_SHOULD_BE_CONSISTENT,
+    #             release_ref=release,
+    #             notes=["[Analyzer] Consistency checks enabled for repo."],
+    #         )
 
     # -- Generate DRAFT_SHOULD_BE_DELETED and PRERELEASE_SHOULD_BE_DELETED.
 

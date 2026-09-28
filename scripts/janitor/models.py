@@ -100,7 +100,7 @@ class RequirementType(Enum):
 
     RELEASE_SHOULD_BE_STABLE = "release-should-be-stable"
     RELEASE_SHOULD_BE_LATEST = "release-should-be-latest"
-    RELEASE_SHOULD_BE_CONSISTENT = "release-should-be-consistent"
+    # RELEASE_SHOULD_BE_CONSISTENT = "release-should-be-consistent"
     DRAFT_SHOULD_BE_DELETED = "draft-should-be-deleted"
     PRERELEASE_SHOULD_BE_DELETED = "prerelease-should-be-deleted"
     REPO_SHOULD_HAVE_A_RECENT_BUILD = "repo-should-have-a-recent-build"
