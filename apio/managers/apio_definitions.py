@@ -312,7 +312,7 @@ def collect_project_definitions(
     programmer_definition = definitions.programmers[programmer_id]
 
     # -- Create the project definitions bundle.
-    project_resources = ProjectDefinitions(
+    project_definitions = ProjectDefinitions(
         board_id,
         board_definition,
         fpga_id,
@@ -322,4 +322,4 @@ def collect_project_definitions(
     )
 
     # -- All done
-    return project_resources
+    return project_definitions

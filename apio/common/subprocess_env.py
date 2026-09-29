@@ -58,46 +58,21 @@ def scons_shell_id(apio_platform: ApioPlatform) -> str:
     return "unknown"
 
 
-def get_env_mutations_for_scons(
+def get_env_mutations_for_subprocess(
     apio_platform: ApioPlatform,
     is_pyinstaller_app: bool,
+    apio_packages: dict[str, ApioPackageSpec],
 ) -> EnvMutations:
-    """Construct an EnvMutations object with the mutations necessary to
-    run scons."""
-
-    # -- Determine if we need to fix the env for pyinstaller linux.
-    pyinstaller_linux_fix: bool = is_pyinstaller_app and apio_platform.is_linux
-
-    # -- Construct the result.
-    result = EnvMutations(
-        unset_vars=[],
-        add_to_path=[],
-        set_vars=[],
-        pyinstaller_linux_fix=pyinstaller_linux_fix,
-    )
-
-    proto_util.check_is_initialized(
-        result, "Failed to initialized EnvMutations"
-    )
-
-    # -- All done.
-    return result
-
-
-def get_env_mutations_for_tools(
-    required_packages: dict[str, ApioPackageSpec],
-    apio_platform: ApioPlatform,
-    is_pyinstaller_app: bool,
-) -> EnvMutations:
-    """Return an EnvMutations with the system env mutations for running
-    underlying tools such as yosys."""
+    """Return an EnvMutations with the system env mutations for running a
+    subprocess. If apio_packages is not empty, the mutations includes also
+    mutation to use the included apio packages (e.g. 'yosys' from
+    oss-cad-suite)."""
 
     unset_vars: list[str] = []
     paths: list[str] = []
-    # set_vars: dict[str, str] = {}
     set_vars: list[NameValue] = []
 
-    for package_spec in required_packages.values():
+    for package_spec in apio_packages.values():
 
         # -- Collect the env vars to delete.
         for var_name in package_spec.env.delete_env_vars:
