@@ -11,7 +11,7 @@ import os
 from enum import Enum, unique
 from pathlib import Path
 import json5
-from apio.common import tools_runtime_env, apio_platforms
+from apio.common import subprocess_env, apio_platforms
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1
 from apio.common.common_util import env_build_path
@@ -414,18 +414,27 @@ class ApioContext:
         """Returns True iff underlying platform is a Windows."""
         return self.platform.is_windows
 
-    def get_env_mutations_for_tools(self) -> EnvMutations:
+    def get_env_mutations_for_subprocess(
+        self, *, include_apio_packages: bool
+    ) -> EnvMutations:
         """Get the environment mutations for the tools that apio runs in
         a sub process.
         """
 
-        return tools_runtime_env.get_env_mutations_for_tools(
-            self.required_packages, self.platform, util.is_pyinstaller_app()
+        self.required_packages = (
+            self.required_packages if include_apio_packages else {}
         )
 
-    def get_env_for_tools(
+        return subprocess_env.get_env_mutations_for_subprocess(
+            self.platform,
+            util.is_pyinstaller_app(),
+            self.required_packages,
+        )
+
+    def get_env_for_subprocess(
         self,
         *,
+        include_apio_packages: bool,
         quiet: bool = False,
         verbose: bool = False,
     ) -> dict[str, str]:
@@ -442,10 +451,12 @@ class ApioContext:
         assert not (quiet and verbose), "Can't have both quite and verbose."
 
         # -- Collect the env mutations from all packages.
-        mutations = self.get_env_mutations_for_tools()
+        mutations = self.get_env_mutations_for_subprocess(
+            include_apio_packages=include_apio_packages
+        )
 
         if verbose:
-            tools_runtime_env.show_env_mutations(mutations, self.platform)
+            subprocess_env.show_env_mutations(mutations, self.platform)
 
         # -- Make an independent copy of os.environ.
         env: dict[str, str] = os.environ.copy()
@@ -454,23 +465,7 @@ class ApioContext:
         if not verbose and not quiet:
             cout("Setting shell vars.")
 
-        tools_runtime_env.apply_env_mutations(mutations, env)
-
-        # -- All done.
-        return env
-
-    def get_env_for_scons(self) -> dict[str, str]:
-        """Return the env to pass to the scons subprocess."""
-
-        # -- Collect the env mutations from all packages.
-        mutations = tools_runtime_env.get_env_mutations_for_scons(
-            self.platform, util.is_pyinstaller_app()
-        )
-
-        # -- Make an independent copy of os.environ.
-        env: dict[str, str] = os.environ.copy()
-
-        tools_runtime_env.apply_env_mutations(mutations, env)
+        subprocess_env.apply_env_mutations(mutations, env)
 
         # -- All done.
         return env
@@ -481,4 +476,4 @@ class ApioContext:
         for executing shell-dependent commands. See code below for possible
         values.
         """
-        return tools_runtime_env.scons_shell_id(self.platform)
+        return subprocess_env.scons_shell_id(self.platform)

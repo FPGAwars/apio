@@ -148,7 +148,9 @@ def test_default_params(apio_runner: ApioRunner):
             sb.packages_dir / "openxc7/share/nextpnr/external/prjxray-db"
         )
         expected.environment.tools_env_mutations.CopyFrom(
-            apio_ctx.get_env_mutations_for_tools()
+            apio_ctx.get_env_mutations_for_subprocess(
+                include_apio_packages=True
+            )
         )
 
         # -- Compare actual to expected values.
@@ -198,7 +200,9 @@ def test_explicit_params(apio_runner: ApioRunner):
         )
 
         expected.environment.tools_env_mutations.CopyFrom(
-            apio_ctx.get_env_mutations_for_tools()
+            apio_ctx.get_env_mutations_for_subprocess(
+                include_apio_packages=True
+            )
         )
 
         # -- Compare actual to expected values.

@@ -14,7 +14,7 @@ from typing import Any
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Environment import BuilderWrapper
 import SCons.Defaults
-from apio.common import apio_platforms, tools_runtime_env
+from apio.common import apio_platforms, subprocess_env
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout
 from apio.common.apio_styles import EMPH3
@@ -61,7 +61,7 @@ class ApioEnv:
         if is_debug(2):
             dump_env("*** Original scons env:", tools_env)
 
-        tools_runtime_env.apply_env_mutations(
+        subprocess_env.apply_env_mutations(
             self.params.environment.tools_env_mutations, tools_env
         )
 

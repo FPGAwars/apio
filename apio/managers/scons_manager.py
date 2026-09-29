@@ -286,7 +286,9 @@ class SConsManager:
 
         # -- Mutations that scons should apply to the env of teh tools it
         # -- invokes.
-        tools_env_mutations = apio_ctx.get_env_mutations_for_tools()
+        tools_env_mutations = apio_ctx.get_env_mutations_for_subprocess(
+            include_apio_packages=True
+        )
 
         result.environment.MergeFrom(
             Environment(
@@ -431,12 +433,17 @@ class SConsManager:
         if is_debug(1):
             cout(f"\nFull scons command: {cmd}\n\n")
 
-        # -- Execute the scons builder!
+        # -- Execute the scons builder.
+        # --
+        # -- Note that the env settings for the  apio packages is passed to
+        # -- the scons process in the params rather than setting them directly
+        # -- to the scons subprocess itself. The scons subprocess will apply
+        # -- those env mutations to the tools it will dispatch.
         result = util.exec_command(
             cmd,
             stdout=util.AsyncPipe(scons_filter.on_stdout_line),
             stderr=util.AsyncPipe(scons_filter.on_stderr_line),
-            env=apio_ctx.get_env_for_scons(),
+            env=apio_ctx.get_env_for_subprocess(include_apio_packages=False),
         )
 
         # -- Is there an error? True/False

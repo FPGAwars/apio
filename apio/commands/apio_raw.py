@@ -167,7 +167,11 @@ def cli(
 
     # -- Set the env for the tools. If verbose, also dumping the env changes
     # -- in a user friendly way.
-    tools_env = apio_ctx.get_env_for_tools(quiet=not verbose, verbose=verbose)
+    tools_env = apio_ctx.get_env_for_subprocess(
+        include_apio_packages=True,
+        quiet=not verbose,
+        verbose=verbose,
+    )
 
     # -- If no command, we are done.
     if not cmd:

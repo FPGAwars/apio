@@ -120,7 +120,10 @@ def cli(
         cmd_options.append("--verbose")
 
     # -- Prepare the packages for use.
-    tools_env = apio_ctx.get_env_for_tools(quiet=not verbose)
+    tools_env = apio_ctx.get_env_for_subprocess(
+        include_apio_packages=True,
+        quiet=not verbose,
+    )
 
     # -- Convert the tuple with file names into a list.
     _files: list[str] = list(files)
