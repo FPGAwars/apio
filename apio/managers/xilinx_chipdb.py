@@ -67,9 +67,7 @@ def chipdb_file_for_part(
 
     # -- Get the local chipdb dir in the installed openxc7 package.
     # -- The path of this dir is defined in packages.jsonc.
-    openxc7_define_consts = apio_ctx.all_packages["openxc7"]["env"][
-        "define-consts"
-    ]
+    openxc7_define_consts = apio_ctx.all_packages["openxc7"].env.define_consts
     assert "CHIPDB_DIR" in openxc7_define_consts, openxc7_define_consts
     chipdb_dir = Path(openxc7_define_consts["CHIPDB_DIR"])
 

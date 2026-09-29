@@ -65,7 +65,7 @@ def print_packages_report2(apio_ctx: ApioContext) -> bool:
         installed_version, *_ = package_manager.get_installed_package_info(
             package_name
         )
-        package_info = package_manager.get_required_package_spec(package_name)
+        package_spec = package_manager.get_required_package_spec(package_name)
 
         # -- Determine row color
         row_style = (
@@ -78,7 +78,8 @@ def print_packages_report2(apio_ctx: ApioContext) -> bool:
         table.add_row(
             package_name,
             installed_version,
-            package_info["description"],
+            # package_info["description"],
+            package_spec.description,
             package_status.value,
             style=row_style,
         )

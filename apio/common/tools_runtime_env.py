@@ -8,7 +8,6 @@ subprocesses."""
 # -- License GPLv2
 
 import os
-from typing import Any
 from collections.abc import MutableMapping
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cstyle
@@ -16,6 +15,7 @@ from apio.common.apio_styles import EMPH2, EMPH3
 from apio.common.apio_platforms import ApioPlatform
 from apio.common import proto_util
 from apio.common.proto.apio_common_pb2 import EnvMutations, NameValue
+from apio.common.proto.apio_resources_pb2 import ApioPackageSpec
 
 # -- Env vars involved in pyinstaller fixing under linux.
 # -- See See https://github.com/FPGAwars/apio/issues/887
@@ -85,44 +85,36 @@ def get_env_mutations_for_scons(
 
 
 def get_env_mutations_for_tools(
-    required_packages: dict[str, Any],
+    required_packages: dict[str, ApioPackageSpec],
     apio_platform: ApioPlatform,
     is_pyinstaller_app: bool,
 ) -> EnvMutations:
     """Return an EnvMutations with the system env mutations for running
     underlying tools such as yosys."""
 
-    # pylint: disable=too-many-locals
-
     unset_vars: list[str] = []
     paths: list[str] = []
     # set_vars: dict[str, str] = {}
     set_vars: list[NameValue] = []
-    for _, package_config in required_packages.items():
-        # -- Get the json 'env' section. We require it, even if it's empty,
-        # -- for clarity reasons.
-        assert "env" in package_config
-        package_env = package_config["env"]
+
+    for package_spec in required_packages.values():
 
         # -- Collect the env vars to delete.
-        delete_env_vars_section = package_env.get("delete-env-vars", [])
-        for var_name in delete_env_vars_section:
+        for var_name in package_spec.env.delete_env_vars:
             # -- Detect duplicates.
             assert var_name not in unset_vars, var_name
             unset_vars.append(var_name)
 
-        # -- Collect the path values.
-        package_paths = package_env.get("add-to-path", [])
-        paths.extend(package_paths)
+        # -- Collect the path values to add.
+        paths.extend(package_spec.env.add_to_path)
 
         # -- Collect the env vars to add (name, value) pairs.
-        add_env_vars_section = package_env.get("add-env-vars", {})
-        for var_name, var_value in add_env_vars_section.items():
+        for name, value in package_spec.env.add_env_vars.items():
             # -- Detect duplicates.
-            for sv in set_vars:
-                assert var_name != sv.name, var_name
+            for set_var in set_vars:
+                assert name != set_var.name, name
             # -- Append.
-            set_vars.append(NameValue(name=var_name, value=var_value))
+            set_vars.append(NameValue(name=name, value=value))
 
     # -- Determine if we need to fix the env for pyinstaller linux.
     pyinstaller_linux_fix: bool = is_pyinstaller_app and apio_platform.is_linux

@@ -1,5 +1,5 @@
-// Protocol buffers definitions used by apio.  Currently we use them just
-// for passing parameters from the apio process to the scons process.
+// Protocol buffers definitions for the boards, fpgas, and programmers
+// definitions.
 
 // IMPORTANT: After making changes in this file, run the repo task
 // 'invoke update-protos' to propagate them to the python stubs.

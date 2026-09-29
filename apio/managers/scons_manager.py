@@ -273,15 +273,15 @@ class SConsManager:
             assert result.verbosity.IsInitialized(), result
 
         # -- Populate the Environment params.
-        oss_define_consts = apio_ctx.all_packages["oss-cad-suite"]["env"][
-            "define-consts"
-        ]
+        oss_define_consts = apio_ctx.all_packages[
+            "oss-cad-suite"
+        ].env.define_consts
         assert "YOSYS_LIB" in oss_define_consts, oss_define_consts
         assert "TRELLIS" in oss_define_consts, oss_define_consts
 
-        openxc7_define_consts = apio_ctx.all_packages["openxc7"]["env"][
-            "define-consts"
-        ]
+        openxc7_define_consts = apio_ctx.all_packages[
+            "openxc7"
+        ].env.define_consts
         assert "PRJXRAY_DB_DIR" in openxc7_define_consts, openxc7_define_consts
 
         # -- Mutations that scons should apply to the env of teh tools it

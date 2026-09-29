@@ -899,10 +899,12 @@ def _get_packages_cli(
         config = apio_ctx.all_packages[package_name]
         build_info = package_manager.read_package_build_info(package_name)
         section_dict[package_name] = {
-            "description": config["description"],
+            "description": config.description,
             "installation": metadata,
             "build-info": build_info,
-            "env": config["env"],
+            # -- Note that this is the package spec from packages.jsonc but
+            # -- with the placeholders resolved.
+            "env": proto_util.proto_to_json_dict(config.env),
         }
 
     # -- Write out
