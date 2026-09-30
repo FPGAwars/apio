@@ -7,6 +7,7 @@ Tests of remote_config.py and it's integration with ApioContext.
 import json
 from datetime import datetime, timedelta
 from tests.conftest import ApioRunner
+from apio.common.proto_util import proto_to_json_dict
 from apio.managers.remote_config import (
     get_datetime_stamp,
     days_between_datetime_stamps,
@@ -143,7 +144,7 @@ def test_cached_config_ok(apio_runner: ApioRunner):
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert "Fetching" in log.out
-        remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
+        remote_config_url = base_apio_ctx.remote_config.metadata.loaded_from
 
         # -- Write a test cached remote config.
         path = sb.home_dir / "cached-remote-config.json"
@@ -169,7 +170,10 @@ def test_cached_config_ok(apio_runner: ApioRunner):
             )
         assert "Cached remote config is unsuitable" not in log.out
         assert "Fetching" not in log.out
-        assert apio_ctx.remote_config.data == test_data["remote-config"]
+        assert (
+            proto_to_json_dict(apio_ctx.remote_config.data)
+            == test_data["remote-config"]
+        )
 
 
 def test_cached_config_different_apio_version(apio_runner: ApioRunner):
@@ -186,7 +190,7 @@ def test_cached_config_different_apio_version(apio_runner: ApioRunner):
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert "Fetching" in log.out
-        remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
+        remote_config_url = base_apio_ctx.remote_config.metadata.loaded_from
 
         # -- Write a test cached remote config. Using a fake apio version.
         path = sb.home_dir / "cached-remote-config.json"
@@ -276,7 +280,7 @@ def test_cached_remote_config_too_old(apio_runner: ApioRunner):
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert "Fetching" in log.out
-        remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
+        remote_config_url = base_apio_ctx.remote_config.metadata.loaded_from
 
         # -- Write a test cached remote config that is 10 days old.
         path = sb.home_dir / "cached-remote-config.json"
@@ -318,7 +322,7 @@ def test_cached_remote_config_too_new(apio_runner: ApioRunner):
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert "Fetching" in log.out
-        remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
+        remote_config_url = base_apio_ctx.remote_config.metadata.loaded_from
 
         # -- Write a test cached remote config that was downloaded 10 days
         # -- in the future.
@@ -382,7 +386,8 @@ def test_corrupt_cached_remote_config(apio_runner: ApioRunner):
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert (
-            "No suitable cached remote config file (couldn't parse)" in log.out
+            "No suitable cached remote config file (couldn't proto parse)"
+            in log.out
         )
         assert "Fetching" in log.out
         assert apio_ctx.remote_config.data == base_apio_ctx.remote_config.data
@@ -409,7 +414,7 @@ def test_no_cached_remote_config(apio_runner: ApioRunner):
             "No suitable cached remote config file (no cache file)" in log.out
         )
         assert "Fetching" in log.out
-        assert "oss-cad-suite" in apio_ctx.remote_config.data["packages"]
+        assert "oss-cad-suite" in apio_ctx.remote_config.data.packages
 
 
 def test_forced_fresh_remote_config_ok(apio_runner: ApioRunner):
@@ -426,7 +431,7 @@ def test_forced_fresh_remote_config_ok(apio_runner: ApioRunner):
                 packages_policy=PackagesPolicy.IGNORE_PACKAGES,
             )
         assert "Fetching" in log.out
-        remote_config_url = base_apio_ctx.remote_config.metadata["loaded-from"]
+        remote_config_url = base_apio_ctx.remote_config.metadata.loaded_from
 
         # -- Write a test cached remote config.
         path = sb.home_dir / "cached-remote-config.json"

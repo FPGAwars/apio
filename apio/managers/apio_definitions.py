@@ -69,8 +69,9 @@ class ApioDefinitions:
             board_definition = proto_util.proto_from_json_dict(
                 definition_dict,
                 BoardDefinition,
-                f"Failed to parse board definition '{board_id}",
             )
+            if board_definition is None:
+                fatal_error(f"Failed to parse board definition '{board_id}")
             self.boards[board_id] = board_definition
 
         # -- Read fpgas definitions as json dicts.
@@ -88,8 +89,9 @@ class ApioDefinitions:
             fpga_definition = proto_util.proto_from_json_dict(
                 definition_dict,
                 FpgaDefinition,
-                f"Failed to parse fpga definition '{fpga_id}",
             )
+            if fpga_definition is None:
+                fatal_error(f"Failed to parse fpga definition '{fpga_id}")
             self.fpgas[fpga_id] = fpga_definition
 
         # -- Load programmers definitions as json dicts.
@@ -107,8 +109,11 @@ class ApioDefinitions:
             programmer_definition = proto_util.proto_from_json_dict(
                 definition_dict,
                 ProgrammerDefinition,
-                f"Failed to parse programmer definition '{programmer_id}",
             )
+            if programmer_definition is None:
+                fatal_error(
+                    f"Failed to parse programmer definition '{programmer_id}"
+                )
             self.programmers[programmer_id] = programmer_definition
 
         # -- Validate the definitions we just loaded.

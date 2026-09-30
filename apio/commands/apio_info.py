@@ -50,28 +50,24 @@ from apio.common.apio_console import (
 def construct_remote_config_status_str(apio_ctx: ApioContext) -> str:
     """Query the apio profile and construct a short string indicating the
     status of the cached remote config."""
-    config = apio_ctx.remote_config.data
-    metadata = config.get("metadata", {})
+    metadata = apio_ctx.remote_config.metadata
     timestamp_now = get_datetime_stamp()
     config_status = []
     # -- Handle the case of a having a cached config.
-    if config:
-        config_days = days_between_datetime_stamps(
-            metadata.get("loaded-at", ""), timestamp_now, 0
+    config_days = days_between_datetime_stamps(
+        metadata.loaded_at, timestamp_now, default=None
+    )
+    # -- Determine cache age in days, if possible.
+    if config_days is not None:
+        config_status.append(
+            f"Cached {util.plurality(config_days, 'day')} ago"
         )
-        # -- Determine cache age in days, if possible.
-        if config_days is not None:
-            config_status.append(
-                f"Cached {util.plurality(config_days, 'day')} ago"
-            )
-        else:
-            config_status.append("Cached")
-        # -- Indicate if there is a sign of a failed refresh attempt.
-        if "refresh-failure-on" in metadata:
-            config_status.append("refresh failed.")
-    # -- Handle the case of not having a cached config.
     else:
-        config_status.append("Not cached")
+        config_status.append("cache timestamp error")
+
+    # -- Indicate if there is a sign of a failed refresh attempt.
+    if metadata.HasField("refresh_failure_on"):
+        config_status.append("refresh failed.")
 
     # -- Concatenate and return.
     return ", ".join(config_status)

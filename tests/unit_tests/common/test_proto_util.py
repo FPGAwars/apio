@@ -31,9 +31,8 @@ def test_proto_from_dict_full(apio_runner: ApioRunner):
         }
 
         # -- Parse proto from json dict and verify
-        proto_msg = proto_from_json_dict(
-            json_dict1, MessageB, "Fail to parse test proto"
-        )
+        proto_msg = proto_from_json_dict(json_dict1, MessageB)
+        assert proto_msg is not None
 
         assert proto_msg.field_b1.field_a1 == "aaa"
         assert proto_msg.field_b1.field_a2 == "bbb"
@@ -59,9 +58,8 @@ def test_proto_from_dict_minimal(apio_runner: ApioRunner):
         }
 
         # -- Parse proto from json dict and verify
-        proto_msg = proto_from_json_dict(
-            json_dict1, MessageB, "Fail to parse test proto"
-        )
+        proto_msg = proto_from_json_dict(json_dict1, MessageB)
+        assert proto_msg is not None
 
         assert proto_msg.field_b1.field_a1 == "aaa"
 
@@ -88,12 +86,8 @@ def test_proto_from_dict_missing_field(apio_runner: ApioRunner):
         }
 
         with apio_runner.with_logger() as log:
-            with pytest.raises(SystemExit) as e:
-                _ = proto_from_json_dict(
-                    json_dict1, MessageB, "Fail to parse test proto"
-                )
-
-        assert e.value.code == 1
+            proto_msg = proto_from_json_dict(json_dict1, MessageB)
+        assert proto_msg is None
         assert "Missing required field 'field-b1.field-a1'" in log.out
 
 
@@ -107,14 +101,12 @@ def test_proto_from_dict_unknown_field(apio_runner: ApioRunner):
         }
 
         with apio_runner.with_logger() as log:
-            with pytest.raises(SystemExit) as e:
-                _ = proto_from_json_dict(
-                    json_dict1, MessageB, "Fail to parse test proto"
-                )
-
-        print(log.out)
-
-        assert e.value.code == 1
+            # with pytest.raises(SystemExit) as e:
+            proto_msg = proto_from_json_dict(
+                json_dict1,
+                MessageB,
+            )
+        assert proto_msg is None
         assert "Unknown field 'no-such-field'" in log.out
 
 

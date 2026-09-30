@@ -177,11 +177,14 @@ def test_loading_with_custom_fpgas(apio_runner: ApioRunner):
 
         # TODO: Use proto ascii literals instead of converting from json
         fpga_proto1 = proto_util.proto_from_json_dict(
-            fpga_json1, FpgaDefinition, "Failed to parse fpga_json1"
+            fpga_json1, FpgaDefinition
         )
+        assert fpga_proto1 is not None
+
         fpga_proto2 = proto_util.proto_from_json_dict(
-            fpga_json2, FpgaDefinition, "Failed to parse fpga_json2"
+            fpga_json2, FpgaDefinition
         )
+        assert fpga_proto2 is not None
 
         assert definitions.fpgas["ice40hx4k-tq144-8k"] == fpga_proto1
         assert definitions.fpgas["my-custom-fpga"] == fpga_proto2

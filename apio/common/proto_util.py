@@ -6,7 +6,7 @@ from google.protobuf.json_format import ParseDict
 from google.protobuf.message import Message
 from google.protobuf.unknown_fields import UnknownFieldSet
 from google.protobuf.json_format import MessageToDict
-from apio.common.apio_console import fatal_error
+from apio.common.apio_console import fatal_error, cerror
 
 # Placeholder for a concrete protobuf message *class* (e.g. MyProto),
 # not an instance. bound=Message restricts it to subclasses of
@@ -15,10 +15,10 @@ from apio.common.apio_console import fatal_error
 MessageClass = TypeVar("MessageClass", bound=Message)
 
 
-def check_is_initialized(
-    proto_msg: Message, error_context: str, *, json_naming: bool = False
-) -> None:
-    """Check that a proto message is fully populated"""
+def is_initialized(proto_msg: Message, use_json_naming: bool = False) -> bool:
+    """Test if the protocol buffer message is fully initializes. If not,
+    print an error message and return False, otherwise return True.
+    """
 
     assert isinstance(proto_msg, Message), type(proto_msg)
 
@@ -29,16 +29,27 @@ def check_is_initialized(
         find = getattr(proto_msg, "FindInitializationErrors", None)
         assert callable(find)
         missing_field = str(find()[0])
-        if json_naming:
+        if use_json_naming:
             missing_field = missing_field.replace("_", "-")
-        fatal_error(error_context, f"Missing required field '{missing_field}'")
+        cerror(f"Missing required field '{missing_field}'")
+        return False
 
     # -- Check 2: Should not carry unknown fields.
     unknown_fields = list(UnknownFieldSet(proto_msg))
     if len(unknown_fields) > 0:
-        fatal_error(
-            error_context, f'Unknown fields: {", ".join(unknown_fields)}'
-        )
+        cerror(f'Unknown fields: {", ".join(unknown_fields)}')
+        return False
+
+    # -- All is good.
+    return True
+
+
+def check_is_initialized(
+    proto_msg: Message, error_msg: str, *, use_json_naming: bool = False
+) -> None:
+    """Check that a proto message is fully populated"""
+    if not is_initialized(proto_msg, use_json_naming=use_json_naming):
+        fatal_error(error_msg)
 
 
 def check_is_required(proto_msg: Message, *fields_names: str) -> None:
@@ -104,27 +115,34 @@ def check_not_required(proto_msg: Message, *fields_names: str) -> None:
 def proto_from_json_dict(
     json_dict: Dict[str, Any],
     proto_class: type[MessageClass],
-    error_context: str,
-) -> MessageClass:
+    *,
+    use_json_naming: bool = True,
+) -> MessageClass | None:
     """Create and return an object of proto message class 'proto_class'
-    populated with values from json dict json_dict. Exit with an error code
-    on any error.
+    populated with values from json dict json_dict. If error, print an error
+    message and return None.
     """
     # pylint: disable=broad-exception-caught
 
     try:
         proto_msg = ParseDict(json_dict, proto_class())
+
     except Exception as e:
-        error_msg = str(e)
+        parsing_error = str(e)
 
         # -- Try to improve the error message.
         pattern = re.compile(r'has no field named "([^"]+)" at')
-        match = pattern.search(error_msg)
+        match = pattern.search(parsing_error)
         if match:
-            error_msg = f"Unknown field '{match.group(1)}'"
-        fatal_error(error_context, error_msg)
+            parsing_error = f"Unknown field '{match.group(1)}'"
 
-    check_is_initialized(proto_msg, error_context, json_naming=True)
+        # -- Print an error message and exit.
+        cerror(parsing_error)
+        return None
+
+    if not is_initialized(proto_msg, use_json_naming=use_json_naming):
+        return None
+
     return proto_msg
 
 
