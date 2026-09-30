@@ -78,3 +78,17 @@ def test_pnr_builder_extra_options(apio_runner: ApioRunner):
         apio_runner, extra_options=["--seed", "7", "--router", "router2"]
     )
     assert action.endswith("-q --seed 7 --router router2")
+
+
+def test_synth_builder(apio_runner: ApioRunner):
+    """The synth command turns the leftover $buf cells of yosys 0.69
+    into connections before writing the json."""
+    with apio_runner.in_sandbox():
+        apio_env = make_test_apio_env()
+        apio_env.params.arch = ApioArch.xilinx
+        apio_env.params.fpga_info.CopyFrom(
+            text_format.Parse(XILINX_FPGA_INFO, FpgaInfo())
+        )
+        action = str(PluginXilinx(apio_env).make_synth_builder().action)
+    assert "synth_xilinx -arch xc7 -top main ; " in action
+    assert "simplemap t:\\$$buf; write_json $TARGET" in action

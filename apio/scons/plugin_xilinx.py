@@ -72,8 +72,10 @@ class PluginXilinx(PluginBase):
                 # -- (like the other architectures do with synth_ice40/ecp5/
                 # -- gowin), so synth flags such as -nodsp work; it used to
                 # -- land after write_json, where it did nothing useful.
+                # -- yosys >= 0.69+59 can leave a $buf cell with z bits that
+                # -- nextpnr can't place; simplemap turns it into wires (#699).
                 'yosys -p "synth_xilinx -arch {0} -top {1} {2}; '
-                'write_json $TARGET " '
+                'simplemap t:\\$$buf; write_json $TARGET " '
                 "{3} -DSYNTHESIZE {4} $SOURCES"
             ).format(
                 xilinx_params.yosys_arch,
