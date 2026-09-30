@@ -393,7 +393,6 @@ def detached_action(apio_env: ApioEnv, cmd: list[str]) -> Action:
             group_flag = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
             creationflags = detached_flag | group_flag
 
-            # apio:subprocess
             subprocess.Popen(
                 cmd_in_env(cmd, tools_env),
                 creationflags=creationflags,
@@ -406,8 +405,6 @@ def detached_action(apio_env: ApioEnv, cmd: list[str]) -> Action:
             return 0
 
         # -- Handle the rest (macOS and Linux)
-
-        # apio:subprocess
         subprocess.Popen(
             cmd_in_env(cmd, tools_env),
             stdout=subprocess.DEVNULL,

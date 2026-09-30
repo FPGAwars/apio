@@ -380,7 +380,6 @@ class Drivers:
         if os.environ.get("SUDO_ASKPASS"):
             sudo_cmd.append("-A")
 
-        # apio:subprocess
         exit_code = subprocess.call(sudo_cmd + ["sh", "-c", script])
         if exit_code == 0:
             return 0
@@ -418,8 +417,6 @@ class Drivers:
         access to the serial port)."""
 
         # -- Get the current groups of the user
-
-        # apio:subprocess
         groups = subprocess.check_output("groups")
 
         # -- True if it does not belong to the dialout group yet.
@@ -475,9 +472,6 @@ class Drivers:
             # -- We execute it using a shell, rather than by
             # -- util.exec_command() because zadig required permissions
             # -- elevation.
-
-            # apio:subprocess
-            # exit_code = os.system(str(zadig_exe))
             exit_code = subprocess.call(str(zadig_abs_path), shell=True)
 
             if exit_code != 0:
@@ -491,9 +485,6 @@ class Drivers:
         # -- We launch the device manager using os.system() rather than with
         # -- util.exec_command() because util.exec_command() does not support
         # -- elevation.
-
-        # apio:subprocess
-        # exit_code = os.system("mmc devmgmt.msc")
         exit_code = subprocess.call("mmc devmgmt.msc", shell=True)
 
         if exit_code != 0:
@@ -515,10 +506,6 @@ class Drivers:
         serial_installer_abs_path = drivers_bin_dir / "serial_install.exe"
         assert serial_installer_abs_path.is_absolute, serial_installer_abs_path
 
-        # apio:subprocess
-        # exit_code = os.system(
-        #     str(Path(drivers_bin_dir) / "serial_install.exe")
-        # )
         exit_code = subprocess.call(str(serial_installer_abs_path), shell=True)
 
         if exit_code != 0:
@@ -534,8 +521,6 @@ class Drivers:
         # -- util.exec_command() because util.exec_command() does not support
         # -- elevation.
 
-        # apio:subprocess
-        # exit_code = os.system("mmc devmgmt.msc")
         exit_code = subprocess.call("mmc devmgmt.msc", shell=True)
 
         if exit_code != 0:

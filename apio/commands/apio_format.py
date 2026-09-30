@@ -186,7 +186,6 @@ def cli(
 
         # -- Execute the formatter command line.
 
-        # apio:subprocess
         result = subprocess.run(
             cmd_in_env(command, tools_env),
             shell=False,
