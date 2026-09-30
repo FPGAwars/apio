@@ -10,7 +10,6 @@ from apio.common.proto.apio_resources_pb2 import (
     ApioPackageSpec,
 )
 
-
 # -- The resources dir under the Apio package.
 RESOURCES_DIR = "resources"
 
@@ -41,11 +40,12 @@ def read_apio_config_file() -> ApioConfig:
         )
 
     # -- Convert to proto
-    apio_config: ApioConfig = proto_util.proto_from_json_dict(
+    apio_config: ApioConfig | None = proto_util.proto_from_json_dict(
         json_dict,
         ApioConfig,
-        "Failed to parse apio config as a protocol buffer",
     )
+    if apio_config is None:
+        fatal_error("Failed to parse apio config as a protocol buffer")
 
     # -- Validate
     assert apio_config.remote_config_ttl_days >= 1, apio_config
@@ -151,12 +151,14 @@ def read_apio_packages_file(packages_dir: Path) -> dict[str, ApioPackageSpec]:
     # -- Convert to a dict of proto
     packages: dict[str, ApioPackageSpec] = {}
     for name, spec_dict in json_dict.items():
-
-        spec_proto: ApioPackageSpec = proto_util.proto_from_json_dict(
+        spec_proto: ApioPackageSpec | None = proto_util.proto_from_json_dict(
             spec_dict,
             ApioPackageSpec,
-            f"Failed to parse package {name} spec as a protocol buffer",
         )
+        if spec_proto is None:
+            fatal_error(
+                f"Failed to parse package {name} spec as a protocol buffer"
+            )
         packages[name] = spec_proto
 
     # -- All done

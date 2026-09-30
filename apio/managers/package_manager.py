@@ -21,8 +21,9 @@ from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
 from apio.common.apio_platforms import ApioPlatform
-from apio.managers.remote_config import RemoteConfig, PackageRemoteConfig
+from apio.managers.remote_config import RemoteConfig
 from apio.common.proto.apio_resources_pb2 import ApioPackageSpec
+from apio.common.proto.apio_remote_config_pb2 import RemoteConfigPackageSpec
 
 
 @unique
@@ -175,7 +176,7 @@ class PackageManager:
 
     def _construct_package_download_url(
         self,
-        package_remote_config: PackageRemoteConfig,
+        package_remote_config: RemoteConfigPackageSpec,
     ) -> str:
         """Construct the download URL for the given package name and
         version."""
@@ -183,7 +184,7 @@ class PackageManager:
         # -- Create vars mapping.
         url_vars = {
             "${PLATFORM}": self.platform.id,
-            "${YYYYMMDD}": package_remote_config.release_tag.replace("-", ""),
+            "${YYYYMMDD}": package_remote_config.release.tag.replace("-", ""),
         }
         if is_debug(1):
             cout(f"Package URL vars: {url_vars}")
@@ -191,13 +192,13 @@ class PackageManager:
         # -- Define the url parts.
         url_parts = [
             "https://github.com/",
-            package_remote_config.repo_organization,
+            package_remote_config.repository.organization,
             "/",
-            package_remote_config.repo_name,
+            package_remote_config.repository.name,
             "/releases/download/",
-            package_remote_config.release_tag,
+            package_remote_config.release.tag,
             "/",
-            package_remote_config.release_file,
+            package_remote_config.release.package,
         ]
 
         if is_debug(1):
@@ -388,12 +389,12 @@ class PackageManager:
 
         # -- Get package remote config from the cache. Caller can refresh the
         # -- cache with the latest remote config if desired.
-        package_config: PackageRemoteConfig = (
+        package_config: RemoteConfigPackageSpec = (
             self.remote_config.get_package_config(package_name)
         )
 
         # -- Get the version we should have.
-        target_version = package_config.release_version
+        target_version = package_config.release.tag.replace("-", ".")
 
         # -- If not forcing and the target version already installed then
         # -- nothing to do and we leave quietly.
@@ -583,13 +584,14 @@ class PackageManager:
         ) = self.get_installed_package_info(name)
 
         # -- Get the package's remote config
-        package_config: PackageRemoteConfig = (
+        package_config: RemoteConfigPackageSpec = (
             self.remote_config.get_package_config(name)
         )
 
         if (
             not installed_version
-            or installed_version != package_config.release_version
+            or installed_version
+            != package_config.release.tag.replace("-", ".")
         ):
             return RequiredPackageStatus.PACKAGE_VERSION_MISMATCH
 

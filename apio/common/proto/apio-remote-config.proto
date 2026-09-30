@@ -1,0 +1,63 @@
+// Protocol buffers definitions for the remote config data.
+
+// IMPORTANT: After making changes in this file, run the repo task
+// 'invoke update-protos' to propagate them to the python stubs.
+// Otherwise they do not take affect.
+
+// Using proto2 for features such as 'has' and 'required'.
+syntax = "proto2";
+
+package apio.common.proto;
+
+
+// Contains the repository specification of an Apio package.
+// For details the the latest remote-config/apio.x.x.x.json file.
+message RemoteConfigRepositorySpec {
+  required string name = 1;
+  required string organization = 2;
+}
+
+// Contains the release specification of an Apio package.
+// For details the the latest remote-config/apio.x.x.x.json file.
+message RemoteConfigReleaseSpec {
+  required string tag = 1;
+  required string package = 2;
+}
+
+// Contains remote config specification of a single Apio package.
+// For details the the latest remote-config/apio.x.x.x.json file.
+message RemoteConfigPackageSpec {
+  required RemoteConfigRepositorySpec repository = 1;
+  required RemoteConfigReleaseSpec release = 2;
+}
+
+// Contains the remote config specification that was fetched from the
+// remote configuration source. This is requivalent to a single
+// apio-x.x.x.json file in the remote-config directory.
+message RemoteConfigSpec {
+  map<string, RemoteConfigPackageSpec> packages = 1;
+}
+
+// Contains the downloading metadata of a cached remote config file.
+message CachedRemoteConfigMetadata {
+  // The apio version that downloaded the remote config. E.g. "1.7.0".
+  required string loaded_by = 1 [json_name = "loaded-by"];
+  // The time the remote config was downloaded. E.g. "2026-09-29-04-19"
+  required string loaded_at = 2 [json_name = "loaded-at"];
+  // The URL from which the remote config was downloaded.
+  required string loaded_from = 3 [json_name = "loaded-from"];
+  // If exists, indicates the last time a remote config fetch failed. The field
+  // is cleared each time a remote config fetch is successful, used to
+  // avoid a failed fetch on each Apio invocation if the internet is down.
+  // E.g. "2026-09-29-04-19".
+  optional string refresh_failure_on = 4 [json_name = "refresh-failure-on"];
+}
+
+// Contains the data stored in the local file "cached-remote-config.json".
+// It included the fetched remote config and the downloading metadata.
+message CachedRemoteConfigSpec {
+  // The remote config.
+  required RemoteConfigSpec remote_config = 1 [json_name = "remote-config"];
+  // The downloading metadata.
+  required CachedRemoteConfigMetadata metadata = 2;
+}

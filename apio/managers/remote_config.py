@@ -9,72 +9,28 @@
 
 import json
 from enum import Enum, unique
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 from pathlib import Path
 import requests
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
 import json5
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, fatal_error
+from apio.common.apio_console import cout, fatal_error, cerror
 from apio.common.apio_styles import INFO, EMPH3
 from apio.utils import util
+from apio.common.proto_util import (
+    proto_from_json_dict,
+    proto_to_json_dict,
+    check_is_required,
+)
+from apio.common.proto.apio_remote_config_pb2 import (
+    CachedRemoteConfigSpec,
+    RemoteConfigSpec,
+    CachedRemoteConfigMetadata,
+    RemoteConfigPackageSpec,
+)
 
-# -- JSON schema for validating the downloaded remote config files.
-REMOTE_CONFIG_SCHEMA = {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "type": "object",
-    "required": ["packages"],
-    "properties": {
-        # -- Packages
-        "packages": {
-            "type": "object",
-            "patternProperties": {
-                "^.*$": {
-                    "type": "object",
-                    "required": ["repository", "release"],
-                    "properties": {
-                        # -- Repository
-                        "repository": {
-                            "type": "object",
-                            "required": ["name", "organization"],
-                            "properties": {
-                                # -- Repo name, e.g. 'examples'
-                                "name": {"type": "string"},
-                                # -- Repo organization. e.g. "fpgawars"
-                                "organization": {"type": "string"},
-                            },
-                            "additionalProperties": False,
-                        },
-                        # -- Release.
-                        "release": {
-                            "type": "object",
-                            "required": [
-                                "tag",
-                                "package",
-                            ],
-                            "properties": {
-                                # -- Tag
-                                "tag": {
-                                    "type": "string",
-                                    "pattern": r"^\d{4}\-\d{2}\-\d{2}$",
-                                },
-                                # -- Package
-                                "package": {"type": "string"},
-                            },
-                            "additionalProperties": False,
-                        },
-                    },
-                    "additionalProperties": False,
-                }
-            },
-            "additionalProperties": False,
-        }
-    },
-    "additionalProperties": False,
-}
+#
 
 
 @unique
@@ -87,22 +43,6 @@ class RemoteConfigPolicy(Enum):
     # -- Config is being used and a fresh copy is that was fetch in this
     # -- invocation of Apio is required.
     GET_FRESH = 2
-
-
-@dataclass(frozen=True)
-class PackageRemoteConfig:
-    """Contains a package info from the remote config."""
-
-    # -- E.g. "tools-oss-cad-suite"
-    repo_name: str
-    # -- E.g. "FPGAwars"
-    repo_organization: str
-    # -- E.g. "0.2.3"
-    release_version: str
-    # -- E.g. "${YYYY-MM-DD}""
-    release_tag: str
-    # -- E.g. "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.zip"
-    release_file: str
 
 
 def get_datetime_stamp(dt: datetime | None = None) -> str:
@@ -210,16 +150,17 @@ class RemoteConfig:
         url = remote_config_url_template
         url = url.replace("{major}", str(ver_tuple[0]))
         url = url.replace("{minor}", str(ver_tuple[1]))
-        self.remote_config_url = url
+
+        self.remote_config_url: str = url
 
         # -- Save remote url ttl setting.
-        self.remote_config_ttl_days = remote_config_ttl_days
+        self.remote_config_ttl_days: int = remote_config_ttl_days
 
         # -- Save the remote config fetch retry minutes.
-        self.remote_config_retry_minutes = remote_config_retry_minutes
+        self.remote_config_retry_minutes: int = remote_config_retry_minutes
 
         # -- Save remote config policy.
-        self._remote_config_policy = remote_config_policy
+        self._remote_config_policy: RemoteConfigPolicy = remote_config_policy
 
         # -- Verify that we resolved all the remote config URL placeholders.
         assert "{" not in self.remote_config_url, self.remote_config_url
@@ -228,10 +169,10 @@ class RemoteConfig:
             cout(f"Remote config url: {self.remote_config_url}")
 
         # -- Start with no remote config.
-        self._cached_remote_config: dict[str, Any] | None = None
+        self._cached_remote_config: CachedRemoteConfigSpec | None = None
 
         # -- Path to the local file with the cached remote config.
-        self._cached_remote_config_path = (
+        self._cached_remote_config_path: Path = (
             home_dir / "cached-remote-config.json"
         )
 
@@ -243,7 +184,7 @@ class RemoteConfig:
         self._apply_remote_config_policy()
 
     @staticmethod
-    def _skipping_cache_msg(reason: str):
+    def _announce_no_suitable_cached_config(reason: str):
         """Show a message indicating that the cached remote config is being
         skipped."""
         cout(f"No suitable cached remote config file ({reason}).", style=INFO)
@@ -254,25 +195,31 @@ class RemoteConfig:
 
         # -- Case 1: A fresh config is required for the current command.
         if self._remote_config_policy == RemoteConfigPolicy.GET_FRESH:
-            self._fetch_and_update_remote_config(error_is_fatal=True)
+            self._maybe_fetch_and_update_remote_config(error_is_fatal=True)
             return
 
         # -- Case 2: A fresh config is optional but there is no cached
         # -- config so practically it's required.
         assert self._remote_config_policy == RemoteConfigPolicy.CACHED_OK
-        if not self._cached_remote_config:
+        if self._cached_remote_config is None:
             if is_debug(1):
                 cout("Cached remote config is not available.", style=INFO)
-            self._fetch_and_update_remote_config(error_is_fatal=True)
+            self._maybe_fetch_and_update_remote_config(error_is_fatal=True)
             return
 
         # -- Case 3: May need to fetch a new config but can continue with
         # -- the cached config in case of a fetch failure.
         #
         # -- Get the cached config metadata.
-        cashed_config_metadata = self._cached_remote_config.get("metadata", {})
-        last_fetch_timestamp = cashed_config_metadata.get("loaded-at", "")
-        last_fetch_url = cashed_config_metadata.get("loaded-from", "")
+        check_is_required(
+            self._cached_remote_config,
+            "metadata",
+            "metadata.loaded_at",
+            "metadata.loaded_from",
+        )
+        metadata = self._cached_remote_config.metadata
+        last_fetch_timestamp = metadata.loaded_at
+        last_fetch_url = metadata.loaded_from
 
         # -- Determine if we need a new config because the remote config URL
         # -- was changed (e.g. with APIO_REMOTE_CONFIG_URL)
@@ -285,18 +232,16 @@ class RemoteConfig:
         )
         time_valid = 0 <= days_since_last_fetch < self.remote_config_ttl_days
 
-        # -- Determine if we already tried recently to refresh this config and
-        # -- failed.
-        refresh_failure_timestamp = cashed_config_metadata.get(
-            "refresh-failure-on", ""
-        )
         minutes_since_refresh_failure = minutes_between_datetime_stamps(
-            refresh_failure_timestamp, datetime_stamp_now, default=99999
+            metadata.refresh_failure_on, datetime_stamp_now, default=None
         )
         refresh_failed_recently = (
-            0
-            <= minutes_since_refresh_failure
-            < self.remote_config_retry_minutes
+            minutes_since_refresh_failure is not None
+            and (
+                0
+                <= minutes_since_refresh_failure
+                < self.remote_config_retry_minutes
+            )
         )
 
         # -- Dump info for debugging.
@@ -311,49 +256,40 @@ class RemoteConfig:
         # -- Fetch the new config if needed.
         if url_changed or not time_valid:
             reason = "source URL mismatch" if url_changed else "stale"
-            self._skipping_cache_msg(reason=reason)
+            self._announce_no_suitable_cached_config(reason=reason)
             if refresh_failed_recently:
-                cout("Remote config fetch failed recently, skipping.")
+                cout(
+                    "Remote config fetch failed recently, "
+                    + "will keep using cached config.",
+                    style=INFO,
+                )
             else:
-                self._fetch_and_update_remote_config(error_is_fatal=False)
+                self._maybe_fetch_and_update_remote_config(
+                    error_is_fatal=False
+                )
 
     @property
-    def data(self) -> dict:
+    def data(self) -> RemoteConfigSpec:
         """Returns the remote config that is applicable for this invocation.
         Should not called if the context was initialized with NO_CONFIG."""
         assert self._cached_remote_config is not None
-        return self._cached_remote_config.get("remote-config", {})
+        return self._cached_remote_config.remote_config
 
     @property
-    def metadata(self) -> dict:
+    def metadata(self) -> CachedRemoteConfigMetadata:
         """Returns the remote config metadata. Should not be called
         if the context was initialized with NO_CONFIG."""
         assert self._cached_remote_config is not None
-        return self._cached_remote_config.get("metadata", {})
+        return self._cached_remote_config.metadata
 
     def get_package_config(
         self,
         package_name: str,
-    ) -> PackageRemoteConfig:
+    ) -> RemoteConfigPackageSpec:
         """Given a package name, return the remote config information with the
         version and fetch information.
         """
-
-        # -- Extract package's remote config.
-        package_config = self.data["packages"][package_name]
-        repo_name = package_config["repository"]["name"]
-        repo_organization = package_config["repository"]["organization"]
-        release_tag = package_config["release"]["tag"]
-        release_version = release_tag.replace("-", ".")
-        release_file = package_config["release"]["package"]
-
-        return PackageRemoteConfig(
-            repo_name=repo_name,
-            repo_organization=repo_organization,
-            release_version=release_version,
-            release_tag=release_tag,
-            release_file=release_file,
-        )
+        return self.data.packages[package_name]
 
     def _maybe_load_cached_remote_config(self):
         """Try loading self._cached_remote_config from the local file
@@ -364,7 +300,7 @@ class RemoteConfig:
 
         # -- If the file doesn't exist then do nothing.
         if not self._cached_remote_config_path.exists():
-            self._skipping_cache_msg("no cache file")
+            self._announce_no_suitable_cached_config("no cache file")
             return
 
         # -- Read the cached remote config file as a json dict and extract its
@@ -376,30 +312,29 @@ class RemoteConfig:
             ) as f:
                 json_data = json.load(f)
 
-            # -- Determine if the cached remote config is usable.
+            # -- If the cached remote config is not from the same apio version
+            # -- as the current one, reject it.
             config_apio_version = json_data.get("metadata", {}).get(
                 "loaded-by", ""
             )
-            apio_version_matches = (
-                config_apio_version == util.get_apio_version_str()
-            )
-
-            # -- Not downloaded by this version of apio. Ignore.
-            if not apio_version_matches:
-                self._skipping_cache_msg("Apio version mismatch")
+            if config_apio_version != util.get_apio_version_str():
+                self._announce_no_suitable_cached_config(
+                    "Apio version mismatch"
+                )
                 return
 
-            # -- Validate the remote config against the schema and keep
-            # -- it.
-            validate(
-                instance=json_data["remote-config"],
-                schema=REMOTE_CONFIG_SCHEMA,
-            )
-            self._cached_remote_config = json_data
-
         except (OSError, ValueError, AttributeError) as e:
-            self._skipping_cache_msg("couldn't parse")
+            self._announce_no_suitable_cached_config("couldn't proto parse")
             cout(str(e), style=INFO)
+
+        # -- Convert to proto.
+        config_proto = proto_from_json_dict(json_data, CachedRemoteConfigSpec)
+        if config_proto is None:
+            self._announce_no_suitable_cached_config("Corrupt cached data")
+            return
+
+        # -- Update the remote config member.
+        self._cached_remote_config = config_proto
 
     def _save(self):
         """Save the cached remote config to a file"""
@@ -410,14 +345,17 @@ class RemoteConfig:
         if not dir_path.exists():
             dir_path.mkdir()
 
+        # -- Convert proto to json dict
+        json_dict = proto_to_json_dict(self._cached_remote_config)
+
         # -- Write to file.
         with open(self._cached_remote_config_path, "w", encoding="utf8") as f:
-            json.dump(self._cached_remote_config, f, indent=2)
+            json.dump(json_dict, f, indent=2)
 
         # -- Dump for debugging.
         if is_debug(1):
             cout("Saved cached remote config:", style=EMPH3)
-            cout(json.dumps(self._cached_remote_config, indent=2))
+            cout(json.dumps(json_dict, indent=2))
 
     def _handle_soft_config_refresh_failure(
         self, *, error_msg_lines: list[str]
@@ -427,29 +365,35 @@ class RemoteConfig:
         remote config."""
 
         # -- Sanity check, the cached config exists.
-        assert self._cached_remote_config, "No cached remote config"
+        assert self._cached_remote_config is not None
 
         # -- Print the soft warning.
-        cout(*error_msg_lines, style=INFO)
+        if error_msg_lines:
+            cerror(*error_msg_lines)
+
         cout("Will try again at a latter time.", style=INFO)
 
         # -- Memorize the time of the attempt so we don't retry too often.
-        metadata = self._cached_remote_config["metadata"]
-        metadata["refresh-failure-on"] = get_datetime_stamp()
+        self._cached_remote_config.metadata.refresh_failure_on = (
+            get_datetime_stamp()
+        )
         self._save()
 
-    def _fetch_and_update_remote_config(self, *, error_is_fatal: bool) -> None:
-        """Returns the apio remote config JSON dict."""
+    def _maybe_fetch_and_update_remote_config(
+        self, *, error_is_fatal: bool
+    ) -> None:
+        """Try to fetch remote config and if fetched successfully update in
+        self."""
 
         # pylint: disable=broad-exception-caught
 
         # -- Fetch the config text. Returns None if error_is_fatal=False and
         # -- fetch failed.
-        config_text: str | None = self._fetch_remote_config_text(
+        remote_config_text: str | None = self._fetch_remote_config_text(
             error_is_fatal=error_is_fatal
         )
 
-        if config_text is None:
+        if remote_config_text is None:
             # -- Sanity check, If error_is_fatal, _fetch_remote_config_text()
             # -- wouldn't return with None.
             assert not error_is_fatal
@@ -457,12 +401,12 @@ class RemoteConfig:
 
         # -- Print the file's content for debugging
         if is_debug(1):
-            cout(config_text)
+            cout(remote_config_text)
 
         try:
-            remote_config = json5.loads(config_text)
+            json_dict = json5.loads(remote_config_text)
         except Exception as e:
-            error_msg = "Failed to parse the latest Apio remote config file."
+            error_msg = "Failed to parse the fetched Apio remote config json."
             if error_is_fatal:
                 fatal_error(error_msg, cause=e)
             self._handle_soft_config_refresh_failure(
@@ -470,47 +414,31 @@ class RemoteConfig:
             )
             return
 
-        # -- Do some checks and fail if invalid. This is not an exhaustive
-        # -- check.
-        ok = self._check_downloaded_remote_config(
-            remote_config, error_is_fatal=error_is_fatal
-        )
-        if not ok:
+        # -- Convert the remote config json to proto.
+        remote_config = proto_from_json_dict(json_dict, RemoteConfigSpec)
+        if remote_config is None:
+            error_msg = "Remote config data corrupt (proto parsing failed)"
+            if error_is_fatal:
+                fatal_error(error_msg)
+            self._handle_soft_config_refresh_failure(
+                error_msg_lines=[error_msg]
+            )
             return
 
-        # -- Create the cached remote config wrapper
-        cached_remote_config = {}
-        cached_remote_config["remote-config"] = remote_config
+        # -- Construct the metadata field.
+        metadata = CachedRemoteConfigMetadata(
+            loaded_by=util.get_apio_version_str(),
+            loaded_at=get_datetime_stamp(),
+            loaded_from=self.remote_config_url,
+        )
 
-        # -- Append remote config metadata. This also clear the
-        # -- "refresh-failure-on" field if exists.
-        metadata_dict: dict[str, Any] = {}
-        metadata_dict["loaded-by"] = util.get_apio_version_str()
-        metadata_dict["loaded-at"] = get_datetime_stamp()
-        metadata_dict["loaded-from"] = self.remote_config_url
-        cached_remote_config["metadata"] = metadata_dict
+        # -- Update the cached config member.
+        self._cached_remote_config = CachedRemoteConfigSpec(
+            remote_config=remote_config, metadata=metadata
+        )
 
-        self._cached_remote_config = cached_remote_config
+        # -- Flush to disk.
         self._save()
-
-    def _check_downloaded_remote_config(
-        self, remote_config: dict, error_is_fatal: bool
-    ) -> bool:
-        """Check the downloaded remote config has a valid structure."""
-        try:
-            validate(instance=remote_config, schema=REMOTE_CONFIG_SCHEMA)
-        except ValidationError as e:
-            # -- Error.
-            error_msg = "Fetched remote config failed validation."
-            if error_is_fatal:
-                fatal_error(error_msg, cause=e)
-            self._handle_soft_config_refresh_failure(
-                error_msg_lines=[error_msg, str(e)]
-            )
-            return False
-
-        # -- Ok.
-        return True
 
     def _fetch_remote_config_text(self, error_is_fatal: bool) -> str | None:
         """Fetches and returns the apio remote config JSON text. In case
@@ -552,24 +480,23 @@ class RemoteConfig:
         except Exception as e:
             exception = e
 
-        context_msg = (
-            "Downloading of the latest Apio remote config file failed."
-        )
+        error_msg = "Downloading of the latest Apio remote config file failed."
 
         # -- Handle the case of an exception. This is the preferable option
         # -- since it provides to fatal_error() a more detailed context of
         # -- the error (which can be viewed with APIO_DEBUG=1)
         if exception is not None:
             if error_is_fatal:
-                fatal_error(context_msg, cause=exception)
+                fatal_error(error_msg, cause=exception)
             self._handle_soft_config_refresh_failure(
-                error_msg_lines=[context_msg, str(exception)]
+                error_msg_lines=[error_msg, str(exception)]
             )
+            return None
 
         # -- Handle the case of a status error with no exception.
-        elif resp.status_code != 200:
+        if resp.status_code != 200:
             error_lines = [
-                context_msg,
+                error_msg,
                 f"Expected HTTP status code 200, got {resp.status_code}.",
             ]
             if error_is_fatal:
@@ -577,7 +504,6 @@ class RemoteConfig:
             self._handle_soft_config_refresh_failure(
                 error_msg_lines=error_lines
             )
-
             return None
 
         # -- Done ok.
