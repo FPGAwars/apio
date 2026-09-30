@@ -79,7 +79,10 @@ class PluginGowin(PluginBase):
         # -- The yosys synth builder.
         return Builder(
             action=(
-                'yosys -p "synth_gowin -top {0} {1} -json $TARGET  {2}" '
+                # -- yosys >= 0.69+59 can leave a $buf cell with z bits that
+                # -- nextpnr can't place; simplemap turns it into wires (#699).
+                'yosys -p "synth_gowin -top {0} {1} {2}; '
+                'simplemap t:\\$$buf; write_json $TARGET" '
                 "{3} -DSYNTHESIZE {4} $SOURCES"
             ).format(
                 params.apio_env_params.top_module,
