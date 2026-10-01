@@ -66,7 +66,6 @@ def _run_raw_command(
     if verbose:
         cout(f"\n---- Executing: [{cmd_str}]")
 
-    # apio:subprocess
     return subprocess.call(cmd_str, shell=True, env=env)
 
 

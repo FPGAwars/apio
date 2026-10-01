@@ -207,7 +207,6 @@ def exec_command(
 
     # -- Execute the command
     try:
-        # apio:subprocess
         with subprocess.Popen(
             cmd_in_env(cmd, env),
             stdout=stdout.fileno(),
