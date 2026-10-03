@@ -10,7 +10,7 @@ syntax = "proto2";
 
 package apio.common.proto;
 
-import "apio/common/proto/apio-common.proto";
+import "apio-common.proto";
 
 // ====================== Board definition ===========================
 

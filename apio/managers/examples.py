@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH3
-from apio.common.proto.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.apio_context import ApioContext
 from apio.utils import util
 from apio.common import proto_util

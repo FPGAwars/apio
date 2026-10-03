@@ -13,7 +13,7 @@ import click
 from apio.utils import cmd_util
 from apio.managers.scons_manager import SConsManager
 from apio.commands import options
-from apio.common.proto.apio_scons_pb2 import Verbosity
+from apio.common.proto.stubs.apio_scons_pb2 import Verbosity
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,

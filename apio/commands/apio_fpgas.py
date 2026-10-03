@@ -16,8 +16,8 @@ from rich import box
 from apio.common import apio_console, proto_util
 from apio.common.apio_console import cout, ctable, cwrite
 from apio.common.apio_styles import INFO, BORDER, EMPH1
-from apio.common.proto.apio_common_pb2 import ApioArch
-from apio.common.proto.apio_definitions_pb2 import FpgaDefinition
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_definitions_pb2 import FpgaDefinition
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,

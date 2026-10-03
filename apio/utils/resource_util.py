@@ -5,7 +5,7 @@ import json5
 from apio.utils import util
 from apio.common.apio_console import fatal_error
 from apio.common import proto_util
-from apio.common.proto.apio_resources_pb2 import (
+from apio.common.proto.stubs.apio_resources_pb2 import (
     ApioConfig,
     ApioPackageSpec,
 )

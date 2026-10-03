@@ -1,6 +1,8 @@
+# *** Apio patched line:
 # pylint: disable=all
 
-from apio.common.proto import apio_common_pb2 as _apio_common_pb2
+# *** Apio patched line:
+from . import apio_common_pb2 as _apio_common_pb2
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from collections.abc import Mapping as _Mapping

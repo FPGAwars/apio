@@ -19,7 +19,7 @@ from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout
 from apio.common.apio_styles import EMPH3
 from apio.common.common_util import env_build_path, dump_env
-from apio.common.proto.apio_scons_pb2 import SconsParams
+from apio.common.proto.stubs.apio_scons_pb2 import SconsParams
 
 
 class ApioEnv:
