@@ -97,6 +97,8 @@ module = [
     "vcdvcd",
     "vcdvcd.*",
     "google.protobuf.unknown_fields",
+    "grpc_tools",
+    "grpc_tools.*",
 ]
 ignore_missing_imports = true
 
