@@ -14,7 +14,7 @@ from typing import Any
 from dataclasses import dataclass
 from pathlib import Path
 from apio.common.apio_console import fatal_error
-from apio.common.proto.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 
 
 @dataclass(frozen=True)

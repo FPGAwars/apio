@@ -15,11 +15,14 @@ from apio.common import subprocess_env, apio_platforms
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1
 from apio.common.common_util import env_build_path
-from apio.common.proto.apio_common_pb2 import EnvMutations
+from apio.common.proto.stubs.apio_common_pb2 import EnvMutations
 from apio.managers.profile import Profile
 from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
 from apio.utils import util, env_options
-from apio.common.proto.apio_resources_pb2 import ApioConfig, ApioPackageSpec
+from apio.common.proto.stubs.apio_resources_pb2 import (
+    ApioConfig,
+    ApioPackageSpec,
+)
 from apio.common.apio_platforms import ApioPlatform
 from apio.managers.project import Project, load_project_from_file
 from apio.managers.package_manager import PackageManager

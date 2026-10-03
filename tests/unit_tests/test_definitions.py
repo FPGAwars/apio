@@ -4,7 +4,7 @@ Tests board/fpga/programmer definitions.
 
 import json
 from tests.conftest import ApioRunner
-from apio.common.proto.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,

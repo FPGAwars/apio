@@ -4,7 +4,7 @@ Tests of proto_util.py
 
 import pytest
 from tests.conftest import ApioRunner
-from apio.common.proto.apio_testing_pb2 import MessageA, MessageB
+from apio.common.proto.stubs.apio_testing_pb2 import MessageA, MessageB
 from apio.common.proto_util import (
     proto_from_json_dict,
     proto_to_json_dict,

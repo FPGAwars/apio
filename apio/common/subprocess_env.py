@@ -14,8 +14,8 @@ from apio.common.apio_console import cout, cstyle
 from apio.common.apio_styles import EMPH2, EMPH3
 from apio.common.apio_platforms import ApioPlatform
 from apio.common import proto_util
-from apio.common.proto.apio_common_pb2 import EnvMutations, NameValue
-from apio.common.proto.apio_resources_pb2 import ApioPackageSpec
+from apio.common.proto.stubs.apio_common_pb2 import EnvMutations, NameValue
+from apio.common.proto.stubs.apio_resources_pb2 import ApioPackageSpec
 
 # -- Env vars involved in pyinstaller fixing under linux.
 # -- See See https://github.com/FPGAwars/apio/issues/887

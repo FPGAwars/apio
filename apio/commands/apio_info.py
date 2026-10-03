@@ -27,7 +27,7 @@ from apio.apio_context import (
     ProjectPolicy,
     RemoteConfigPolicy,
 )
-from apio.common.proto.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.utils.cmd_util import ApioGroup, ApioSubgroup, ApioCommand
 from apio.common.apio_themes import THEMES_TABLE, THEME_LIGHT
 from apio.managers.remote_config import (

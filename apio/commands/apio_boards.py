@@ -20,7 +20,7 @@ from apio.common.apio_styles import BORDER, EMPH1
 from apio.utils import util, cmd_util
 from apio.commands import options
 from apio.managers.examples import Examples
-from apio.common.proto.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,

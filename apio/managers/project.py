@@ -20,7 +20,7 @@ from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH2
 from apio.common.common_util import PROJECT_BUILD_PATH
-from apio.common.proto.apio_definitions_pb2 import BoardDefinition
+from apio.common.proto.stubs.apio_definitions_pb2 import BoardDefinition
 
 DEFAULT_TOP_MODULE = "main"
 
