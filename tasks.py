@@ -30,7 +30,6 @@ from importlib.metadata import version, PackageNotFoundError
 from invoke.tasks import task
 from invoke.context import Context
 
-
 # ========================== Helper definitions ===============================
 
 
@@ -338,4 +337,4 @@ def update_protos_task(ctx: Context):
     announce_task("update-protos")
     os.chdir(get_repo_root())
     run(ctx, ["pwd"])
-    run(ctx, ["./scripts/update-protos.sh"])
+    run(ctx, [PYTHON, "-m", "scripts.update_protos"])
