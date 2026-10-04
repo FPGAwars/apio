@@ -22,8 +22,10 @@ from apio.managers.downloader import FileDownloader
 from apio.utils import util
 from apio.common.apio_platforms import ApioPlatform
 from apio.managers.remote_config import RemoteConfig
-from apio.common.proto.apio_resources_pb2 import ApioPackageSpec
-from apio.common.proto.apio_remote_config_pb2 import RemoteConfigPackageSpec
+from apio.common.proto.stubs.apio_resources_pb2 import ApioPackageSpec
+from apio.common.proto.stubs.apio_remote_config_pb2 import (
+    RemoteConfigPackageSpec,
+)
 
 
 @unique

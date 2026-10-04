@@ -22,7 +22,7 @@ from rich.table import Table
 from apio.common import rich_lib_windows
 from apio.common.apio_styles import WARNING, ERROR, INFO
 from apio.common.apio_themes import ApioTheme, THEMES_TABLE, DEFAULT_THEME
-from apio.common.proto.apio_scons_pb2 import (
+from apio.common.proto.stubs.apio_scons_pb2 import (
     TerminalMode,
     FORCE_PIPE,
     FORCE_TERMINAL,

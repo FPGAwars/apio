@@ -23,7 +23,7 @@ from apio.common.proto_util import (
     proto_to_json_dict,
     check_is_required,
 )
-from apio.common.proto.apio_remote_config_pb2 import (
+from apio.common.proto.stubs.apio_remote_config_pb2 import (
     CachedRemoteConfigSpec,
     RemoteConfigSpec,
     CachedRemoteConfigMetadata,

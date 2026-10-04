@@ -14,7 +14,7 @@ from pathlib import Path
 import json5
 from apio.common import proto_util
 from apio.common.apio_console import cout, fatal_error
-from apio.common.proto.apio_definitions_pb2 import (
+from apio.common.proto.stubs.apio_definitions_pb2 import (
     BoardDefinition,
     FpgaDefinition,
     ProgrammerDefinition,

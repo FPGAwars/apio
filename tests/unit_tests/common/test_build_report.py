@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import pytest
 from tests.conftest import ApioRunner
-from apio.common.proto.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.common.build_report import (
     ResourceReport,
     ClockReport,

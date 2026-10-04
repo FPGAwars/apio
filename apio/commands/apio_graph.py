@@ -19,7 +19,7 @@ from apio.apio_context import (
     RemoteConfigPolicy,
 )
 from apio.utils import cmd_util
-from apio.common.proto.apio_scons_pb2 import (
+from apio.common.proto.stubs.apio_scons_pb2 import (
     GraphOutputType,
     GraphParams,
     Verbosity,

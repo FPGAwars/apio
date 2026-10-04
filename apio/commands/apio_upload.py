@@ -20,7 +20,7 @@ from apio.apio_context import (
     RemoteConfigPolicy,
 )
 from apio.managers.programmers import construct_programmer_cmd
-from apio.common.proto.apio_scons_pb2 import UploadParams
+from apio.common.proto.stubs.apio_scons_pb2 import UploadParams
 
 
 # --------- apio upload

@@ -4,7 +4,7 @@ Linux pyinstaller bundle. See https://github.com/FPGAwars/apio/issues/887
 """
 
 from apio.common.apio_platforms import get_apio_platforms
-from apio.common.proto.apio_common_pb2 import EnvMutations
+from apio.common.proto.stubs.apio_common_pb2 import EnvMutations
 from apio.common.subprocess_env import (
     apply_env_mutations,
     get_env_mutations_for_subprocess,

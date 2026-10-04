@@ -18,8 +18,8 @@ from apio.scons.plugin_ice40 import PluginIce40
 from apio.scons.plugin_ecp5 import PluginEcp5
 from apio.scons.plugin_gowin import PluginGowin
 from apio.scons.plugin_xilinx import PluginXilinx
-from apio.common.proto.apio_common_pb2 import ApioArch
-from apio.common.proto.apio_scons_pb2 import SimParams, SconsParams
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
+from apio.common.proto.stubs.apio_scons_pb2 import SimParams, SconsParams
 from apio.common import apio_console, proto_util, apio_platforms
 from apio.scons.apio_env import ApioEnv
 from apio.scons.plugin_base import PluginBase
