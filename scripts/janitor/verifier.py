@@ -98,61 +98,6 @@ def _verify_release_should_be_latest(
         ctx.add_success(requirement, "[Verifier] Release is latest.")
 
 
-# def _verify_release_should_be_consistent(
-#     ctx: VerificationContext, requirement: Requirement
-# ):
-#     """Verify a requirement that a release should be consistent."""
-#     assert requirement.req_type == RequirementType.RELEASE_SHOULD_BE_CONSISTENT
-
-#     # -- For now we check consistency only of openxc7 releases.
-#     release = requirement.release_ref()
-#     assert release.repo == "fpgawars/tools-openxc7", requirement
-
-#     # -- Older version didn't have the parts index so we just
-#     # -- assume they are ok.
-#     if release.release_tag < "2026-09-10":
-#         ctx.add_success(requirement, "[Verifier] Old release, assuming OK.")
-#         return
-
-#     # -- Download the xilinx parts index.
-#     index_bytes = util.download_release_asset(
-#         requirement.release_ref(), "XILINX-PARTS-INDEX.json"
-#     )
-#     index = json.loads(index_bytes)
-
-#     # -- Construct a set of the chipdb asset names from the index.
-#     index_chipdbs: set[str] = {
-#         part["asset"] for part in index["parts"].values() if "asset" in part
-#     }
-#     print(f"index_chipdbs has {len(index_chipdbs)} members.")
-#     assert len(index_chipdbs) >= 10, index_chipdbs  # Sanity check
-
-#     # -- Download the release metadata.
-#     release_metadata = util.download_release_metadata(release)
-
-#     # -- Construct the set of chipdb assets names from the release
-#     # -- metadata.
-#     assets_chipdbs: set[str] = {
-#         name
-#         for name in release_metadata.assets.keys()
-#         if name.startswith("apio-xilinx-chipdb-")
-#     }
-#     print(f"assets_chipdbs has {len(assets_chipdbs)} members.")
-#     assert len(assets_chipdbs) >= 10, assets_chipdbs  # Sanity check
-
-#     # -- Classify the requirement
-#     if index_chipdbs != assets_chipdbs:
-#         print(f"Openxc7 release {release} is NOT consistent")
-#         only_in_index = sorted(index_chipdbs - assets_chipdbs)
-#         only_in_assets = sorted(assets_chipdbs - index_chipdbs)
-#         print(f"{only_in_index=}")
-#         print(f"{only_in_assets=}")
-#         ctx.add_failure(requirement,
-#                     "[Verifier] Chipdb assets do not match.")
-#     else:
-#         ctx.add_success(requirement, "[Verifier] Chipdb assets match index.")
-
-
 def _verify_draft_should_be_deleted(
     ctx: VerificationContext, requirement: Requirement
 ):

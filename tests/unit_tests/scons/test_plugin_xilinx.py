@@ -11,8 +11,7 @@ from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.common.proto.stubs.apio_scons_pb2 import FpgaInfo
 from apio.scons.plugin_xilinx import PluginXilinx
 
-# -- An xc7a35t (Artix-7, Arty A7-35T) FPGA info. chipdb_file_path is the
-# -- file the parts index names for the part's die.
+# -- An xc7a35t (Artix-7, Arty A7-35T) FPGA info.
 XILINX_FPGA_INFO = """
 fpga_id: "xc7a35tcsg324-1"
 part_num: "XC7A35T-1CSG324C"
@@ -21,7 +20,6 @@ xilinx_params {
   yosys_family: "artix7"
   yosys_arch: "xc7"
   yosys_part: "xc7a35tcsg324-1"
-  chipdb_file_path: "/chipdb/chipdb-xc7a50t.bin"
 }
 """
 
@@ -50,13 +48,10 @@ def _pnr_action(
 
 
 def test_pnr_builder(apio_runner: ApioRunner):
-    """nextpnr-xilinx takes the full part as --device, the chipdb file of
-    the part's die, and the xilinx outputs as uarch options."""
+    """nextpnr-xilinx takes the full part as --device, and the xilinx
+    outputs as uarch options."""
     action = _pnr_action(apio_runner)
-    assert action.startswith(
-        "nextpnr-xilinx --device xc7a35tcsg324-1 "
-        "--chipdb /chipdb/chipdb-xc7a50t.bin "
-    )
+    assert action.startswith("nextpnr-xilinx --device xc7a35tcsg324-1 ")
     assert "-o xdc=arty.xdc" in action
     assert "-o fasm=$TARGET" in action
     assert "--json $SOURCE" in action
