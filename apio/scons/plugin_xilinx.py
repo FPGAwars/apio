@@ -107,15 +107,11 @@ class PluginXilinx(PluginBase):
         quiet = "" if params.verbosity.all or params.verbosity.pnr else "-q"
         extra_options = " ".join(params.apio_env_params.nextpnr_extra_options)
 
-        # -- nextpnr-xilinx's chipdbs are per die, so it also takes the full
-        # -- part (package and speed grade) as --device, and names its xilinx
-        # -- outputs as uarch options.
         action = (
-            "nextpnr-xilinx --device {0} --chipdb {1} -o xdc={2} "
-            "-o fasm=$TARGET --json $SOURCE --report {3} {4} {5}"
+            "nextpnr-xilinx --device {0} -o xdc={1} "
+            "-o fasm=$TARGET --json $SOURCE --report {2} {3} {4}"
         ).format(
             xilinx_params.yosys_part,
-            xilinx_params.chipdb_file_path,
             self.constrain_file(),
             apio_env.target + ".pnr",
             quiet,

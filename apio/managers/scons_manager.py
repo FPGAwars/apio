@@ -25,7 +25,6 @@ from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
 from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
-from apio.managers import xilinx_chipdb
 from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.common.proto.stubs.apio_scons_pb2 import (
     FORCE_PIPE,
@@ -250,15 +249,11 @@ class SConsManager:
                     "yosys_part",
                     "speed",
                 )
-                chipdb_file_path = xilinx_chipdb.chipdb_file_for_part(
-                    apio_ctx, xilinx_params.yosys_part
-                )
                 result.fpga_info.xilinx_params.MergeFrom(
                     XilinxParams(
                         yosys_family=xilinx_params.yosys_family,
                         yosys_arch=xilinx_params.yosys_arch,
                         yosys_part=xilinx_params.yosys_part,
-                        chipdb_file_path=str(chipdb_file_path),
                     )
                 )
             case _:

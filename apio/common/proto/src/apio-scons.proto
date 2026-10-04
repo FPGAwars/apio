@@ -43,7 +43,6 @@ message XilinxParams {
   required string yosys_family = 1;
   required string yosys_arch = 2;
   required string yosys_part = 3;
-  required string chipdb_file_path = 4;
 }
 
 // General fpga info.
