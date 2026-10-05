@@ -1,0 +1,21 @@
+// Protocol buffers definitions for the boards, fpgas, and programmers
+// definitions.
+
+// IMPORTANT: After making changes in this file, run the repo task
+// 'invoke update-protos' to propagate them to the python stubs.
+//  Otherwise they do not take affect.
+
+// Using proto2 for features such as 'has' and 'required'.
+syntax = "proto2";
+
+package apio.common.proto;
+
+import "apio-common.proto";
+import "apio-definitions.proto";
+
+
+// Information about a single FPGA part.
+message ApioPartEntry {
+  required bool generated = 1;
+  required FpgaDefinition definition = 2;
+}
