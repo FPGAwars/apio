@@ -377,6 +377,31 @@ def test_apio_api_get_examples(apio_runner: ApioRunner):
         )
 
 
+def test_apio_api_scan_path(apio_runner: ApioRunner):
+    """Test "apio api scan-path" """
+
+    with apio_runner.in_sandbox() as sb:
+        # -- Execute "apio api scan-path -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(apio, ["api", "scan-path", "-t", "xyz"])
+        sb.assert_result_ok(result)
+        assert "xyz" in result.output
+        assert '"conflicts"' in result.output
+        assert '"duplicates"' in result.output
+
+        # -- Execute "apio api scan-path -t xyz -o <path>"
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "scan-path", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file_text(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert len(data["apio-path-scan"]["path-dirs"]) > 0
+
+
 def test_apio_api_scan_devices(apio_runner: ApioRunner):
     """Test "apio api scan-devices" """
 
@@ -418,11 +443,6 @@ def test_apio_api_echo(apio_runner: ApioRunner):
     """Test "apio api echo" """
 
     with apio_runner.in_sandbox() as sb:
-
-        # -- Execute "apio api scan-devices -t xyz". We run it in a
-        # -- subprocess such that it releases the libusb1 file it uses.
-        # -- This also means that it's not included in the pytest test
-        # -- coverage report.
         result = sb.invoke_apio_cmd(
             apio,
             ["api", "echo", "-t", "Hello world", "-s", "OK"],
