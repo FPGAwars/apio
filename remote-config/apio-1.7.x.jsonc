@@ -33,7 +33,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-01",
+        "tag": "2026-10-07",
         "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -55,7 +55,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-03",
+        "tag": "2026-10-07",
         "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -66,7 +66,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-09-15",
+        "tag": "2026-10-06",
         "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
