@@ -33,7 +33,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-01",
+        "tag": "2026-10-07",
         "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
