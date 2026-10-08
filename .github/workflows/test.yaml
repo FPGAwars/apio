@@ -34,6 +34,8 @@ jobs:
         shell: bash
 
     strategy:
+      fail-fast: false
+
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
         python-version: ["3.11", "3.12", "3.13", "3.14"]
