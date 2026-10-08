@@ -3,11 +3,19 @@ Tests of subprocess_env.py, in particular the LD_LIBRARY_PATH fix for the
 Linux pyinstaller bundle. See https://github.com/FPGAwars/apio/issues/887
 """
 
+from pathlib import Path
+from tests.conftest import ApioRunner
 from apio.common.apio_platforms import get_apio_platforms
 from apio.common.proto.stubs.apio_common_pb2 import EnvMutations
 from apio.common.subprocess_env import (
     apply_env_mutations,
     get_env_mutations_for_subprocess,
+)
+from apio.apio_context import (
+    ApioContext,
+    PackagesPolicy,
+    ProjectPolicy,
+    RemoteConfigPolicy,
 )
 
 LINUX = get_apio_platforms()["linux-x86-64"]
@@ -63,3 +71,44 @@ def test_no_fix_leaves_ld_library_path_alone():
     env = {"PATH": "/usr/bin", "LD_LIBRARY_PATH": "/opt/user/lib"}
     apply_env_mutations(EnvMutations(pyinstaller_linux_fix=False), env)
     assert env == {"PATH": "/usr/bin", "LD_LIBRARY_PATH": "/opt/user/lib"}
+
+
+def test_path_conflicts(apio_runner: ApioRunner):
+    """Test that there are no conflicting items along the Apio PATH
+    mutations."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Create an ApioContext with access to Apio packages.
+        apio_ctx = ApioContext(
+            project_policy=ProjectPolicy.NO_PROJECT,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+        )
+
+        # -- Get the path mutations in order of search (first is highest
+        # -- priority)
+        mutations: EnvMutations = apio_ctx.get_env_mutations_for_subprocess(
+            include_apio_packages=True
+        )
+        apio_path_dirs = mutations.add_to_path
+
+        # -- Collect items on path
+        print(f"{apio_path_dirs=}")
+        matches: dict[str, list[Path]] = {}
+        for dir in apio_path_dirs:
+            dir_path = Path(dir)
+            files_paths: list[Path] = [
+                p for p in dir_path.glob("*") if p.is_file()
+            ]
+            for file_path in files_paths:
+                matches.setdefault(file_path.name, []).append(file_path)
+
+        # -- Report
+        for name, files in matches.items():
+            if len(files) > 1:
+                data = files[0].read_bytes()
+                same = all(p.read_bytes() == data for p in files[1:])
+                print(f"\n{name} {same}")
+                for file in files:
+                    print(f"- {str(file)}")
