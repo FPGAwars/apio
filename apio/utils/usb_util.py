@@ -123,10 +123,16 @@ def scan_usb_devices(apio_ctx: ApioContext) -> list[UsbDevice]:
     # -- Lookup libusb backend library file in oss-cad-suite/lib.
     backend = usb.backend.libusb1.get_backend(find_library=find_library)
 
+    # -- If it doesn't load (e.g. it needs a newer glibc than the system
+    # -- has), try the system's libusb.
+    if not backend:
+        backend = usb.backend.libusb1.get_backend()
+
     if not backend:
         fatal_error(
             "Libusb backend not found",
-            info=f"Searched names: {searched_names}",
+            info=f"Searched names {searched_names} in oss-cad-suite/lib "
+            + "and the system's libusb.",
         )
 
     # -- Find the usb devices.
