@@ -31,6 +31,21 @@
       }
     }
   },
+  // "openxc7" package
+  "openxc7": {
+    "description": "Openxc7 toolchain (Xilinx FPGAs)",
+    "env": {
+      "add-to-path": [
+        "%p/bin",
+        "%p/lib"
+      ],
+      // These are internal values that are used by Apio and they are not
+      // exported as env vars.
+      "define-consts": {
+        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
+      }
+    }
+  },
   // "definitions" package
   "definitions": {
     "description": "Apio definitions",
@@ -58,21 +73,6 @@
       "add-to-path": [
         "%p/bin"
       ]
-    }
-  },
-  // "openxc7" package
-  "openxc7": {
-    "description": "Openxc7 toolchain (Xilinx FPGAs)",
-    "env": {
-      "add-to-path": [
-        "%p/bin",
-        "%p/lib"
-      ],
-      // These are internal values that are used by Apio and they are not
-      // exported as env vars.
-      "define-consts": {
-        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
-      }
     }
   },
   // "verible" package
