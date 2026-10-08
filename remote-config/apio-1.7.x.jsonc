@@ -55,7 +55,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-07",
+        "tag": "2026-10-08",
         "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
