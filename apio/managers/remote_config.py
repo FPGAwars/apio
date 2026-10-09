@@ -187,7 +187,7 @@ class RemoteConfig:
     def _announce_no_suitable_cached_config(reason: str):
         """Show a message indicating that the cached remote config is being
         skipped."""
-        cout(f"No suitable cached remote config file ({reason}).", style=INFO)
+        cout(f"No suitable cached remote config file ({reason}).")
 
     def _apply_remote_config_policy(self) -> None:
         """Called after loading the profile file, to apply the remote config
