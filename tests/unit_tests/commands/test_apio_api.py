@@ -172,6 +172,37 @@ def test_apio_api_get_packages(apio_runner: ApioRunner):
         )
 
 
+def test_apio_api_get_parts_index(apio_runner: ApioRunner):
+    """Test "apio api get-parts-index" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio api get-parts-index -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-parts-index", "-t", "xyz"]
+        )
+        sb.assert_result_ok(result)
+        assert '"parts-index":' in result.output
+        assert '"xilinx":' in result.output
+        assert '"xc7a100tcsg324-1":' in result.output
+
+        # -- Execute "apio api get-parts-index -t xyz -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-parts-index", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file_text(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert (
+            "part-num"
+            in data["parts-index"]["xilinx"]["xc7a100tcsg324-1"]["definition"]
+        )
+
+
 def test_apio_api_get_system(apio_runner: ApioRunner):
     """Test "apio api get-system" """
 
