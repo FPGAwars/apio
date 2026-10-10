@@ -68,10 +68,6 @@ jobs:
         run: |
           cat ./_janitor-data/verification-results.json
 
-     
-
-  
-
       - name: Write verification report to summary
         run: |
           {

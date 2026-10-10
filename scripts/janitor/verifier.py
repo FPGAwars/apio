@@ -268,6 +268,8 @@ def _generate_markdown_report(
                 else:
                     link = f"[releases](https://github.com/{repo}/releases)"
                 lines.append(f"  - {link}")
+                for note in requirement.notes:
+                    lines.append(f"    - {note}")
 
     # -- All done.
     return "\n".join(lines)
