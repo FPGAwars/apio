@@ -970,15 +970,12 @@ def _get_parts_index_cli(
     section_dict: dict[str, Any] = {}
 
     for arch in ApioArch.values():
-        if arch == ApioArch.xilinx:
-            arch_parts_dict: dict[str, dict] = {}
-            arch_manager = arch_managers[arch]
-            index_proto = arch_manager.read_parts_index_file()
-            for part_id, entry in index_proto.items():
-                arch_parts_dict[part_id] = proto_util.proto_to_json_dict(entry)
-            section_dict[ApioArch.Name(arch)] = arch_parts_dict
-        else:
-            section_dict[ApioArch.Name(arch)] = "TBD"
+        arch_parts_dict: dict[str, dict] = {}
+        arch_manager = arch_managers[arch]
+        index_proto = arch_manager.read_parts_index_file()
+        for part_id, entry in index_proto.items():
+            arch_parts_dict[part_id] = proto_util.proto_to_json_dict(entry)
+        section_dict[ApioArch.Name(arch)] = arch_parts_dict
 
     top_dict["parts-index"] = section_dict
 
