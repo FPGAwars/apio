@@ -81,8 +81,17 @@ jobs:
 
       - name: Install dev tools
         run: |
-          pip install invoke
+          pip install invoke==2.2.1
           invoke install-deps
+
+      # This is not required for the test step, just for the scan-path below.
+      - name: Install Apio
+        run: |
+          invoke install-apio
+
+      - name: Show Apio PATH conflicts
+        run: |
+          apio api scan-path
 
       # TODO: Move the logic here to an Invoke task and use it instead.
       - name: Run Tests
