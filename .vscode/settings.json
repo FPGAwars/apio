@@ -237,6 +237,7 @@
         "Supress",
         "synthesizable",
         "targetes",
+        "tcsg",
         "tcsh",
         "testbench",
         "testbenches",
@@ -263,6 +264,7 @@
         "workpath",
         "Wwarn",
         "yosys",
-        "Zadig"
+        "Zadig",
+        "zynq"
     ]
 }

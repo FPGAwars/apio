@@ -183,7 +183,7 @@ def test_apio_api_get_parts_index(apio_runner: ApioRunner):
         )
         sb.assert_result_ok(result)
         assert '"parts-index":' in result.output
-        assert '"xilinx":' in result.output
+        assert '"xilinx"' in result.output
         assert '"xc7a100tcsg324-1":' in result.output
 
         # -- Execute "apio api get-parts-index -t xyz -o <dir>"  (file)
@@ -198,8 +198,7 @@ def test_apio_api_get_parts_index(apio_runner: ApioRunner):
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert (
-            "part-num"
-            in data["parts-index"]["xilinx"]["xc7a100tcsg324-1"]["definition"]
+            "part-num" in data["parts-index"]["xc7a100tcsg324-1"]["definition"]
         )
 
 

@@ -599,3 +599,20 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
                 tar_file.extract(item, dest_dir, filter="fully_trusted")
             else:
                 tar_file.extract(item, dest_dir)
+
+
+def json_dict_contains_substring(data, substr: str) -> bool:
+    """Returns True if any of the string values in the dict (at any level)
+    contains the given substring, case insensitive."""
+    substr = substr.casefold()
+
+    def walk(obj) -> bool:
+        if isinstance(obj, str):
+            return substr in obj.casefold()
+        if isinstance(obj, dict):
+            return any(walk(v) for v in obj.values())
+        if isinstance(obj, list):
+            return any(walk(v) for v in obj)
+        return False
+
+    return walk(data)
