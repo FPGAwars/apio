@@ -496,15 +496,18 @@ def _get_boards_cli(
         # -- Add board's fpga information.
         fpga_id = board_definition.fpga_id
         fpga_definition = apio_ctx.definitions.fpgas[fpga_id]
-        fpga_dict = {"id": fpga_id}
-        fpga_dict.update(proto_util.proto_to_json_dict(fpga_definition))
-        board_dict["fpga"] = fpga_dict
+        board_dict["fpga"] = {
+            "id": fpga_id,
+            "definition": proto_util.proto_to_json_dict(fpga_definition),
+        }
 
         # -- Add board's programmer information.
-        programmer_dict = {}
         programmer_id = board_definition.programmer.id
-        programmer_dict["id"] = programmer_id
-        board_dict["programmer"] = programmer_dict
+        programmer_definition = apio_ctx.definitions.programmers[programmer_id]
+        board_dict["programmer"] = {
+            "id": programmer_id,
+            "definition": proto_util.proto_to_json_dict(programmer_definition),
+        }
 
         # -- Add the board to the boards dict.
         section[board_id] = board_dict

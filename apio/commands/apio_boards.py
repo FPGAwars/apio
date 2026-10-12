@@ -41,7 +41,7 @@ class Entry:
     fpga_arch: str
     fpga_size: str
     fpga_id: str
-    fpga_part_num: str
+    fpga_vendor_part: str
     programmer: str
 
     def sort_key(self):
@@ -67,13 +67,13 @@ def _collect_board_entries(apio_ctx: ApioContext) -> list[Entry]:
         fpga_id = board_definition.fpga_id
         fpga_definition = apio_ctx.definitions.fpgas[fpga_id]
         proto_util.check_is_required(
-            fpga_definition, "arch", "size", "part_num"
+            fpga_definition, "arch", "size", "vendor_part"
         )
         examples_count = "   " + str(examples_counts.get(board_id, ""))
         board_description = board_definition.description
         fpga_arch = ApioArch.Name(fpga_definition.arch)
         fpga_size = fpga_definition.size
-        fpga_part_num = fpga_definition.part_num
+        fpga_vendor_part = fpga_definition.vendor_part
         programmer_id = board_definition.programmer.id
 
         result.append(
@@ -84,7 +84,7 @@ def _collect_board_entries(apio_ctx: ApioContext) -> list[Entry]:
                 fpga_arch=fpga_arch,
                 fpga_size=fpga_size,
                 fpga_id=fpga_id,
-                fpga_part_num=fpga_part_num,
+                fpga_vendor_part=fpga_vendor_part,
                 programmer=programmer_id,
             )
         )
@@ -142,7 +142,7 @@ def _list_boards(apio_ctx: ApioContext, verbose: bool):
         values.append(entry.fpga_size)
         if verbose:
             values.append(entry.fpga_id)
-        values.append(entry.fpga_part_num)
+        values.append(entry.fpga_vendor_part)
         values.append(entry.programmer)
 
         # -- Add row.
@@ -182,7 +182,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
         len("DESCRIPTION"),
         *(len(entry.board_description) for entry in entries),
     )
-    w4 = max(len("FPGA"), *(len(entry.fpga_part_num) for entry in entries))
+    w4 = max(len("FPGA"), *(len(entry.fpga_vendor_part) for entry in entries))
 
     # -- Print page header
     today = date.today()
@@ -232,7 +232,7 @@ def _list_boards_docs_format(apio_ctx: ApioContext):
                 entry.board_id.ljust(w1),
                 entry.fpga_size.ljust(w2),
                 entry.board_description.ljust(w3),
-                entry.fpga_part_num.ljust(w4),
+                entry.fpga_vendor_part.ljust(w4),
             )
         )
 

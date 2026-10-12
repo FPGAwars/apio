@@ -35,12 +35,12 @@ CUSTOM_BOARDS = """
 CUSTOM_FPGAS = """
 {
   "custom-fpga": {
-    "part-num": "CUSTOM-FPGA",
     "arch": "ice40",
+    "vendor-part": "CUSTOM-FPGA",
     "size": "5k",
     "ice40-params": {
-      "type": "up5k",
-      "package": "sg48"
+      "nextpnr-type": "up5k",
+      "nextpnr-package": "sg48"
     }
   }
 }

@@ -47,13 +47,15 @@ class PluginGowin(PluginBase):
         # -- win, and the duplicates are waived with the MODDUP rule below
         # -- (scoped to the yosys lib dir).
         self.lint_lib_files = self.sim_lib_files
-        part_num = apio_env.params.fpga_info.part_num.upper()
+        device_lc = (
+            apio_env.params.fpga_info.definition.gowin_params.nextpnr_device.upper()
+        )
         for prefix, family in (
             ("GW1N", "gw1n"),
             ("GW2A", "gw2a"),
             ("GW5A", "gw5a"),
         ):
-            if part_num.startswith(prefix):
+            if device_lc.startswith(prefix):
                 self.lint_lib_files = self.sim_lib_files + [
                     yosys_path / "gowin" / f"cells_xtra_{family}.v"
                 ]
@@ -74,7 +76,7 @@ class PluginGowin(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        gowin_params = params.fpga_info.gowin_params
+        gowin_params = params.fpga_info.definition.gowin_params
 
         # -- The yosys synth builder.
         return Builder(
@@ -107,7 +109,7 @@ class PluginGowin(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        gowin_params = params.fpga_info.gowin_params
+        gowin_params = params.fpga_info.definition.gowin_params
 
         # -- We use an emmiter to add to the builder a second output file.
         def emitter(target, source, env):
@@ -122,7 +124,7 @@ class PluginGowin(PluginBase):
                 "--write $TARGET --report {1} {2} "
                 "--vopt cst={3} {4} {5}"
             ).format(
-                params.fpga_info.part_num,
+                params.fpga_info.definition.gowin_params.nextpnr_device,
                 apio_env.target + ".pnr",
                 (
                     f"--vopt family={gowin_params.nextpnr_family}"
@@ -144,7 +146,7 @@ class PluginGowin(PluginBase):
 
         return Builder(
             action="gowin_pack -d {0} -o $TARGET $SOURCE".format(
-                self.apio_env.params.fpga_info.gowin_params.packer_device
+                self.apio_env.params.fpga_info.definition.gowin_params.packer_device
             ),
             src_suffix=".pnr.json",
             suffix=".fs",

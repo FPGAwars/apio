@@ -35,7 +35,7 @@ class Entry:
     fpga: str
     board_count: int
     fpga_arch: str
-    fpga_part_num: str
+    fpga_vendor_part: str
     fpga_size: str
     fpga_params: str
 
@@ -71,11 +71,11 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> list[Entry]:
     result: list[Entry] = []
     for fpga_id, fpga_definition in apio_ctx.definitions.fpgas.items():
         proto_util.check_is_required(
-            fpga_definition, "arch", "part_num", "size"
+            fpga_definition, "arch", "vendor_part", "size"
         )
         board_count = boards_counts.get(fpga_id, 0)
         fpga_arch = fpga_definition.arch
-        fpga_part_num = fpga_definition.part_num
+        fpga_vendor_part = fpga_definition.vendor_part
         fpga_size = fpga_definition.size
 
         # -- Arch specific params summary string.
@@ -89,7 +89,7 @@ def _collect_fpgas_entries(apio_ctx: ApioContext) -> list[Entry]:
                 fpga=fpga_id,
                 board_count=board_count,
                 fpga_arch=ApioArch.Name(fpga_arch),
-                fpga_part_num=fpga_part_num,
+                fpga_vendor_part=fpga_vendor_part,
                 fpga_size=fpga_size,
                 fpga_params=fpga_params,
             )
@@ -140,7 +140,7 @@ def _list_fpgas(apio_ctx: ApioContext, verbose: bool):
         values.append(entry.fpga)
         values.append(f"{entry.board_count:>2}" if entry.board_count else "")
         values.append(entry.fpga_arch)
-        values.append(entry.fpga_part_num)
+        values.append(entry.fpga_vendor_part)
         values.append(entry.fpga_size)
         if verbose:
             values.append(entry.fpga_params)
@@ -177,7 +177,9 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
     # -- Determine column sizes
     w1 = max(len("FPGA-ID"), *(len(entry.fpga) for entry in entries))
     w2 = max(len("SIZE"), *(len(entry.fpga_size) for entry in entries))
-    w3 = max(len("PART-NUM"), *(len(entry.fpga_part_num) for entry in entries))
+    w3 = max(
+        len("PART-NUM"), *(len(entry.fpga_vendor_part) for entry in entries)
+    )
 
     # -- Print page header
     today = date.today()
@@ -224,7 +226,7 @@ def _list_fpgas_docs_format(apio_ctx: ApioContext):
             "| {0} | {1} | {2} |\n".format(
                 entry.fpga.ljust(w1),
                 entry.fpga_size.ljust(w2),
-                entry.fpga_part_num.ljust(w3),
+                entry.fpga_vendor_part.ljust(w3),
             )
         )
 

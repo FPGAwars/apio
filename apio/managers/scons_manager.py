@@ -14,18 +14,18 @@ import shutil
 from datetime import datetime
 from google.protobuf import text_format
 from apio.common.debug_util import is_debug
-from apio.common import apio_console, proto_util
+from apio.common import apio_console
 from apio.common.apio_console import (
     cout,
     cstyle,
     cunstyle,
-    fatal_error,
 )
 from apio.common.apio_styles import SUCCESS, ERROR, EMPH3
 from apio.utils import util
 from apio.apio_context import ApioContext
 from apio.managers.scons_filter import SconsFilter
-from apio.common.proto.stubs.apio_common_pb2 import ApioArch
+
+# from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.common.proto.stubs.apio_scons_pb2 import (
     FORCE_PIPE,
     FORCE_TERMINAL,
@@ -35,10 +35,6 @@ from apio.common.proto.stubs.apio_scons_pb2 import (
     TargetParams,
     FpgaInfo,
     ApioEnvParams,
-    Ice40Params,
-    Ecp5FpgaParams,
-    GowinParams,
-    XilinxParams,
     GraphParams,
     LintParams,
     SimParams,
@@ -159,9 +155,6 @@ class SConsManager:
         """Populate and return the SconsParam proto to pass to the scons
         process."""
 
-        # pylint: disable=too-many-statements
-        # pylint: disable=too-many-locals
-
         # -- Create a shortcut.
         apio_ctx = self.apio_ctx
 
@@ -180,84 +173,18 @@ class SConsManager:
 
         # -- Get the project resources.
         pr = apio_ctx.project_resources
-        fpga_definition = pr.fpga_definition
 
-        # -- Populate the common values of FpgaInfo.
-        proto_util.check_is_required(fpga_definition, "part_num", "size")
+        # -- Get the fpga definition.
+        fpga_definition = pr.fpga_definition
+        # result.arch = fpga_definition.arch
+
+        # -- Populate the the 'fpga_info' field.
         result.fpga_info.MergeFrom(
             FpgaInfo(
-                fpga_id=pr.fpga_id,
-                part_num=fpga_definition.part_num,
-                size=fpga_definition.size,
+                id=pr.fpga_id,
+                definition=fpga_definition,
             )
         )
-
-        # - Populate the architecture specific values of result.fpga_info.
-        proto_util.check_is_required(fpga_definition, "arch")
-        fpga_arch = fpga_definition.arch
-        match fpga_arch:
-            case ApioArch.ice40:
-                assert fpga_definition.HasField("ice40_params")
-                ice40_params = fpga_definition.ice40_params
-                result.arch = ApioArch.ice40
-                proto_util.check_is_required(ice40_params, "type", "package")
-                result.fpga_info.ice40_params.MergeFrom(
-                    Ice40Params(
-                        type=ice40_params.type,
-                        package=ice40_params.package,
-                    )
-                )
-            case ApioArch.ecp5:
-                assert fpga_definition.HasField("ecp5_params")
-                epp5_params = fpga_definition.ecp5_params
-                result.arch = ApioArch.ecp5
-                proto_util.check_is_required(
-                    epp5_params, "type", "package", "speed"
-                )
-                result.fpga_info.ecp5_params.MergeFrom(
-                    Ecp5FpgaParams(
-                        type=epp5_params.type,
-                        package=epp5_params.package,
-                        speed=epp5_params.speed,
-                    )
-                )
-            case ApioArch.gowin:
-                assert fpga_definition.HasField("gowin_params")
-                gowin_params = fpga_definition.gowin_params
-                result.arch = ApioArch.gowin
-                proto_util.check_is_required(
-                    gowin_params,
-                    "yosys_family",
-                    "nextpnr_family",
-                    "packer_device",
-                )
-                result.fpga_info.gowin_params.MergeFrom(
-                    GowinParams(
-                        yosys_family=gowin_params.yosys_family,
-                        nextpnr_family=gowin_params.nextpnr_family,
-                        packer_device=gowin_params.packer_device,
-                    )
-                )
-            case ApioArch.xilinx:
-                assert fpga_definition.HasField("xilinx_params")
-                xilinx_params = fpga_definition.xilinx_params
-                result.arch = ApioArch.xilinx
-                proto_util.check_is_required(
-                    xilinx_params,
-                    "yosys_family",
-                    "yosys_arch",
-                    "yosys_part",
-                    "speed",
-                )
-                result.fpga_info.xilinx_params.MergeFrom(
-                    XilinxParams(
-                        yosys_family=xilinx_params.yosys_family,
-                        yosys_arch=xilinx_params.yosys_arch,
-                        yosys_part=xilinx_params.yosys_part,
-                    )
-                )
-            case _:
-                fatal_error(f"Unexpected fpga_arch value {fpga_arch}")
 
         # -- We are done populating The FpgaInfo params..
         assert result.fpga_info.IsInitialized(), result

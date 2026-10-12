@@ -27,7 +27,7 @@ class ExampleInfo:
     path: Path
     description: str
     fpga_arch: str
-    fpga_part_num: str
+    fpga_vendor_part: str
     fpga_size: str
 
     @property
@@ -127,10 +127,10 @@ class Examples:
                 fpga_id = board_definition.fpga_id
                 fpga_definition = definitions.fpgas[fpga_id]
                 proto_util.check_is_required(
-                    fpga_definition, "arch", "part_num", "size"
+                    fpga_definition, "arch", "vendor_part", "size"
                 )
                 fpga_arch = ApioArch.Name(fpga_definition.arch)
-                fpga_part_num = fpga_definition.part_num
+                fpga_vendor_part = fpga_definition.vendor_part
                 fpga_size = fpga_definition.size
 
                 # -- Append this example to the list.
@@ -140,7 +140,7 @@ class Examples:
                     path=example_dir,
                     description=description,
                     fpga_arch=fpga_arch,
-                    fpga_part_num=fpga_part_num,
+                    fpga_vendor_part=fpga_vendor_part,
                     fpga_size=fpga_size,
                 )
                 examples.append(example_info)

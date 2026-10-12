@@ -16,14 +16,16 @@ from apio.common.proto.stubs.apio_scons_pb2 import (
 
 TEST_PARAMS = """
 timestamp: "20123412052"
-arch: ice40
 fpga_info {
-  fpga_id: "ice40hx4k-tq144-8k"
-  part_num: "ICE40HX4K-TQ144"
-  size: "8k"
-  ice40_params {
-    type: "hx8k"
-    package: "tq144:4k"
+  id: "ice40hx4k-tq144-8k"
+  definition: {
+    arch: ice40
+    size: "8k"
+    vendor_part: "ICE40HX4K-TQ144"
+    ice40_params {
+        nextpnr_type: "hx8k"
+        nextpnr_package: "tq144:4k"
+    }
   }
 }
 verbosity {

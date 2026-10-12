@@ -63,7 +63,7 @@ class PluginXilinx(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        xilinx_params = params.fpga_info.xilinx_params
+        xilinx_params = params.fpga_info.definition.xilinx_params
 
         # -- The yosys synth builder.
         return Builder(
@@ -96,9 +96,9 @@ class PluginXilinx(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        xilinx_params = params.fpga_info.xilinx_params
+        xilinx_params = params.fpga_info.definition.xilinx_params
 
-        # -- We use an emmiter to add to the builder a second output file.
+        # -- We use an emitter to add to the builder a second output file.
         def emitter(target, source, env):
             _ = env  # Unused
             target.append(apio_env.target + ".pnr")
@@ -111,7 +111,7 @@ class PluginXilinx(PluginBase):
             "nextpnr-xilinx --device {0} -o xdc={1} "
             "-o fasm=$TARGET --json $SOURCE --report {2} {3} {4}"
         ).format(
-            xilinx_params.yosys_part,
+            xilinx_params.nextpnr_device,
             self.constrain_file(),
             apio_env.target + ".pnr",
             quiet,
@@ -133,11 +133,11 @@ class PluginXilinx(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        xilinx_params = params.fpga_info.xilinx_params
+        xilinx_params = params.fpga_info.definition.xilinx_params
 
         prjxray_db = Path(apio_env.params.environment.xilinx_prjxray_db_path)
         prjxray_db = prjxray_db / xilinx_params.yosys_family
-        part_file = prjxray_db / xilinx_params.yosys_part / "part.yaml"
+        part_file = prjxray_db / xilinx_params.nextpnr_device / "part.yaml"
 
         # -- Intermediate .frames file path expression. When resolved, it's
         # -- the same as target file but with the ".frames" extension.
@@ -148,12 +148,12 @@ class PluginXilinx(PluginBase):
                 # -- STEP1: Converts .fasm to .frames
                 "fasm2frames --part {0} --db-root {1} "
                 " $SOURCE > {2} ".format(
-                    xilinx_params.yosys_part, prjxray_db, frames_file_macro
+                    xilinx_params.nextpnr_device, prjxray_db, frames_file_macro
                 ),
                 # -- STEP2 Converts .frames to .bit
                 "xc7frames2bit --part_file {0} --part_name {1} "
                 "--frm_file {2} --output_file $TARGET".format(
-                    part_file, xilinx_params.yosys_part, frames_file_macro
+                    part_file, xilinx_params.nextpnr_device, frames_file_macro
                 ),
             ],
             src_suffix=".fasm",

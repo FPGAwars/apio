@@ -7,19 +7,23 @@ from pathlib import Path
 from google.protobuf import text_format
 from tests.unit_tests.scons.testing import make_test_apio_env
 from tests.conftest import ApioRunner
-from apio.common.proto.stubs.apio_common_pb2 import ApioArch
+
+# from apio.common.proto.stubs.apio_common_pb2 import ApioArch
 from apio.common.proto.stubs.apio_scons_pb2 import FpgaInfo
 from apio.scons.plugin_xilinx import PluginXilinx
 
 # -- An xc7a35t (Artix-7, Arty A7-35T) FPGA info.
 XILINX_FPGA_INFO = """
-fpga_id: "xc7a35tcsg324-1"
-part_num: "XC7A35T-1CSG324C"
-size: "35k"
-xilinx_params {
-  yosys_family: "artix7"
-  yosys_arch: "xc7"
-  yosys_part: "xc7a35tcsg324-1"
+id: "xc7a35tcsg324-1"
+definition: {
+    arch: xilinx
+    vendor_part: "XC7A35T-1CSG324C"
+    size: "35k"
+    xilinx_params {
+        yosys_arch: "xc7"
+        yosys_family: "artix7"
+        nextpnr_device: "xc7a35tcsg324-1"
+  }
 }
 """
 
@@ -34,7 +38,7 @@ def _pnr_action(
     with apio_runner.in_sandbox() as sb:
         sb.write_file("arty.xdc", "")
         apio_env = make_test_apio_env()
-        apio_env.params.arch = ApioArch.xilinx
+        # apio_env.params.arch = ApioArch.xilinx
         apio_env.params.fpga_info.CopyFrom(
             text_format.Parse(XILINX_FPGA_INFO, FpgaInfo())
         )
@@ -80,7 +84,7 @@ def test_synth_builder(apio_runner: ApioRunner):
     into connections before writing the json."""
     with apio_runner.in_sandbox():
         apio_env = make_test_apio_env()
-        apio_env.params.arch = ApioArch.xilinx
+        # apio_env.params.arch = ApioArch.xilinx
         apio_env.params.fpga_info.CopyFrom(
             text_format.Parse(XILINX_FPGA_INFO, FpgaInfo())
         )

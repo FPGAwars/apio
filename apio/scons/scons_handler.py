@@ -98,9 +98,10 @@ class SconsHandler:
         assert apio_env.apio_platform is apio_platform
 
         # -- Select the plugin.
-        proto_util.check_is_required(params, "arch")
+        proto_util.check_is_required(params, "fpga_info.definition.arch")
+        arch = params.fpga_info.definition.arch
         plugin: PluginBase
-        match params.arch:
+        match arch:
             case ApioArch.ice40:
                 plugin = PluginIce40(apio_env)
             case ApioArch.ecp5:
@@ -112,7 +113,7 @@ class SconsHandler:
             case _:
                 fatal_error(
                     "Apio SConstruct dispatch error: unknown "
-                    + f"arch [{ApioArch.Name(params.arch)}]"
+                    + f"arch [{ApioArch.Name(arch)}]"
                 )
 
         # -- Create the handler.
