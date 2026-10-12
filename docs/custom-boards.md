@@ -68,12 +68,12 @@ a custom fpga definition `ice40lp16k-cm121`:
 ```json
 {
   "ice40lp16k-cm121": {
-    "part-num": "ICE40LP16K-CM121",
     "arch": "ice40",
+    "vendor-part": "ICE40LP16K-CM121",
     "size": "16k",
     "ice40-params": {
-      "type": "lp16k",
-      "package": "cm121"
+      "nextpnr-type": "lp16k",
+      "nextpnr-package": "cm121"
     }
   }
 }
