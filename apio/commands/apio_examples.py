@@ -95,7 +95,7 @@ def list_examples(apio_ctx: ApioContext, verbose: bool) -> None:
         values.append(entry.name)
         values.append(entry.fpga_arch)
         if verbose:
-            values.append(entry.fpga_part_num)
+            values.append(entry.fpga_vendor_part)
             values.append(entry.fpga_size)
         values.append(entry.description)
 

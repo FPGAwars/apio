@@ -137,17 +137,23 @@ def test_loading_with_custom_fpgas(apio_runner: ApioRunner):
 
         # -- Write fake custom boards
         fpga_json1 = {
-            "part-num": "ICE40HX4K-TQ144",
             "arch": "ice40",
+            "vendor-part": "ICE40HX4K-TQ144",
             "size": "99k",  # Overriding 8k
-            "ice40-params": {"type": "hx8k", "package": "tq144:4k"},
+            "ice40-params": {
+                "nextpnr-type": "hx8k",
+                "nextpnr-package": "tq144:4k",
+            },
         }
 
         fpga_json2 = {
-            "part-num": "MY-CUSTOM-FPGA",
             "arch": "ice40",
+            "vendor-part": "MY-CUSTOM-FPGA",
             "size": "4k",
-            "ice40-params": {"type": "hx4k", "package": "bg121"},
+            "ice40-params": {
+                "nextpnr-type": "hx4k",
+                "nextpnr-package": "bg121",
+            },
         }
 
         sb.write_json_file(
@@ -311,7 +317,10 @@ def test_loading_invalid_custom_fpga(apio_runner: ApioRunner):
                 "ice40lp384-cm36": {
                     "arch": "ice40",
                     "size": "384",
-                    "ice40-params": {"type": "lp384", "package": "cm36"},
+                    "ice40-params": {
+                        "nextpnr-type": "lp384",
+                        "nextpnr-package": "cm36",
+                    },
                 }
             },
         )
@@ -327,7 +336,7 @@ def test_loading_invalid_custom_fpga(apio_runner: ApioRunner):
 
         # -- Verify
         assert e.value.code == 1
-        assert "Missing required field 'part-num'" in log.out
+        assert "Missing required field 'vendor-part'" in log.out
 
 
 def test_loading_invalid_custom_programmer(apio_runner: ApioRunner):
@@ -413,10 +422,13 @@ def test_loading_invalid_custom_fpga_id(apio_runner: ApioRunner):
             "fpgas.jsonc",
             {
                 "invalid-ID": {
-                    "part-num": "ICE40LP1K-SWG16TR",
                     "arch": "ice40",
+                    "vendor-part": "ICE40LP1K-SWG16TR",
                     "size": "1k",
-                    "ice40-params": {"type": "lp1k", "package": "swg16tr"},
+                    "ice40-params": {
+                        "nextpnr-type": "lp1k",
+                        "nextpnr-package": "swg16tr",
+                    },
                 }
             },
         )

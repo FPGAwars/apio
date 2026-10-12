@@ -37,15 +37,23 @@ def test_apio_api_get_boards(apio_runner: ApioRunner):
             "description": "Alhambra II",
             "fpga": {
                 "id": "ice40hx4k-tq144-8k",
-                "part-num": "ICE40HX4K-TQ144",
-                "arch": "ice40",
-                "size": "8k",
-                "ice40-params": {
-                    "package": "tq144:4k",
-                    "type": "hx8k",
+                "definition": {
+                    "arch": "ice40",
+                    "vendor-part": "ICE40HX4K-TQ144",
+                    "size": "8k",
+                    "ice40-params": {
+                        "nextpnr-type": "hx8k",
+                        "nextpnr-package": "tq144:4k",
+                    },
                 },
             },
-            "programmer": {"id": "openfpgaloader"},
+            "programmer": {
+                "id": "openfpgaloader",
+                "definition": {
+                    "command": "openFPGALoader",
+                    "args": "--force-terminal-mode --verify",
+                },
+            },
         }
 
 
@@ -72,12 +80,12 @@ def test_apio_api_get_fpgas(apio_runner: ApioRunner):
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert data["fpgas"]["ice40hx4k-tq144-8k"] == {
-            "part-num": "ICE40HX4K-TQ144",
             "arch": "ice40",
+            "vendor-part": "ICE40HX4K-TQ144",
             "size": "8k",
             "ice40-params": {
-                "package": "tq144:4k",
-                "type": "hx8k",
+                "nextpnr-type": "hx8k",
+                "nextpnr-package": "tq144:4k",
             },
         }
 
@@ -198,7 +206,8 @@ def test_apio_api_get_parts_index(apio_runner: ApioRunner):
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert (
-            "part-num" in data["parts-index"]["xc7a100tcsg324-1"]["definition"]
+            "vendor-part"
+            in data["parts-index"]["xc7a100tcsg324-1"]["definition"]
         )
 
 
@@ -265,28 +274,23 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
         print(json.dumps(data, indent=2))
         print()
 
+        print(data)
+
         assert data == {
             "timestamp": "xyz",
             "project": {
                 "active-env": {
                     "name": "default",
-                    "options": {
-                        "board": "alhambra-ii",
-                        "top-module": "main",
-                    },
+                    "options": {"board": "alhambra-ii", "top-module": "main"},
                 },
-                "envs": [
-                    "default",
-                ],
+                "envs": ["default"],
                 "synth-files": [
                     "synth0.v",
                     "tb_0.sv",
                     f"src1{os.sep}synth1.sv",
                     f"src1{os.sep}synth2.sv",
                 ],
-                "test-benches": [
-                    f"src1{os.sep}tb1_tb.sv",
-                ],
+                "test-benches": [f"src1{os.sep}tb1_tb.sv"],
                 "board": {
                     "id": "alhambra-ii",
                     "is-custom": False,
@@ -309,12 +313,12 @@ def test_apio_api_get_project(apio_runner: ApioRunner):
                     "id": "ice40hx4k-tq144-8k",
                     "is-custom": False,
                     "definition": {
-                        "part-num": "ICE40HX4K-TQ144",
                         "arch": "ice40",
+                        "vendor-part": "ICE40HX4K-TQ144",
                         "size": "8k",
                         "ice40-params": {
-                            "type": "hx8k",
-                            "package": "tq144:4k",
+                            "nextpnr-type": "hx8k",
+                            "nextpnr-package": "tq144:4k",
                         },
                     },
                 },

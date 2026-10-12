@@ -3,6 +3,8 @@
 
 # *** Apio patched line:
 from . import apio_common_pb2 as _apio_common_pb2
+# *** Apio patched line:
+from . import apio_definitions_pb2 as _apio_definitions_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -30,61 +32,13 @@ SVG: GraphOutputType
 PNG: GraphOutputType
 PDF: GraphOutputType
 
-class Ice40Params(_message.Message):
-    __slots__ = ("type", "package")
-    TYPE_FIELD_NUMBER: _ClassVar[int]
-    PACKAGE_FIELD_NUMBER: _ClassVar[int]
-    type: str
-    package: str
-    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ...) -> None: ...
-
-class Ecp5FpgaParams(_message.Message):
-    __slots__ = ("type", "package", "speed")
-    TYPE_FIELD_NUMBER: _ClassVar[int]
-    PACKAGE_FIELD_NUMBER: _ClassVar[int]
-    SPEED_FIELD_NUMBER: _ClassVar[int]
-    type: str
-    package: str
-    speed: str
-    def __init__(self, type: _Optional[str] = ..., package: _Optional[str] = ..., speed: _Optional[str] = ...) -> None: ...
-
-class GowinParams(_message.Message):
-    __slots__ = ("yosys_family", "nextpnr_family", "packer_device")
-    YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
-    NEXTPNR_FAMILY_FIELD_NUMBER: _ClassVar[int]
-    PACKER_DEVICE_FIELD_NUMBER: _ClassVar[int]
-    yosys_family: str
-    nextpnr_family: str
-    packer_device: str
-    def __init__(self, yosys_family: _Optional[str] = ..., nextpnr_family: _Optional[str] = ..., packer_device: _Optional[str] = ...) -> None: ...
-
-class XilinxParams(_message.Message):
-    __slots__ = ("yosys_family", "yosys_arch", "yosys_part")
-    YOSYS_FAMILY_FIELD_NUMBER: _ClassVar[int]
-    YOSYS_ARCH_FIELD_NUMBER: _ClassVar[int]
-    YOSYS_PART_FIELD_NUMBER: _ClassVar[int]
-    yosys_family: str
-    yosys_arch: str
-    yosys_part: str
-    def __init__(self, yosys_family: _Optional[str] = ..., yosys_arch: _Optional[str] = ..., yosys_part: _Optional[str] = ...) -> None: ...
-
 class FpgaInfo(_message.Message):
-    __slots__ = ("fpga_id", "part_num", "size", "ice40_params", "ecp5_params", "gowin_params", "xilinx_params")
-    FPGA_ID_FIELD_NUMBER: _ClassVar[int]
-    PART_NUM_FIELD_NUMBER: _ClassVar[int]
-    SIZE_FIELD_NUMBER: _ClassVar[int]
-    ICE40_PARAMS_FIELD_NUMBER: _ClassVar[int]
-    ECP5_PARAMS_FIELD_NUMBER: _ClassVar[int]
-    GOWIN_PARAMS_FIELD_NUMBER: _ClassVar[int]
-    XILINX_PARAMS_FIELD_NUMBER: _ClassVar[int]
-    fpga_id: str
-    part_num: str
-    size: str
-    ice40_params: Ice40Params
-    ecp5_params: Ecp5FpgaParams
-    gowin_params: GowinParams
-    xilinx_params: XilinxParams
-    def __init__(self, fpga_id: _Optional[str] = ..., part_num: _Optional[str] = ..., size: _Optional[str] = ..., ice40_params: _Optional[_Union[Ice40Params, _Mapping]] = ..., ecp5_params: _Optional[_Union[Ecp5FpgaParams, _Mapping]] = ..., gowin_params: _Optional[_Union[GowinParams, _Mapping]] = ..., xilinx_params: _Optional[_Union[XilinxParams, _Mapping]] = ...) -> None: ...
+    __slots__ = ("id", "definition")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    DEFINITION_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    definition: _apio_definitions_pb2.FpgaDefinition
+    def __init__(self, id: _Optional[str] = ..., definition: _Optional[_Union[_apio_definitions_pb2.FpgaDefinition, _Mapping]] = ...) -> None: ...
 
 class Verbosity(_message.Message):
     __slots__ = ("all", "synth", "pnr")
@@ -201,19 +155,17 @@ class TargetParams(_message.Message):
     def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class SconsParams(_message.Message):
-    __slots__ = ("timestamp", "arch", "fpga_info", "verbosity", "environment", "apio_env_params", "target")
+    __slots__ = ("timestamp", "fpga_info", "verbosity", "environment", "apio_env_params", "target")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
-    ARCH_FIELD_NUMBER: _ClassVar[int]
     FPGA_INFO_FIELD_NUMBER: _ClassVar[int]
     VERBOSITY_FIELD_NUMBER: _ClassVar[int]
     ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
     APIO_ENV_PARAMS_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     timestamp: str
-    arch: _apio_common_pb2.ApioArch
     fpga_info: FpgaInfo
     verbosity: Verbosity
     environment: Environment
     apio_env_params: ApioEnvParams
     target: TargetParams
-    def __init__(self, timestamp: _Optional[str] = ..., arch: _Optional[_Union[_apio_common_pb2.ApioArch, str]] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, timestamp: _Optional[str] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...

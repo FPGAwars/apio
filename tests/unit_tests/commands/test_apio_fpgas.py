@@ -6,21 +6,21 @@ from apio.commands.apio import apio_top_cli as apio
 CUSTOM_FPGAS = """
 {
   "custom-ice40hx4k-bg121": {
-    "part-num": "CUSTOM-ICE40HX4K-BG121",
     "arch": "ice40",
+    "vendor-part": "CUSTOM-ICE40HX4K-BG121",
     "size": "4k",
     "ice40-params": {
-      "type": "hx4k",
-      "package": "bg121"
+      "nextpnr-type": "hx4k",
+      "nextpnr-package": "bg121"
     }
   },
   "ice40hx4k-tq144-8k": {
-    "part-num": "ICE40HX4K-TQ144",
     "arch": "ice40",
+    "vendor-part": "ICE40HX4K-TQ144",
     "size": "8k",
     "ice40-params": {
-      "type": "modified-hx8k",
-      "package": "tq144:4k"
+      "nextpnr-type": "modified-hx8k",
+      "nextpnr-package": "tq144:4k"
     }
   }
 }

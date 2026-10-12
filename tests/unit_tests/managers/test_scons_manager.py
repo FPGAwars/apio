@@ -36,14 +36,16 @@ TEST_APIO_INI_DICT = {
 # -- at runtime.
 EXPECTED1 = """
 timestamp: "TBD"
-arch: ice40
 fpga_info {
-  fpga_id: "ice40hx4k-tq144-8k"
-  part_num: "ICE40HX4K-TQ144"
-  size: "8k"
-  ice40_params {
-    type: "hx8k"
-    package: "tq144:4k"
+  id: "ice40hx4k-tq144-8k"
+  definition: {
+    arch: ice40
+    vendor_part: "ICE40HX4K-TQ144"
+    size: "8k"
+    ice40_params {
+        nextpnr_type: "hx8k"
+        nextpnr_package: "tq144:4k"
+    }
   }
 }
 environment {
@@ -71,14 +73,16 @@ apio_env_params {
 
 EXPECTED2 = """
 timestamp: "TBD"
-arch: ice40
 fpga_info {
-  fpga_id: "ice40hx4k-tq144-8k"
-  part_num: "ICE40HX4K-TQ144"
-  size: "8k"
-  ice40_params {
-    type: "hx8k"
-    package: "tq144:4k"
+  id: "ice40hx4k-tq144-8k"
+  definition: {
+    arch: ice40
+    vendor_part: "ICE40HX4K-TQ144"
+    size: "8k"
+    ice40_params {
+        nextpnr_type: "hx8k"
+        nextpnr_package: "tq144:4k"
+    }
   }
 }
 verbosity {

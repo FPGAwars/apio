@@ -258,7 +258,9 @@ def _project_cli(
     )
 
     fpga_definition = res.fpga_definition
-    proto_util.check_is_required(fpga_definition, "arch", "part_num", "size")
+    proto_util.check_is_required(
+        fpga_definition, "arch", "vendor_part", "size"
+    )
 
     table.add_row("Total project envs", str(len(project.env_names)))
     table.add_row("Active project env", project.env_name)
@@ -267,7 +269,7 @@ def _project_cli(
     table.add_row("Board definition", board_definition_src)
     table.add_row("FPGA id", fpga_id)
     table.add_row("FPGA definition", fpga_definition_src)
-    table.add_row("FPGA part num", fpga_definition.part_num)
+    table.add_row("FPGA part", fpga_definition.vendor_part)
     table.add_row("FPGA Architecture", ApioArch.Name(fpga_definition.arch))
     table.add_row("FPGA size", fpga_definition.size)
     table.add_row("Programmer id", programmer_id)
