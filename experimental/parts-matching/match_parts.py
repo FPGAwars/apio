@@ -34,13 +34,13 @@ def compare_definitions(
 
     id_match = id1 == id2
 
-    part_num_match = def1["part-num"] == def2["part-num"]
+    part_num_match = def1["vendor-part"] == def2["vendor-part"]
 
     a = copy.deepcopy(def1)
     b = copy.deepcopy(def2)
     # Normalize
-    a.pop("part-num")
-    b.pop("part-num")
+    a.pop("vendor-part")
+    b.pop("vendor-part")
 
     params_match = a == b
 
@@ -103,3 +103,5 @@ if missing_identical:
     print("\n\nMissing identical:")
     for id in missing_identical:
         print(f"- fpga def: {id}")
+else:
+    print("\nNo missing identicals.")

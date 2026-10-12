@@ -310,7 +310,7 @@ def test_loading_invalid_custom_fpga(apio_runner: ApioRunner):
         sb.write_default_apio_ini()
 
         # -- Write a custom definition file with an invalid definition
-        # -- Missing part-num field.
+        # -- Missing vendor-part field.
         sb.write_json_file(
             "fpgas.jsonc",
             {
