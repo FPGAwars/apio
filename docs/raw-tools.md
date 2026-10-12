@@ -107,9 +107,9 @@ apio format pll.v
 The Apio example `sipeed-tang-nano-9k/pll` demonstrates a `pll.v` module that
 was generated with this command.
 
-> The value of the `-d` option is the `part-num` value from the output of the
-> command `apio api get-project`. For example, for the Tang Nano 20k board,
-> the value is `GW2AR-LV18QN88C8/I7`.
+> The value of the `-d` option is the `nextpnr-device` value from the output
+> of the command `apio api get-project`. For example, for the Tang Nano 20k
+> board, the value is `GW2AR-LV18QN88C8/I7`.
 
 ---
 
