@@ -427,8 +427,9 @@ def _get_project_cli(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_API_GET_BOARDS_HELP = """
-The command 'apio api get-boards' exports apio boards information as a \
-JSON document.
+The command 'apio api get-boards' exports apio standard boards information as \
+a JSON document. It does not show any custom boards in the user's project, \
+for that, use the 'apio api get-project' command.
 
 The optional flag '--timestamp' allows the caller to embed in the JSON \
 document a known timestamp that allows to verify that the JSON document \
@@ -523,8 +524,9 @@ def _get_boards_cli(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_API_GET_FPGAS_HELP = """
-The command 'apio api get-fpgas' exports apio FPGAss information as a \
-JSON document.
+The command 'apio api get-fpgas' exports apio standard FPGAs information as a \
+JSON document. It does not show any custom fpgas in the user's project, for \
+that, use the 'apio api get-project' command.
 
 The optional flag '--timestamp' allows the caller to embed in the JSON \
 document a known timestamp that allows to verify that the JSON document \
@@ -586,8 +588,9 @@ def _get_fpgas_cli(
 
 # -- Text in the rich-text format of the python rich library.
 APIO_API_GET_PROGRAMMERS_HELP = """
-The command 'apio api get-programmers' exports apio programmers information \
-as a JSON document.
+The command 'apio api get-programmers' exports apio standard programmers \
+information as a JSON document. It does not show any custom programmers in \
+the user's project, for that, use the 'apio api get-project' command.
 
 The optional flag '--timestamp' allows the caller to embed in the JSON \
 document a known timestamp that allows to verify that the JSON document \
