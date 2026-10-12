@@ -91,7 +91,7 @@ class ApioDefinitions:
                 FpgaDefinition,
             )
             if fpga_definition is None:
-                fatal_error(f"Failed to parse fpga definition '{fpga_id}")
+                fatal_error(f"Failed to parse fpga definition '{fpga_id}'")
             self.fpgas[fpga_id] = fpga_definition
 
         # -- Load programmers definitions as json dicts.

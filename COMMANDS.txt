@@ -132,8 +132,9 @@ apio api get-boards
 
 Usage: apio api get-boards [OPTIONS]
 
-  The command 'apio api get-boards' exports apio boards information as a
-  JSON document.
+  The command 'apio api get-boards' exports apio standard boards
+  information as a JSON document. It does not show any custom boards in
+  the user's project, for that, use the 'apio api get-project' command.
 
   The optional flag '--timestamp' allows the caller to embed in the JSON
   document a known timestamp that allows to verify that the JSON
@@ -239,8 +240,9 @@ apio api get-fpgas
 
 Usage: apio api get-fpgas [OPTIONS]
 
-  The command 'apio api get-fpgas' exports apio FPGAss information as a
-  JSON document.
+  The command 'apio api get-fpgas' exports apio standard FPGAs
+  information as a JSON document. It does not show any custom fpgas in
+  the user's project, for that, use the 'apio api get-project' command.
 
   The optional flag '--timestamp' allows the caller to embed in the JSON
   document a known timestamp that allows to verify that the JSON
@@ -333,8 +335,10 @@ apio api get-programmers
 
 Usage: apio api get-programmers [OPTIONS]
 
-  The command 'apio api get-programmers' exports apio programmers
-  information as a JSON document.
+  The command 'apio api get-programmers' exports apio standard
+  programmers information as a JSON document. It does not show any
+  custom programmers in the user's project, for that, use the 'apio api
+  get-project' command.
 
   The optional flag '--timestamp' allows the caller to embed in the JSON
   document a known timestamp that allows to verify that the JSON
