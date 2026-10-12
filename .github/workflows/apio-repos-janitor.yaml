@@ -8,8 +8,8 @@ on:
   push:
 
   # Run every 6 hours
-  # schedule:
-  #   - cron: "0 */6 * * *"
+  schedule:
+    - cron: "0 */6 * * *"
 
   # Allow manual launch
   workflow_dispatch:
