@@ -20,6 +20,7 @@
 
 import sys
 import os
+from os import sep
 import webbrowser
 from pathlib import Path
 import shutil
@@ -338,3 +339,25 @@ def update_protos_task(ctx: Context):
     os.chdir(get_repo_root())
     run(ctx, ["pwd"])
     run(ctx, [PYTHON, "-m", "scripts.update_protos"])
+
+
+@task(name="snapshot", aliases=["s", "snap"])
+def snapshot_task(ctx: Context):
+    """Update snapshots in snapshots dir."""
+    announce_task("snapshots")
+    os.chdir(get_repo_root())
+    run(ctx, [f".{sep}scripts{sep}update-commands-txt.sh"])
+    run(
+        ctx,
+        [
+            "apio",
+            "api",
+            "get-part",
+            "-f",
+            "-o",
+            "./snapshots/apio-api-get-part.json",
+        ],
+    )
+
+    # run(ctx, ["pwd"])
+    # run(ctx, [PYTHON, "-m", "scripts.update_protos"])

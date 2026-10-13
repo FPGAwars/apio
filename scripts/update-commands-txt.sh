@@ -5,7 +5,7 @@ invoke install-apio
 
 # Run to update COMMANDS.txt with the latest apio commands help text.
 
-output="COMMANDS.txt"
+output="snapshots/COMMANDS.txt"
 
 rm -f $output
 

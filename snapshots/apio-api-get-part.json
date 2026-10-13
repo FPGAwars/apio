@@ -1,0 +1,7155 @@
+{
+  "parts-index": {
+    "gw1n-lv1cs30c5-i4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV1CS30C5/I4",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV1CS30C5/I4",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-1"
+        }
+      }
+    },
+    "gw1n-lv1cs30c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV1CS30C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV1CS30C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-1"
+        }
+      }
+    },
+    "gw1n-lv1lq100c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV1LQ100C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV1LQ100C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-1"
+        }
+      }
+    },
+    "gw1n-lv1lq144c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV1LQ144C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV1LQ144C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-1"
+        }
+      }
+    },
+    "gw1n-lv1qn32c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV1QN32C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV1QN32C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-1"
+        }
+      }
+    },
+    "gw1n-lv1qn48c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV1QN48C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV1QN48C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-1"
+        }
+      }
+    },
+    "gw1n-lv4cs72c5-i4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4CS72C5/I4",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4CS72C5/I4",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4cs72c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4CS72C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4CS72C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4lq100c5-i4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4LQ100C5/I4",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4LQ100C5/I4",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4lq100c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4LQ100C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4LQ100C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4lq144c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4LQ144C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4LQ144C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4mg160c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4MG160C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4MG160C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4pg256c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4PG256C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4PG256C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4pg256mc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4PG256MC6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4PG256MC6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4qn32c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4QN32C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4QN32C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4qn48c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4QN48C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4QN48C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4qn88a4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4QN88A4",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4QN88A4",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv4qn88c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV4QN88C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV4QN88C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-lv9cm64c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9CM64C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9CM64C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9cm64c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9CM64C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9CM64C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9cs81mc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9CS81MC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9CS81MC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9cs81mc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9CS81MC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9CS81MC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9eq144c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9EQ144C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9EQ144C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9eq144es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9EQ144ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9EQ144ES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1n-lv9eq176c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9EQ176C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9EQ176C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9eq176c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9EQ176C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9EQ176C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9lq100c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9LQ100C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9LQ100C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9lq100c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9LQ100C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9LQ100C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9lq144c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9LQ144C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9LQ144C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9lq144c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9LQ144C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9LQ144C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9lq176c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9LQ176C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9LQ176C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9lq176c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9LQ176C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9LQ176C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9lq176es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9LQ176ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9LQ176ES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1n-lv9mg100c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG100C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG100C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg100c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG100C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG100C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg100es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG100ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG100ES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg100tc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG100TC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG100TC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg100tc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG100TC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG100TC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg160c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG160C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG160C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg160c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG160C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG160C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg196c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG196C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG196C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9mg196c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9MG196C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9MG196C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9pg256c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9PG256C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9PG256C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9pg256c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9PG256C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9PG256C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn48c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN48C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN48C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn48c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN48C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN48C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn48fc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN48FC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN48FC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn48fc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN48FC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN48FC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn60a4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN60A4",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN60A4",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn88c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN88C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN88C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn88c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN88C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN88C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn88es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN88ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN88ES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9qn88fa4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9QN88FA4",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9QN88FA4",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9ug169c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9UG169C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9UG169C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9ug169c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9UG169C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9UG169C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9ug256c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9UG256C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9UG256C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9ug256c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9UG256C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9UG256C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9ug332c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9UG332C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9UG332C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-lv9ug332c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-LV9UG332C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-LV9UG332C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv4cs72c5-i4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4CS72C5/I4",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4CS72C5/I4",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4cs72c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4CS72C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4CS72C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4lq100c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4LQ100C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4LQ100C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4lq144c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4LQ144C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4LQ144C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4mg160c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4MG160C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4MG160C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4pg256c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4PG256C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4PG256C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4pg256mc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4PG256MC6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4PG256MC6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4qn32c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4QN32C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4QN32C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4qn48c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4QN48C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4QN48C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4qn88a4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4QN88A4",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4QN88A4",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv4qn88c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV4QN88C6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV4QN88C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1N-4"
+        }
+      }
+    },
+    "gw1n-uv9cm64c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9CM64C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9CM64C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9eq144c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9EQ144C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9EQ144C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9eq144es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9EQ144ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9EQ144ES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9eq176c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9EQ176C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9EQ176C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9lq100c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9LQ100C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9LQ100C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9lq144c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9LQ144C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9LQ144C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9lq144es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9LQ144ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9LQ144ES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9lq176c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9LQ176C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9LQ176C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9lq176es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9LQ176ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9LQ176ES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1n-uv9mg160c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9MG160C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9MG160C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9mg196c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9MG196C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9MG196C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9pg256c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9PG256C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9PG256C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9qn48c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9QN48C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9QN48C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9qn88c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9QN88C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9QN88C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9qn88es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9QN88ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9QN88ES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9ug169c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9UG169C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9UG169C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9ug169es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9UG169ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9UG169ES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9ug256c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9UG256C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9UG256C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9ug256es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9UG256ES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9UG256ES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1n-uv9ug332c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1N-UV9UG332C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1N-UV9UG332C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9lq144pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9LQ144PC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9LQ144PC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9lq144pc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9LQ144PC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9LQ144PC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9lq144pes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9LQ144PES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9LQ144PES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pac6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PAC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PAC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pac7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PAC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PAC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100paes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PAES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PAES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pdc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PDC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PDC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pdc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PDC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PDC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pfc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PFC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PFC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pfc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PFC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PFC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pfes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PFES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PFES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100psc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PSC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PSC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100psc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PSC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PSC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100pses": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PSES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PSES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100ptc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PTC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PTC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100ptc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PTC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PTC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9mg100ptes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9MG100PTES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9MG100PTES",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9qn88c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9QN88C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9QN88C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9qn88c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9QN88C7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9QN88C7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9qn88pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9QN88PC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9QN88PC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9qn88pc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9QN88PC7/I6",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9QN88PC7/I6",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-lv9qn88pes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-LV9QN88PES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-LV9QN88PES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1nr-uv9lq144pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-UV9LQ144PC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-UV9LQ144PC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-uv9lq144pes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-UV9LQ144PES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-UV9LQ144PES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1nr-uv9mg100pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-UV9MG100PC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-UV9MG100PC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-uv9mg100pes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-UV9MG100PES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-UV9MG100PES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1nr-uv9qn88c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-UV9QN88C6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-UV9QN88C6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-uv9qn88pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-UV9QN88PC6/I5",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-UV9QN88PC6/I5",
+          "nextpnr-family": "GW1N-9C",
+          "packer-device": "GW1N-9C"
+        }
+      }
+    },
+    "gw1nr-uv9qn88pes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NR-UV9QN88PES",
+        "size": "9k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NR-UV9QN88PES",
+          "nextpnr-family": "GW1N-9",
+          "packer-device": "GW1N-9"
+        }
+      }
+    },
+    "gw1nsr-lv4cmg64pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NSR-LV4CMG64PC6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NSR-LV4CMG64PC6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NS-4"
+        }
+      }
+    },
+    "gw1nsr-lv4cmg64pc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NSR-LV4CMG64PC7/I6",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NSR-LV4CMG64PC7/I6",
+          "nextpnr-family": "",
+          "packer-device": "GW1NS-4"
+        }
+      }
+    },
+    "gw1nsr-lv4cqn48gc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NSR-LV4CQN48GC6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NSR-LV4CQN48GC6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NS-4"
+        }
+      }
+    },
+    "gw1nsr-lv4cqn48gc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NSR-LV4CQN48GC7/I6",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NSR-LV4CQN48GC7/I6",
+          "nextpnr-family": "",
+          "packer-device": "GW1NS-4"
+        }
+      }
+    },
+    "gw1nsr-lv4cqn48pc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NSR-LV4CQN48PC6/I5",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NSR-LV4CQN48PC6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NS-4"
+        }
+      }
+    },
+    "gw1nsr-lv4cqn48pc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NSR-LV4CQN48PC7/I6",
+        "size": "4k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NSR-LV4CQN48PC7/I6",
+          "nextpnr-family": "",
+          "packer-device": "GW1NS-4"
+        }
+      }
+    },
+    "gw1nz-lv1cg25c5-i4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1CG25C5/I4",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1CG25C5/I4",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1cg25c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1CG25C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1CG25C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1cs16c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1CS16C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1CS16C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1fn24c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1FN24C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1FN24C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1fn32c5-i4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1FN32C5/I4",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1FN32C5/I4",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1fn32c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1FN32C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1FN32C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1fn32fc5-i4": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1FN32FC5/I4",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1FN32FC5/I4",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1fn32fc6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1FN32FC6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1FN32FC6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1qn48c6-i5": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1QN48C6/I5",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1QN48C6/I5",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-lv1qn48es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-LV1QN48ES",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-LV1QN48ES",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1cs16i2": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1CS16I2",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1CS16I2",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1cs16i3": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1CS16I3",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1CS16I3",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1fn32fes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1FN32FES",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1FN32FES",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1fn32fi2": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1FN32FI2",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1FN32FI2",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1fn32fi3": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1FN32FI3",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1FN32FI3",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1fn32i2": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1FN32I2",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1FN32I2",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1fn32i3": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1FN32I3",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1FN32I3",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1qn48i2": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1QN48I2",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1QN48I2",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw1nz-zv1qn48i3": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW1NZ-ZV1QN48I3",
+        "size": "1k",
+        "gowin-params": {
+          "yosys-family": "",
+          "nextpnr-device": "GW1NZ-ZV1QN48I3",
+          "nextpnr-family": "",
+          "packer-device": "GW1NZ-1"
+        }
+      }
+    },
+    "gw2a-lv18eq144c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18EQ144C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18EQ144C7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18eq144c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18EQ144C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18EQ144C8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18mg196c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18MG196C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18MG196C7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18mg196c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18MG196C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18MG196C8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256a6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256A6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256A6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2a-lv18pg256c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256C7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256C8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256c9-i8": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256C9/I8",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256C9/I8",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256cc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256CC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256CC7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256cc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256CC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256CC8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256cfc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256CFC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256CFC7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2a-lv18pg256cfc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256CFC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256CFC8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2a-lv18pg256ec8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256EC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256EC8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256ees": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256EES",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256EES",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256sc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256SC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256SC7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256sc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256SC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256SC8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg256sfc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256SFC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256SFC7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2a-lv18pg256sfc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG256SFC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG256SFC8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2a-lv18pg484c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG484C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG484C7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg484c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG484C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG484C8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg484c9-i8": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG484C9/I8",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG484C9/I8",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18pg484cc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18PG484CC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18PG484CC8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2a-lv18qn88a6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18QN88A6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18QN88A6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18qn88c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18QN88C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18QN88C7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18qn88c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18QN88C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18QN88C8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18ug324c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18UG324C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18UG324C7/I6",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18ug324c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18UG324C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18UG324C8/I7",
+          "nextpnr-family": "GW2A-18",
+          "packer-device": "GW2A-18"
+        }
+      }
+    },
+    "gw2a-lv18ug484c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18UG484C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18UG484C7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2a-lv18ug484c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2A-LV18UG484C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2A-LV18UG484C8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144C7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144C8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144pc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144PC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144PC7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144pc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144PC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144PC8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144pc9-i8": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144PC9/I8",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144PC9/I8",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144pfc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144PFC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144PFC7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144pfc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144PFC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144PFC8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq144pfc9-i8": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ144PFC9/I8",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ144PFC9/I8",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq176c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ176C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ176C7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18eq176c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18EQ176C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18EQ176C8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18qn88c7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18QN88C7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18QN88C7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18qn88c8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18QN88C8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18QN88C8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18qn88pc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18QN88PC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18QN88PC7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18qn88pc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18QN88PC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18QN88PC8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18qn88pfc7-i6": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18QN88PFC7/I6",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18QN88PFC7/I6",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18qn88pfc8-i7": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18QN88PFC8/I7",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18QN88PFC8/I7",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw2ar-lv18qn88pfc9-i8": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW2AR-LV18QN88PFC9/I8",
+        "size": "20k",
+        "gowin-params": {
+          "yosys-family": "gw2a",
+          "nextpnr-device": "GW2AR-LV18QN88PFC9/I8",
+          "nextpnr-family": "GW2A-18C",
+          "packer-device": "GW2A-18C"
+        }
+      }
+    },
+    "gw5a-ev25lq100c1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25LQ100C1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25LQ100C1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25lq100c2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25LQ100C2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25LQ100C2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25lq100es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25LQ100ES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25LQ100ES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25mg196sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25MG196SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25MG196SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25mg196sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25MG196SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25MG196SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25mg196ses": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25MG196SES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25MG196SES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25pg256cc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25PG256CC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25PG256CC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25pg256cc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25PG256CC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25PG256CC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25pg256ces": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25PG256CES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25PG256CES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25pg256sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25PG256SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25PG256SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25pg256sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25PG256SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25PG256SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25pg256ses": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25PG256SES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25PG256SES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug225sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG225SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG225SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug225sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG225SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG225SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug225ses": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG225SES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG225SES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug256cc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG256CC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG256CC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug256cc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG256CC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG256CC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug256ces": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG256CES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG256CES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug324sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG324SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG324SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug324sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG324SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG324SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-ev25ug324ses": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-EV25UG324SES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-EV25UG324SES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25lq100c1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25LQ100C1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25LQ100C1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25lq100c2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25LQ100C2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25LQ100C2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25lq144c1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25LQ144C1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25LQ144C1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25lq144c2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25LQ144C2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25LQ144C2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25mg121nc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25MG121NC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25MG121NC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25mg121nc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25MG121NC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25MG121NC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25mg121nes": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25MG121NES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25MG121NES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25mg196sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25MG196SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25MG196SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25mg196sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25MG196SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25MG196SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25pg196sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25PG196SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25PG196SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25pg196sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25PG196SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25PG196SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25pg256a0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25PG256A0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25PG256A0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25pg256c1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25PG256C1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25PG256C1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25pg256c2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25PG256C2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25PG256C2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25pg256sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25PG256SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25PG256SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25pg256sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25PG256SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25PG256SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25ug324c1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25UG324C1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25UG324C1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25ug324c2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25UG324C2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25UG324C2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25ug324es": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25UG324ES",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25UG324ES",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25ug324sc1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25UG324SC1/I0",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25UG324SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5a-lv25ug324sc2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5A-LV25UG324SC2/I1",
+        "size": "25k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5A-LV25UG324SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5A-25A"
+        }
+      }
+    },
+    "gw5ast-lv138fpg676ac1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AST-LV138FPG676AC1/I0",
+        "size": "138k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AST-LV138FPG676AC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5AST-138C"
+        }
+      }
+    },
+    "gw5ast-lv138fpg676ac2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AST-LV138FPG676AC2/I1",
+        "size": "138k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AST-LV138FPG676AC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5AST-138C"
+        }
+      }
+    },
+    "gw5ast-lv138pg484ac1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AST-LV138PG484AC1/I0",
+        "size": "138k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AST-LV138PG484AC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5AST-138C"
+        }
+      }
+    },
+    "gw5ast-lv138pg484ac2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AST-LV138PG484AC2/I1",
+        "size": "138k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AST-LV138PG484AC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5AST-138C"
+        }
+      }
+    },
+    "gw5ast-lv138pg676ac1-i0": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AST-LV138PG676AC1/I0",
+        "size": "138k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AST-LV138PG676AC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5AST-138C"
+        }
+      }
+    },
+    "gw5ast-lv138pg676ac2-i1": {
+      "generated": true,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AST-LV138PG676AC2/I1",
+        "size": "138k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AST-LV138PG676AC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5AST-138C"
+        }
+      }
+    },
+    "gw5at-ev60ug324sc1-i0": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-EV60UG324SC1/I0",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-EV60UG324SC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "gw5at-ev60ug324sc2-i1": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-EV60UG324SC2/I1",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-EV60UG324SC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "gw5at-lv60pg484ac1-i0": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-LV60PG484AC1/I0",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-LV60PG484AC1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "gw5at-lv60pg484ac2-i1": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-LV60PG484AC2/I1",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-LV60PG484AC2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "gw5at-lv60pg484aes": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-LV60PG484AES",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-LV60PG484AES",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "gw5at-lv60ug225a0": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-LV60UG225A0",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-LV60UG225A0",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "gw5at-lv60ug225c1-i0": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-LV60UG225C1/I0",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-LV60UG225C1/I0",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "gw5at-lv60ug225c2-i1": {
+      "generated": false,
+      "definition": {
+        "arch": "gowin",
+        "vendor-part": "GW5AT-LV60UG225C2/I1",
+        "size": "60k",
+        "gowin-params": {
+          "yosys-family": "gw5a",
+          "nextpnr-device": "GW5AT-LV60UG225C2/I1",
+          "nextpnr-family": "",
+          "packer-device": "GW5AT-60B"
+        }
+      }
+    },
+    "ice40hx1k-cb132": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX1K-CB132",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "hx1k",
+          "nextpnr-package": "cb132"
+        }
+      }
+    },
+    "ice40hx1k-tq144": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX1K-TQ144",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "hx1k",
+          "nextpnr-package": "tq144"
+        }
+      }
+    },
+    "ice40hx1k-vq100": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX1K-VQ100",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "hx1k",
+          "nextpnr-package": "vq100"
+        }
+      }
+    },
+    "ice40hx4k-bg121": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX4K-BG121",
+        "size": "4k",
+        "ice40-params": {
+          "nextpnr-type": "hx4k",
+          "nextpnr-package": "bg121"
+        }
+      }
+    },
+    "ice40hx4k-bg121-8k": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX4K-BG121",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "hx8k",
+          "nextpnr-package": "bg121:4k"
+        }
+      }
+    },
+    "ice40hx4k-cb132": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX4K-CB132",
+        "size": "4k",
+        "ice40-params": {
+          "nextpnr-type": "hx4k",
+          "nextpnr-package": "cb132"
+        }
+      }
+    },
+    "ice40hx4k-cb132-8k": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX4K-CB132",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "hx8k",
+          "nextpnr-package": "cb132:4k"
+        }
+      }
+    },
+    "ice40hx4k-tq144": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX4K-TQ144",
+        "size": "4k",
+        "ice40-params": {
+          "nextpnr-type": "hx4k",
+          "nextpnr-package": "tq144"
+        }
+      }
+    },
+    "ice40hx4k-tq144-8k": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX4K-TQ144",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "hx8k",
+          "nextpnr-package": "tq144:4k"
+        }
+      }
+    },
+    "ice40hx8k-bg121": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX8K-BG121",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "hx8k",
+          "nextpnr-package": "bg121"
+        }
+      }
+    },
+    "ice40hx8k-cb132": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX8K-CB132",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "hx8k",
+          "nextpnr-package": "cb132"
+        }
+      }
+    },
+    "ice40hx8k-cm225": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX8K-CM225",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "hx8k",
+          "nextpnr-package": "cm225"
+        }
+      }
+    },
+    "ice40hx8k-ct256": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40HX8K-CT256",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "hx8k",
+          "nextpnr-package": "ct256"
+        }
+      }
+    },
+    "ice40lp1k-cb121": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-CB121",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "cb121"
+        }
+      }
+    },
+    "ice40lp1k-cb81": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-CB81",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "cb81"
+        }
+      }
+    },
+    "ice40lp1k-cm121": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-CM121",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "cm121"
+        }
+      }
+    },
+    "ice40lp1k-cm36": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-CM36",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "cm36"
+        }
+      }
+    },
+    "ice40lp1k-cm49": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-CM49",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "cm49"
+        }
+      }
+    },
+    "ice40lp1k-cm81": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-CM81",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "cm81"
+        }
+      }
+    },
+    "ice40lp1k-qn84": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-QN84",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "qn84"
+        }
+      }
+    },
+    "ice40lp1k-swg16tr": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP1K-SWG16TR",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "lp1k",
+          "nextpnr-package": "swg16tr"
+        }
+      }
+    },
+    "ice40lp384-cm36": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP384-CM36",
+        "size": "384",
+        "ice40-params": {
+          "nextpnr-type": "lp384",
+          "nextpnr-package": "cm36"
+        }
+      }
+    },
+    "ice40lp384-cm49": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP384-CM49",
+        "size": "384",
+        "ice40-params": {
+          "nextpnr-type": "lp384",
+          "nextpnr-package": "cm49"
+        }
+      }
+    },
+    "ice40lp384-qn32": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP384-QN32",
+        "size": "384",
+        "ice40-params": {
+          "nextpnr-type": "lp384",
+          "nextpnr-package": "qn32"
+        }
+      }
+    },
+    "ice40lp4k-cm121": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP4K-CM121",
+        "size": "4k",
+        "ice40-params": {
+          "nextpnr-type": "lp4k",
+          "nextpnr-package": "cm121"
+        }
+      }
+    },
+    "ice40lp4k-cm121-8k": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP4K-CM121",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "lp8k",
+          "nextpnr-package": "cm121:4k"
+        }
+      }
+    },
+    "ice40lp4k-cm225": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP4K-CM225",
+        "size": "4k",
+        "ice40-params": {
+          "nextpnr-type": "lp4k",
+          "nextpnr-package": "cm225"
+        }
+      }
+    },
+    "ice40lp4k-cm225-8k": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP4K-CM225",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "lp8k",
+          "nextpnr-package": "cm225:4k"
+        }
+      }
+    },
+    "ice40lp4k-cm81": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP4K-CM81",
+        "size": "4k",
+        "ice40-params": {
+          "nextpnr-type": "lp4k",
+          "nextpnr-package": "cm81"
+        }
+      }
+    },
+    "ice40lp4k-cm81-8k": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP4K-CM81",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "lp8k",
+          "nextpnr-package": "cm81:4k"
+        }
+      }
+    },
+    "ice40lp8k-cm121": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP8K-CM121",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "lp8k",
+          "nextpnr-package": "cm121"
+        }
+      }
+    },
+    "ice40lp8k-cm225": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP8K-CM225",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "lp8k",
+          "nextpnr-package": "cm225"
+        }
+      }
+    },
+    "ice40lp8k-cm81": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40LP8K-CM81",
+        "size": "8k",
+        "ice40-params": {
+          "nextpnr-type": "lp8k",
+          "nextpnr-package": "cm81"
+        }
+      }
+    },
+    "ice40up3k-sg48": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40UP3K-SG48",
+        "size": "3k",
+        "ice40-params": {
+          "nextpnr-type": "up3k",
+          "nextpnr-package": "sg48"
+        }
+      }
+    },
+    "ice40up3k-uwg30": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40UP3K-UWG30",
+        "size": "3k",
+        "ice40-params": {
+          "nextpnr-type": "up3k",
+          "nextpnr-package": "uwg30"
+        }
+      }
+    },
+    "ice40up5k-sg48": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40UP5K-SG48",
+        "size": "5k",
+        "ice40-params": {
+          "nextpnr-type": "up5k",
+          "nextpnr-package": "sg48"
+        }
+      }
+    },
+    "ice40up5k-uwg30": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE40UP5K-UWG30",
+        "size": "5k",
+        "ice40-params": {
+          "nextpnr-type": "up5k",
+          "nextpnr-package": "uwg30"
+        }
+      }
+    },
+    "ice5lp1k-sg48": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE5LP1K-SG48",
+        "size": "1k",
+        "ice40-params": {
+          "nextpnr-type": "u1k",
+          "nextpnr-package": "sg48"
+        }
+      }
+    },
+    "ice5lp2k-sg48": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE5LP2K-SG48",
+        "size": "2k",
+        "ice40-params": {
+          "nextpnr-type": "u2k",
+          "nextpnr-package": "sg48"
+        }
+      }
+    },
+    "ice5lp4k-sg48": {
+      "generated": true,
+      "definition": {
+        "arch": "ice40",
+        "vendor-part": "ICE5LP4K-SG48",
+        "size": "4k",
+        "ice40-params": {
+          "nextpnr-type": "u4k",
+          "nextpnr-package": "sg48"
+        }
+      }
+    },
+    "lfe5u-12f-6bg256c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-12F-6BG256C",
+        "size": "12k",
+        "ecp5-params": {
+          "nextpnr-type": "12k",
+          "nextpnr-package": "CABGA256",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-12f-6bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-12F-6BG381C",
+        "size": "12k",
+        "ecp5-params": {
+          "nextpnr-type": "12k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-12f-6mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-12F-6MG285C",
+        "size": "12k",
+        "ecp5-params": {
+          "nextpnr-type": "12k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-12f-6tg144c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-12F-6TG144C",
+        "size": "12k",
+        "ecp5-params": {
+          "nextpnr-type": "12k",
+          "nextpnr-package": "TQFP144",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-25f-6bg256c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-25F-6BG256C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "25k",
+          "nextpnr-package": "CABGA256",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-25f-6bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-25F-6BG381C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "25k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-25f-6mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-25F-6MG285C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "25k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-25f-6tg144c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-25F-6TG144C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "25k",
+          "nextpnr-package": "TQFP144",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-45f-6bg256c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-45F-6BG256C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "45k",
+          "nextpnr-package": "CABGA256",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-45f-6bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-45F-6BG381C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "45k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-45f-6bg554c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-45F-6BG554C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "45k",
+          "nextpnr-package": "CABGA554",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-45f-6mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-45F-6MG285C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "45k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-45f-6tg144c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-45F-6TG144C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "45k",
+          "nextpnr-package": "TQFP144",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-85f-6bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-85F-6BG381C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "85k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-85f-6bg554c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-85F-6BG554C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "85k",
+          "nextpnr-package": "CABGA554",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-85f-6bg756c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-85F-6BG756C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "85k",
+          "nextpnr-package": "CABGA756",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5u-85f-6mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5U-85F-6MG285C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "85k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-25f-6bg256c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-25F-6BG256C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "um-25k",
+          "nextpnr-package": "CABGA256",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-25f-6bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-25F-6BG381C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "um-25k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-25f-6mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-25F-6MG285C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "um-25k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-45f-6bg256c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-45F-6BG256C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um-45k",
+          "nextpnr-package": "CABGA256",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-45f-6bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-45F-6BG381C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um-45k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-45f-6bg554c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-45F-6BG554C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um-45k",
+          "nextpnr-package": "CABGA554",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-45f-6mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-45F-6MG285C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um-45k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-85f-6bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-85F-6BG381C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um-85k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-85f-6bg554c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-85F-6BG554C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um-85k",
+          "nextpnr-package": "CABGA554",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-85f-6bg756c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-85F-6BG756C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um-85k",
+          "nextpnr-package": "CABGA756",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um-85f-6mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM-85F-6MG285C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um-85k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "6"
+        }
+      }
+    },
+    "lfe5um5g-25f-8bg256c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-25F-8BG256C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-25k",
+          "nextpnr-package": "CABGA256",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-25f-8bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-25F-8BG381C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-25k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-25f-8mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-25F-8MG285C",
+        "size": "25k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-25k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-45f-8bg256c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-45F-8BG256C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-45k",
+          "nextpnr-package": "CABGA256",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-45f-8bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-45F-8BG381C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-45k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-45f-8bg554c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-45F-8BG554C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-45k",
+          "nextpnr-package": "CABGA554",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-45f-8mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-45F-8MG285C",
+        "size": "45k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-45k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-85f-8bg381c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-85F-8BG381C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-85k",
+          "nextpnr-package": "CABGA381",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-85f-8bg554c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-85F-8BG554C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-85k",
+          "nextpnr-package": "CABGA554",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-85f-8bg756c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-85F-8BG756C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-85k",
+          "nextpnr-package": "CABGA756",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "lfe5um5g-85f-8mg285c": {
+      "generated": true,
+      "definition": {
+        "arch": "ecp5",
+        "vendor-part": "LFE5UM5G-85F-8MG285C",
+        "size": "85k",
+        "ecp5-params": {
+          "nextpnr-type": "um5g-85k",
+          "nextpnr-package": "CSFBGA285",
+          "nextpnr-speed": "8"
+        }
+      }
+    },
+    "xc7a100tcsg324-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-1CSG324",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tcsg324-1"
+        }
+      }
+    },
+    "xc7a100tcsg324-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2CSG324",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tcsg324-2"
+        }
+      }
+    },
+    "xc7a100tcsg324-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2LCSG324",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tcsg324-2L"
+        }
+      }
+    },
+    "xc7a100tcsg324-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-3CSG324",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tcsg324-3"
+        }
+      }
+    },
+    "xc7a100tfgg484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-1FGG484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg484-1"
+        }
+      }
+    },
+    "xc7a100tfgg484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2FGG484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg484-2"
+        }
+      }
+    },
+    "xc7a100tfgg484-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2LFGG484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg484-2L"
+        }
+      }
+    },
+    "xc7a100tfgg484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-3FGG484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg484-3"
+        }
+      }
+    },
+    "xc7a100tfgg676-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-1FGG676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg676-1"
+        }
+      }
+    },
+    "xc7a100tfgg676-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2FGG676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg676-2"
+        }
+      }
+    },
+    "xc7a100tfgg676-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2LFGG676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg676-2L"
+        }
+      }
+    },
+    "xc7a100tfgg676-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-3FGG676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tfgg676-3"
+        }
+      }
+    },
+    "xc7a100tftg256-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-1FTG256",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tftg256-1"
+        }
+      }
+    },
+    "xc7a100tftg256-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2FTG256",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tftg256-2"
+        }
+      }
+    },
+    "xc7a100tftg256-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-2LFTG256",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tftg256-2L"
+        }
+      }
+    },
+    "xc7a100tftg256-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A100T-3FTG256",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a100tftg256-3"
+        }
+      }
+    },
+    "xc7a200tfbg484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1FBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg484-1"
+        }
+      }
+    },
+    "xc7a200tfbg484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2FBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg484-2"
+        }
+      }
+    },
+    "xc7a200tfbg484-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LFBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg484-2L"
+        }
+      }
+    },
+    "xc7a200tfbg484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3FBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg484-3"
+        }
+      }
+    },
+    "xc7a200tfbg676-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1FBG676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg676-1"
+        }
+      }
+    },
+    "xc7a200tfbg676-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2FBG676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg676-2"
+        }
+      }
+    },
+    "xc7a200tfbg676-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LFBG676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg676-2L"
+        }
+      }
+    },
+    "xc7a200tfbg676-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3FBG676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbg676-3"
+        }
+      }
+    },
+    "xc7a200tfbv484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1FBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv484-1"
+        }
+      }
+    },
+    "xc7a200tfbv484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2FBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv484-2"
+        }
+      }
+    },
+    "xc7a200tfbv484-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LFBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv484-2L"
+        }
+      }
+    },
+    "xc7a200tfbv484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3FBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv484-3"
+        }
+      }
+    },
+    "xc7a200tfbv676-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1FBV676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv676-1"
+        }
+      }
+    },
+    "xc7a200tfbv676-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2FBV676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv676-2"
+        }
+      }
+    },
+    "xc7a200tfbv676-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LFBV676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv676-2L"
+        }
+      }
+    },
+    "xc7a200tfbv676-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3FBV676",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tfbv676-3"
+        }
+      }
+    },
+    "xc7a200tffg1156-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1FFG1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffg1156-1"
+        }
+      }
+    },
+    "xc7a200tffg1156-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2FFG1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffg1156-2"
+        }
+      }
+    },
+    "xc7a200tffg1156-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LFFG1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffg1156-2L"
+        }
+      }
+    },
+    "xc7a200tffg1156-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3FFG1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffg1156-3"
+        }
+      }
+    },
+    "xc7a200tffv1156-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1FFV1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffv1156-1"
+        }
+      }
+    },
+    "xc7a200tffv1156-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2FFV1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffv1156-2"
+        }
+      }
+    },
+    "xc7a200tffv1156-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LFFV1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffv1156-2L"
+        }
+      }
+    },
+    "xc7a200tffv1156-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3FFV1156",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tffv1156-3"
+        }
+      }
+    },
+    "xc7a200tsbg484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1SBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbg484-1"
+        }
+      }
+    },
+    "xc7a200tsbg484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2SBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbg484-2"
+        }
+      }
+    },
+    "xc7a200tsbg484-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LSBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbg484-2L"
+        }
+      }
+    },
+    "xc7a200tsbg484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3SBG484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbg484-3"
+        }
+      }
+    },
+    "xc7a200tsbv484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-1SBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbv484-1"
+        }
+      }
+    },
+    "xc7a200tsbv484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2SBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbv484-2"
+        }
+      }
+    },
+    "xc7a200tsbv484-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-2LSBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbv484-2L"
+        }
+      }
+    },
+    "xc7a200tsbv484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A200T-3SBV484",
+        "size": "200k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a200tsbv484-3"
+        }
+      }
+    },
+    "xc7a35tcpg236-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-1CPG236",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcpg236-1"
+        }
+      }
+    },
+    "xc7a35tcpg236-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2CPG236",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcpg236-2"
+        }
+      }
+    },
+    "xc7a35tcpg236-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2LCPG236",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcpg236-2L"
+        }
+      }
+    },
+    "xc7a35tcpg236-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-3CPG236",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcpg236-3"
+        }
+      }
+    },
+    "xc7a35tcsg324-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-1CSG324",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg324-1"
+        }
+      }
+    },
+    "xc7a35tcsg324-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2CSG324",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg324-2"
+        }
+      }
+    },
+    "xc7a35tcsg324-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2LCSG324",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg324-2L"
+        }
+      }
+    },
+    "xc7a35tcsg324-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-3CSG324",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg324-3"
+        }
+      }
+    },
+    "xc7a35tcsg325-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-1CSG325",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg325-1"
+        }
+      }
+    },
+    "xc7a35tcsg325-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2CSG325",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg325-2"
+        }
+      }
+    },
+    "xc7a35tcsg325-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2LCSG325",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg325-2L"
+        }
+      }
+    },
+    "xc7a35tcsg325-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-3CSG325",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tcsg325-3"
+        }
+      }
+    },
+    "xc7a35tfgg484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-1FGG484",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tfgg484-1"
+        }
+      }
+    },
+    "xc7a35tfgg484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2FGG484",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tfgg484-2"
+        }
+      }
+    },
+    "xc7a35tfgg484-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2LFGG484",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tfgg484-2L"
+        }
+      }
+    },
+    "xc7a35tfgg484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-3FGG484",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tfgg484-3"
+        }
+      }
+    },
+    "xc7a35tftg256-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-1FTG256",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tftg256-1"
+        }
+      }
+    },
+    "xc7a35tftg256-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2FTG256",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tftg256-2"
+        }
+      }
+    },
+    "xc7a35tftg256-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-2LFTG256",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tftg256-2L"
+        }
+      }
+    },
+    "xc7a35tftg256-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A35T-3FTG256",
+        "size": "35k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a35tftg256-3"
+        }
+      }
+    },
+    "xc7a50tcpg236-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-1CPG236",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcpg236-1"
+        }
+      }
+    },
+    "xc7a50tcpg236-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2CPG236",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcpg236-2"
+        }
+      }
+    },
+    "xc7a50tcpg236-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2LCPG236",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcpg236-2L"
+        }
+      }
+    },
+    "xc7a50tcpg236-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-3CPG236",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcpg236-3"
+        }
+      }
+    },
+    "xc7a50tcsg324-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-1CSG324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg324-1"
+        }
+      }
+    },
+    "xc7a50tcsg324-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2CSG324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg324-2"
+        }
+      }
+    },
+    "xc7a50tcsg324-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2LCSG324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg324-2L"
+        }
+      }
+    },
+    "xc7a50tcsg324-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-3CSG324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg324-3"
+        }
+      }
+    },
+    "xc7a50tcsg325-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-1CSG325",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg325-1"
+        }
+      }
+    },
+    "xc7a50tcsg325-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2CSG325",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg325-2"
+        }
+      }
+    },
+    "xc7a50tcsg325-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2LCSG325",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg325-2L"
+        }
+      }
+    },
+    "xc7a50tcsg325-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-3CSG325",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tcsg325-3"
+        }
+      }
+    },
+    "xc7a50tfgg484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-1FGG484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tfgg484-1"
+        }
+      }
+    },
+    "xc7a50tfgg484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2FGG484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tfgg484-2"
+        }
+      }
+    },
+    "xc7a50tfgg484-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2LFGG484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tfgg484-2L"
+        }
+      }
+    },
+    "xc7a50tfgg484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-3FGG484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tfgg484-3"
+        }
+      }
+    },
+    "xc7a50tftg256-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-1FTG256",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tftg256-1"
+        }
+      }
+    },
+    "xc7a50tftg256-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2FTG256",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tftg256-2"
+        }
+      }
+    },
+    "xc7a50tftg256-2l": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-2LFTG256",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tftg256-2L"
+        }
+      }
+    },
+    "xc7a50tftg256-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7A50T-3FTG256",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "artix7",
+          "nextpnr-device": "xc7a50tftg256-3"
+        }
+      }
+    },
+    "xc7s100fgga484-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-1FGGA484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga484-1"
+        }
+      }
+    },
+    "xc7s100fgga484-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-1ILFGGA484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga484-1IL"
+        }
+      }
+    },
+    "xc7s100fgga484-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-1QFGGA484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga484-1Q"
+        }
+      }
+    },
+    "xc7s100fgga484-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-2FGGA484",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga484-2"
+        }
+      }
+    },
+    "xc7s100fgga676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-1FGGA676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga676-1"
+        }
+      }
+    },
+    "xc7s100fgga676-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-1ILFGGA676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga676-1IL"
+        }
+      }
+    },
+    "xc7s100fgga676-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-1QFGGA676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga676-1Q"
+        }
+      }
+    },
+    "xc7s100fgga676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S100-2FGGA676",
+        "size": "100k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s100fgga676-2"
+        }
+      }
+    },
+    "xc7s15cpga196-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1CPGA196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15cpga196-1"
+        }
+      }
+    },
+    "xc7s15cpga196-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1ILCPGA196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15cpga196-1IL"
+        }
+      }
+    },
+    "xc7s15cpga196-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1QCPGA196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15cpga196-1Q"
+        }
+      }
+    },
+    "xc7s15cpga196-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-2CPGA196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15cpga196-2"
+        }
+      }
+    },
+    "xc7s15csga225-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1CSGA225",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15csga225-1"
+        }
+      }
+    },
+    "xc7s15csga225-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1ILCSGA225",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15csga225-1IL"
+        }
+      }
+    },
+    "xc7s15csga225-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1QCSGA225",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15csga225-1Q"
+        }
+      }
+    },
+    "xc7s15csga225-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-2CSGA225",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15csga225-2"
+        }
+      }
+    },
+    "xc7s15ftgb196-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1FTGB196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15ftgb196-1"
+        }
+      }
+    },
+    "xc7s15ftgb196-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1ILFTGB196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15ftgb196-1IL"
+        }
+      }
+    },
+    "xc7s15ftgb196-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-1QFTGB196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15ftgb196-1Q"
+        }
+      }
+    },
+    "xc7s15ftgb196-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S15-2FTGB196",
+        "size": "15k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s15ftgb196-2"
+        }
+      }
+    },
+    "xc7s25csga225-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S25-1CSGA225",
+        "size": "25k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s25csga225-1"
+        }
+      }
+    },
+    "xc7s25csga225-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S25-1ILCSGA225",
+        "size": "25k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s25csga225-1IL"
+        }
+      }
+    },
+    "xc7s25csga225-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S25-1QCSGA225",
+        "size": "25k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s25csga225-1Q"
+        }
+      }
+    },
+    "xc7s25csga225-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S25-2CSGA225",
+        "size": "25k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s25csga225-2"
+        }
+      }
+    },
+    "xc7s25csga324-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S25-1CSGA324",
+        "size": "25k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s25csga324-1"
+        }
+      }
+    },
+    "xc7s50csga324-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1CSGA324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50csga324-1"
+        }
+      }
+    },
+    "xc7s50csga324-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1ILCSGA324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50csga324-1IL"
+        }
+      }
+    },
+    "xc7s50csga324-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1QCSGA324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50csga324-1Q"
+        }
+      }
+    },
+    "xc7s50csga324-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-2CSGA324",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50csga324-2"
+        }
+      }
+    },
+    "xc7s50fgga484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1FGGA484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50fgga484-1"
+        }
+      }
+    },
+    "xc7s50fgga484-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1ILFGGA484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50fgga484-1IL"
+        }
+      }
+    },
+    "xc7s50fgga484-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1QFGGA484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50fgga484-1Q"
+        }
+      }
+    },
+    "xc7s50fgga484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-2FGGA484",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50fgga484-2"
+        }
+      }
+    },
+    "xc7s50ftgb196-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1FTGB196",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50ftgb196-1"
+        }
+      }
+    },
+    "xc7s50ftgb196-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1ILFTGB196",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50ftgb196-1IL"
+        }
+      }
+    },
+    "xc7s50ftgb196-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-1QFTGB196",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50ftgb196-1Q"
+        }
+      }
+    },
+    "xc7s50ftgb196-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S50-2FTGB196",
+        "size": "50k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s50ftgb196-2"
+        }
+      }
+    },
+    "xc7s6cpga196-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1CPGA196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6cpga196-1"
+        }
+      }
+    },
+    "xc7s6cpga196-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1ILCPGA196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6cpga196-1IL"
+        }
+      }
+    },
+    "xc7s6cpga196-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1QCPGA196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6cpga196-1Q"
+        }
+      }
+    },
+    "xc7s6cpga196-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-2CPGA196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6cpga196-2"
+        }
+      }
+    },
+    "xc7s6csga225-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1CSGA225",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6csga225-1"
+        }
+      }
+    },
+    "xc7s6csga225-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1ILCSGA225",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6csga225-1IL"
+        }
+      }
+    },
+    "xc7s6csga225-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1QCSGA225",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6csga225-1Q"
+        }
+      }
+    },
+    "xc7s6csga225-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-2CSGA225",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6csga225-2"
+        }
+      }
+    },
+    "xc7s6ftgb196-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1FTGB196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6ftgb196-1"
+        }
+      }
+    },
+    "xc7s6ftgb196-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1ILFTGB196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6ftgb196-1IL"
+        }
+      }
+    },
+    "xc7s6ftgb196-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-1QFTGB196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6ftgb196-1Q"
+        }
+      }
+    },
+    "xc7s6ftgb196-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S6-2FTGB196",
+        "size": "6k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s6ftgb196-2"
+        }
+      }
+    },
+    "xc7s75fgga484-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-1FGGA484",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga484-1"
+        }
+      }
+    },
+    "xc7s75fgga484-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-1ILFGGA484",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga484-1IL"
+        }
+      }
+    },
+    "xc7s75fgga484-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-1QFGGA484",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga484-1Q"
+        }
+      }
+    },
+    "xc7s75fgga484-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-2FGGA484",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga484-2"
+        }
+      }
+    },
+    "xc7s75fgga676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-1FGGA676",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga676-1"
+        }
+      }
+    },
+    "xc7s75fgga676-1il": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-1ILFGGA676",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga676-1IL"
+        }
+      }
+    },
+    "xc7s75fgga676-1q": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-1QFGGA676",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga676-1Q"
+        }
+      }
+    },
+    "xc7s75fgga676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7S75-2FGGA676",
+        "size": "75k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "spartan7",
+          "nextpnr-device": "xc7s75fgga676-2"
+        }
+      }
+    },
+    "xc7z007sclg225-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z007S-1CLG225",
+        "size": "23k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z007sclg225-1"
+        }
+      }
+    },
+    "xc7z007sclg225-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z007S-2CLG225",
+        "size": "23k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z007sclg225-2"
+        }
+      }
+    },
+    "xc7z007sclg400-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z007S-1CLG400",
+        "size": "23k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z007sclg400-1"
+        }
+      }
+    },
+    "xc7z007sclg400-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z007S-2CLG400",
+        "size": "23k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z007sclg400-2"
+        }
+      }
+    },
+    "xc7z010clg225-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z010-1CLG225",
+        "size": "28k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z010clg225-1"
+        }
+      }
+    },
+    "xc7z010clg225-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z010-2CLG225",
+        "size": "28k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z010clg225-2"
+        }
+      }
+    },
+    "xc7z010clg225-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z010-3CLG225",
+        "size": "28k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z010clg225-3"
+        }
+      }
+    },
+    "xc7z010clg400-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z010-1CLG400",
+        "size": "28k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z010clg400-1"
+        }
+      }
+    },
+    "xc7z010clg400-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z010-2CLG400",
+        "size": "28k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z010clg400-2"
+        }
+      }
+    },
+    "xc7z010clg400-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z010-3CLG400",
+        "size": "28k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z010clg400-3"
+        }
+      }
+    },
+    "xc7z020clg400-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z020-1CLG400",
+        "size": "85k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z020clg400-1"
+        }
+      }
+    },
+    "xc7z020clg400-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z020-2CLG400",
+        "size": "85k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z020clg400-2"
+        }
+      }
+    },
+    "xc7z020clg400-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z020-3CLG400",
+        "size": "85k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z020clg400-3"
+        }
+      }
+    },
+    "xc7z020clg484-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z020-1CLG484",
+        "size": "85k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z020clg484-1"
+        }
+      }
+    },
+    "xc7z020clg484-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z020-2CLG484",
+        "size": "85k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z020clg484-2"
+        }
+      }
+    },
+    "xc7z020clg484-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z020-3CLG484",
+        "size": "85k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z020clg484-3"
+        }
+      }
+    },
+    "xc7z030fbg676-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z030-1FBG676",
+        "size": "125k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z030fbg676-1"
+        }
+      }
+    },
+    "xc7z035fbg676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-1FBG676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035fbg676-1"
+        }
+      }
+    },
+    "xc7z035fbg676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-2FBG676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035fbg676-2"
+        }
+      }
+    },
+    "xc7z035fbg676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-3FBG676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035fbg676-3"
+        }
+      }
+    },
+    "xc7z035fbv676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-1FBV676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035fbv676-1"
+        }
+      }
+    },
+    "xc7z035fbv676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-2FBV676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035fbv676-2"
+        }
+      }
+    },
+    "xc7z035fbv676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-3FBV676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035fbv676-3"
+        }
+      }
+    },
+    "xc7z035ffg676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-1FFG676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffg676-1"
+        }
+      }
+    },
+    "xc7z035ffg676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-2FFG676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffg676-2"
+        }
+      }
+    },
+    "xc7z035ffg676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-3FFG676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffg676-3"
+        }
+      }
+    },
+    "xc7z035ffg900-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-1FFG900",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffg900-1"
+        }
+      }
+    },
+    "xc7z035ffg900-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-2FFG900",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffg900-2"
+        }
+      }
+    },
+    "xc7z035ffg900-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-3FFG900",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffg900-3"
+        }
+      }
+    },
+    "xc7z035ffv676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-1FFV676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffv676-1"
+        }
+      }
+    },
+    "xc7z035ffv676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-2FFV676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffv676-2"
+        }
+      }
+    },
+    "xc7z035ffv676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-3FFV676",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffv676-3"
+        }
+      }
+    },
+    "xc7z035ffv900-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-1FFV900",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffv900-1"
+        }
+      }
+    },
+    "xc7z035ffv900-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-2FFV900",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffv900-2"
+        }
+      }
+    },
+    "xc7z035ffv900-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z035-3FFV900",
+        "size": "275k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z035ffv900-3"
+        }
+      }
+    },
+    "xc7z045fbg676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-1FBG676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045fbg676-1"
+        }
+      }
+    },
+    "xc7z045fbg676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-2FBG676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045fbg676-2"
+        }
+      }
+    },
+    "xc7z045fbg676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-3FBG676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045fbg676-3"
+        }
+      }
+    },
+    "xc7z045fbv676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-1FBV676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045fbv676-1"
+        }
+      }
+    },
+    "xc7z045fbv676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-2FBV676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045fbv676-2"
+        }
+      }
+    },
+    "xc7z045fbv676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-3FBV676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045fbv676-3"
+        }
+      }
+    },
+    "xc7z045ffg676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-1FFG676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffg676-1"
+        }
+      }
+    },
+    "xc7z045ffg676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-2FFG676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffg676-2"
+        }
+      }
+    },
+    "xc7z045ffg676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-3FFG676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffg676-3"
+        }
+      }
+    },
+    "xc7z045ffg900-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-1FFG900",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffg900-1"
+        }
+      }
+    },
+    "xc7z045ffg900-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-2FFG900",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffg900-2"
+        }
+      }
+    },
+    "xc7z045ffg900-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-3FFG900",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffg900-3"
+        }
+      }
+    },
+    "xc7z045ffv676-1": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-1FFV676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffv676-1"
+        }
+      }
+    },
+    "xc7z045ffv676-2": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-2FFV676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffv676-2"
+        }
+      }
+    },
+    "xc7z045ffv676-3": {
+      "generated": false,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-3FFV676",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffv676-3"
+        }
+      }
+    },
+    "xc7z045ffv900-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-1FFV900",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffv900-1"
+        }
+      }
+    },
+    "xc7z045ffv900-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-2FFV900",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffv900-2"
+        }
+      }
+    },
+    "xc7z045ffv900-3": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z045-3FFV900",
+        "size": "350k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z045ffv900-3"
+        }
+      }
+    },
+    "xc7z100ffg1156-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-1FFG1156",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffg1156-1"
+        }
+      }
+    },
+    "xc7z100ffg1156-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-2FFG1156",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffg1156-2"
+        }
+      }
+    },
+    "xc7z100ffg900-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-1FFG900",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffg900-1"
+        }
+      }
+    },
+    "xc7z100ffg900-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-2FFG900",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffg900-2"
+        }
+      }
+    },
+    "xc7z100ffv1156-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-1FFV1156",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffv1156-1"
+        }
+      }
+    },
+    "xc7z100ffv1156-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-2FFV1156",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffv1156-2"
+        }
+      }
+    },
+    "xc7z100ffv900-1": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-1FFV900",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffv900-1"
+        }
+      }
+    },
+    "xc7z100ffv900-2": {
+      "generated": true,
+      "definition": {
+        "arch": "xilinx",
+        "vendor-part": "XC7Z100-2FFV900",
+        "size": "444k",
+        "xilinx-params": {
+          "yosys-arch": "xc7",
+          "yosys-family": "zynq7",
+          "nextpnr-device": "xc7z100ffv900-2"
+        }
+      }
+    }
+  }
+}
