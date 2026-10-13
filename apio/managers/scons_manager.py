@@ -33,7 +33,6 @@ from apio.common.proto.stubs.apio_scons_pb2 import (
     Environment,
     SconsParams,
     TargetParams,
-    FpgaInfo,
     ApioEnvParams,
     GraphParams,
     LintParams,
@@ -178,16 +177,8 @@ class SConsManager:
         fpga_definition = pr.fpga_definition
         # result.arch = fpga_definition.arch
 
-        # -- Populate the the 'fpga_info' field.
-        result.fpga_info.MergeFrom(
-            FpgaInfo(
-                id=pr.fpga_id,
-                definition=fpga_definition,
-            )
-        )
-
-        # -- We are done populating The FpgaInfo params..
-        assert result.fpga_info.IsInitialized(), result
+        # -- Populate the the 'fpga_definition' field.
+        result.fpga_definition.CopyFrom(fpga_definition)
 
         # -- Populate the optional Verbosity params.
         if verbosity:

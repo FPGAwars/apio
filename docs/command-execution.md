@@ -93,13 +93,13 @@ Sample `scons.params` file
 ```proto
 timestamp: "07174143800"
 arch: ice40
-fpga_info {
-  fpga_id: "ice40hx4k-tq144-8k"
-  part_num: "ICE40HX4K-TQ144"
+fpga_definition {
+  arch: "xilinx"
+  vendor_part: "ICE40HX4K-TQ144"
   size: "8k"
   ice40_params {
-    type: "hx8k"
-    package: "tq144:4k"
+    nextpnr-type: "hx8k"
+    nextpnr-package: "tq144:4k"
   }
 }
 verbosity {

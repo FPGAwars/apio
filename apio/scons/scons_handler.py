@@ -98,8 +98,8 @@ class SconsHandler:
         assert apio_env.apio_platform is apio_platform
 
         # -- Select the plugin.
-        proto_util.check_is_required(params, "fpga_info.definition.arch")
-        arch = params.fpga_info.definition.arch
+        proto_util.check_is_required(params, "fpga_definition.arch")
+        arch = params.fpga_definition.arch
         plugin: PluginBase
         match arch:
             case ApioArch.ice40:

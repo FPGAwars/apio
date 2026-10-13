@@ -32,14 +32,6 @@ SVG: GraphOutputType
 PNG: GraphOutputType
 PDF: GraphOutputType
 
-class FpgaInfo(_message.Message):
-    __slots__ = ("id", "definition")
-    ID_FIELD_NUMBER: _ClassVar[int]
-    DEFINITION_FIELD_NUMBER: _ClassVar[int]
-    id: str
-    definition: _apio_definitions_pb2.FpgaDefinition
-    def __init__(self, id: _Optional[str] = ..., definition: _Optional[_Union[_apio_definitions_pb2.FpgaDefinition, _Mapping]] = ...) -> None: ...
-
 class Verbosity(_message.Message):
     __slots__ = ("all", "synth", "pnr")
     ALL_FIELD_NUMBER: _ClassVar[int]
@@ -155,17 +147,17 @@ class TargetParams(_message.Message):
     def __init__(self, lint: _Optional[_Union[LintParams, _Mapping]] = ..., graph: _Optional[_Union[GraphParams, _Mapping]] = ..., sim: _Optional[_Union[SimParams, _Mapping]] = ..., test: _Optional[_Union[ApioTestParams, _Mapping]] = ..., upload: _Optional[_Union[UploadParams, _Mapping]] = ...) -> None: ...
 
 class SconsParams(_message.Message):
-    __slots__ = ("timestamp", "fpga_info", "verbosity", "environment", "apio_env_params", "target")
+    __slots__ = ("timestamp", "fpga_definition", "verbosity", "environment", "apio_env_params", "target")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
-    FPGA_INFO_FIELD_NUMBER: _ClassVar[int]
+    FPGA_DEFINITION_FIELD_NUMBER: _ClassVar[int]
     VERBOSITY_FIELD_NUMBER: _ClassVar[int]
     ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
     APIO_ENV_PARAMS_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     timestamp: str
-    fpga_info: FpgaInfo
+    fpga_definition: _apio_definitions_pb2.FpgaDefinition
     verbosity: Verbosity
     environment: Environment
     apio_env_params: ApioEnvParams
     target: TargetParams
-    def __init__(self, timestamp: _Optional[str] = ..., fpga_info: _Optional[_Union[FpgaInfo, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...
+    def __init__(self, timestamp: _Optional[str] = ..., fpga_definition: _Optional[_Union[_apio_definitions_pb2.FpgaDefinition, _Mapping]] = ..., verbosity: _Optional[_Union[Verbosity, _Mapping]] = ..., environment: _Optional[_Union[Environment, _Mapping]] = ..., apio_env_params: _Optional[_Union[ApioEnvParams, _Mapping]] = ..., target: _Optional[_Union[TargetParams, _Mapping]] = ...) -> None: ...

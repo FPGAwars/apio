@@ -3,27 +3,21 @@ Tests of the scons plugin_xilinx.py place and route builder.
 """
 
 from pathlib import Path
-
 from google.protobuf import text_format
 from tests.unit_tests.scons.testing import make_test_apio_env
 from tests.conftest import ApioRunner
-
-# from apio.common.proto.stubs.apio_common_pb2 import ApioArch
-from apio.common.proto.stubs.apio_scons_pb2 import FpgaInfo
 from apio.scons.plugin_xilinx import PluginXilinx
+from apio.common.proto.stubs.apio_definitions_pb2 import FpgaDefinition
 
 # -- An xc7a35t (Artix-7, Arty A7-35T) FPGA info.
-XILINX_FPGA_INFO = """
-id: "xc7a35tcsg324-1"
-definition: {
-    arch: xilinx
-    vendor_part: "XC7A35T-1CSG324C"
-    size: "35k"
-    xilinx_params {
-        yosys_arch: "xc7"
-        yosys_family: "artix7"
-        nextpnr_device: "xc7a35tcsg324-1"
-  }
+XILINX_FPGA_DEFINITION = """
+arch: xilinx
+vendor_part: "XC7A35T-1CSG324C"
+size: "35k"
+xilinx_params {
+    yosys_arch: "xc7"
+    yosys_family: "artix7"
+    nextpnr_device: "xc7a35tcsg324-1"
 }
 """
 
@@ -39,8 +33,8 @@ def _pnr_action(
         sb.write_file("arty.xdc", "")
         apio_env = make_test_apio_env()
         # apio_env.params.arch = ApioArch.xilinx
-        apio_env.params.fpga_info.CopyFrom(
-            text_format.Parse(XILINX_FPGA_INFO, FpgaInfo())
+        apio_env.params.fpga_definition.CopyFrom(
+            text_format.Parse(XILINX_FPGA_DEFINITION, FpgaDefinition())
         )
         apio_env.params.verbosity.pnr = pnr_verbose
         if extra_options:
@@ -83,8 +77,8 @@ def test_synth_builder(apio_runner: ApioRunner):
     """The synth command writes the JSON after synth_xilinx."""
     with apio_runner.in_sandbox():
         apio_env = make_test_apio_env()
-        apio_env.params.fpga_info.CopyFrom(
-            text_format.Parse(XILINX_FPGA_INFO, FpgaInfo())
+        apio_env.params.fpga_definition.CopyFrom(
+            text_format.Parse(XILINX_FPGA_DEFINITION, FpgaDefinition())
         )
         action = str(PluginXilinx(apio_env).make_synth_builder().action)
     assert "synth_xilinx -arch xc7 -top main ; " in action
