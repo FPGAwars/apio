@@ -63,7 +63,7 @@ class PluginXilinx(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        xilinx_params = params.fpga_info.definition.xilinx_params
+        xilinx_params = params.fpga_definition.xilinx_params
 
         # -- The yosys synth builder.
         return Builder(
@@ -94,7 +94,7 @@ class PluginXilinx(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        xilinx_params = params.fpga_info.definition.xilinx_params
+        xilinx_params = params.fpga_definition.xilinx_params
 
         # -- We use an emitter to add to the builder a second output file.
         def emitter(target, source, env):
@@ -131,7 +131,7 @@ class PluginXilinx(PluginBase):
         # -- Keep short references.
         apio_env = self.apio_env
         params = apio_env.params
-        xilinx_params = params.fpga_info.definition.xilinx_params
+        xilinx_params = params.fpga_definition.xilinx_params
 
         prjxray_db = Path(apio_env.params.environment.xilinx_prjxray_db_path)
         prjxray_db = prjxray_db / xilinx_params.yosys_family

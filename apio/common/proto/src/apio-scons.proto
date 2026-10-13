@@ -19,13 +19,6 @@ enum TerminalMode {
   FORCE_PIPE = 3;
 }
 
-
-// FPGA info.
-message FpgaInfo {
-  required string id = 1;
-  required FpgaDefinition definition = 2;
-}
-
 // Verbosity levels.
 message Verbosity {
   // If true, enable general verbosity.
@@ -156,8 +149,8 @@ message SconsParams {
   // to verify that scons reads the correct versions of the params file.
   required string timestamp = 1;
 
-  // Information about the FPGA used in the project. From fpgas.jsonc.
-  required FpgaInfo fpga_info = 2;
+  // The FPGA definition from fpgas.jsonc.
+  required FpgaDefinition fpga_definition = 2;
 
   // Verbosity flags.
   optional Verbosity verbosity = 3;

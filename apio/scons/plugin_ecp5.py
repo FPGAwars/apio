@@ -106,9 +106,9 @@ class PluginEcp5(PluginBase):
                 "--report {3} --lpf {4} --timing-allow-fail --force "
                 "{5} {6}"
             ).format(
-                params.fpga_info.definition.ecp5_params.nextpnr_type,
-                params.fpga_info.definition.ecp5_params.nextpnr_package,
-                params.fpga_info.definition.ecp5_params.nextpnr_speed,
+                params.fpga_definition.ecp5_params.nextpnr_type,
+                params.fpga_definition.ecp5_params.nextpnr_package,
+                params.fpga_definition.ecp5_params.nextpnr_speed,
                 apio_env.target + ".pnr",
                 self.constrain_file(),
                 "" if params.verbosity.all or params.verbosity.pnr else "-q",
