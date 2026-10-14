@@ -72,7 +72,6 @@
             "get-examples": {},
             "get-commands": {},
             "get-packages": {},
-            "get-parts-index": {},
             "scan-path": {},
             "scan-devices": {},
             "echo": {}

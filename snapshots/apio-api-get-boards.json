@@ -1954,6 +1954,28 @@
         }
       }
     },
+    "soan-papdi-mini": {
+      "description": "Soan-Papdi-Mini",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
     "thetamachines-eth4k": {
       "description": "Theta Machines ETH4K",
       "fpga": {
