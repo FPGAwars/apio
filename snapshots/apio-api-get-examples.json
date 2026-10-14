@@ -1,0 +1,453 @@
+{
+  "examples": {
+    "alchitry-au-plus": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "alchitry-au": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "alchitry-cu": {
+      "blinky": {
+        "description": "Blinking all leds"
+      }
+    },
+    "alhambra-ii": {
+      "area-test": {
+        "description": "Area Test Module for ice40hx8k FPGA"
+      },
+      "bcd-counter": {
+        "description": "Verilog example with testbenches and subdirectories."
+      },
+      "bcd-counter-sv": {
+        "description": "System Verilog example with testbenches and subdirectories."
+      },
+      "blinky": {
+        "description": "Blinking led"
+      },
+      "constraint-files": {
+        "description": "Envs with different constraint files"
+      },
+      "getting-started": {
+        "description": "Example for Apio getting-Starting docs."
+      },
+      "ledon": {
+        "description": "Turning on a led"
+      },
+      "multi-board": {
+        "description": "Multiple boards and multi configurations."
+      },
+      "multi-env": {
+        "description": "Multi apio env demo"
+      },
+      "pll": {
+        "description": "Using PLL."
+      },
+      "prog-cmd": {
+        "description": "Using the 'programmer-cmd' opion in apio.ini"
+      },
+      "speed-test": {
+        "description": "Speed test"
+      },
+      "template": {
+        "description": "Project template"
+      }
+    },
+    "alinx-ax7035": {
+      "blinky": {
+        "description": "Slow/Fast blinky."
+      }
+    },
+    "arty-a7-100t": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "arty-a7-35t": {
+      "blinky": {
+        "description": "Blinking a LED"
+      },
+      "multi-env": {
+        "description": "Multi apio env demo"
+      },
+      "pll": {
+        "description": "Using PLL."
+      }
+    },
+    "arty-s7-25": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "arty-s7-50": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "basys3": {
+      "blinky": {
+        "description": "Blinking a LED"
+      },
+      "ledon": {
+        "description": "Turning on a led"
+      }
+    },
+    "blackice": {
+      "blink": {
+        "description": "Blinking a led"
+      },
+      "blinky": {
+        "description": "Blinking a led"
+      }
+    },
+    "brs-100-gw1nr9": {
+      "blinky": {
+        "description": "Running leds"
+      }
+    },
+    "cmod-a7-35t": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "colorlight-5a-75b-v8": {
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "ledon": {
+        "description": "Blinking leds"
+      },
+      "ledon-sv": {
+        "description": "Blinking leds (system verilog)"
+      },
+      "pll": {
+        "description": "Using a PLL."
+      },
+      "speed-test": {
+        "description": "Speed test"
+      }
+    },
+    "colorlight-5a-75e-v71-ft2232h": {
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "ledon": {
+        "description": "Blinking leds"
+      }
+    },
+    "colorlight-i9plus": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "cynthion-r1-4": {
+      "blinky": {
+        "description": "Blinking a led"
+      }
+    },
+    "edu-ciaa-fpga": {
+      "and-gate-sv": {
+        "description": "Experimental system-verilog"
+      },
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "led-green": {
+        "description": "Truning on a led"
+      },
+      "template": {
+        "description": "Project template"
+      }
+    },
+    "epm11": {
+      "blinky": {
+        "description": "Blinking a led"
+      }
+    },
+    "fomu": {
+      "blink": {
+        "description": "Tri-colour led blink"
+      },
+      "dsp": {
+        "description": "Using -dsp to enable DSP cells."
+      }
+    },
+    "go-board": {
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "leds": {
+        "description": "Turning all leds on"
+      },
+      "template": {
+        "description": "Project template"
+      }
+    },
+    "ice40-hx1k-evb": {
+      "leds": {
+        "description": "Turning leds on/off"
+      }
+    },
+    "ice40-hx8k-evb": {
+      "leds": {
+        "description": "Turning leds on/off"
+      }
+    },
+    "ice40-hx8k": {
+      "leds": {
+        "description": "Turning all the leds on"
+      }
+    },
+    "ice40-up5k": {
+      "blinky": {
+        "description": "Blink the RGB led"
+      },
+      "led-green": {
+        "description": "Turning the RGB led green"
+      },
+      "switches": {
+        "description": "Switches controlling RGB led"
+      }
+    },
+    "icebreaker": {
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "buttons": {
+        "description": "Controlling a led using the buttons"
+      },
+      "led-green": {
+        "description": "Turning the green led on"
+      }
+    },
+    "icefun": {
+      "blinky": {
+        "description": "Blinking LEDs. AI generated testbench."
+      },
+      "led-matrix": {
+        "description": "LED matrix module."
+      }
+    },
+    "icepi-zero": {
+      "blinky": {
+        "description": "Blinking a led"
+      }
+    },
+    "icestick": {
+      "leds": {
+        "description": "Turning all the lds on"
+      },
+      "template": {
+        "description": "Project template"
+      }
+    },
+    "icesugar-1-5": {
+      "blinky": {
+        "description": "Blinking red/green/blue leds"
+      }
+    },
+    "icesugar-pro": {
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "flash-and-ram": {
+        "description": "Dual env with flash and ram programming."
+      },
+      "pll": {
+        "description": "Pll example"
+      }
+    },
+    "icewerx": {
+      "blinky": {
+        "description": "Blinking the Green LED"
+      },
+      "ledon": {
+        "description": "Turning on the red led"
+      }
+    },
+    "icezum": {
+      "frere-jacques": {
+        "description": "Fr\u00e8re Jacques two voices melody (see READMEmd)"
+      },
+      "leds": {
+        "description": "Turning all the leds on"
+      },
+      "marcha-imperial": {
+        "description": "Project template for the icezum board"
+      },
+      "template": {
+        "description": "Project template"
+      },
+      "wire": {
+        "description": "Describing a simple wire"
+      }
+    },
+    "kefir": {
+      "leds": {
+        "description": "Turning all the leds on"
+      },
+      "template": {
+        "description": "Project template"
+      }
+    },
+    "microphase-a7-lite": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "mimas-a7": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "nexys-a7-100t": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "nexys-a7-50t": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "pynq-z1": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "pynq-z2": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "qmtech-xc7a100t-ft2232h": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "sipeed-tang-nano-1k": {
+      "blinky": {
+        "description": "Blinking RGB led"
+      }
+    },
+    "sipeed-tang-nano-20k": {
+      "blinky": {
+        "description": "Blinking led"
+      },
+      "pll": {
+        "description": "Using 60Mhz PLL"
+      },
+      "speed-test": {
+        "description": "Speed test"
+      }
+    },
+    "sipeed-tang-nano-4k": {
+      "blinky": {
+        "description": "Blinking led (untested)"
+      }
+    },
+    "sipeed-tang-nano-9k": {
+      "blinky": {
+        "description": "Blinking led"
+      },
+      "blinky-sv": {
+        "description": "Blinking led (system verilog)"
+      },
+      "pll": {
+        "description": "PLL clock multiplier"
+      },
+      "speed-test": {
+        "description": "Speed test"
+      }
+    },
+    "sipeed-tang-primer-20k": {
+      "blinky": {
+        "description": "7-seg blink (icebreaker PMOD, Lite top-right)"
+      },
+      "counter": {
+        "description": "Two-digit 7-seg counter (icebreaker PMOD, Lite top-right)"
+      }
+    },
+    "tinyfpga-b2": {
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "template": {
+        "description": "Project template"
+      }
+    },
+    "tinyfpga-bx": {
+      "blink-sos": {
+        "description": "Blink SOS pattern"
+      },
+      "blinky": {
+        "description": "Blinking led"
+      },
+      "clock-divider": {
+        "description": "Clock divider with two phases outputs"
+      },
+      "template": {
+        "description": "Project template"
+      }
+    },
+    "ulx3s-12f": {
+      "blinky": {
+        "description": "Blinking a led"
+      },
+      "ledon": {
+        "description": "Turning on a led"
+      }
+    },
+    "ulx3s-45f": {
+      "blinky": {
+        "description": "Blinking leds"
+      }
+    },
+    "ulx3s-85f": {
+      "blinky": {
+        "description": "Blinking leds"
+      }
+    },
+    "upduino31": {
+      "blinky": {
+        "description": "Using the SB_RGBA_DRV primitive led driver"
+      },
+      "testbench": {
+        "description": "A testbench example"
+      }
+    },
+    "zedboard": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "zxtres-plus-plus": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "zxtres-plus": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "zxtres": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "zybo-z7-10": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    },
+    "zybo-z7-20": {
+      "blinky": {
+        "description": "Blinking a LED"
+      }
+    }
+  }
+}

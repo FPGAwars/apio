@@ -43,23 +43,25 @@ class ApioDefinitions:
 
     def __init__(
         self,
-        package_definitions_dir: Path,
+        apio_packages_dir: Path,
         project_definitions_dir: Path | None,
     ):
+        # pylint: disable=too-many-locals
 
-        assert isinstance(package_definitions_dir, Path)
+        assert isinstance(apio_packages_dir, Path)
         assert project_definitions_dir is None or isinstance(
             project_definitions_dir, Path
         )
 
-        self._package_definitions_dir = package_definitions_dir
+        self._apio_packages_dir = apio_packages_dir
         self._project_definitions_dir = project_definitions_dir
 
-        # -- Read boards definitions as json_dicts.
+        # -- Read boards definitions as a json_dict.
         # -- Custom definitions overrides apio standard definitions.
         boards_json, self.custom_boards_ids = self._load_definitions(
+            {},
             BOARDS_JSONC,
-            self._package_definitions_dir,
+            self._apio_packages_dir / "definitions",
             self._project_definitions_dir,
         )
 
@@ -74,11 +76,25 @@ class ApioDefinitions:
                 fatal_error(f"Failed to parse board definition '{board_id}")
             self.boards[board_id] = board_definition
 
+        # -- Read the base fpga definitions exported by the underlying tools.
+        base_fpgas_dict = self._load_definitions_file(
+            self._apio_packages_dir / "oss-cad-suite" / "FPGAS.jsonc"
+        )
+        openxc7_fpgas_dict = self._load_definitions_file(
+            self._apio_packages_dir / "openxc7" / "FPGAS.jsonc"
+        )
+        for fpga_id, fpga_def in openxc7_fpgas_dict.items():
+            assert (
+                fpga_id not in base_fpgas_dict
+            ), f"Duplicate fpga id: {fpga_id}"
+            base_fpgas_dict[fpga_id] = fpga_def
+
         # -- Read fpgas definitions as json dicts.
         # -- Custom definitions overrides apio standard definitions.
         fpgas_json, self.custom_fpgas_ids = self._load_definitions(
+            base_fpgas_dict,
             FPGAS_JSONC,
-            self._package_definitions_dir,
+            self._apio_packages_dir / "definitions",
             self._project_definitions_dir,
         )
 
@@ -97,8 +113,9 @@ class ApioDefinitions:
         # -- Load programmers definitions as json dicts.
         # -- Custom definitions overrides apio standard definitions.
         programmers_json, self.custom_programmers_ids = self._load_definitions(
+            {},
             PROGRAMMERS_JSONC,
-            self._package_definitions_dir,
+            self._apio_packages_dir / "definitions",
             self._project_definitions_dir,
         )
 
@@ -224,6 +241,7 @@ class ApioDefinitions:
     @classmethod
     def _load_definitions(
         cls,
+        base_definitions: dict[str, dict],
         name: str,
         package_definitions_dir: Path,
         project_definitions_dir: Path | None,
@@ -235,24 +253,32 @@ class ApioDefinitions:
         definitions (custom wins) and a set of boards ids in the custom
         resource file.
         """
+        # -- Level 1 - Start with the base definition.
+        combined_dict: dict[str, dict] = {}
+        combined_dict.update(base_definitions)
 
-        # -- Load the standard definition as a json dict.
-        filepath = package_definitions_dir / name
-        combined_dict = cls._load_definitions_file(filepath)
+        # -- Level 2 - Load the standard definition from the package.
+        package_file = package_definitions_dir / name
+        package_dict = cls._load_definitions_file(package_file)
+        combined_dict.update(package_dict)
+
+        # -- Level 3 - If there is a project specific override file, apply it
+        # -- on top of the standard apio definition dict. These are the custom
+        # -- definitions provided by the user.
         custom_ids: set[str] = set()
-
-        # -- If there is a project specific override file, apply it on
-        # -- top of the standard apio definition dict.
         if project_definitions_dir:
-            filepath = project_definitions_dir / name
-            if filepath.exists():
+            project_file = project_definitions_dir / name
+            if project_file.exists():
                 # -- Load the override json dict.
                 cout(f"Loading custom '{name}'.")
-                custom_dict = cls._load_definitions_file(filepath)
+                project_dict = cls._load_definitions_file(project_file)
                 # -- Apply the override. Entries in override replace same
                 # -- key entries in result or if unique are added.
-                combined_dict.update(custom_dict)
-                custom_ids.update(custom_dict.keys())
+                combined_dict.update(project_dict)
+                custom_ids.update(project_dict.keys())
+
+        # -- Sort combined dict by key.
+        combined_dict = dict(sorted(combined_dict.items()))
 
         # -- All done.
         return (combined_dict, custom_ids)

@@ -1,0 +1,2455 @@
+{
+  "boards": {
+    "alchitry-au": {
+      "description": "Alchitry Au (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a35tftg256-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A35T-1FTG256",
+          "size": "35k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a35tftg256-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "alchitry-au-plus": {
+      "description": "Alchitry Au+ (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a100tftg256-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A100T-1FTG256",
+          "size": "100k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a100tftg256-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "alchitry-cu": {
+      "description": "Alchitry Cu Development Board",
+      "fpga": {
+        "id": "ice40hx8k-cb132",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX8K-CB132",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "cb132"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "alhambra-ii": {
+      "description": "Alhambra II",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "alinx-ax7035": {
+      "description": "Alinx ARTIX-7 AX7035",
+      "fpga": {
+        "id": "xc7a35tfgg484-2",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A35T-2FGG484",
+          "size": "35k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a35tfgg484-2"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "arice1": {
+      "description": "ARiCE v1",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "arty-a7-100t": {
+      "description": "Arty A7-100T (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a100tcsg324-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A100T-1CSG324",
+          "size": "100k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a100tcsg324-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "arty-a7-35t": {
+      "description": "Arty A7-35T (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a35tcsg324-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A35T-1CSG324",
+          "size": "35k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a35tcsg324-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "arty-s7-25": {
+      "description": "Arty S7-25 (Xilinx, Spartan7)",
+      "fpga": {
+        "id": "xc7s25csga324-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7S25-1CSGA324",
+          "size": "25k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "spartan7",
+            "nextpnr-device": "xc7s25csga324-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "arty-s7-50": {
+      "description": "Arty S7-50 (Xilinx, Spartan7)",
+      "fpga": {
+        "id": "xc7s50csga324-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7S50-1CSGA324",
+          "size": "50k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "spartan7",
+            "nextpnr-device": "xc7s50csga324-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "azukar2": {
+      "description": "AZUKAR v2",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "basys3": {
+      "description": "Basys3 (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a35tcpg236-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A35T-1CPG236",
+          "size": "35k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a35tcpg236-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "blackice": {
+      "description": "BlackIce",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "blackiceprog",
+        "definition": {
+          "command": "black-iceprog",
+          "args": "${SERIAL_PORT}"
+        }
+      }
+    },
+    "blackice-ii": {
+      "description": "BlackIce II",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "blackiceprog",
+        "definition": {
+          "command": "black-iceprog",
+          "args": "${SERIAL_PORT}"
+        }
+      }
+    },
+    "blackice-mx": {
+      "description": "BlackIce MX",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "blackiceprog",
+        "definition": {
+          "command": "black-iceprog",
+          "args": "${SERIAL_PORT}"
+        }
+      }
+    },
+    "brs-100-gw1nr9": {
+      "description": "BrisbaneSilicon 9k",
+      "fpga": {
+        "id": "gw1nr-lv9qn88pc6-i5",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW1NR-LV9QN88PC6/I5",
+          "size": "9k",
+          "gowin-params": {
+            "yosys-family": "",
+            "nextpnr-device": "GW1NR-LV9QN88PC6/I5",
+            "nextpnr-family": "GW1N-9C",
+            "packer-device": "GW1N-9C"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "butterstick-r10-2g-85k": {
+      "description": "butterstick r1.0 DFU",
+      "fpga": {
+        "id": "lfe5um5g-85f-8bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5UM5G-85F-8BG381C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "um5g-85k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "8"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "butterstick-r10-2g-85k-ft2232h": {
+      "description": "butterstick r1.0 FT2232H",
+      "fpga": {
+        "id": "lfe5um5g-85f-8bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5UM5G-85F-8BG381C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "um5g-85k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "8"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "butterstick-r10-2g-85k-ft232h": {
+      "description": "butterstick r1.0 FT232H",
+      "fpga": {
+        "id": "lfe5um5g-85f-8bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5UM5G-85F-8BG381C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "um5g-85k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "8"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "cmod-a7-35t": {
+      "description": "Cmod A7-35T (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a35tcpg236-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A35T-1CPG236",
+          "size": "35k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a35tcpg236-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-5a-75b-v61": {
+      "description": "ColorLight-5A-75B-V61",
+      "fpga": {
+        "id": "lfe5u-25f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG381C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-5a-75b-v7": {
+      "description": "ColorLight-5A-75B-V7",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-5a-75b-v8": {
+      "description": "ColorLight-5A-75B-V8",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-5a-75e-v6": {
+      "description": "ColorLight-5A-75E-V6",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-5a-75e-v71-ft2232h": {
+      "description": "ColorLight-5A-75E-V71",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-5a-75e-v71-ft232h": {
+      "description": "ColorLight-5A-75E-V71",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-5a-75e-v71-usb-blaster": {
+      "description": "ColorLight-5A-75E-V71",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-i5-v7-0": {
+      "description": "ColorLight-i5",
+      "fpga": {
+        "id": "lfe5u-25f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG381C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-i5-v7-0-ram": {
+      "description": "ColorLight-i5 (RAM)",
+      "fpga": {
+        "id": "lfe5u-25f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG381C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-i9-v7-2-cmsis-dap": {
+      "description": "ColorLight-i9",
+      "fpga": {
+        "id": "lfe5u-45f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-45F-6BG381C",
+          "size": "45k",
+          "ecp5-params": {
+            "nextpnr-type": "45k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-i9-v7-2-ft2232h": {
+      "description": "ColorLight-i9",
+      "fpga": {
+        "id": "lfe5u-45f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-45F-6BG381C",
+          "size": "45k",
+          "ecp5-params": {
+            "nextpnr-type": "45k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-i9-v7-2-ft232h": {
+      "description": "ColorLight-i9",
+      "fpga": {
+        "id": "lfe5u-45f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-45F-6BG381C",
+          "size": "45k",
+          "ecp5-params": {
+            "nextpnr-type": "45k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-i9-v7-2-usb-blaster": {
+      "description": "ColorLight-i9",
+      "fpga": {
+        "id": "lfe5u-45f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-45F-6BG381C",
+          "size": "45k",
+          "ecp5-params": {
+            "nextpnr-type": "45k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "colorlight-i9plus": {
+      "description": "Colorlight i9+ (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a50tfgg484-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A50T-1FGG484",
+          "size": "50k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a50tfgg484-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "cynthion-r1-4": {
+      "description": "Cynthion r1.4",
+      "fpga": {
+        "id": "lfe5u-12f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-12F-6BG256C",
+          "size": "12k",
+          "ecp5-params": {
+            "nextpnr-type": "12k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "apollo",
+        "definition": {
+          "command": "apollo",
+          "args": "configure"
+        }
+      }
+    },
+    "ecp5-evaluation-board": {
+      "description": "ECP5-Evaluation-Board",
+      "fpga": {
+        "id": "lfe5um5g-85f-8bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5UM5G-85F-8BG381C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "um5g-85k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "8"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "ecp5-mini-12": {
+      "description": "ECP5-Mini-12",
+      "fpga": {
+        "id": "lfe5u-12f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-12F-6BG256C",
+          "size": "12k",
+          "ecp5-params": {
+            "nextpnr-type": "12k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "ecp5-mini-25": {
+      "description": "ECP5-Mini-12",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "edu-ciaa-fpga": {
+      "description": "EDU-CIAA-FPGA",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "epm11": {
+      "description": "BrisbaneSilicon EPM11",
+      "fpga": {
+        "id": "gw1nr-lv9qn88pc6-i5",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW1NR-LV9QN88PC6/I5",
+          "size": "9k",
+          "gowin-params": {
+            "yosys-family": "",
+            "nextpnr-device": "GW1NR-LV9QN88PC6/I5",
+            "nextpnr-family": "GW1N-9C",
+            "packer-device": "GW1N-9C"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "fleafpga-ohm-ft2232h": {
+      "description": "FleaFPGA-Ohm_(FT2232H)",
+      "fpga": {
+        "id": "lfe5u-25f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG381C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "fleafpga-ohm-ft232h": {
+      "description": "FleaFPGA-Ohm_(FT232H)",
+      "fpga": {
+        "id": "lfe5u-25f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG381C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "fleafpga-ohm-usb-blaster": {
+      "description": "FleaFPGA-Ohm_(USB-Blaster)",
+      "fpga": {
+        "id": "lfe5u-25f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG381C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "fomu": {
+      "description": "Fomu",
+      "fpga": {
+        "id": "ice40up5k-uwg30",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-UWG30",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "uwg30"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "fpga101": {
+      "description": "FPGA 101 - Workshop Badge",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "go-board": {
+      "description": "The Go Board",
+      "fpga": {
+        "id": "ice40hx1k-vq100",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX1K-VQ100",
+          "size": "1k",
+          "ice40-params": {
+            "nextpnr-type": "hx1k",
+            "nextpnr-package": "vq100"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "ice40-hx1k-evb": {
+      "description": "ICE40HX1K-EVB",
+      "fpga": {
+        "id": "ice40hx1k-vq100",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX1K-VQ100",
+          "size": "1k",
+          "ice40-params": {
+            "nextpnr-type": "hx1k",
+            "nextpnr-package": "vq100"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprogduino",
+        "definition": {
+          "command": "iceprogduino",
+          "args": "-I ${SERIAL_PORT}"
+        }
+      }
+    },
+    "ice40-hx8k": {
+      "description": "iCE40-HX8K Breakout Board",
+      "fpga": {
+        "id": "ice40hx8k-ct256",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX8K-CT256",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "ct256"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "ice40-hx8k-evb": {
+      "description": "iCE40HX8K-EVB",
+      "fpga": {
+        "id": "ice40hx8k-ct256",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX8K-CT256",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "ct256"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprogduino",
+        "definition": {
+          "command": "iceprogduino",
+          "args": "-I ${SERIAL_PORT}"
+        }
+      }
+    },
+    "ice40-up5k": {
+      "description": "iCE40 UltraPlus Breakout",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "iceblink40-hx1k": {
+      "description": "iCEblink40-HX1K Eval Kit",
+      "fpga": {
+        "id": "ice40hx1k-vq100",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX1K-VQ100",
+          "size": "1k",
+          "ice40-params": {
+            "nextpnr-type": "hx1k",
+            "nextpnr-package": "vq100"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceburn",
+        "definition": {
+          "command": "iCEburn",
+          "args": "-ew"
+        }
+      }
+    },
+    "icebreaker": {
+      "description": "iCEBreaker",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "icebreaker-bitsy0": {
+      "description": "iCEBreaker bitsy",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "icebreaker-bitsy1": {
+      "description": "iCEBreaker bitsy",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "icefun": {
+      "description": "iceFUN",
+      "fpga": {
+        "id": "ice40hx8k-cb132",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX8K-CB132",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "cb132"
+          }
+        }
+      },
+      "programmer": {
+        "id": "icefunprog",
+        "definition": {
+          "command": "icefunprog",
+          "args": "${SERIAL_PORT}"
+        }
+      }
+    },
+    "icenode": {
+      "description": "ICENode",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "icepi-zero": {
+      "description": "Icepi Zero",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "icestick": {
+      "description": "iCEstick Eval Kit",
+      "fpga": {
+        "id": "ice40hx1k-tq144",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX1K-TQ144",
+          "size": "1k",
+          "ice40-params": {
+            "nextpnr-type": "hx1k",
+            "nextpnr-package": "tq144"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "icesugar-1-5": {
+      "description": "iCESugar v1.5",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "icesprog",
+        "definition": {
+          "command": "icesprog",
+          "args": ""
+        }
+      }
+    },
+    "icesugar-nano": {
+      "description": "iCESugar-nano",
+      "fpga": {
+        "id": "ice40lp1k-cm36",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40LP1K-CM36",
+          "size": "1k",
+          "ice40-params": {
+            "nextpnr-type": "lp1k",
+            "nextpnr-package": "cm36"
+          }
+        }
+      },
+      "programmer": {
+        "id": "icesprog",
+        "definition": {
+          "command": "icesprog",
+          "args": ""
+        }
+      }
+    },
+    "icesugar-pro": {
+      "description": "Icesugar Pro",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "icesugar-pro-ram": {
+      "description": "Icesugar Pro (RAM)",
+      "fpga": {
+        "id": "lfe5u-25f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG256C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "icewerx": {
+      "description": "iceWerx",
+      "fpga": {
+        "id": "ice40hx8k-cb132",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX8K-CB132",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "cb132"
+          }
+        }
+      },
+      "programmer": {
+        "id": "icefunprog",
+        "definition": {
+          "command": "icefunprog",
+          "args": "${SERIAL_PORT}"
+        }
+      }
+    },
+    "icezum": {
+      "description": "Icezum Alhambra",
+      "fpga": {
+        "id": "ice40hx1k-tq144",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX1K-TQ144",
+          "size": "1k",
+          "ice40-params": {
+            "nextpnr-type": "hx1k",
+            "nextpnr-package": "tq144"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "kefir": {
+      "description": "K\u00e9fir I iCE40-HX4K",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "microphase-a7-lite": {
+      "description": "MicroPhase A7-Lite (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a200tfbg484-3",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A200T-3FBG484",
+          "size": "200k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a200tfbg484-3"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "mimas-a7": {
+      "description": "Mimas A7 (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a50tfgg484-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A50T-1FGG484",
+          "size": "50k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a50tfgg484-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "mimas-ecp5-mini": {
+      "description": "Mimas ECP5 Mini",
+      "fpga": {
+        "id": "lfe5u-45f-6bg256c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-45F-6BG256C",
+          "size": "45k",
+          "ecp5-params": {
+            "nextpnr-type": "45k",
+            "nextpnr-package": "CABGA256",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "nexys-a7-100t": {
+      "description": "Nexys A7-100T / Nexys 4 DDR (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a100tcsg324-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A100T-1CSG324",
+          "size": "100k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a100tcsg324-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "nexys-a7-50t": {
+      "description": "Nexys A7-50T (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a50tcsg324-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A50T-1CSG324",
+          "size": "50k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a50tcsg324-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "odt-icyblue-feather": {
+      "description": "ODT_IcyBlue_Feather",
+      "fpga": {
+        "id": "ice5lp4k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE5LP4K-SG48",
+          "size": "4k",
+          "ice40-params": {
+            "nextpnr-type": "u4k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "icesprog",
+        "definition": {
+          "command": "icesprog",
+          "args": ""
+        }
+      }
+    },
+    "ok-ice40pro": {
+      "description": "OK-iCE40Pro",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "orangecrab-r02-25f": {
+      "description": "OrangeCrab r0.2 25K",
+      "fpga": {
+        "id": "lfe5u-25f-6mg285c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6MG285C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CSFBGA285",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "orangecrab-r02-85f": {
+      "description": "OrangeCrab r0.2 85K",
+      "fpga": {
+        "id": "lfe5u-85f-6mg285c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-85F-6MG285C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "85k",
+            "nextpnr-package": "CSFBGA285",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "pi-sicle": {
+      "description": "Pi-sicle",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "pi-sicle-loader",
+        "definition": {
+          "command": "pi-sicle-loader",
+          "args": "--flash"
+        }
+      }
+    },
+    "pico-ice": {
+      "description": "pico-ice",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "pynq-z1": {
+      "description": "Pynq-Z1 (Xilinx, Zynq7 PL)",
+      "fpga": {
+        "id": "xc7z020clg400-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7Z020-1CLG400",
+          "size": "85k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "zynq7",
+            "nextpnr-device": "xc7z020clg400-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "pynq-z2": {
+      "description": "Pynq-Z2 (Xilinx, Zynq7 PL)",
+      "fpga": {
+        "id": "xc7z020clg400-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7Z020-1CLG400",
+          "size": "85k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "zynq7",
+            "nextpnr-device": "xc7z020clg400-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "qmtech-xc7a100t-ft2232h": {
+      "description": "QMTECH XC7A100T core board (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a100tfgg676-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A100T-1FGG676",
+          "size": "100k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a100tfgg676-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "sipeed-tang-nano": {
+      "description": "Sipeed Tang Nano",
+      "fpga": {
+        "id": "gw1n-lv1qn48c6-i5",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW1N-LV1QN48C6/I5",
+          "size": "1k",
+          "gowin-params": {
+            "yosys-family": "",
+            "nextpnr-device": "GW1N-LV1QN48C6/I5",
+            "nextpnr-family": "",
+            "packer-device": "GW1N-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "sipeed-tang-nano-1k": {
+      "description": "Sipeed Tang Nano 1k",
+      "fpga": {
+        "id": "gw1nz-lv1qn48c6-i5",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW1NZ-LV1QN48C6/I5",
+          "size": "1k",
+          "gowin-params": {
+            "yosys-family": "",
+            "nextpnr-device": "GW1NZ-LV1QN48C6/I5",
+            "nextpnr-family": "",
+            "packer-device": "GW1NZ-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "sipeed-tang-nano-20k": {
+      "description": "Sipeed Tang Nano 20k",
+      "fpga": {
+        "id": "gw2ar-lv18qn88c8-i7",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW2AR-LV18QN88C8/I7",
+          "size": "20k",
+          "gowin-params": {
+            "yosys-family": "gw2a",
+            "nextpnr-device": "GW2AR-LV18QN88C8/I7",
+            "nextpnr-family": "GW2A-18C",
+            "packer-device": "GW2A-18C"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "sipeed-tang-nano-4k": {
+      "description": "Sipeed Tang Nano 4k",
+      "fpga": {
+        "id": "gw1nsr-lv4cqn48pc7-i6",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW1NSR-LV4CQN48PC7/I6",
+          "size": "4k",
+          "gowin-params": {
+            "yosys-family": "",
+            "nextpnr-device": "GW1NSR-LV4CQN48PC7/I6",
+            "nextpnr-family": "",
+            "packer-device": "GW1NS-4"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "sipeed-tang-nano-9k": {
+      "description": "Sipeed Tang Nano 9k",
+      "fpga": {
+        "id": "gw1nr-lv9qn88pc6-i5",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW1NR-LV9QN88PC6/I5",
+          "size": "9k",
+          "gowin-params": {
+            "yosys-family": "",
+            "nextpnr-device": "GW1NR-LV9QN88PC6/I5",
+            "nextpnr-family": "GW1N-9C",
+            "packer-device": "GW1N-9C"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "sipeed-tang-primer-20k": {
+      "description": "Sipeed Tang Primer 20k",
+      "fpga": {
+        "id": "gw2a-lv18pg256c8-i7",
+        "definition": {
+          "arch": "gowin",
+          "vendor-part": "GW2A-LV18PG256C8/I7",
+          "size": "20k",
+          "gowin-params": {
+            "yosys-family": "gw2a",
+            "nextpnr-device": "GW2A-LV18PG256C8/I7",
+            "nextpnr-family": "GW2A-18",
+            "packer-device": "GW2A-18"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "soan-papdi": {
+      "description": "Soan-Papdi",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "dfu",
+        "definition": {
+          "command": "dfu-util",
+          "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+        }
+      }
+    },
+    "thetamachines-eth4k": {
+      "description": "Theta Machines ETH4K",
+      "fpga": {
+        "id": "ice40hx4k-tq144-8k",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40HX4K-TQ144",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "hx8k",
+            "nextpnr-package": "tq144:4k"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "tinyfpga-b2": {
+      "description": "TinyFPGA B2",
+      "fpga": {
+        "id": "ice40lp8k-cm81",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40LP8K-CM81",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "lp8k",
+            "nextpnr-package": "cm81"
+          }
+        }
+      },
+      "programmer": {
+        "id": "tinyfpgab",
+        "definition": {
+          "command": "tinyfpgab",
+          "args": "-c ${SERIAL_PORT} --program"
+        }
+      }
+    },
+    "tinyfpga-bx": {
+      "description": "TinyFPGA BX",
+      "fpga": {
+        "id": "ice40lp8k-cm81",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40LP8K-CM81",
+          "size": "8k",
+          "ice40-params": {
+            "nextpnr-type": "lp8k",
+            "nextpnr-package": "cm81"
+          }
+        }
+      },
+      "programmer": {
+        "id": "tinyprog",
+        "definition": {
+          "command": "tinyprog",
+          "args": "--pyserial -c ${SERIAL_PORT} --program"
+        }
+      }
+    },
+    "tinyfpga-ex-rev1": {
+      "description": "TinyFPGA EX rev 1",
+      "fpga": {
+        "id": "lfe5u-85f-6mg285c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-85F-6MG285C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "85k",
+            "nextpnr-package": "CSFBGA285",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "tinyprog",
+        "definition": {
+          "command": "tinyprog",
+          "args": "--pyserial -c ${SERIAL_PORT} --program"
+        }
+      }
+    },
+    "tinyfpga-ex-rev2": {
+      "description": "TinyFPGA EX rev 2",
+      "fpga": {
+        "id": "lfe5um5g-85f-8mg285c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5UM5G-85F-8MG285C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "um5g-85k",
+            "nextpnr-package": "CSFBGA285",
+            "nextpnr-speed": "8"
+          }
+        }
+      },
+      "programmer": {
+        "id": "tinyprog",
+        "definition": {
+          "command": "tinyprog",
+          "args": "--pyserial -c ${SERIAL_PORT} --program"
+        }
+      }
+    },
+    "ulx3s-12f": {
+      "description": "ULX3S 12K",
+      "fpga": {
+        "id": "lfe5u-12f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-12F-6BG381C",
+          "size": "12k",
+          "ecp5-params": {
+            "nextpnr-type": "12k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "fujprog",
+        "definition": {
+          "command": "fujprog",
+          "args": "-l 2"
+        }
+      }
+    },
+    "ulx3s-25f": {
+      "description": "ULX3S 25K",
+      "fpga": {
+        "id": "lfe5u-25f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-25F-6BG381C",
+          "size": "25k",
+          "ecp5-params": {
+            "nextpnr-type": "25k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "fujprog",
+        "definition": {
+          "command": "fujprog",
+          "args": "-l 2"
+        }
+      }
+    },
+    "ulx3s-45f": {
+      "description": "ULX3S 45K",
+      "fpga": {
+        "id": "lfe5u-45f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-45F-6BG381C",
+          "size": "45k",
+          "ecp5-params": {
+            "nextpnr-type": "45k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "fujprog",
+        "definition": {
+          "command": "fujprog",
+          "args": "-l 2"
+        }
+      }
+    },
+    "ulx3s-85f": {
+      "description": "ULX3S 85K",
+      "fpga": {
+        "id": "lfe5u-85f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5U-85F-6BG381C",
+          "size": "85k",
+          "ecp5-params": {
+            "nextpnr-type": "85k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "fujprog",
+        "definition": {
+          "command": "fujprog",
+          "args": "-l 2"
+        }
+      }
+    },
+    "upduino": {
+      "description": "UPDuino v1.0",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "upduino2": {
+      "description": "UPDuino v2.0",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "upduino21": {
+      "description": "UPduino v2.1",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "upduino3": {
+      "description": "UPduino v3.0",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "upduino31": {
+      "description": "UPduino v3.1",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "versa": {
+      "description": "ECP5 Versa",
+      "fpga": {
+        "id": "lfe5um-45f-6bg381c",
+        "definition": {
+          "arch": "ecp5",
+          "vendor-part": "LFE5UM-45F-6BG381C",
+          "size": "45k",
+          "ecp5-params": {
+            "nextpnr-type": "um-45k",
+            "nextpnr-package": "CABGA381",
+            "nextpnr-speed": "6"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "vsdsquadron-fm": {
+      "description": "VSDSquadron FPGA Mini",
+      "fpga": {
+        "id": "ice40up5k-sg48",
+        "definition": {
+          "arch": "ice40",
+          "vendor-part": "ICE40UP5K-SG48",
+          "size": "5k",
+          "ice40-params": {
+            "nextpnr-type": "up5k",
+            "nextpnr-package": "sg48"
+          }
+        }
+      },
+      "programmer": {
+        "id": "iceprog",
+        "definition": {
+          "command": "iceprog",
+          "args": "-d d:${BUS}/${DEV}"
+        }
+      }
+    },
+    "zedboard": {
+      "description": "ZedBoard (Xilinx, Zynq7 PL)",
+      "fpga": {
+        "id": "xc7z020clg484-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7Z020-1CLG484",
+          "size": "85k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "zynq7",
+            "nextpnr-device": "xc7z020clg484-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "zxtres": {
+      "description": "ZXTRES (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a35tfgg484-2",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A35T-2FGG484",
+          "size": "35k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a35tfgg484-2"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "zxtres-plus": {
+      "description": "ZXTRES+ (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a100tfgg484-2",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A100T-2FGG484",
+          "size": "100k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a100tfgg484-2"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "zxtres-plus-plus": {
+      "description": "ZXTRES++ (Xilinx, Artix7)",
+      "fpga": {
+        "id": "xc7a200tfbg484-2",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7A200T-2FBG484",
+          "size": "200k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "artix7",
+            "nextpnr-device": "xc7a200tfbg484-2"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "zybo-z7-10": {
+      "description": "Zybo Z7-10 (Xilinx, Zynq7 PL)",
+      "fpga": {
+        "id": "xc7z010clg400-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7Z010-1CLG400",
+          "size": "28k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "zynq7",
+            "nextpnr-device": "xc7z010clg400-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    },
+    "zybo-z7-20": {
+      "description": "Zybo Z7-20 (Xilinx, Zynq7 PL)",
+      "fpga": {
+        "id": "xc7z020clg400-1",
+        "definition": {
+          "arch": "xilinx",
+          "vendor-part": "XC7Z020-1CLG400",
+          "size": "85k",
+          "xilinx-params": {
+            "yosys-arch": "xc7",
+            "yosys-family": "zynq7",
+            "nextpnr-device": "xc7z020clg400-1"
+          }
+        }
+      },
+      "programmer": {
+        "id": "openfpgaloader",
+        "definition": {
+          "command": "openFPGALoader",
+          "args": "--force-terminal-mode --verify"
+        }
+      }
+    }
+  }
+}

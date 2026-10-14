@@ -1,0 +1,84 @@
+{
+  "commands": {
+    "apio": {
+      "commands": {
+        "build": {},
+        "upload": {},
+        "clean": {},
+        "lint": {},
+        "format": {},
+        "sim": {},
+        "test": {},
+        "report": {},
+        "graph": {},
+        "create": {},
+        "preferences": {},
+        "packages": {
+          "commands": {
+            "install": {},
+            "list": {}
+          }
+        },
+        "drivers": {
+          "commands": {
+            "install": {
+              "commands": {
+                "ftdi": {},
+                "serial": {}
+              }
+            },
+            "uninstall": {
+              "commands": {
+                "ftdi": {},
+                "serial": {}
+              }
+            }
+          }
+        },
+        "devices": {
+          "commands": {
+            "scan-usb": {},
+            "scan-serial": {}
+          }
+        },
+        "boards": {},
+        "fpgas": {},
+        "examples": {
+          "commands": {
+            "list": {},
+            "fetch": {}
+          }
+        },
+        "docs": {},
+        "info": {
+          "commands": {
+            "system": {},
+            "project": {},
+            "platforms": {},
+            "colors": {},
+            "themes": {},
+            "commands": {}
+          }
+        },
+        "raw": {},
+        "api": {
+          "commands": {
+            "get-system": {},
+            "get-project": {},
+            "get-build-report": {},
+            "get-boards": {},
+            "get-fpgas": {},
+            "get-programmers": {},
+            "get-examples": {},
+            "get-commands": {},
+            "get-packages": {},
+            "get-parts-index": {},
+            "scan-path": {},
+            "scan-devices": {},
+            "echo": {}
+          }
+        }
+      }
+    }
+  }
+}

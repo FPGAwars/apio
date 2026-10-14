@@ -347,17 +347,14 @@ def snapshot_task(ctx: Context):
     announce_task("snapshots")
     os.chdir(get_repo_root())
     run(ctx, [f".{sep}scripts{sep}update-commands-txt.sh"])
-    run(
-        ctx,
-        [
-            "apio",
-            "api",
-            "get-part",
-            "-f",
-            "-o",
-            "./snapshots/apio-api-get-part.json",
-        ],
-    )
-
-    # run(ctx, ["pwd"])
-    # run(ctx, [PYTHON, "-m", "scripts.update_protos"])
+    # run(
+    #    ctx,
+    #    [
+    #        "apio",
+    #        "api",
+    #        "get-part",
+    #        "-f",
+    #        "-o",
+    #        "./snapshots/apio-api-get-part.json",
+    #    ],
+    # )
