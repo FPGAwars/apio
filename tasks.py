@@ -123,6 +123,11 @@ def get_repo_root() -> Path:
     return Path(__file__).resolve().parent
 
 
+def get_apio_home() -> Path:
+    """Get a Path to the dir with apio installation."""
+    return Path.home() / ".apio"
+
+
 def open_test_coverage_viewer() -> None:
     """Open a browser to view the test coverage results entry page."""
     file_path = get_repo_root() / "_pytest-coverage" / "index.html"
@@ -256,8 +261,9 @@ def clean_task(_: Context):
     # -- Collect nested items
     items.extend(repo_root.rglob("__pycache__"))
 
-    apio_root = Path.home() / ".apio"
-    items.extend(apio_root.glob("*"))
+    # apio_root = Path.home() / ".apio"
+    apio_home = get_apio_home()
+    items.extend(apio_home.glob("*"))
 
     if not items:
         print("Already clean")
@@ -268,10 +274,10 @@ def clean_task(_: Context):
     for item in items:
         # -- Item must be strictly under one of the roots.
         assert str(item).startswith(str(repo_root)) or str(item).startswith(
-            str(apio_root)
+            str(apio_home)
         )
         assert not str(repo_root).startswith(str(item))
-        assert not str(apio_root).startswith(str(item))
+        assert not str(apio_home).startswith(str(item))
 
         # -- E.g. if we hit a __pycache__ under .tox but already deleted
         # -- tox.
@@ -345,16 +351,34 @@ def update_protos_task(ctx: Context):
 def snapshot_task(ctx: Context):
     """Update snapshots in snapshots dir."""
     announce_task("snapshots")
-    os.chdir(get_repo_root())
+    repo_root = get_repo_root()
+    os.chdir(repo_root)
+
+    # Updated COMMANDS.txt
     run(ctx, [f".{sep}scripts{sep}update-commands-txt.sh"])
-    # run(
-    #    ctx,
-    #    [
-    #        "apio",
-    #        "api",
-    #        "get-part",
-    #        "-f",
-    #        "-o",
-    #        "./snapshots/apio-api-get-part.json",
-    #    ],
-    # )
+
+    # Copy files
+    apio_packages = get_apio_home() / "packages"
+    snapshots = Path("snapshots")
+    shutil.copy(
+        apio_packages / "openxc7/FPGAS.jsonc",
+        snapshots / "openxc7-fpgas.jsonc",
+    )
+    shutil.copy(
+        apio_packages / "oss-cad-suite/FPGAS.jsonc",
+        snapshots / "oss-cad-suite-fpgas.jsonc",
+    )
+
+    # Generate API files
+    cmds = [
+        ("get-fpgas", "apio-api-get-fpgas.json"),
+        ("get-boards", "apio-api-get-boards.json"),
+        ("get-programmers", "apio-api-get-programmers.json"),
+        ("get-examples", "apio-api-get-examples.json"),
+        ("get-commands", "apio-api-get-commands.json"),
+    ]
+
+    for cmd, fname in cmds:
+        run(ctx, ["apio", "api", cmd, "-f", "-o", "snapshots/" + fname])
+
+    cout("Snapshots dir updated successfully.", style="green bold")
