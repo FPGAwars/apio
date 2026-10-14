@@ -147,7 +147,7 @@ def _system_cli():
     table.add_row("Apio home dir", str(apio_ctx.apio_home_dir))
     table.add_row("Apio packages dir", str(apio_ctx.apio_packages_dir))
     table.add_row(
-        "Remote config URL", apio_ctx.remote_config.remote_config_url
+        "Remote config file URL", apio_ctx.remote_config.remote_config_file_url
     )
     table.add_row(
         "Remote config status", construct_remote_config_status_str(apio_ctx)
