@@ -8,10 +8,11 @@
 # pylint: disable=duplicate-code
 
 import json
+from urllib.parse import urlparse, urlunparse, ParseResult
 from enum import Enum, unique
 from datetime import datetime
 from typing import Any
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import requests
 import json5
 from apio.common.debug_util import is_debug
@@ -29,8 +30,6 @@ from apio.common.proto.stubs.apio_remote_config_pb2 import (
     CachedRemoteConfigMetadata,
     RemoteConfigPackageSpec,
 )
-
-#
 
 
 @unique
@@ -107,23 +106,25 @@ class RemoteConfig:
 
     # -- Only these instance vars are allowed.
     __slots__ = (
-        # "_profile_path",
-        # "_packages_index_path",
-        "remote_config_url",
+        "remote_config_file_url",
         "remote_config_ttl_days",
         "remote_config_retry_minutes",
         "_remote_config_policy",
         "_cached_remote_config_path",
         "_cached_remote_config",
-        # "preferences",
-        # "installed_packages",
     )
+
+    remote_config_file_url: str
+    remote_config_ttl_days: int
+    remote_config_retry_minutes: int
+    _remote_config_policy: RemoteConfigPolicy
+    _cached_remote_config_path: Path
+    _cached_remote_config: CachedRemoteConfigSpec | None
 
     def __init__(
         self,
         home_dir: Path,
-        # packages_dir: Path,
-        remote_config_url_template: str,
+        remote_config_dir_url: str,
         remote_config_ttl_days: int,
         remote_config_retry_minutes: int,
         remote_config_policy: RemoteConfigPolicy,
@@ -143,15 +144,21 @@ class RemoteConfig:
         assert isinstance(remote_config_retry_minutes, int)
         assert 0 < remote_config_retry_minutes <= (60 * 24)
 
-        # -- Resolve and cache the remote config url. Replaced the placeholders
-        # -- with the major and minor versions of apio. Path version is
-        # -- not used.
+        # -- Get the current Apio version major.minor.patch.
         ver_tuple = util.get_apio_version_tuple()
-        url = remote_config_url_template
-        url = url.replace("{major}", str(ver_tuple[0]))
-        url = url.replace("{minor}", str(ver_tuple[1]))
 
-        self.remote_config_url: str = url
+        # -- Resolve and save the remote config file URL.
+        dir_url = urlparse(remote_config_dir_url)
+        dir_url_path = dir_url.path
+        file_url_path = str(
+            PurePosixPath(dir_url_path)
+            / f"apio-{ver_tuple[0]}.{ver_tuple[1]}.x.jsonc"
+        )
+        file_url = dir_url._replace(path=file_url_path)
+        self.remote_config_file_url: ParseResult = urlunparse(file_url)
+
+        if is_debug(1):
+            cout(f"Remote config url: {self.remote_config_file_url}")
 
         # -- Save remote url ttl setting.
         self.remote_config_ttl_days: int = remote_config_ttl_days
@@ -161,12 +168,6 @@ class RemoteConfig:
 
         # -- Save remote config policy.
         self._remote_config_policy: RemoteConfigPolicy = remote_config_policy
-
-        # -- Verify that we resolved all the remote config URL placeholders.
-        assert "{" not in self.remote_config_url, self.remote_config_url
-
-        if is_debug(1):
-            cout(f"Remote config url: {self.remote_config_url}")
 
         # -- Start with no remote config.
         self._cached_remote_config: CachedRemoteConfigSpec | None = None
@@ -223,7 +224,7 @@ class RemoteConfig:
 
         # -- Determine if we need a new config because the remote config URL
         # -- was changed (e.g. with APIO_REMOTE_CONFIG_URL)
-        url_changed = last_fetch_url != self.remote_config_url
+        url_changed = last_fetch_url != self.remote_config_file_url
 
         # -- Determine if there is time related reason to fetch a new config.
         datetime_stamp_now = get_datetime_stamp()
@@ -429,7 +430,7 @@ class RemoteConfig:
         metadata = CachedRemoteConfigMetadata(
             loaded_by=util.get_apio_version_str(),
             loaded_at=get_datetime_stamp(),
-            loaded_from=self.remote_config_url,
+            loaded_from=self.remote_config_file_url,
         )
 
         # -- Update the cached config member.
@@ -447,12 +448,12 @@ class RemoteConfig:
         # pylint: disable=broad-exception-caught
 
         # -- Announce the remote config url
-        cout(f"Fetching '{self.remote_config_url}'")
+        cout(f"Fetching '{self.remote_config_file_url}'")
 
         # -- If the URL has a file protocol, read from the file. This
         # -- is used mostly for testing of a new package version.
-        if self.remote_config_url.startswith("file://"):
-            file_path = self.remote_config_url[7:]
+        if self.remote_config_file_url.startswith("file://"):
+            file_path = self.remote_config_file_url[7:]
             try:
                 with open(file_path, encoding="utf-8") as f:
                     file_text = f.read()
@@ -475,7 +476,7 @@ class RemoteConfig:
         exception: Exception | None = None
         try:
             resp: requests.Response = requests.get(
-                self.remote_config_url, timeout=25
+                self.remote_config_file_url, timeout=25
             )
         except Exception as e:
             exception = e

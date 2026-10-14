@@ -203,7 +203,7 @@ def test_apio_api_get_system(apio_runner: ApioRunner):
         text = sb.read_file_text(path)
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
-        assert data["system"]["remote-config-url"].endswith(".jsonc")
+        assert data["system"]["remote-config-file-url"].endswith(".jsonc")
 
 
 def test_apio_api_get_project(apio_runner: ApioRunner):

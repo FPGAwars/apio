@@ -10,15 +10,13 @@ from collections.abc import Iterator
 import shutil
 import tempfile
 import contextlib
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import cast, Any
 import os
-from urllib.parse import urlparse
 from pprint import pprint
 import pytest
 from click.testing import CliRunner, Result
 from rich.ansi import AnsiDecoder
-import json5
 from apio import __main__
 from apio.common import apio_console
 from apio.common.proto.stubs.apio_scons_pb2 import FORCE_PIPE, FORCE_TERMINAL
@@ -466,41 +464,18 @@ class ApioRunner:
         the published remote config.
         """
 
-        # -- Read apio/resources/config.jsonc so we can extract the remote
-        # -- config file name template to construct the local URL.
-        this_file_path = Path(__file__).resolve()
-        config_file_path = (
-            this_file_path.parent.parent / "apio/resources/config.jsonc"
-        )
-
-        jsonc_text: str = config_file_path.read_text(encoding="utf-8")
-        json_data: dict = json5.loads(jsonc_text)
-
-        # -- Get the original remote config url.
-        url_str: str = json_data["remote-config-url"]
-
-        # -- Extract the file name part. E.g. 'apio-{major}.{minor}.x.jsonc'.
-        # -- The {major} and {minor} are placeholders for apio's major and
-        # -- minor version number which we don't resolve here.
-        remote_config_file_path: str = urlparse(url_str).path
-        remote_config_file_name: str = PurePosixPath(
-            remote_config_file_path
-        ).name
-        print(f"remote-config-file-name = {remote_config_file_name}")
-
-        # -- Construct the path of the config file in this repo. We compute it
+        # -- Construct the path of the config dir in this repo. We compute it
         # -- based on the path of this conftest.py python file.
-        local_config_file = os.path.normpath(
+        local_config_dir = os.path.normpath(
             os.path.join(
                 os.path.abspath(__file__),
                 "..",
                 "..",
                 "remote-config",
-                remote_config_file_name,
             )
         )
         # -- Convert the file path to a URL with a 'file://' form.
-        local_config_url = "file://" + str(local_config_file)
+        local_config_url = "file://" + str(local_config_dir)
 
         return local_config_url
 
