@@ -1,0 +1,56 @@
+{
+  "programmers": {
+    "apollo": {
+      "command": "apollo",
+      "args": "configure"
+    },
+    "blackiceprog": {
+      "command": "black-iceprog",
+      "args": "${SERIAL_PORT}"
+    },
+    "dfu": {
+      "command": "dfu-util",
+      "args": "-d ${VID}:${PID} -a 0 -D ${BIN_FILE}"
+    },
+    "fujprog": {
+      "command": "fujprog",
+      "args": "-l 2"
+    },
+    "iceburn": {
+      "command": "iCEburn",
+      "args": "-ew"
+    },
+    "icefunprog": {
+      "command": "icefunprog",
+      "args": "${SERIAL_PORT}"
+    },
+    "iceprog": {
+      "command": "iceprog",
+      "args": "-d d:${BUS}/${DEV}"
+    },
+    "iceprogduino": {
+      "command": "iceprogduino",
+      "args": "-I ${SERIAL_PORT}"
+    },
+    "icesprog": {
+      "command": "icesprog",
+      "args": ""
+    },
+    "openfpgaloader": {
+      "command": "openFPGALoader",
+      "args": "--force-terminal-mode --verify"
+    },
+    "pi-sicle-loader": {
+      "command": "pi-sicle-loader",
+      "args": "--flash"
+    },
+    "tinyfpgab": {
+      "command": "tinyfpgab",
+      "args": "-c ${SERIAL_PORT} --program"
+    },
+    "tinyprog": {
+      "command": "tinyprog",
+      "args": "--pyserial -c ${SERIAL_PORT} --program"
+    }
+  }
+}

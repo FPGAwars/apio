@@ -242,7 +242,7 @@ class ApioContext:
             # -- Load the boards, fpgas, and programmer definitions, including
             # -- optional custom overrides in project's dir.
             self.definitions = ApioDefinitions(
-                self.get_package_dir("definitions"),
+                self.apio_packages_dir,
                 self._project_dir,
             )
 
