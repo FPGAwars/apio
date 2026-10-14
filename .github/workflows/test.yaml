@@ -89,13 +89,11 @@ jobs:
         run: |
           invoke install-apio
 
-      # NOTE: Currently this runs without APIO_REMOTE_CONFIG_URL so when the
-      # test runs as part of a PR, it doesn't use the remote config from the PR
-      # but the published one. If this will be problematic, add here a
-      # temporary setting of the APIO_REMOTE_CONFIG_URL env var (see
-      # config.jsonc for an example)
       - name: Show Apio PATH conflicts
         run: |
+          # We make sure to use the local remote config, in case we run a 
+          # pre PR test.
+          export APIO_REMOTE_CONFIG_URL="file://remote-config"
           apio api scan-path
 
       # TODO: Move the logic here to an Invoke task and use it instead.
