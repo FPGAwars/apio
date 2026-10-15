@@ -97,7 +97,7 @@ jobs:
 
       - name: Fail if verifications has failures
         run: |
-          # -- Dump failures, if any
-          jq '{failures: .failures}' _janitor-data/verification-results.json
-          # -- Fail if passed is not true.
-          jq -e '.passed == true' ./_janitor-data/verification-results.json > /dev/null
+          if ! jq -e '.passed == true' ./_janitor-data/verification-results.json > /dev/null; then
+            echo "::error::Verification failed — see Janitor workflow Summary for details"
+            exit 1
+          fi
