@@ -14,11 +14,10 @@ from datetime import datetime
 from typing import Any
 from pathlib import Path, PurePosixPath
 import requests
-import json5
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, fatal_error, cerror
 from apio.common.apio_styles import INFO, EMPH3
-from apio.utils import util
+from apio.utils import util, jsonc
 from apio.common.proto_util import (
     proto_from_json_dict,
     proto_to_json_dict,
@@ -405,7 +404,8 @@ class RemoteConfig:
             cout(remote_config_text)
 
         try:
-            json_dict = json5.loads(remote_config_text)
+            json_text = jsonc.to_json(remote_config_text)
+            json_dict = json.loads(json_text)
         except Exception as e:
             error_msg = "Failed to parse the fetched Apio remote config json."
             if error_is_fatal:

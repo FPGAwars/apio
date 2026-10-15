@@ -42,7 +42,7 @@
       // These are internal values that are used by Apio and they are not
       // exported as env vars.
       "define-consts": {
-        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db",
+        "PRJXRAY_DB_DIR": "%p/share/nextpnr/external/prjxray-db"
       }
     }
   },

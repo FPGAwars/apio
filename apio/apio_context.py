@@ -10,7 +10,7 @@ import os
 
 from enum import Enum, unique
 from pathlib import Path
-import json5
+import json
 from apio.common import subprocess_env, apio_platforms
 from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import INFO, EMPH1
@@ -18,7 +18,7 @@ from apio.common.common_util import env_build_path
 from apio.common.proto.stubs.apio_common_pb2 import EnvMutations
 from apio.managers.profile import Profile
 from apio.managers.remote_config import RemoteConfig, RemoteConfigPolicy
-from apio.utils import util, env_options
+from apio.utils import util, env_options, jsonc
 from apio.common.proto.stubs.apio_resources_pb2 import (
     ApioConfig,
     ApioPackageSpec,
@@ -340,7 +340,8 @@ class ApioContext:
         # -- Read the and parse the jsonc file
         try:
             jsonc_text = filepath.read_text(encoding="utf-8")
-            json_dict = json5.loads(jsonc_text)
+            json_text = jsonc.to_json(jsonc_text)
+            json_dict = json.loads(json_text)
         except Exception as e:
 
             fatal_error(
