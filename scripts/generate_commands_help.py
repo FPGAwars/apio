@@ -36,7 +36,24 @@ def get_commands_list() -> list[list[str]]:
         encoding="utf-8",
     )
 
-    data = json.loads(result.stdout)
+    text = result.stdout
+
+    # -- Skip spam lines at the beginning, for example if
+    # -- APIO_REMOTE_CONFIG_URL env var is defined.
+    lines = text.splitlines(keepends=True)
+
+    start = None
+    for i, line in enumerate(lines):
+        if line.startswith("{"):
+            start = i
+            break
+
+    assert start is not None, "'{' line not found"
+
+    json_text = "".join(lines[start:])
+
+    data = json.loads(json_text)
+
     commands = extract_command_list(data["commands"]["apio"], ["apio"])
 
     return commands
