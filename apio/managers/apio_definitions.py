@@ -11,7 +11,8 @@ and custom boards, fpgas, and programmers definitions."""
 import re
 from dataclasses import dataclass
 from pathlib import Path
-import json5
+import json
+from apio.utils import jsonc
 from apio.common import proto_util
 from apio.common.apio_console import cout, fatal_error
 from apio.common.proto.stubs.apio_definitions_pb2 import (
@@ -295,7 +296,8 @@ class ApioDefinitions:
         # -- Read the jsonc file
         try:
             jsonc_text = filepath.read_text(encoding="utf-8")
-            json_dict = json5.loads(jsonc_text)
+            json_text = jsonc.to_json(jsonc_text)
+            json_dict = json.loads(json_text)
         except Exception as e:
             fatal_error(
                 f"Failed to read and parse definition file {filepath.name}",

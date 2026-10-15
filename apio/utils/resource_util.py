@@ -1,8 +1,8 @@
 """Utilities related to the Apio resource files."""
 
 from pathlib import Path
-import json5
-from apio.utils import util
+import json
+from apio.utils import util, jsonc
 from apio.common.apio_console import fatal_error
 from apio.common import proto_util
 from apio.common.proto.stubs.apio_resources_pb2 import (
@@ -32,7 +32,8 @@ def read_apio_config_file() -> ApioConfig:
     # -- Read the and parse the jsonc file
     try:
         jsonc_text = filepath.read_text(encoding="utf-8")
-        json_dict = json5.loads(jsonc_text)
+        json_text = jsonc.to_json(jsonc_text)
+        json_dict = json.loads(json_text)
 
     except Exception as e:
         fatal_error(
@@ -138,7 +139,8 @@ def read_apio_packages_file(packages_dir: Path) -> dict[str, ApioPackageSpec]:
     # -- Read the and parse the jsonc file
     try:
         jsonc_text = filepath.read_text(encoding="utf-8")
-        json_dict = json5.loads(jsonc_text)
+        json_text = jsonc.to_json(jsonc_text)
+        json_dict = json.loads(json_text)
 
     except Exception as e:
         fatal_error(
