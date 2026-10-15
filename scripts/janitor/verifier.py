@@ -245,10 +245,10 @@ def _generate_markdown_report(
     # -- Get the failing requirements
     failures: RequirementsSet = verification_results.failures
     if len(failures) == 0:
-        lines.append("No errors found.")
+        lines.append("✅&nbsp;&nbsp; **No errors found**")
         return "\n".join(lines)
 
-    lines.append("**Error founds**")
+    lines.append("❌&nbsp;&nbsp; **Error founds**")
 
     # -- Generate a report section for each repo.
     for repo, requirement_types in failures.group_by_repo_and_type().items():
