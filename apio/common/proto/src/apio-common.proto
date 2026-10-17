@@ -31,14 +31,14 @@ message NameValue {
 // is passed to subprocesses (yosys, scons, format, raw, etc.). The mutations
 // are applied in the order of the proto fields here.
 message EnvMutations {
-  // List of env vars to unset if exist.
-  repeated string unset_vars = 1;
-
   // Path values to prepend to the path, preserving the order.
-  repeated string add_to_path = 2;
+  repeated string add_to_path = 1;
+  
+  // List of env vars to delete if exist.
+  repeated string delete_env_var = 2;
 
   // Env vars to set, overwriting if already exist.
-  repeated NameValue set_vars = 3;
+  repeated NameValue add_env_vars = 3;
 
   // Fix for pyinstaller.
   required bool pyinstaller_linux_fix = 4;

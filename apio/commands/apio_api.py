@@ -1058,7 +1058,6 @@ def _scan_path_cli(
     mutations: EnvMutations = apio_ctx.get_env_mutations_for_subprocess(
         include_apio_packages=True
     )
-    # apio_path_dirs = mutations.add_to_path
 
     # -- Collect file on paths, grouped by file name.
     files_index: dict[str, list[Path]] = {}
