@@ -900,7 +900,7 @@ def _get_packages_cli(
     section_dict: dict[str, Any] = {}
     top_dict["packages"] = section_dict
 
-    for package_name in package_manager.required_packages:
+    for package_name in package_manager.platform_packages:
         metadata = package_manager.installed_packages[package_name]
         config = apio_ctx.all_packages[package_name]
         build_info = package_manager.read_package_build_info(package_name)
@@ -908,9 +908,6 @@ def _get_packages_cli(
             "description": config.description,
             "installation": metadata,
             "build-info": build_info,
-            # -- Note that this is the package spec from packages.jsonc but
-            # -- with the placeholders resolved.
-            "env": proto_util.proto_to_json_dict(config.env),
         }
 
     # -- Write out

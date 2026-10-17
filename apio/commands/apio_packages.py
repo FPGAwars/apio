@@ -58,7 +58,7 @@ def print_packages_report2(apio_ctx: ApioContext) -> bool:
     table.add_column("DESCRIPTION", no_wrap=True)
     table.add_column("STATUS", no_wrap=True)
 
-    for package_name, package_status in scan.required_packages.items():
+    for package_name, package_status in scan.platform_packages.items():
 
         # -- Collect additional info about the package.
         package_manager = apio_ctx.package_manager
@@ -181,7 +181,7 @@ def _install_cli(
     apio_ctx.package_manager.scan_and_fix_inconsistencies()
 
     # -- Install the packages, one by one.
-    for package in apio_ctx.required_packages:
+    for package in apio_ctx.platform_packages:
         apio_ctx.package_manager.install_package(
             package_name=package,
             force_reinstall=force,

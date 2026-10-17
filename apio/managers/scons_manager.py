@@ -186,16 +186,10 @@ class SConsManager:
             assert result.verbosity.IsInitialized(), result
 
         # -- Populate the Environment params.
-        oss_define_consts = apio_ctx.all_packages[
-            "oss-cad-suite"
-        ].env.define_consts
-        assert "YOSYS_LIB" in oss_define_consts, oss_define_consts
-        assert "TRELLIS" in oss_define_consts, oss_define_consts
-
-        openxc7_define_consts = apio_ctx.all_packages[
-            "openxc7"
-        ].env.define_consts
-        assert "PRJXRAY_DB_DIR" in openxc7_define_consts, openxc7_define_consts
+        env_consts = apio_ctx.config.platform_env.define_consts
+        assert "YOSYS_LIB" in env_consts, env_consts
+        assert "TRELLIS" in env_consts, env_consts
+        assert "PRJXRAY_DB_DIR" in env_consts, env_consts
 
         # -- Mutations that scons should apply to the env of teh tools it
         # -- invokes.
@@ -212,10 +206,10 @@ class SConsManager:
                     else FORCE_PIPE
                 ),
                 theme_name=apio_console.current_theme_name(),
-                yosys_path=oss_define_consts["YOSYS_LIB"],
-                trellis_path=oss_define_consts["TRELLIS"],
+                yosys_path=env_consts["YOSYS_LIB"],
+                trellis_path=env_consts["TRELLIS"],
                 scons_shell_id=apio_ctx.scons_shell_id(),
-                xilinx_prjxray_db_path=openxc7_define_consts["PRJXRAY_DB_DIR"],
+                xilinx_prjxray_db_path=env_consts["PRJXRAY_DB_DIR"],
                 tools_env_mutations=tools_env_mutations,
             )
         )

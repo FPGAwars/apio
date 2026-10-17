@@ -22,7 +22,7 @@ from apio.managers.downloader import FileDownloader
 from apio.utils import util
 from apio.common.apio_platforms import ApioPlatform
 from apio.managers.remote_config import RemoteConfig
-from apio.common.proto.stubs.apio_resources_pb2 import ApioPackageSpec
+from apio.common.proto.stubs.apio_config_pb2 import ApioPackageSpec
 from apio.common.proto.stubs.apio_remote_config_pb2 import (
     RemoteConfigPackageSpec,
 )
@@ -78,7 +78,7 @@ class PackagesScanResults:
     """Represents results of packages scan."""
 
     # -- Names and statuses of required packages.
-    required_packages: dict[str, RequiredPackageStatus]
+    platform_packages: dict[str, RequiredPackageStatus]
 
     # -- Name and types of package, dir, and file orphans.
     orphans: dict[str, OrphanType]
@@ -86,14 +86,14 @@ class PackagesScanResults:
     def packages_installed_ok(self) -> bool:
         """Returns true if all the required packages are installed ok,
         regardless of other fixable errors."""
-        return all(status.is_ok for status in self.required_packages.values())
+        return all(status.is_ok for status in self.platform_packages.values())
 
     def num_inconsistencies_to_fix(self) -> int:
         """Returns the number of inconsistencies that require fixing before
         installing any missing package."""
         required_packages_inconsistencies = sum(
             1
-            for status in self.required_packages.values()
+            for status in self.platform_packages.values()
             if status.is_inconsistency
         )
         # -- All orphan errors are considered to be inconsistencies.
@@ -109,7 +109,7 @@ class PackagesScanResults:
         """Dump the content of this object. For debugging."""
         cout()
         cout("Package scan results:")
-        cout(f"  required  {self.required_packages}")
+        cout(f"  required  {self.platform_packages}")
         cout(f"  orphans   {self.orphans}")
 
 
@@ -132,7 +132,7 @@ class PackageManager:
     def __init__(
         self,
         remote_config: RemoteConfig,
-        required_packages: dict[str, ApioPackageSpec],
+        platform_packages: dict[str, ApioPackageSpec],
         platform: ApioPlatform,
         apio_home_dir: Path,
         packages_dir: Path,
@@ -143,8 +143,8 @@ class PackageManager:
 
         # -- Same as ApioContext.remote_config
         self.remote_config = remote_config
-        # -- Same as ApioContext.required_packages
-        self.required_packages = required_packages
+        # -- Same as ApioContext.platform_packages
+        self.platform_packages = platform_packages
         # -- platform: ApioPlatform
         self.platform = platform
         # -- Same as ApioContext.apio_home_dir
@@ -154,7 +154,7 @@ class PackageManager:
 
         # -- Sanity checks.
         assert isinstance(self.remote_config, RemoteConfig)
-        assert self.required_packages
+        assert self.platform_packages
         assert self.platform
         assert self.packages_dir
 
@@ -172,7 +172,7 @@ class PackageManager:
     def required_package_dir(self, package_name: str) -> Path:
         """Return the local root directory of the package with given name"""
         # -- Validate the package name
-        assert package_name in self.required_packages, package_name
+        assert package_name in self.platform_packages, package_name
         # -- Construct the path
         return self.packages_dir / package_name
 
@@ -328,10 +328,10 @@ class PackageManager:
         # --
         # -- Get lists of installed and required packages.
         installed_packages = self.installed_packages
-        required_packages_names = self.required_packages.keys()
+        platform_packages_names = self.platform_packages.keys()
 
         # -- Install any required package that is not installed.
-        for package_name in required_packages_names:
+        for package_name in platform_packages_names:
             if package_name not in installed_packages:
                 self.install_package(
                     package_name=package_name,
@@ -376,7 +376,7 @@ class PackageManager:
 
         # -- Caller is responsible to check check that package name is valid
         # -- on this platform.
-        assert package_name in self.required_packages, package_name
+        assert package_name in self.platform_packages, package_name
 
         # -- Set up installation announcement
         pending_announcement: str | None = cstyle(
@@ -474,7 +474,7 @@ class PackageManager:
         """If the package scan result contains errors, fix them. This
         does not install missing packages, just fixing inconsistencies."""
 
-        for package_name, package_status in scan.required_packages.items():
+        for package_name, package_status in scan.platform_packages.items():
             if package_status.is_inconsistency:
                 cout(f"Uninstalling broken package '{package_name}'")
                 self._delete_package_dir(package_name, verbose=False)
@@ -563,7 +563,7 @@ class PackageManager:
         # pylint: disable=too-many-return-statements
 
         # -- Check tha the package is a required one.
-        assert name in self.required_packages, name
+        assert name in self.platform_packages, name
 
         # -- Construct the package path.
         package_path: Path = self.required_package_dir(name)
@@ -620,15 +620,15 @@ class PackageManager:
         result = PackagesScanResults({}, {})
 
         # -- Scan the required packages.
-        for package_name in self.required_packages:
+        for package_name in self.platform_packages:
             package_status: RequiredPackageStatus = (
                 self.classify_required_package_status(package_name)
             )
-            result.required_packages[package_name] = package_status
+            result.platform_packages[package_name] = package_status
 
         # -- Scan the installed packages and identify orphan packages.
         for package_name in self.installed_packages:
-            if package_name not in self.required_packages:
+            if package_name not in self.platform_packages:
                 result.orphans[package_name] = OrphanType.ORPHAN_PACKAGE
 
         # -- Scan the packages directory and identify orphan dirs and files.
@@ -643,7 +643,7 @@ class PackageManager:
             # -- I the dir entry is of a required or orphan package, skip it,
             # -- it will be covered by the package handling.
             if (
-                base_name in result.required_packages
+                base_name in result.platform_packages
                 or base_name in result.orphans
             ):
                 continue
@@ -768,7 +768,7 @@ class PackageManager:
         The information is a proto buffer originated at packages.json().
         Exits with an error message if the package is not defined.
         """
-        package_info = self.required_packages.get(package_name, None)
+        package_info = self.platform_packages.get(package_name, None)
         if package_info is None:
             fatal_error(f"Unknown package '{package_name}'")
 

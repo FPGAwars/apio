@@ -11,6 +11,7 @@ from apio.common.subprocess_env import (
     apply_env_mutations,
     get_env_mutations_for_subprocess,
 )
+from apio.common.proto.stubs.apio_config_pb2 import ApioPlatformEnvSpec
 from apio.apio_context import (
     ApioContext,
     PackagesPolicy,
@@ -25,16 +26,18 @@ DARWIN = get_apio_platforms()["darwin-arm64"]
 def test_fix_flag_only_for_pyinstaller_on_linux():
     """The fix is requested only for a pyinstaller app on Linux."""
 
-    mutations = get_env_mutations_for_subprocess(LINUX, True, {})
+    empty_env_spec = ApioPlatformEnvSpec()
+
+    mutations = get_env_mutations_for_subprocess(LINUX, True, empty_env_spec)
     assert mutations.pyinstaller_linux_fix
 
-    mutations = get_env_mutations_for_subprocess(LINUX, False, {})
+    mutations = get_env_mutations_for_subprocess(LINUX, False, empty_env_spec)
     assert not mutations.pyinstaller_linux_fix
 
-    mutations = get_env_mutations_for_subprocess(DARWIN, True, {})
+    mutations = get_env_mutations_for_subprocess(DARWIN, True, empty_env_spec)
     assert not mutations.pyinstaller_linux_fix
 
-    mutations = get_env_mutations_for_subprocess(DARWIN, False, {})
+    mutations = get_env_mutations_for_subprocess(DARWIN, False, empty_env_spec)
     assert not mutations.pyinstaller_linux_fix
 
 

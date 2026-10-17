@@ -1,0 +1,40 @@
+// Protocol buffers definitions for the config and packages resources
+
+// IMPORTANT: After making changes in this file, run the repo task
+// 'invoke update-protos' to propagate them to the python stubs.
+//  Otherwise they do not take affect.
+
+// Using proto2 for features such as 'has' and 'required'.
+syntax = "proto2";
+
+message ApioPackageSpec {
+  required string description = 1;
+}
+
+message ApioPlatformEnvSpec {
+  repeated string add_to_path = 2 [json_name = "add-to-path"];
+  repeated string delete_env_vars = 1 [json_name = "delete-env-vars"];
+  map<string, string> add_env_vars = 3 [json_name = "add-env-vars"];
+  map<string, string> define_consts = 4 [json_name = "define-consts"];
+}
+
+message ApioPlatformSpec {
+  repeated string packages = 1;
+  required ApioPlatformEnvSpec env = 2;
+}
+
+message ApioRemoteConfigSpec {
+  required int32 ttl_days = 1 [json_name = "ttl-days"];
+  required int32 retry_minutes = 2 [json_name = "retry-minutes"];
+  required string url = 3 [json_name = "url"];
+}
+
+// The top level proto of the resource/config.jsonc file.
+message ApioRawConfig {
+  map<string, ApioPackageSpec> packages = 1;
+  map<string, ApioPlatformSpec> platforms = 2;
+  required ApioRemoteConfigSpec remote_config = 3 [json_name = "remote-config"];
+}
+
+
+

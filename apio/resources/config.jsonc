@@ -1,32 +1,167 @@
-// General config parameters.
-//
+// Apio's configuration.
 {
-  // How many days we keep a cached remote config before we fetch a new onw.
-  // Value of 1 means fetching once a day. 7 once every seven days, and so on.
-  "remote-config-ttl-days" : 1,
-
-  // The time period in minutes after a config fetch failure until the next
-  // try. This applies only for optional remote config fetch where Apio can
-  // fall back to the cached config, and does not apply to cases where a
-  // fresh config is required, e.g. by 'apio packages install' or if a cached
-  // config is not available.
   //
-  // To force an immediate config fetch, user can run 'apio packages install'.
-  "remote-config-retry-minutes": 60,
-
-  // URL of the apio remote config directory from which apio will load the
-  // file apio-{major}.{minor}.x.jsonc, where {major} and {minor} are the first
-  // two numbers in the major.minor.patch version of Apio.
+  // ===== Packages specification.
   //
-  // The value of the remote config field here can be overridden for testing
-  // using the env var APIO_REMOTE_CONFIG_URL, including for reading from
-  // a local file using the "file://" protocol spec.
+  "packages": {
+    // "definitions" package. Used on all platforms.
+    "definitions": {
+      "description": "Apio definitions"
+    },
+    // "oss-cad-suite" package. Used on all platforms.
+    "oss-cad-suite": {
+      "description": "Yosys HQ oss-cad-suite"
+    },
+    // "openxc7" package. Used on all platforms.
+    "openxc7": {
+      "description": "Openxc7 toolchain (Xilinx FPGAs)"
+    },
+    // "verible" package. Used on all platforms.
+    "verible": {
+      "description": "Chips Alliance Verible toolset"
+    },
+    // "drivers" package. Used on Windows only.
+    "drivers": {
+      "description": "Drivers tools for Windows"
+    },
+    // "graphviz" package. Used on Windows only.
+    "graphviz": {
+      "description": "Graphviz tool for Windows"
+    }
+  },
   //
-  // For testing using the local remote config
-  // export APIO_REMOTE_CONFIG_URL="file:///Volumes/projects/apio-dev/repo/remote-config"
-
-  "remote-config-url": "https://github.com/fpgawars/apio/raw/main/remote-config"
+  // ===== Platforms specifications.
+  //
+  "platforms": {
+    "darwin-arm64": {
+      "packages": [
+        "definitions",
+        "oss-cad-suite",
+        "openxc7",
+        "verible"
+      ],
+      "env": {
+        "delete-env-vars": [
+          // Delete this var, if exists. This isolate the oss-cad-suite
+          // embedded python from the local python.
+          "PYTHONPATH"
+        ],
+        "add-env-vars": {
+          "VERILATOR_ROOT": "{oss-cad-suite}/share/verilator"
+        },
+        "add-to-path": [
+          // oss-cad-suite
+          "{oss-cad-suite}/bin",
+          "{oss-cad-suite}/lib",
+          // openxc7
+          "{openxc7}/bin",
+          "{openxc7}/lib",
+          // Verible
+          "{verible}/bin"
+        ],
+        "define-consts": {
+          // oss-cad-suite
+          "TRELLIS": "{oss-cad-suite}/share/trellis",
+          "YOSYS_LIB": "{oss-cad-suite}/share/yosys",
+          // openxc7
+          "PRJXRAY_DB_DIR": "{openxc7}/share/nextpnr/external/prjxray-db"
+        }
+      }
+    },
+    "linux-x86-64": {
+      "packages": [
+        "definitions",
+        "oss-cad-suite",
+        "openxc7",
+        "verible"
+      ],
+      "env": {
+        "delete-env-vars": [
+          // Delete this var, if exists. This isolate the oss-cad-suite
+          // embedded python from the local python.
+          "PYTHONPATH"
+        ],
+        "add-env-vars": {
+          "VERILATOR_ROOT": "{oss-cad-suite}/share/verilator"
+        },
+        "add-to-path": [
+          // oss-cad-suite
+          "{oss-cad-suite}/bin",
+          "{oss-cad-suite}/lib",
+          // openxc7
+          "{openxc7}/bin",
+          "{openxc7}/lib",
+          // Verible
+          "{verible}/bin"
+        ],
+        "define-consts": {
+          // oss-cad-suite
+          "TRELLIS": "{oss-cad-suite}/share/trellis",
+          "YOSYS_LIB": "{oss-cad-suite}/share/yosys",
+          // openxc7
+          "PRJXRAY_DB_DIR": "{openxc7}/share/nextpnr/external/prjxray-db"
+        }
+      }
+    },
+    "windows-amd64": {
+      "packages": [
+        "definitions",
+        "oss-cad-suite",
+        "openxc7",
+        "verible",
+        "drivers",
+        "graphviz"
+      ],
+      "env": {
+        "delete-env-vars": [
+          // Delete this var, if exists. This isolate the oss-cad-suite
+          // embedded python from the local python.
+          "PYTHONPATH"
+        ],
+        "add-env-vars": {
+          "VERILATOR_ROOT": "{oss-cad-suite}\\share/verilator"
+        },
+        "add-to-path": [
+          // oss-cad-suite
+          "{oss-cad-suite}\\bin",
+          "{oss-cad-suite}\\lib",
+          // openxc7
+          "{openxc7}\\bin",
+          "{openxc7}\\lib",
+          // verible
+          "{verible}\\bin",
+          // drivers
+          "{drivers}\\bin",
+          // graphviz
+          "{graphviz}\\bin"
+        ],
+        "define-consts": {
+          // oss-cad-suite
+          "TRELLIS": "{oss-cad-suite}\\share\\trellis",
+          "YOSYS_LIB": "{oss-cad-suite}\\share\\yosys",
+          // openxc7
+          "PRJXRAY_DB_DIR": "{openxc7}\\share\\nextpnr\\external\\prjxray-db"
+        }
+      }
+    }
+  },
+  //
+  // ===== Remote config specification
+  //
+  "remote-config": {
+    // How many days we keep a cached remote config before trying to fetch a
+    // new one.
+    "ttl-days": 1,
+    // If a non mandatory remote config fetch failed, how long to wait before
+    // trying again.
+    "retry-minutes": 60,
+    // URL of the dir with the 'apio-{major}.{minor}.x.jsonc' remote config
+    // files. Supported protocols are https and file. This value is overridden
+    // in tests using the env var APIO_REMOTE_CONFIG_URL.
+    //
+    // For using Apio with the local remote config
+    // export APIO_REMOTE_CONFIG_URL="file:///Volumes/projects/apio-dev/repo/remote-config"
+    //
+    "url": "https://github.com/fpgawars/apio/raw/main/remote-config"
+  }
 }
-
-
-
