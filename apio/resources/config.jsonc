@@ -47,23 +47,19 @@
           "PYTHONPATH"
         ],
         "add-env-vars": {
+          "VIRTUAL_ENV": "{oss-cad-suite}",
           "VERILATOR_ROOT": "{oss-cad-suite}/share/verilator"
         },
         "add-to-path": [
-          // oss-cad-suite
           "{oss-cad-suite}/bin",
           "{oss-cad-suite}/lib",
-          // openxc7
           "{openxc7}/bin",
           "{openxc7}/lib",
-          // Verible
           "{verible}/bin"
         ],
         "define-consts": {
-          // oss-cad-suite
           "TRELLIS": "{oss-cad-suite}/share/trellis",
           "YOSYS_LIB": "{oss-cad-suite}/share/yosys",
-          // openxc7
           "PRJXRAY_DB_DIR": "{openxc7}/share/nextpnr/external/prjxray-db"
         }
       }
@@ -85,20 +81,15 @@
           "VERILATOR_ROOT": "{oss-cad-suite}/share/verilator"
         },
         "add-to-path": [
-          // oss-cad-suite
           "{oss-cad-suite}/bin",
           "{oss-cad-suite}/lib",
-          // openxc7
           "{openxc7}/bin",
           "{openxc7}/lib",
-          // Verible
           "{verible}/bin"
         ],
         "define-consts": {
-          // oss-cad-suite
           "TRELLIS": "{oss-cad-suite}/share/trellis",
           "YOSYS_LIB": "{oss-cad-suite}/share/yosys",
-          // openxc7
           "PRJXRAY_DB_DIR": "{openxc7}/share/nextpnr/external/prjxray-db"
         }
       }
@@ -122,24 +113,17 @@
           "VERILATOR_ROOT": "{oss-cad-suite}\\share/verilator"
         },
         "add-to-path": [
-          // oss-cad-suite
           "{oss-cad-suite}\\bin",
           "{oss-cad-suite}\\lib",
-          // openxc7
           "{openxc7}\\bin",
           "{openxc7}\\lib",
-          // verible
           "{verible}\\bin",
-          // drivers
           "{drivers}\\bin",
-          // graphviz
           "{graphviz}\\bin"
         ],
         "define-consts": {
-          // oss-cad-suite
           "TRELLIS": "{oss-cad-suite}\\share\\trellis",
           "YOSYS_LIB": "{oss-cad-suite}\\share\\yosys",
-          // openxc7
           "PRJXRAY_DB_DIR": "{openxc7}\\share\\nextpnr\\external\\prjxray-db"
         }
       }
