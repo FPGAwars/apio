@@ -70,34 +70,33 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
             )
 
     # -- Generate RELEASE_SHOULD_BE_LATEST requirements.
-
     # -- The apio vscode release of the latest vscode market release should
     # -- be marked as latest.
     vscode_crawl = crawl_results.vscode_marketplace_crawl
-    vscode_latest_release = vscode_crawl.releases[str(vscode_crawl.latest)]
+    vscode_latest_release = vscode_crawl.releases[str(vscode_crawl.latest_version)]
     requirements.add_by_ref(
         RequirementType.RELEASE_SHOULD_BE_LATEST,
         vscode_latest_release.apio_vscode_release,
         notes=[
             "[Analyzer] Latest published apio-vscode "
-            + f"({vscode_crawl.latest})."
+            + f"({vscode_crawl.latest_version})."
         ],
     )
 
     # -- The cli release that is the latest on pypi should be latest in the
     # -- apio repository.
     pypi_crawl = crawl_results.pypi_crawl
-    pypi_latest_release = pypi_crawl.releases[str(pypi_crawl.latest)]
+    pypi_latest_release = pypi_crawl.releases[str(pypi_crawl.latest_version)]
     requirements.add_by_ref(
         RequirementType.RELEASE_SHOULD_BE_LATEST,
         pypi_latest_release.apio_cli_release,
-        notes=[f"[Analyzer] Published as Pypi latest ({pypi_crawl.latest})."],
+        notes=[f"[Analyzer] Published as Pypi latest ({pypi_crawl.latest_version})."],
     )
 
     # -- The apio packages releases that are referred by the remote config
     # -- of the latest apio CLI should be marked latest.
     latest_remote_config_key = (
-        str(pypi_crawl.latest.major) + "." + str(pypi_crawl.latest.minor)
+        str(pypi_crawl.latest_version.major) + "." + str(pypi_crawl.latest_version.minor)
     )
     latest_remote_config = crawl_results.remote_configs_crawl.remote_configs[
         latest_remote_config_key
@@ -121,20 +120,6 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
             RequirementType.RELEASE_SHOULD_BE_STABLE
         )
     }
-
-    # -- Generate RELEASE_SHOULD_BE_CONSISTENT requirements
-
-    # -- Generate RELEASE_SHOULD_BE_CONSISTENT requirement for each
-    # -- RELEASE_SHOULD_BE_STABLE requirement in a repo that is checked
-    # -- for consistency. As for Sep 2026, only the openxc7 repo is checked
-    # -- for consistency.
-    # for release in releases_in_use:
-    #     if consts.APIO_REPOS[release.repo].check_consistency:
-    #         requirements.add_by_ref(
-    #             req_type=RequirementType.RELEASE_SHOULD_BE_CONSISTENT,
-    #             release_ref=release,
-    #             notes=["[Analyzer] Consistency checks enabled for repo."],
-    #         )
 
     # -- Generate DRAFT_SHOULD_BE_DELETED and PRERELEASE_SHOULD_BE_DELETED.
 
@@ -197,6 +182,18 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
                     notes=["[Analyzer] Repo should have a daily build."],
                 )
             )
+
+    # -- Generate LATEST_VSCODE_SHOULD_USE_LATEST_APIO_CLI requirement
+    requirements.add(
+        Requirement(
+            req_type=RequirementType.LATEST_VSCODE_AND_PYPI_USE_SAME_APIO_CLI,
+            repo="fpgawars/apio-vscode",
+            release_tag=None,
+            notes=[
+                "[Analyzer] Latest published VScode should latest apio CLI."
+            ],
+        )
+    )
 
     # -- All done.
     return AnalysisResults(requirements)

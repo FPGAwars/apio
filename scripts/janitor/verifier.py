@@ -14,7 +14,7 @@ from scripts.janitor import crawler, util, consts
 from scripts.janitor.models import (
     RequirementsSet,
     RepoCrawl,
-    ReposCrawl,
+    CrawlResults,
     Requirement,
     RequirementType,
     ReleaseState,
@@ -42,7 +42,7 @@ class VerificationContext:
 
     failures: RequirementsSet
     successes: RequirementsSet
-    fresh_repos_crawl: ReposCrawl
+    fresh_crawl: CrawlResults
     today: date
 
     def add_failure(self, requirement: Requirement, note: str):
@@ -68,7 +68,9 @@ def _verify_release_should_be_stable(
 
     # -- Get the release crawl information
     release = requirement.release_ref()
-    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+    release_crawl = ctx.fresh_crawl.repos_crawl.get_release_crawl(
+        release, None
+    )
 
     # -- Classify the requirement.
     if release_crawl is None:
@@ -87,7 +89,9 @@ def _verify_release_should_be_latest(
 
     # -- Get the release crawl information
     release = requirement.release_ref()
-    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+    release_crawl = ctx.fresh_crawl.repos_crawl.get_release_crawl(
+        release, None
+    )
 
     # -- Classify the requirement.
     if release_crawl is None:
@@ -106,7 +110,9 @@ def _verify_draft_should_be_deleted(
 
     # -- Get the release crawl information
     release = requirement.release_ref()
-    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+    release_crawl = ctx.fresh_crawl.repos_crawl.get_release_crawl(
+        release, None
+    )
 
     # -- Classify the requirement
     if release_crawl is None:
@@ -125,7 +131,9 @@ def _verify_prerelease_should_be_deleted(
 
     # -- Get the release crawl information
     release = requirement.release_ref()
-    release_crawl = ctx.fresh_repos_crawl.get_release_crawl(release, None)
+    release_crawl = ctx.fresh_crawl.repos_crawl.get_release_crawl(
+        release, None
+    )
 
     # -- Classify the requirement
     if release_crawl is None:
@@ -139,14 +147,14 @@ def _verify_prerelease_should_be_deleted(
 def _verify_repo_should_have_a_recent_build(
     ctx: VerificationContext, requirement: Requirement
 ):
-    """Verify a requirement that a repo should have a recent build.."""
+    """Verify a requirement that a repo should have a recent build."""
     assert (
         requirement.req_type == RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD
     )
 
     # -- Get the repo crawl information
     repo = requirement.repo
-    repo_crawl: RepoCrawl = ctx.fresh_repos_crawl.repos[repo]
+    repo_crawl: RepoCrawl = ctx.fresh_crawl.repos_crawl.repos[repo]
 
     # -- Find the date of the latest release
     latest: tuple[str, ReleaseCrawl] | None = max(
@@ -178,6 +186,43 @@ def _verify_repo_should_have_a_recent_build(
     )
 
 
+def _verify_latest_vscode_should_use_latest_apio_cli(
+    ctx: VerificationContext, requirement: Requirement
+):
+    """Verify a requirement that the latest published VScode and Pypi are
+    based on the same release tag of Apio CLK."""
+
+    assert (
+        requirement.req_type
+        == RequirementType.LATEST_VSCODE_AND_PYPI_USE_SAME_APIO_CLI
+    )
+
+    # -- Get the apio release tag used by VScode latest release.
+    vscode_crawl = ctx.fresh_crawl.vscode_marketplace_crawl
+    vscode_latest = vscode_crawl.latest_release_crawl()
+    vscode_apio_cli_release = vscode_latest.apio_cli_release
+
+    # -- Get the apio release tag used by Pypi latest release.
+    pypi_crawl = ctx.fresh_crawl.pypi_crawl
+    pypi_latest = pypi_crawl.latest_release_crawl()
+    pypi_apio_cli_release = pypi_latest.apio_cli_release
+
+    # -- Success
+    if vscode_apio_cli_release == pypi_apio_cli_release:
+        ctx.add_success(
+            requirement,
+            f"[Verifier] Both use {vscode_apio_cli_release}",
+        )
+        return
+
+    # -- Failure
+    ctx.add_failure(
+        requirement,
+        f"[Verifier] VScode: {vscode_apio_cli_release}, "
+        f"Pypi: {pypi_apio_cli_release}.",
+    )
+
+
 def verify(
     analysis_results: AnalysisResults,
 ) -> VerificationResults:
@@ -190,7 +235,7 @@ def verify(
     ctx = VerificationContext(
         failures=RequirementsSet(),
         successes=RequirementsSet(),
-        fresh_repos_crawl=crawler.crawl_apio_repos(),
+        fresh_crawl=crawler.crawl(),
         today=date.today(),
     )
 
@@ -206,9 +251,6 @@ def verify(
             case RequirementType.RELEASE_SHOULD_BE_LATEST:
                 _verify_release_should_be_latest(ctx, requirement)
 
-            # case RequirementType.RELEASE_SHOULD_BE_CONSISTENT:
-            #     _verify_release_should_be_consistent(ctx, requirement)
-
             case RequirementType.DRAFT_SHOULD_BE_DELETED:
                 _verify_draft_should_be_deleted(ctx, requirement)
 
@@ -217,6 +259,12 @@ def verify(
 
             case RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD:
                 _verify_repo_should_have_a_recent_build(ctx, requirement)
+
+            case RequirementType.LATEST_VSCODE_AND_PYPI_USE_SAME_APIO_CLI:
+                _verify_latest_vscode_should_use_latest_apio_cli(
+                    ctx, requirement
+                )
+
             case _:
                 raise ValueError(
                     f"unknown requirement type: {requirement.req_type}"
