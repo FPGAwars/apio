@@ -134,13 +134,7 @@ def read_apio_config_file(
     for package_name in result.platform_packages:
         mapping[package_name] = str(packages_dir / package_name)
 
-    # -- Resolve placeholders in add_env_var
-    new_dict = {
-        k: _resolve_str_placeholders(v, mapping)
-        for k, v in result.platform_env.add_env_vars.items()
-    }
-    result.platform_env.add_env_vars.clear()
-    result.platform_env.add_env_vars.update(new_dict)
+    # -- NOTE: No need resolve delete_env_vars since they have no values.
 
     # -- Resolve placeholders in add_to_path
     new_list = [
@@ -149,6 +143,14 @@ def read_apio_config_file(
     ]
     result.platform_env.add_to_path.clear()
     result.platform_env.add_to_path.extend(new_list)
+
+    # -- Resolve placeholders in add_env_var
+    new_dict = {
+        k: _resolve_str_placeholders(v, mapping)
+        for k, v in result.platform_env.add_env_vars.items()
+    }
+    result.platform_env.add_env_vars.clear()
+    result.platform_env.add_env_vars.update(new_dict)
 
     # -- Resolve placeholders in define_consts
     new_dict = {

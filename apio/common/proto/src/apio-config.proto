@@ -12,8 +12,8 @@ message ApioPackageSpec {
 }
 
 message ApioPlatformEnvSpec {
-  repeated string add_to_path = 2 [json_name = "add-to-path"];
-  repeated string delete_env_vars = 1 [json_name = "delete-env-vars"];
+  repeated string add_to_path = 1 [json_name = "add-to-path"];
+  repeated string delete_env_vars = 2 [json_name = "delete-env-vars"];
   map<string, string> add_env_vars = 3 [json_name = "add-env-vars"];
   map<string, string> define_consts = 4 [json_name = "define-consts"];
 }

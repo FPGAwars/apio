@@ -41,6 +41,13 @@
         "verible"
       ],
       "env": {
+        "add-to-path": [
+          "{oss-cad-suite}/bin",
+          "{oss-cad-suite}/lib",
+          "{openxc7}/bin",
+          "{openxc7}/lib",
+          "{verible}/bin"
+        ],
         "delete-env-vars": [
           // Delete this var, if exists. This isolate the oss-cad-suite
           // embedded python from the local python.
@@ -50,13 +57,6 @@
           "VIRTUAL_ENV": "{oss-cad-suite}",
           "VERILATOR_ROOT": "{oss-cad-suite}/share/verilator"
         },
-        "add-to-path": [
-          "{oss-cad-suite}/bin",
-          "{oss-cad-suite}/lib",
-          "{openxc7}/bin",
-          "{openxc7}/lib",
-          "{verible}/bin"
-        ],
         "define-consts": {
           "TRELLIS": "{oss-cad-suite}/share/trellis",
           "YOSYS_LIB": "{oss-cad-suite}/share/yosys",
@@ -72,6 +72,13 @@
         "verible"
       ],
       "env": {
+        "add-to-path": [
+          "{oss-cad-suite}/bin",
+          "{oss-cad-suite}/lib",
+          "{openxc7}/bin",
+          "{openxc7}/lib",
+          "{verible}/bin"
+        ],
         "delete-env-vars": [
           // Delete this var, if exists. This isolate the oss-cad-suite
           // embedded python from the local python.
@@ -80,13 +87,6 @@
         "add-env-vars": {
           "VERILATOR_ROOT": "{oss-cad-suite}/share/verilator"
         },
-        "add-to-path": [
-          "{oss-cad-suite}/bin",
-          "{oss-cad-suite}/lib",
-          "{openxc7}/bin",
-          "{openxc7}/lib",
-          "{verible}/bin"
-        ],
         "define-consts": {
           "TRELLIS": "{oss-cad-suite}/share/trellis",
           "YOSYS_LIB": "{oss-cad-suite}/share/yosys",
@@ -104,14 +104,6 @@
         "graphviz"
       ],
       "env": {
-        "delete-env-vars": [
-          // Delete this var, if exists. This isolate the oss-cad-suite
-          // embedded python from the local python.
-          "PYTHONPATH"
-        ],
-        "add-env-vars": {
-          "VERILATOR_ROOT": "{oss-cad-suite}\\share/verilator"
-        },
         "add-to-path": [
           "{oss-cad-suite}\\bin",
           "{oss-cad-suite}\\lib",
@@ -121,6 +113,14 @@
           "{drivers}\\bin",
           "{graphviz}\\bin"
         ],
+        "delete-env-vars": [
+          // Delete this var, if exists. This isolate the oss-cad-suite
+          // embedded python from the local python.
+          "PYTHONPATH"
+        ],
+        "add-env-vars": {
+          "VERILATOR_ROOT": "{oss-cad-suite}\\share/verilator"
+        },
         "define-consts": {
           "TRELLIS": "{oss-cad-suite}\\share\\trellis",
           "YOSYS_LIB": "{oss-cad-suite}\\share\\yosys",

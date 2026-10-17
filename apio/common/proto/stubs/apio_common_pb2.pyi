@@ -30,13 +30,13 @@ class NameValue(_message.Message):
     def __init__(self, name: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
 
 class EnvMutations(_message.Message):
-    __slots__ = ("unset_vars", "add_to_path", "set_vars", "pyinstaller_linux_fix")
-    UNSET_VARS_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("add_to_path", "delete_env_var", "add_env_vars", "pyinstaller_linux_fix")
     ADD_TO_PATH_FIELD_NUMBER: _ClassVar[int]
-    SET_VARS_FIELD_NUMBER: _ClassVar[int]
+    DELETE_ENV_VAR_FIELD_NUMBER: _ClassVar[int]
+    ADD_ENV_VARS_FIELD_NUMBER: _ClassVar[int]
     PYINSTALLER_LINUX_FIX_FIELD_NUMBER: _ClassVar[int]
-    unset_vars: _containers.RepeatedScalarFieldContainer[str]
     add_to_path: _containers.RepeatedScalarFieldContainer[str]
-    set_vars: _containers.RepeatedCompositeFieldContainer[NameValue]
+    delete_env_var: _containers.RepeatedScalarFieldContainer[str]
+    add_env_vars: _containers.RepeatedCompositeFieldContainer[NameValue]
     pyinstaller_linux_fix: bool
-    def __init__(self, unset_vars: _Optional[_Iterable[str]] = ..., add_to_path: _Optional[_Iterable[str]] = ..., set_vars: _Optional[_Iterable[_Union[NameValue, _Mapping]]] = ..., pyinstaller_linux_fix: bool = ...) -> None: ...
+    def __init__(self, add_to_path: _Optional[_Iterable[str]] = ..., delete_env_var: _Optional[_Iterable[str]] = ..., add_env_vars: _Optional[_Iterable[_Union[NameValue, _Mapping]]] = ..., pyinstaller_linux_fix: bool = ...) -> None: ...

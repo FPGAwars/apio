@@ -72,16 +72,16 @@ def get_env_mutations_for_subprocess(
         env_spec
     )
 
-    unset_vars: list[str] = []
+    delete_env_var: list[str] = []
     paths: list[str] = []
-    set_vars: list[NameValue] = []
+    add_env_vars: list[NameValue] = []
 
     if env_spec is not None:
         # -- Collect the env vars to delete.
         for var_name in env_spec.delete_env_vars:
             # -- Detect duplicates.
-            assert var_name not in unset_vars, var_name
-            unset_vars.append(var_name)
+            assert var_name not in delete_env_var, var_name
+            delete_env_var.append(var_name)
 
         # -- Collect the path values to add.
         paths.extend(env_spec.add_to_path)
@@ -89,19 +89,19 @@ def get_env_mutations_for_subprocess(
         # -- Collect the env vars to add (name, value) pairs.
         for name, value in env_spec.add_env_vars.items():
             # -- Detect duplicates.
-            for set_var in set_vars:
-                assert name != set_var.name, name
+            for add_var in add_env_vars:
+                assert name != add_var.name, name
             # -- Append.
-            set_vars.append(NameValue(name=name, value=value))
+            add_env_vars.append(NameValue(name=name, value=value))
 
     # -- Determine if we need to fix the env for pyinstaller linux.
     pyinstaller_linux_fix: bool = is_pyinstaller_app and apio_platform.is_linux
 
     # -- Construct the result.
     result = EnvMutations(
-        unset_vars=unset_vars,
         add_to_path=paths,
-        set_vars=set_vars,
+        delete_env_var=delete_env_var,
+        add_env_vars=add_env_vars,
         pyinstaller_linux_fix=pyinstaller_linux_fix,
     )
     proto_util.check_is_initialized(
@@ -121,15 +121,7 @@ def show_env_mutations(
     # -- Special case for windows.
     windows = apio_platform.is_windows
 
-    # -- Print unset vars.
-    for name in mutations.unset_vars:
-        styled_name = cstyle(name, style=EMPH3)
-        if windows:
-            cout(f"  set {styled_name}=")
-        else:
-            cout(f"  unset {styled_name}")
-
-    # -- Dump paths.
+    # -- Print paths.
     for p in reversed(mutations.add_to_path):
         styled_name = cstyle("PATH", style=EMPH3)
         if windows:
@@ -137,8 +129,16 @@ def show_env_mutations(
         else:
             cout(f'  {styled_name}="{p}:$PATH"')
 
-    # -- Print set vars.
-    for sv in mutations.set_vars:
+    # -- Print delete vars.
+    for name in mutations.delete_env_var:
+        styled_name = cstyle(name, style=EMPH3)
+        if windows:
+            cout(f"  set {styled_name}=")
+        else:
+            cout(f"  unset {styled_name}")
+
+    # -- Print add vars.
+    for sv in mutations.add_env_vars:
         styled_name = cstyle(sv.name, style=EMPH3)
         if windows:
             cout(f"  set {styled_name}={sv.value}")
@@ -154,10 +154,6 @@ def apply_env_mutations(
 ) -> None:
     """Apply a given set of env mutations, while preserving their order."""
 
-    # -- Apply the unset var mutations
-    for name in mutations.unset_vars:
-        env.pop(name, None)
-
     # -- Apply the path mutations, while preserving order.
     # -- NOTE: We treat the old path items as a single items.
     old_val = env["PATH"]
@@ -165,8 +161,12 @@ def apply_env_mutations(
     new_val = os.pathsep.join(items)
     env["PATH"] = new_val
 
+    # -- Apply the unset var mutations
+    for name in mutations.delete_env_var:
+        env.pop(name, None)
+
     # -- Apply the set var mutations
-    for sv in mutations.set_vars:
+    for sv in mutations.add_env_vars:
         env[sv.name] = sv.value
 
     # -- For now we fix only for linux
