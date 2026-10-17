@@ -15,7 +15,7 @@ from apio.common.apio_styles import EMPH2, EMPH3
 from apio.common.apio_platforms import ApioPlatform
 from apio.common import proto_util
 from apio.common.proto.stubs.apio_common_pb2 import EnvMutations, NameValue
-from apio.common.proto.stubs.apio_resources_pb2 import ApioPackageSpec
+from apio.common.proto.stubs.apio_config_pb2 import ApioPlatformEnvSpec
 
 # -- Env vars involved in pyinstaller fixing under linux.
 # -- See See https://github.com/FPGAwars/apio/issues/887
@@ -61,30 +61,33 @@ def scons_shell_id(apio_platform: ApioPlatform) -> str:
 def get_env_mutations_for_subprocess(
     apio_platform: ApioPlatform,
     is_pyinstaller_app: bool,
-    apio_packages: dict[str, ApioPackageSpec],
+    env_spec: ApioPlatformEnvSpec | None,
 ) -> EnvMutations:
     """Return an EnvMutations with the system env mutations for running a
     subprocess. If apio_packages is not empty, the mutations includes also
     mutation to use the included apio packages (e.g. 'yosys' from
     oss-cad-suite)."""
 
+    assert env_spec is None or isinstance(env_spec, ApioPlatformEnvSpec), type(
+        env_spec
+    )
+
     unset_vars: list[str] = []
     paths: list[str] = []
     set_vars: list[NameValue] = []
 
-    for package_spec in apio_packages.values():
-
+    if env_spec is not None:
         # -- Collect the env vars to delete.
-        for var_name in package_spec.env.delete_env_vars:
+        for var_name in env_spec.delete_env_vars:
             # -- Detect duplicates.
             assert var_name not in unset_vars, var_name
             unset_vars.append(var_name)
 
         # -- Collect the path values to add.
-        paths.extend(package_spec.env.add_to_path)
+        paths.extend(env_spec.add_to_path)
 
         # -- Collect the env vars to add (name, value) pairs.
-        for name, value in package_spec.env.add_env_vars.items():
+        for name, value in env_spec.add_env_vars.items():
             # -- Detect duplicates.
             for set_var in set_vars:
                 assert name != set_var.name, name
