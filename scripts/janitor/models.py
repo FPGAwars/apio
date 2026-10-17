@@ -100,10 +100,12 @@ class RequirementType(Enum):
 
     RELEASE_SHOULD_BE_STABLE = "release-should-be-stable"
     RELEASE_SHOULD_BE_LATEST = "release-should-be-latest"
-    # RELEASE_SHOULD_BE_CONSISTENT = "release-should-be-consistent"
     DRAFT_SHOULD_BE_DELETED = "draft-should-be-deleted"
     PRERELEASE_SHOULD_BE_DELETED = "prerelease-should-be-deleted"
     REPO_SHOULD_HAVE_A_RECENT_BUILD = "repo-should-have-a-recent-build"
+    LATEST_VSCODE_AND_PYPI_USE_SAME_APIO_CLI = (
+        "latest-vscode-and-pypi-use-same-apio-cli"
+    )
 
     @property
     def is_repo_scope(self) -> bool:
@@ -111,6 +113,7 @@ class RequirementType(Enum):
         should not contain release tag"""
         return self in {
             RequirementType.REPO_SHOULD_HAVE_A_RECENT_BUILD,
+            RequirementType.LATEST_VSCODE_AND_PYPI_USE_SAME_APIO_CLI,
         }
 
     @property
@@ -323,12 +326,16 @@ class PypiCrawl:
 
     # -- The default release for 'pip install apio', this is considered the
     # -- 'latest' stable release.
-    latest: Version
+    latest_version: Version
     # -- Dict from pypi release version to the release information.
     releases: dict[str, PypiReleaseCrawl]
     # -- List of pypi apio releases that were skipped, either too old
     # -- or known to be problematic.
     skipped_versions: list[str]
+
+    def latest_release_crawl(self) -> PypiReleaseCrawl:
+        """Return the crawl of the latest version."""
+        return self.releases[str(self.latest_version)]
 
 
 @dataclass(frozen=True)
@@ -352,11 +359,15 @@ class VscodeMarketplaceCrawl:
 
     # -- The default Apio Vscode extension version. This considered to be the
     # -- 'latest' stable release.
-    latest: Version
+    latest_version: Version
     # -- List of relevant releases that were crawled.
     releases: dict[str, VscodeReleaseCrawl]
     # -- List of extension versions that were skipped, e.g. for being too old.
     skipped_versions: list[str]
+
+    def latest_release_crawl(self)->VscodeReleaseCrawl:
+        """Return the crawl of the latest version."""
+        return self.releases[str(self.latest_version)]
 
 
 @dataclass(frozen=True)

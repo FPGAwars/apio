@@ -387,7 +387,7 @@ def _crawl_apio_repo(repo: str) -> RepoCrawl:
     return RepoCrawl(releases)
 
 
-def crawl_apio_repos() -> ReposCrawl:
+def _crawl_apio_repos() -> ReposCrawl:
     """Crawl the given repos. This function is called multiple times
     during the execution of the janitor, including from other steps,
     since the state of the apio repos may be changed by the fixing
@@ -410,7 +410,7 @@ def crawl() -> CrawlResults:
     pypi_crawl: PypiCrawl = _crawl_pypi()
     vscode_marketplace_crawl = _crawl_vscode_marketplace()
     remote_configs_crawl = _crawl_remote_configs()
-    repos_crawl = crawl_apio_repos()
+    repos_crawl = _crawl_apio_repos()
 
     # -- All done.
     print("Crawling done")
