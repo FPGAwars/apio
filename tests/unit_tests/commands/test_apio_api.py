@@ -180,6 +180,31 @@ def test_apio_api_get_packages(apio_runner: ApioRunner):
         )
 
 
+def test_apio_api_get_config(apio_runner: ApioRunner):
+    """Test "apio api get-config" """
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Execute "apio api get-config -t xyz"  (stdout)
+        result = sb.invoke_apio_cmd(apio, ["api", "get-config", "-t", "xyz"])
+        sb.assert_result_ok(result)
+        assert '"config":' in result.output
+        assert '"YOSYS_LIB":' in result.output
+
+        # -- Execute "apio api get-config -t xyz -o <dir>"  (file)
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-config", "-t", "xyz", "-o", str(path)]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Read and verify the file.
+        text = sb.read_file_text(path)
+        data = json.loads(text)
+        assert data["timestamp"] == "xyz"
+        assert "YOSYS_LIB" in data["config"]["platform-env"]["define-consts"]
+
+
 def test_apio_api_get_system(apio_runner: ApioRunner):
     """Test "apio api get-system" """
 
