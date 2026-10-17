@@ -211,15 +211,15 @@ def _verify_latest_vscode_should_use_latest_apio_cli(
     if vscode_apio_cli_release == pypi_apio_cli_release:
         ctx.add_success(
             requirement,
-            f"[Verifier] Latest VSCode and Pypi use {vscode_apio_cli_release}",
+            f"[Verifier] Both use {vscode_apio_cli_release}",
         )
         return
 
     # -- Failure
     ctx.add_failure(
         requirement,
-        f"[Verifier] VSCode uses {vscode_apio_cli_release} while "
-        f"Pypi uses {pypi_apio_cli_release}.",
+        f"[Verifier] VScode: {vscode_apio_cli_release}, "
+        f"Pypi: {pypi_apio_cli_release}.",
     )
 
 
