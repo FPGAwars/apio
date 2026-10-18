@@ -152,7 +152,7 @@ def test_resolve_packages_dir_expanded_check(apio_runner: ApioRunner):
             with pytest.raises(SystemExit) as e:
                 resolve_packages_dir(sb.home_dir)
         assert e.value.code == 1
-        assert "should include the string 'packages'" in log.out
+        assert "should include the strings 'apio' and 'packages'" in log.out
 
         # -- The original var value doesn't contain 'packages' but the expanded value
         # -- does. Should pass.
@@ -160,4 +160,44 @@ def test_resolve_packages_dir_expanded_check(apio_runner: ApioRunner):
         os.environ["APIO_PACKAGES"] = "${my_dir}"
         assert resolve_packages_dir(sb.home_dir) == (
             sb.home_dir / "my-packages"
+        )
+
+
+def test_resolve_packages_dir_apio_and_packages_check(
+    apio_runner: ApioRunner,
+):
+    """Tests that APIO_PACKAGES must contain both 'apio' and 'packages',
+    case insensitive."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Case 1: Contains 'packages' but not 'apio'. Should fail. The check
+        # -- happens before the dir is accessed so a fake path is ok.
+        os.environ["APIO_PACKAGES"] = str(Path("/no-such-dir/my-packages"))
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                resolve_packages_dir(sb.home_dir)
+        assert e.value.code == 1
+        assert "should include the strings 'apio' and 'packages'" in log.out
+
+        # -- Case 2: Contains 'apio' but not 'packages'. Should fail.
+        os.environ["APIO_PACKAGES"] = str(Path("/no-such-dir/my-apio-tools"))
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                resolve_packages_dir(sb.home_dir)
+        assert e.value.code == 1
+        assert "should include the strings 'apio' and 'packages'" in log.out
+
+        # -- Case 3: Contains neither 'apio' nor 'packages'. Should fail.
+        os.environ["APIO_PACKAGES"] = str(Path("/no-such-dir/my-tools"))
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                resolve_packages_dir(sb.home_dir)
+        assert e.value.code == 1
+        assert "should include the strings 'apio' and 'packages'" in log.out
+
+        # -- Case 4: Upper case 'PACKAGES' and 'APIO'. Should pass.
+        os.environ["APIO_PACKAGES"] = str(sb.home_dir / "APIO-PACKAGES")
+        assert resolve_packages_dir(sb.home_dir) == (
+            sb.home_dir / "APIO-PACKAGES"
         )
