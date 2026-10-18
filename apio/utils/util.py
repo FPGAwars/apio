@@ -19,11 +19,9 @@ import subprocess
 from threading import Thread
 from pathlib import Path
 import hashlib
-from tarfile import open as tarfile_open
-from rich.progress import track
 import apio
 from apio.utils import env_options
-from apio.common.apio_console import cout, cerror, console, fatal_error
+from apio.common.apio_console import cout, cerror, fatal_error
 from apio.common.common_util import cmd_in_env
 
 # ----------------------------------------
@@ -570,38 +568,6 @@ def compute_file_sha256(path: Path) -> str:
 
     # -- All done OK.
     return sha256
-
-
-def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
-    """Unpack a .tgz archive into the given dest directory."""
-
-    # -- Get the file name
-    archive_name = archive_file_path.name
-
-    # -- Check it's a ".tgz" file
-    if not archive_name.endswith(".tgz"):
-        fatal_error(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
-
-    # -- Extract all items while animating the progress bar.
-    with tarfile_open(archive_file_path) as tar_file:
-
-        items = tar_file.getmembers()
-
-        for i in track(
-            range(len(items)),
-            description="Unpacking  ",
-            console=console(),
-        ):
-            item = items[i]
-            # -- Extract the item
-            if get_python_ver_tuple() >= (3, 12, 0):
-                # -- Special case for avoiding the tar deprecation warning.
-                # Search
-                # -- 'extraction_filter' in the page
-                # -- https://docs.python.org/3/library/tarfile.html
-                tar_file.extract(item, dest_dir, filter="fully_trusted")
-            else:
-                tar_file.extract(item, dest_dir)
 
 
 def json_dict_contains_substring(data, substr: str) -> bool:

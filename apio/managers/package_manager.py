@@ -15,7 +15,9 @@ from dataclasses import dataclass
 from typing import Any
 from pathlib import Path
 import shutil
-from apio.common.apio_console import cout, cstyle, fatal_error
+from tarfile import open as tarfile_open
+from rich.progress import track
+from apio.common.apio_console import cout, cstyle, console, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
@@ -118,6 +120,37 @@ def get_datetime_stamp(dt: datetime | None = None) -> str:
     if dt is None:
         dt = datetime.now()
     return dt.strftime("%Y-%m-%d-%H-%M")
+
+
+def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
+    """Unpack a .tgz archive into the given dest directory."""
+
+    # -- Get the file name
+    archive_name = archive_file_path.name
+
+    # -- Check it's a ".tgz" file
+    if not archive_name.endswith(".tgz"):
+        fatal_error(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
+
+    # -- Extract all items while animating the progress bar.
+    with tarfile_open(archive_file_path) as tar_file:
+
+        items = tar_file.getmembers()
+
+        for i in track(
+            range(len(items)),
+            description="Unpacking  ",
+            console=console(),
+        ):
+            item = items[i]
+            # -- Extract the item
+            if util.get_python_ver_tuple() >= (3, 12, 0):
+                # -- Special case for avoiding the tar deprecation warning.
+                # -- Search 'extraction_filter' in the page:
+                # -- https://docs.python.org/3/library/tarfile.html
+                tar_file.extract(item, dest_dir, filter="fully_trusted")
+            else:
+                tar_file.extract(item, dest_dir)
 
 
 class PackageManager:
@@ -455,7 +488,7 @@ class PackageManager:
         self._delete_package_dir(package_name, verbose)
 
         # -- Unpack the package. This creates a new package dir.
-        util.unpack_tgz(local_package_file, package_dir)
+        unpack_tgz(local_package_file, package_dir)
 
         # -- Remove the package file. We don't need it anymore.
         if verbose:
