@@ -143,7 +143,9 @@ def show_env_mutations(
         if windows:
             cout(f"  set {styled_name}={sv.value}")
         else:
-            cout(f'  {styled_name}="{sv.value}"')
+            # -- Export so the var is visible to processes started by the
+            # -- shell, e.g. if the user copy/pastes these lines.
+            cout(f'  export {styled_name}="{sv.value}"')
 
     # -- NOTE For now we don't dump the pyinstaller fix mutation since
     # -- it's internal to Apio (not user facing)

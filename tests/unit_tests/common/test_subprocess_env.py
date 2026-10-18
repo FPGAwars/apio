@@ -5,11 +5,13 @@ Linux pyinstaller bundle. See https://github.com/FPGAwars/apio/issues/887
 
 from pathlib import Path
 from tests.conftest import ApioRunner
+from apio.common.apio_console import cunstyle
 from apio.common.apio_platforms import get_apio_platforms
-from apio.common.proto.stubs.apio_common_pb2 import EnvMutations
+from apio.common.proto.stubs.apio_common_pb2 import EnvMutations, NameValue
 from apio.common.subprocess_env import (
     apply_env_mutations,
     get_env_mutations_for_subprocess,
+    show_env_mutations,
 )
 from apio.common.proto.stubs.apio_config_pb2 import ApioPlatformEnvSpec
 from apio.apio_context import (
@@ -19,8 +21,10 @@ from apio.apio_context import (
     RemoteConfigPolicy,
 )
 
+# -- ApioPlatform instances.
 LINUX = get_apio_platforms()["linux-x86-64"]
 DARWIN = get_apio_platforms()["darwin-arm64"]
+WINDOWS = get_apio_platforms()["windows-amd64"]
 
 
 def test_fix_flag_only_for_pyinstaller_on_linux():
@@ -115,3 +119,36 @@ def test_path_conflicts(apio_runner: ApioRunner):
                 print(f"\n{name} {same}")
                 for file in files:
                     print(f"- {str(file)}")
+
+
+def test_show_env_mutations(apio_runner: ApioRunner):
+    """Tests that the env mutations are shown as valid shell commands,
+    with added vars exported on non windows platforms so user can
+    copy/paste them."""
+
+    # -- The sandbox configures the apio console.
+    with apio_runner.in_sandbox():
+
+        mutations = EnvMutations(
+            add_to_path=["/my/bin"],
+            delete_env_var=["PYTHONPATH"],
+            add_env_vars=[NameValue(name="MY_VAR", value="my-value")],
+        )
+
+        # -- Non windows.
+        with apio_runner.with_logger() as log:
+            show_env_mutations(mutations, LINUX)
+        out = cunstyle(log.out)
+        assert 'PATH="/my/bin:$PATH"' in out
+        assert 'export PATH="' not in out
+        assert "unset PYTHONPATH" in out
+        assert 'export MY_VAR="my-value"' in out
+
+        # -- Windows.
+        with apio_runner.with_logger() as log:
+            show_env_mutations(mutations, WINDOWS)
+        out = cunstyle(log.out)
+        assert "set PATH=/my/bin;%PATH%" in out
+        assert "set PYTHONPATH=" in out
+        assert "set MY_VAR=my-value" in out
+        assert "export" not in out
