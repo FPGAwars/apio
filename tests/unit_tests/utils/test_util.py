@@ -14,6 +14,7 @@ from apio.utils.util import (
     pushd,
     # subprocess_call,
     compute_file_sha256,
+    resolve_packages_dir,
 )
 
 # TODO: Add more tests.
@@ -134,4 +135,29 @@ def test_compute_file_sha256(apio_runner: ApioRunner):
         assert (
             sha256 == "b94d27b9934d3e08a52e52d7da7dabfac"
             "484efe37a5380ee9088f7ace2efcde9"
+        )
+
+
+def test_resolve_packages_dir_expanded_check(apio_runner: ApioRunner):
+    """Tests that the 'packages' safety check of APIO_PACKAGES is applied
+    to the value after the env vars expansion."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- The original var value contains 'packages' but the expanded value
+        # -- doesn't. Should fail.
+        os.environ["packages_dir"] = str(sb.home_dir / "my-tools")
+        os.environ["APIO_PACKAGES"] = "${packages_dir}"
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                resolve_packages_dir(sb.home_dir)
+        assert e.value.code == 1
+        assert "should include the string 'packages'" in log.out
+
+        # -- The original var value doesn't contain 'packages' but the expanded value
+        # -- does. Should pass.
+        os.environ["my_dir"] = str(sb.home_dir / "my-packages")
+        os.environ["APIO_PACKAGES"] = "${my_dir}"
+        assert resolve_packages_dir(sb.home_dir) == (
+            sb.home_dir / "my-packages"
         )

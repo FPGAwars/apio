@@ -478,17 +478,18 @@ def resolve_packages_dir(apio_home_dir: Path) -> Path:
 
     # -- If the env vars specified an packages dir then use it.
     if apio_packages_dir_env:
-        # -- Verify that the env variable contains 'packages' to make sure we
-        # -- don't clobber system directories.
+        # -- Expand user home '~' marker, if exists.
+        apio_packages_dir_env = os.path.expanduser(apio_packages_dir_env)
+        # -- Expand vars such as $HOME or %HOME% on windows.
+        apio_packages_dir_env = os.path.expandvars(apio_packages_dir_env)
+        # -- Verify that the expanded value contains 'packages' to make sure
+        # -- we don't clobber system directories. This is done after the
+        # -- expansion since the expanded value is the one we use.
         if "packages" not in apio_packages_dir_env:
             fatal_error(
                 "Apio packages dir APIO_PACKAGES should include the "
-                + "string 'packages'."
+                + f"string 'packages' [{apio_packages_dir_env}]."
             )
-        # -- Expand user home '~' marker, if exists.
-        apio_packages_dir_env = os.path.expanduser(apio_packages_dir_env)
-        # -- Expand varas such as $HOME or %HOME% on windows.
-        apio_packages_dir_env = os.path.expandvars(apio_packages_dir_env)
         # -- Convert string to path.
         packages_dir = Path(apio_packages_dir_env)
     else:
