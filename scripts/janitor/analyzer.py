@@ -73,7 +73,9 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     # -- The apio vscode release of the latest vscode market release should
     # -- be marked as latest.
     vscode_crawl = crawl_results.vscode_marketplace_crawl
-    vscode_latest_release = vscode_crawl.releases[str(vscode_crawl.latest_version)]
+    vscode_latest_release = vscode_crawl.releases[
+        str(vscode_crawl.latest_version)
+    ]
     requirements.add_by_ref(
         RequirementType.RELEASE_SHOULD_BE_LATEST,
         vscode_latest_release.apio_vscode_release,
@@ -90,13 +92,18 @@ def analyze(crawl_results: CrawlResults) -> AnalysisResults:
     requirements.add_by_ref(
         RequirementType.RELEASE_SHOULD_BE_LATEST,
         pypi_latest_release.apio_cli_release,
-        notes=[f"[Analyzer] Published as Pypi latest ({pypi_crawl.latest_version})."],
+        notes=[
+            "[Analyzer] Published as Pypi latest "
+            + f"({pypi_crawl.latest_version})."
+        ],
     )
 
     # -- The apio packages releases that are referred by the remote config
     # -- of the latest apio CLI should be marked latest.
     latest_remote_config_key = (
-        str(pypi_crawl.latest_version.major) + "." + str(pypi_crawl.latest_version.minor)
+        str(pypi_crawl.latest_version.major)
+        + "."
+        + str(pypi_crawl.latest_version.minor)
     )
     latest_remote_config = crawl_results.remote_configs_crawl.remote_configs[
         latest_remote_config_key
