@@ -497,7 +497,7 @@ class PackageManager:
             elif orphan_type == orphan_type.ORPHAN_FILE:
                 cout(f"Deleting unknown package file '{orphan_name}'")
                 file_path = self.packages_dir / orphan_name
-                assert "packages" in str(file_path).lower(), dir_path
+                assert "packages" in str(file_path).lower(), file_path
                 file_path.unlink()
 
             # -- Unexpected orphan type.
