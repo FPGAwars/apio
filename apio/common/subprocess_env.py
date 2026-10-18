@@ -10,7 +10,7 @@ subprocesses."""
 import os
 from collections.abc import MutableMapping
 from apio.common.debug_util import is_debug
-from apio.common.apio_console import cout, cstyle
+from apio.common.apio_console import cout, cstyle, fatal_error
 from apio.common.apio_styles import EMPH2, EMPH3
 from apio.common.apio_platforms import ApioPlatform
 from apio.common import proto_util
@@ -158,10 +158,11 @@ def apply_env_mutations(
 
     # -- Apply the path mutations, while preserving order.
     # -- NOTE: We treat the old path items as a single items.
-    old_val = env["PATH"]
+    old_val = env.get("PATH")
+    if not old_val:
+        fatal_error("The PATH env var is not set or is empty.")
     items = list(mutations.add_to_path) + [old_val]
-    new_val = os.pathsep.join(items)
-    env["PATH"] = new_val
+    env["PATH"] = os.pathsep.join(items)
 
     # -- Apply the unset var mutations
     for name in mutations.delete_env_var:
