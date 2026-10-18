@@ -1,3 +1,6 @@
+CLAUDE.md
+CLAUDE.local.md
+.claude/
 *.pyc
 *.asc
 *.bin

@@ -365,7 +365,7 @@ class VscodeMarketplaceCrawl:
     # -- List of extension versions that were skipped, e.g. for being too old.
     skipped_versions: list[str]
 
-    def latest_release_crawl(self)->VscodeReleaseCrawl:
+    def latest_release_crawl(self) -> VscodeReleaseCrawl:
         """Return the crawl of the latest version."""
         return self.releases[str(self.latest_version)]
 

@@ -43,15 +43,14 @@
       "env": {
         "add-to-path": [
           "{oss-cad-suite}/bin",
-          "{oss-cad-suite}/lib",
           "{openxc7}/bin",
-          "{openxc7}/lib",
           "{verible}/bin"
         ],
         "delete-env-vars": [
-          // Delete this var, if exists. This isolate the oss-cad-suite
+          // Delete these vars, if exist. This isolate the oss-cad-suite
           // embedded python from the local python.
-          "PYTHONPATH"
+          "PYTHONPATH",
+          "PYTHONHOME"
         ],
         "add-env-vars": {
           "VIRTUAL_ENV": "{oss-cad-suite}",
@@ -74,17 +73,17 @@
       "env": {
         "add-to-path": [
           "{oss-cad-suite}/bin",
-          "{oss-cad-suite}/lib",
           "{openxc7}/bin",
-          "{openxc7}/lib",
           "{verible}/bin"
         ],
         "delete-env-vars": [
-          // Delete this var, if exists. This isolate the oss-cad-suite
+          // Delete these vars, if exist. This isolate the oss-cad-suite
           // embedded python from the local python.
-          "PYTHONPATH"
+          "PYTHONPATH",
+          "PYTHONHOME"
         ],
         "add-env-vars": {
+          "VIRTUAL_ENV": "{oss-cad-suite}",
           "VERILATOR_ROOT": "{oss-cad-suite}/share/verilator"
         },
         "define-consts": {
@@ -114,12 +113,14 @@
           "{graphviz}\\bin"
         ],
         "delete-env-vars": [
-          // Delete this var, if exists. This isolate the oss-cad-suite
+          // Delete these vars, if exist. This isolate the oss-cad-suite
           // embedded python from the local python.
-          "PYTHONPATH"
+          "PYTHONPATH",
+          "PYTHONHOME"
         ],
         "add-env-vars": {
-          "VERILATOR_ROOT": "{oss-cad-suite}\\share/verilator"
+          "VERILATOR_ROOT": "{oss-cad-suite}\\share\\verilator",
+          "OPENFPGALOADER_SOJ_DIR": "{oss-cad-suite}\\share\\openFPGALoader"
         },
         "define-consts": {
           "TRELLIS": "{oss-cad-suite}\\share\\trellis",

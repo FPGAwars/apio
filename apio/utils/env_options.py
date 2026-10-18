@@ -12,6 +12,7 @@ variables that are used to modify the default behavior of APIO.
 """
 
 import os
+from apio.common.apio_console import fatal_error
 
 # -- Env variable to override the apio home dir ~/.apio. If specified,
 # -- it contains the profile.json file and if APIO_PACKAGES is not
@@ -79,7 +80,17 @@ def get(var_name: str, default: str | None = None):
         var_value = default
     else:
         # -- Var is defined. For windows benefit, remove optional quotes.
-        if var_value.startswith('"') and var_value.endswith('"'):
+        if var_value.startswith('"') or var_value.endswith('"'):
+            if (
+                len(var_value) < 2
+                or not var_value.startswith('"')
+                or not var_value.endswith('"')
+            ):
+                fatal_error(
+                    f"Env var {var_name} has unbalanced double quotes: "
+                    f"[{var_value}]"
+                )
+            # -- Remove first and last chars.
             var_value = var_value[1:-1]
 
     return var_value
