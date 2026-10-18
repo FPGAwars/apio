@@ -56,6 +56,23 @@ def test_get(apio_runner: ApioRunner):
         assert env_options.get(APIO_HOME) == "/my/home"
 
 
+def test_get_unbalanced_quotes(apio_runner: ApioRunner):
+    """Tests that a value with a leading double quote and no trailing one,
+    or a trailing double quote and no leading one, is an error."""
+
+    # -- The sandbox restores the system env on exit.
+    with apio_runner.in_sandbox():
+        for value in ['"', '"aa', '"aa"bb', 'aa"', 'bb"aa"']:
+            os.environ[APIO_HOME] = value
+            with apio_runner.with_logger() as log:
+                with pytest.raises(SystemExit) as e:
+                    env_options.get(APIO_HOME)
+            assert e.value.code == 1, value
+            assert (
+                "Env var APIO_HOME has unbalanced double quotes" in log.out
+            ), value
+
+
 def test_get_unknown_var():
     """Tests that get() rejects vars that apio doesn't know about."""
     with pytest.raises(AssertionError, match="Unknown apio env var"):
