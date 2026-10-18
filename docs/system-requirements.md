@@ -27,4 +27,4 @@ These requirements apply only when installing Apio CLI as a Pip package (Python-
 | 3.14.x         | Recommended |
 | 3.13.x         | Supported   |
 | 3.12.x         | Supported   |
-| 3.11.x         | Supported   |
+| 3.11.4+        | Supported   |

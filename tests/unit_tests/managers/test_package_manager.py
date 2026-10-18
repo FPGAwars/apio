@@ -6,10 +6,7 @@ import io
 import tarfile
 import pytest
 from tests.conftest import ApioRunner
-from apio.managers.package_manager import (
-    _check_tar_item_is_safe,
-    unpack_tgz,
-)
+from apio.managers.package_manager import unpack_tgz
 
 
 def test_unpack_tgz(apio_runner: ApioRunner):
@@ -75,26 +72,3 @@ def test_unpack_tgz_unsafe_item(apio_runner: ApioRunner):
         assert e.value.code == 1
         assert "Unsafe item '../escape.txt'" in log.out
         assert not (sb.proj_dir / "escape.txt").exists()
-
-
-def test_check_tar_item_is_safe(apio_runner: ApioRunner):
-    """Tests the unsafe item check that unpack_tgz() uses on Python < 3.11.4.
-    We call it directly so it's tested on any Python."""
-
-    with apio_runner.in_sandbox() as sb:
-
-        dest_dir = sb.proj_dir / "dest"
-
-        # -- An item inside the dest dir. Should pass.
-        _check_tar_item_is_safe(
-            tarfile.TarInfo("bin/tool"), dest_dir, "package.tgz"
-        )
-
-        # -- An item outside the dest dir. Should fail.
-        with apio_runner.with_logger() as log:
-            with pytest.raises(SystemExit) as e:
-                _check_tar_item_is_safe(
-                    tarfile.TarInfo("../escape.txt"), dest_dir, "package.tgz"
-                )
-        assert e.value.code == 1
-        assert "Unsafe item '../escape.txt'" in log.out

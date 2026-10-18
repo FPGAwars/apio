@@ -122,44 +122,6 @@ def get_datetime_stamp(dt: datetime | None = None) -> str:
     return dt.strftime("%Y-%m-%d-%H-%M")
 
 
-def _is_within_dir(path: Path, dir_path: Path) -> bool:
-    """Used only for Python older than 3.11.4.
-    Returns True if path, after resolving '..' and symlinks, is dir_path
-    or inside it."""
-    return path.resolve().is_relative_to(dir_path.resolve())
-
-
-def _check_tar_item_is_safe(
-    item: tarfile.TarInfo, dest_dir: Path, archive_name: str
-) -> None:
-    """Used only for Python older than 3.11.4.
-    Exits with a fatal error if extracting the item would write outside
-    of dest_dir. Used only when tarfile's 'data' filter is not available."""
-
-    # -- Check the location of the item itself.
-    item_path = dest_dir / item.name
-    if not _is_within_dir(item_path, dest_dir):
-        fatal_error(
-            f"Unsafe item '{item.name}' in archive '{archive_name}'.",
-            info="The item is outside of the dest dir.",
-        )
-
-    # -- Check the target of symbolic links, which is relative to the link's
-    # -- dir, and of hard links, which is relative to the archive root.
-    if item.issym():
-        link_target = item_path.parent / item.linkname
-    elif item.islnk():
-        link_target = dest_dir / item.linkname
-    else:
-        return
-    if not _is_within_dir(link_target, dest_dir):
-        fatal_error(
-            f"Unsafe item '{item.name}' in archive '{archive_name}'.",
-            info=f"The item links to '{item.linkname}' which is outside "
-            "of the dest dir.",
-        )
-
-
 def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
     """Unpack a .tgz archive into the given dest directory. Exits with an
     error if an archive item would be written outside of dest_dir, e.g.
@@ -172,16 +134,9 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
     if not archive_name.endswith(".tgz"):
         fatal_error(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
 
-    # -- Python 3.11.4+ has the tarfile 'data' filter which rejects items
-    # -- that would be written outside of the dest dir. With older Pythons
-    # -- we perform the check ourselves. Search 'extraction_filter' in
+    # -- We use the tarfile 'data' filter which rejects items that would be
+    # -- written outside of the dest dir. Search 'extraction_filter' in
     # -- https://docs.python.org/3/library/tarfile.html
-    has_data_filter = util.get_python_ver_tuple() >= (3, 11, 4)
-
-    # -- Sanity check.
-    assert has_data_filter == hasattr(
-        tarfile, "data_filter"
-    ), util.get_python_ver_tuple()
 
     # -- Extract all items while animating the progress bar.
     with tarfile.open(archive_file_path) as tar_file:
@@ -194,17 +149,13 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
         for item in items:
             # -- Pre-check that we don't write outside dest_dir, e.g. with
             # -- ".." path in the tar file.
-            if has_data_filter:
-                try:
-                    tarfile.data_filter(item, str(dest_dir))
-                except tarfile.FilterError as e:
-                    fatal_error(
-                        f"Unsafe item '{item.name}' in archive "
-                        + f"'{archive_name}'.",
-                        cause=e,
-                    )
-            else:
-                _check_tar_item_is_safe(item, dest_dir, archive_name)
+            try:
+                tarfile.data_filter(item, str(dest_dir))
+            except tarfile.FilterError as e:
+                fatal_error(
+                    f"Unsafe item '{item.name}' in archive '{archive_name}'.",
+                    cause=e,
+                )
 
         for i in track(
             range(len(items)),
@@ -212,24 +163,16 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
             console=console(),
         ):
             item = items[i]
-            # -- Extract the item
-            if has_data_filter:
-                # -- Case 1: Using newer Python
-                try:
-                    tar_file.extract(item, dest_dir, filter="data")
-                except tarfile.FilterError as e:
-                    fatal_error(
-                        f"Unsafe item '{item.name}' in archive "
-                        + f"'{archive_name}'.",
-                        cause=e,
-                    )
-            else:
-                # -- Check again, now that the previous items are on disk.
-                # -- This catches items that are safe by name but escape
-                # -- via a previously extracted link, e.g. 'a/../x' after
-                # -- the link 'a -> .'.
-                _check_tar_item_is_safe(item, dest_dir, archive_name)
-                tar_file.extract(item, dest_dir)
+            # -- Extract the item. The filter checks again, now that the
+            # -- previous items are on disk, e.g. 'a/../x' after the link
+            # -- 'a -> .'.
+            try:
+                tar_file.extract(item, dest_dir, filter="data")
+            except tarfile.FilterError as e:
+                fatal_error(
+                    f"Unsafe item '{item.name}' in archive '{archive_name}'.",
+                    cause=e,
+                )
 
 
 class PackageManager:

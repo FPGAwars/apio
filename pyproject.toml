@@ -39,7 +39,7 @@ classifiers = [
         "Operating System :: MacOS",
 ]
 
-requires-python = ">=3.11"
+requires-python = ">=3.11.4"
 
 dependencies = [
     'click==8.2.1',
