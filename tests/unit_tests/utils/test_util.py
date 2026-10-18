@@ -201,3 +201,38 @@ def test_resolve_packages_dir_apio_and_packages_check(
         assert resolve_packages_dir(sb.home_dir) == (
             sb.home_dir / "APIO-PACKAGES"
         )
+
+
+def test_resolve_packages_dir_dot_dot(apio_runner: ApioRunner):
+    """Tests that '..' path components in APIO_PACKAGES are rejected."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Case 1: '..' that removes the 'apio' and 'packages' component.
+        # -- Should fail.
+        os.environ["APIO_PACKAGES"] = str(
+            Path("/no-such-dir/apio-packages/..")
+        )
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                resolve_packages_dir(sb.home_dir)
+        assert e.value.code == 1
+        assert "should not contain '..'" in log.out
+
+        # -- Case 2: '..' that keeps the 'apio' and 'packages' component.
+        # -- Should fail.
+        os.environ["APIO_PACKAGES"] = str(
+            Path("/no-such-dir/tmp/../apio-packages")
+        )
+        with apio_runner.with_logger() as log:
+            with pytest.raises(SystemExit) as e:
+                resolve_packages_dir(sb.home_dir)
+        assert e.value.code == 1
+        assert "should not contain '..'" in log.out
+
+        # -- Case 3: '..' inside a dir name is not a '..' component.
+        # -- Should pass.
+        os.environ["APIO_PACKAGES"] = str(sb.sandbox_dir / "apio..packages")
+        assert resolve_packages_dir(sb.home_dir) == (
+            sb.sandbox_dir / "apio..packages"
+        )

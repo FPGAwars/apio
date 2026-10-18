@@ -482,6 +482,13 @@ def resolve_packages_dir(apio_home_dir: Path) -> Path:
         apio_packages_dir_env = os.path.expanduser(apio_packages_dir_env)
         # -- Expand vars such as $HOME or %HOME% on windows.
         apio_packages_dir_env = os.path.expandvars(apio_packages_dir_env)
+        # -- Disallow '..' path components since they can be used to bypass
+        # -- the safety check below, e.g. '/home/me/apio-packages/..'.
+        if ".." in Path(apio_packages_dir_env).parts:
+            fatal_error(
+                "Apio packages dir APIO_PACKAGES should not contain "
+                + f"'..' [{apio_packages_dir_env}]."
+            )
         # -- Verify that the expanded value contains 'apio' and 'packages'
         # -- (case insensitive) to make sure we don't clobber system
         # -- directories. This is done after the expansion since the

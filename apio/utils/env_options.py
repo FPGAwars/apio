@@ -24,8 +24,9 @@ APIO_HOME = "APIO_HOME"
 # -- Env variable to override the apio packages dir <apio_home>/packages.
 # -- it contains the apio packages loaded from github. If specified, the
 # -- path must contain the strings 'apio' and 'packages' (case insensitive,
-# -- order doesn't matter) for safety. This env variable used in testing to
-# -- share cached downloaded packages across tests runs.
+# -- order doesn't matter) and must not contain '..' for safety. This env
+# -- variable used in testing to share cached downloaded packages across
+# -- tests runs.
 APIO_PACKAGES = "APIO_PACKAGES"
 
 # -- Env variable to override the platform id that is determined automatically
