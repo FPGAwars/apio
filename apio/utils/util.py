@@ -593,13 +593,6 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
             console=console(),
         ):
             item = items[i]
-
-            # -- Skip .gitignore files.
-            if hasattr(item, "filename") and item.filename.endswith(
-                ".gitignore"
-            ):
-                continue
-
             # -- Extract the item
             if get_python_ver_tuple() >= (3, 12, 0):
                 # -- Special case for avoiding the tar deprecation warning.
