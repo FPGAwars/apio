@@ -13,6 +13,7 @@
 # pylint: disable=duplicate-code
 
 from pathlib import Path
+from typing_extensions import override
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase, CompositeBuilder
 from apio.common.common_util import SRC_SUFFIXES
@@ -48,6 +49,7 @@ class PluginXilinx(PluginBase):
             yosys_path / "xilinx" / "cells_xtra.v"
         ]
 
+    @override
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
         return ArchPluginInfo(
@@ -56,7 +58,7 @@ class PluginXilinx(PluginBase):
             bitstream_file_suffix=".bit",
         )
 
-    # @overrides
+    @override
     def make_synth_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the synth builder."""
 
@@ -87,7 +89,7 @@ class PluginXilinx(PluginBase):
             src_suffix=SRC_SUFFIXES,
         )
 
-    # @overrides
+    @override
     def make_pnr_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the pnr builder."""
 
@@ -124,7 +126,7 @@ class PluginXilinx(PluginBase):
             emitter=emitter,
         )
 
-    # @overrides
+    @override
     def make_bitstream_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the bitstream builder."""
 
@@ -158,7 +160,7 @@ class PluginXilinx(PluginBase):
             suffix=".bit",
         )
 
-    # @overrides
+    @override
     def make_testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the testbench compile builder."""
 
@@ -204,7 +206,7 @@ class PluginXilinx(PluginBase):
             suffix=".out",
         )
 
-    # @overrides
+    @override
     def make_lint_config_builder(self) -> BuilderBase:
         """Creates and returns the lint config builder."""
 
@@ -220,7 +222,7 @@ class PluginXilinx(PluginBase):
             ],
         )
 
-    # @overrides
+    @override
     def make_lint_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the lint builder."""
 

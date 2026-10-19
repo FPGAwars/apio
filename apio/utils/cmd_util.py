@@ -10,6 +10,7 @@
 """Utility functionality for apio click commands."""
 
 from dataclasses import dataclass
+from typing_extensions import override
 import click
 from click.formatting import HelpFormatter
 from apio.common import apio_console
@@ -268,7 +269,7 @@ class ApioGroup(click.Group):
             for cmd in subgroup.commands:
                 self.add_command(cmd=cmd, name=cmd.name)
 
-    # @override
+    @override
     def format_help_text(
         self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
@@ -276,7 +277,7 @@ class ApioGroup(click.Group):
         assert isinstance(ctx, ApioCmdContext)
         _format_apio_rich_text_help_text(str(self.help), formatter)
 
-    # @override
+    @override
     def format_options(
         self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
@@ -317,7 +318,7 @@ class ApioGroup(click.Group):
                 )
             formatter.write("\n")
 
-    # @override
+    @override
     def get_command(self, ctx, cmd_name) -> click.Command | None:
         """Overrides the method that matches a token in the command line to
         a sub-command. This alternative implementation allows to specify also
@@ -358,7 +359,7 @@ class ApioCommand(click.Command):
     """A customized click.Command class that allows apio customized help
     format and proper handling of command shortcuts."""
 
-    # @override
+    @override
     def format_help_text(
         self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
@@ -388,7 +389,7 @@ class ApioCmdContext(click.Context):
         # -- usage text by click.
         self.color = apio_console.is_terminal()
 
-    # @override
+    @override
     def get_help(self) -> str:
         # IMPORTANT:
         # This implementation behaves differently than the parent method

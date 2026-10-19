@@ -19,6 +19,7 @@ import subprocess
 from threading import Thread
 from pathlib import Path
 import hashlib
+from typing_extensions import override
 import apio
 from apio.utils import env_options
 from apio.common.apio_console import cout, cerror, fatal_error
@@ -82,6 +83,7 @@ class AsyncPipe(Thread):
         if self.outcallback:
             self.outcallback(line, terminator)
 
+    @override
     def run(self) -> None:
         """DOC: TODO"""
 

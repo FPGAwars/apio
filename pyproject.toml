@@ -62,6 +62,7 @@ dependencies = [
     'vcdvcd==2.6.0',
     'invoke==2.2.1',
     'json5==0.15.0',
+    'typing-extensions>=4.4.0',
 ]
 
 [project.optional-dependencies]
@@ -83,6 +84,10 @@ mypy = [
 
 [project.scripts]
 apio = "apio.__main__:main"
+
+[tool.mypy]
+# Require the @override decorator on methods that override a base method.
+enable_error_code = ["explicit-override"]
 
 [[tool.mypy.overrides]]
 # Supress mypy warning for these imported modules since type stubs are

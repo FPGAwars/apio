@@ -9,6 +9,7 @@ from datetime import date
 from dataclasses import dataclass, field
 from enum import Enum, unique
 from packaging.version import Version
+from typing_extensions import override
 from scripts.janitor import consts
 
 # ---------- Common
@@ -40,6 +41,7 @@ class ReleaseState(Enum):
             return cls.LATEST
         return cls.STABLE
 
+    @override
     def __str__(self) -> str:
         """Using the string value as string representation. Used by json dumps
         when default=str.
@@ -89,6 +91,7 @@ class GithubReleaseRef:
         _check_repo_str(self.repo)
         # _check_release_tag_str(self.release_tag)
 
+    @override
     def __str__(self) -> str:
         """Human friendly representation of the object."""
         return _repo_and_tag_to_str(self.repo, self.release_tag)

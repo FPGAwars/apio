@@ -13,6 +13,7 @@
 # pylint: disable=duplicate-code
 
 from pathlib import Path
+from typing_extensions import override
 from SCons.Script import Builder
 from SCons.Builder import BuilderBase, CompositeBuilder
 from apio.common.common_util import SRC_SUFFIXES
@@ -52,6 +53,7 @@ class PluginEcp5(PluginBase):
             yosys_path / "ecp5" / "cells_bb.v"
         ]
 
+    @override
     def plugin_info(self) -> ArchPluginInfo:
         """Return plugin specific parameters."""
         return ArchPluginInfo(
@@ -60,7 +62,7 @@ class PluginEcp5(PluginBase):
             bitstream_file_suffix=".bit",
         )
 
-    # @overrides
+    @override
     def make_synth_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the synth builder."""
 
@@ -84,7 +86,7 @@ class PluginEcp5(PluginBase):
             suffix=".json",
         )
 
-    # @overrides
+    @override
     def make_pnr_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the pnr builder."""
 
@@ -119,7 +121,7 @@ class PluginEcp5(PluginBase):
             emitter=emitter,
         )
 
-    # @overrides
+    @override
     def make_bitstream_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the bitstream builder."""
 
@@ -131,7 +133,7 @@ class PluginEcp5(PluginBase):
             suffix=".bit",
         )
 
-    # @overrides
+    @override
     def make_testbench_compile_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the testbench compile builder."""
         # -- Keep short references.
@@ -178,7 +180,7 @@ class PluginEcp5(PluginBase):
             suffix=".out",
         )
 
-    # @overrides
+    @override
     def make_lint_config_builder(self) -> BuilderBase:
         """Creates and returns the lint config builder."""
 
@@ -204,7 +206,7 @@ class PluginEcp5(PluginBase):
             ],
         )
 
-    # @overrides
+    @override
     def make_lint_builder(self) -> BuilderBase | CompositeBuilder:
         """Creates and returns the lint builder."""
 
