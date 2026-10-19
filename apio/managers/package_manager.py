@@ -15,7 +15,9 @@ from dataclasses import dataclass
 from typing import Any
 from pathlib import Path
 import shutil
-from apio.common.apio_console import cout, cstyle, fatal_error
+import tarfile
+from rich.progress import track
+from apio.common.apio_console import cout, cstyle, console, fatal_error
 from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
@@ -118,6 +120,59 @@ def get_datetime_stamp(dt: datetime | None = None) -> str:
     if dt is None:
         dt = datetime.now()
     return dt.strftime("%Y-%m-%d-%H-%M")
+
+
+def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
+    """Unpack a .tgz archive into the given dest directory. Exits with an
+    error if an archive item would be written outside of dest_dir, e.g.
+    '../foo', '/foo', or a link to outside of dest_dir."""
+
+    # -- Get the file name
+    archive_name = archive_file_path.name
+
+    # -- Check it's a ".tgz" file
+    if not archive_name.endswith(".tgz"):
+        fatal_error(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
+
+    # -- We use the tarfile 'data' filter which rejects items that would be
+    # -- written outside of the dest dir. Search 'extraction_filter' in
+    # -- https://docs.python.org/3/library/tarfile.html
+
+    # -- Extract all items while animating the progress bar.
+    with tarfile.open(archive_file_path) as tar_file:
+
+        items = tar_file.getmembers()
+
+        # -- Check all the items before extracting any of them. This way an
+        # -- unsafe archive is rejected before anything is written, and the
+        # -- error is not lost in the progress bar output.
+        for item in items:
+            # -- Pre-check that we don't write outside dest_dir, e.g. with
+            # -- ".." path in the tar file.
+            try:
+                tarfile.data_filter(item, str(dest_dir))
+            except tarfile.FilterError as e:
+                fatal_error(
+                    f"Unsafe item '{item.name}' in archive '{archive_name}'.",
+                    cause=e,
+                )
+
+        for i in track(
+            range(len(items)),
+            description="Unpacking  ",
+            console=console(),
+        ):
+            item = items[i]
+            # -- Extract the item. The filter checks again, now that the
+            # -- previous items are on disk, e.g. 'a/../x' after the link
+            # -- 'a -> .'.
+            try:
+                tar_file.extract(item, dest_dir, filter="data")
+            except tarfile.FilterError as e:
+                fatal_error(
+                    f"Unsafe item '{item.name}' in archive '{archive_name}'.",
+                    cause=e,
+                )
 
 
 class PackageManager:
@@ -455,7 +510,7 @@ class PackageManager:
         self._delete_package_dir(package_name, verbose)
 
         # -- Unpack the package. This creates a new package dir.
-        util.unpack_tgz(local_package_file, package_dir)
+        unpack_tgz(local_package_file, package_dir)
 
         # -- Remove the package file. We don't need it anymore.
         if verbose:
@@ -497,7 +552,7 @@ class PackageManager:
             elif orphan_type == orphan_type.ORPHAN_FILE:
                 cout(f"Deleting unknown package file '{orphan_name}'")
                 file_path = self.packages_dir / orphan_name
-                assert "packages" in str(file_path).lower(), dir_path
+                assert "packages" in str(file_path).lower(), file_path
                 file_path.unlink()
 
             # -- Unexpected orphan type.

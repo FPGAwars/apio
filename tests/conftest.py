@@ -15,6 +15,7 @@ from typing import cast, Any
 import os
 from pprint import pprint
 import pytest
+from typing_extensions import override
 from click.testing import CliRunner, Result
 from rich.ansi import AnsiDecoder
 from apio import __main__
@@ -40,7 +41,7 @@ class _LogTee(TextIOBase):
         self._buf = log_buffer
         self._live = live_stream
 
-    # @overrides
+    @override
     def write(self, s: str) -> int:
         # -- Write to the log buffer
         self._buf.write(s)
@@ -50,7 +51,7 @@ class _LogTee(TextIOBase):
         # -- All done.
         return len(s)
 
-    # @overrides
+    @override
     def flush(self) -> None:
         self._buf.flush()
         self._live.flush()

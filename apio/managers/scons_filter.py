@@ -10,6 +10,7 @@
 import re
 import threading
 from enum import Enum, unique
+from typing_extensions import override
 from apio.common.debug_util import is_debug
 from apio.common.apio_console import cout, cunstyle, cwrite, cstyle
 from apio.common.apio_styles import INFO, WARNING, SUCCESS, ERROR
@@ -119,6 +120,7 @@ class PnrRangeDetector(RangeDetector):
     """Implements a RangeDetector for the nextpnr command verbose
     log lines."""
 
+    @override
     def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents | None:
         # -- Break line into words.
         tokens = line.split()

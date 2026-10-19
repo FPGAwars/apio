@@ -19,11 +19,10 @@ import subprocess
 from threading import Thread
 from pathlib import Path
 import hashlib
-from tarfile import open as tarfile_open
-from rich.progress import track
+from typing_extensions import override
 import apio
 from apio.utils import env_options
-from apio.common.apio_console import cout, cerror, console, fatal_error
+from apio.common.apio_console import cout, cerror, fatal_error
 from apio.common.common_util import cmd_in_env
 
 # ----------------------------------------
@@ -84,6 +83,7 @@ class AsyncPipe(Thread):
         if self.outcallback:
             self.outcallback(line, terminator)
 
+    @override
     def run(self) -> None:
         """DOC: TODO"""
 
@@ -478,17 +478,27 @@ def resolve_packages_dir(apio_home_dir: Path) -> Path:
 
     # -- If the env vars specified an packages dir then use it.
     if apio_packages_dir_env:
-        # -- Verify that the env variable contains 'packages' to make sure we
-        # -- don't clobber system directories.
-        if "packages" not in apio_packages_dir_env:
-            fatal_error(
-                "Apio packages dir APIO_PACKAGES should include the "
-                + "string 'packages'."
-            )
         # -- Expand user home '~' marker, if exists.
         apio_packages_dir_env = os.path.expanduser(apio_packages_dir_env)
-        # -- Expand varas such as $HOME or %HOME% on windows.
+        # -- Expand vars such as $HOME or %HOME% on windows.
         apio_packages_dir_env = os.path.expandvars(apio_packages_dir_env)
+        # -- Disallow '..' path components since they can be used to bypass
+        # -- the safety check below, e.g. '/home/me/apio-packages/..'.
+        if ".." in Path(apio_packages_dir_env).parts:
+            fatal_error(
+                "Apio packages dir APIO_PACKAGES should not contain "
+                + f"'..' [{apio_packages_dir_env}]."
+            )
+        # -- Verify that the expanded value contains 'apio' and 'packages'
+        # -- (case insensitive) to make sure we don't clobber system
+        # -- directories. This is done after the expansion since the
+        # -- expanded value is the one we use.
+        lower_value = apio_packages_dir_env.lower()
+        if "apio" not in lower_value or "packages" not in lower_value:
+            fatal_error(
+                "Apio packages dir APIO_PACKAGES should include the "
+                + f"strings 'apio' and 'packages' [{apio_packages_dir_env}]."
+            )
         # -- Convert string to path.
         packages_dir = Path(apio_packages_dir_env)
     else:
@@ -560,45 +570,6 @@ def compute_file_sha256(path: Path) -> str:
 
     # -- All done OK.
     return sha256
-
-
-def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
-    """Unpack a .tgz archive into the given dest directory."""
-
-    # -- Get the file name
-    archive_name = archive_file_path.name
-
-    # -- Check it's a ".tgz" file
-    if not archive_name.endswith(".tgz"):
-        fatal_error(f"Cannot unarchive'{archive_name}', it's not a .tgz file.")
-
-    # -- Extract all items while animating the progress bar.
-    with tarfile_open(archive_file_path) as tar_file:
-
-        items = tar_file.getmembers()
-
-        for i in track(
-            range(len(items)),
-            description="Unpacking  ",
-            console=console(),
-        ):
-            item = items[i]
-
-            # -- Skip .gitignore files.
-            if hasattr(item, "filename") and item.filename.endswith(
-                ".gitignore"
-            ):
-                continue
-
-            # -- Extract the item
-            if get_python_ver_tuple() >= (3, 12, 0):
-                # -- Special case for avoiding the tar deprecation warning.
-                # Search
-                # -- 'extraction_filter' in the page
-                # -- https://docs.python.org/3/library/tarfile.html
-                tar_file.extract(item, dest_dir, filter="fully_trusted")
-            else:
-                tar_file.extract(item, dest_dir)
 
 
 def json_dict_contains_substring(data, substr: str) -> bool:
