@@ -132,7 +132,7 @@ def _system_cli():
         apio_ctx.package_manager.get_yosys_release_tag(),
     )
     table.add_row("Python version", util.get_python_version())
-    table.add_row("Python executable", sys.executable)
+    table.add_row("Executable", sys.executable)
     table.add_row("System info", apio_platforms.get_system_info())
     table.add_row("Platform id", platform.id)
     table.add_row("Is Darwin", str(platform.is_darwin))
