@@ -1,4 +1,4 @@
-// Common protcol buffers definitions that are imported by other
+// Common protocol buffers definitions that are imported by other
 // protocol buffer files.
 
 // IMPORTANT: After making changes in this file, run the repo task
