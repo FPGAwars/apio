@@ -1,11 +1,13 @@
+# This file is part of the Apio project
+# (C) 2016-present FPGAwars
+# Project authors:
+#   * Jesús Arroyo (Jesus89) (2016-2019)
+#   * Juan Gonzalez (obijuan) (2019-2024)
+#   * The Apio Team (2024-present)
+# License: GPLv2
+
 """The apio definitions manager class. This class manages the standard
 and custom boards, fpgas, and programmers definitions."""
-
-# -*- coding: utf-8 -*-
-# -- This file is part of the Apio project
-# -- (C) 2016-2019 FPGAwars
-# -- Author Jesús Arroyo
-# -- License GPLv2
 
 
 import re
