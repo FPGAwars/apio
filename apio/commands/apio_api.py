@@ -172,7 +172,7 @@ def _get_system_cli(
         apio_ctx.package_manager.get_yosys_release_tag()
     )
     section_dict["python-version"] = util.get_python_version()
-    section_dict["python-executable"] = sys.executable
+    section_dict["Executable"] = sys.executable
     section_dict["platform-info"] = apio_platforms.get_system_info()
     section_dict["platform-id"] = platform.id
     section_dict["is-darwin"] = platform.is_darwin
