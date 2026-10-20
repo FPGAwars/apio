@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
-# -- This file is part of the Apio project
-# -- (C) 2016-2024 FPGAwars
-# -- Authors
-# --  * Jesús Arroyo (2016-2019)
-# --  * Juan Gonzalez (obijuan) (2019-2024)
-# -- License GPLv2
+# This file is part of the Apio project
+# (C) 2016-present FPGAwars
+# Project authors:
+#   * Jesús Arroyo (Jesus89) (2016-2019)
+#   * Juan Gonzalez (obijuan) (2019-2024)
+#   * The Apio Team (2024-present)
+# License: GPLv2
+
 """Implementation of 'apio create' command"""
 
 from pathlib import Path
