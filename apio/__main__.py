@@ -1,5 +1,3 @@
-#!venv/bin/python
-
 # This file is part of the Apio project
 # (C) 2016-present FPGAwars
 # Project authors:
