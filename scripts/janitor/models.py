@@ -442,7 +442,7 @@ class ReposCrawl:
         # -- Lookup at release tag level
         assert isinstance(repo_crawl, RepoCrawl)
         release_crawl = repo_crawl.releases.get(release.release_tag, None)
-        if repo_crawl is None:
+        if release_crawl is None:
             return default
 
         # -- All done.
