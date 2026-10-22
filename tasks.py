@@ -287,7 +287,7 @@ def clean_task(_: Context):
         # -- Item exists, delete it.
         description = str(item)
         if str(item).startswith(str(repo_root)):
-            description = "${repo}/" + str(item.relative_to(repo_root))
+            description = "{repo}/" + str(item.relative_to(repo_root))
 
         if item.is_dir():
             print(f"[d] {description}")

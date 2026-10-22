@@ -22,7 +22,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-14",
+        "tag": "2026-10-22",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
@@ -33,7 +33,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-21",
+        "tag": "2026-10-22",
         "package": "apio-drivers-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -44,7 +44,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-09-15",
+        "tag": "2026-10-22",
         "package": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -55,7 +55,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-20",
+        "tag": "2026-10-22",
         "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -66,7 +66,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-16",
+        "tag": "2026-10-22",
         "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -77,7 +77,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-09-20",
+        "tag": "2026-10-22",
         "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     }
