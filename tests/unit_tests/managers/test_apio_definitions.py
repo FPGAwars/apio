@@ -10,6 +10,8 @@
 Tests of apio_definitions.py
 """
 
+import os
+import shutil
 from pytest import raises
 from google.protobuf.json_format import MessageToDict
 from tests.conftest import ApioRunner
@@ -488,3 +490,52 @@ def test_loading_invalid_custom_programmer_id(apio_runner: ApioRunner):
         # -- Verify
         assert e.value.code == 1
         assert "Programmer id has an invalid format: invalid-ID" in log.out
+
+
+def test_definitions_env_var(apio_runner: ApioRunner):
+    """Tests that APIO_DEFINITIONS overrides the definitions dir."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        # -- Make sure the packages are installed.
+        _ = ApioContext(
+            project_policy=ProjectPolicy.NO_PROJECT,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+        )
+
+        # -- Copy the definitions to another dir and point to it.
+        my_dir = sb.sandbox_dir / "my-definitions"
+        shutil.copytree(sb.packages_dir / "definitions", my_dir)
+        sb.write_json_file(my_dir / "boards.jsonc", {}, exists_ok=True)
+        os.environ["APIO_DEFINITIONS"] = str(my_dir)
+
+        apio_ctx = ApioContext(
+            project_policy=ProjectPolicy.NO_PROJECT,
+            remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+            packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+        )
+
+        assert apio_ctx.definitions is not None
+        assert apio_ctx.definitions.package_definitions_dir == my_dir
+        # -- The boards came from the empty boards.jsonc in my_dir.
+        assert not apio_ctx.definitions.boards
+
+
+def test_definitions_env_var_bad_dir(apio_runner: ApioRunner):
+    """Tests that APIO_DEFINITIONS with a non existing dir is an error."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        os.environ["APIO_DEFINITIONS"] = str(sb.sandbox_dir / "no-such-dir")
+
+        with apio_runner.with_logger() as log:
+            with raises(SystemExit) as e:
+                _ = ApioContext(
+                    project_policy=ProjectPolicy.NO_PROJECT,
+                    remote_config_policy=RemoteConfigPolicy.CACHED_OK,
+                    packages_policy=PackagesPolicy.ENSURE_PACKAGES,
+                )
+
+        assert e.value.code == 1
+        assert "APIO_DEFINITIONS is not a directory" in log.out
