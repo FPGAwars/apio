@@ -13,8 +13,10 @@
 
 import json
 import os
+from pathlib import Path
 from tests.conftest import ApioRunner
 from apio.commands.apio import apio_top_cli as apio
+from apio.utils import env_options
 
 # TODO: Add more tests
 
@@ -237,6 +239,13 @@ def test_apio_api_get_system(apio_runner: ApioRunner):
         data = json.loads(text)
         assert data["timestamp"] == "xyz"
         assert data["system"]["remote-config-file-url"].endswith(".jsonc")
+        # -- APIO_DEFINITIONS may be predefined by the developer.
+        expected_dir = env_options.get(
+            env_options.APIO_DEFINITIONS, str(sb.packages_dir / "definitions")
+        )
+        assert Path(data["system"]["apio-definitions-dir"]) == Path(
+            str(expected_dir)
+        )
 
 
 def test_apio_api_get_project(apio_runner: ApioRunner):

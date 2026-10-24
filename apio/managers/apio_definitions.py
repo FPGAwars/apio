@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 import json
-from apio.utils import jsonc
+from apio.utils import jsonc, env_options
 from apio.common import proto_util
 from apio.common.apio_console import cout, fatal_error
 from apio.common.proto.stubs.apio_definitions_pb2 import (
@@ -59,12 +59,18 @@ class ApioDefinitions:
         self._apio_packages_dir = apio_packages_dir
         self._project_definitions_dir = project_definitions_dir
 
+        # -- The dir with the standard boards, fpgas, and programmers
+        # -- definition files. Can be overridden with APIO_DEFINITIONS.
+        self._package_definitions_dir = self._resolve_package_definitions_dir(
+            apio_packages_dir
+        )
+
         # -- Read boards definitions as a json_dict.
         # -- Custom definitions overrides apio standard definitions.
         boards_json, self.custom_boards_ids = self._load_definitions(
             {},
             BOARDS_JSONC,
-            self._apio_packages_dir / "definitions",
+            self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
@@ -97,7 +103,7 @@ class ApioDefinitions:
         fpgas_json, self.custom_fpgas_ids = self._load_definitions(
             base_fpgas_dict,
             FPGAS_JSONC,
-            self._apio_packages_dir / "definitions",
+            self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
@@ -118,7 +124,7 @@ class ApioDefinitions:
         programmers_json, self.custom_programmers_ids = self._load_definitions(
             {},
             PROGRAMMERS_JSONC,
-            self._apio_packages_dir / "definitions",
+            self._package_definitions_dir,
             self._project_definitions_dir,
         )
 
@@ -138,6 +144,29 @@ class ApioDefinitions:
 
         # -- Validate the definitions we just loaded.
         self._validate_definitions()
+
+    @property
+    def package_definitions_dir(self) -> Path:
+        """Returns the dir from which the standard boards, fpgas, and
+        programmers definition files were loaded."""
+        return self._package_definitions_dir
+
+    @staticmethod
+    def _resolve_package_definitions_dir(apio_packages_dir: Path) -> Path:
+        """Returns the dir of the standard definition files. This is
+        <packages dir>/definitions, unless overridden by the APIO_DEFINITIONS
+        env var."""
+        override = env_options.get(env_options.APIO_DEFINITIONS)
+        if override is None:
+            return apio_packages_dir / "definitions"
+
+        override_dir = Path(override)
+        if not override_dir.is_dir():
+            fatal_error(
+                f"{env_options.APIO_DEFINITIONS} is not a directory: "
+                f"'{override}'"
+            )
+        return override_dir
 
     def _validate_definitions(self):
         """Validate the boards, fpgas, and programmers definitions of this

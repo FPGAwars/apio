@@ -50,6 +50,17 @@ APIO_DEBUG = "APIO_DEBUG"
 #
 APIO_REMOTE_CONFIG_URL = "APIO_REMOTE_CONFIG_URL"
 
+# -- Env variable to override the dir from which apio reads the boards.jsonc,
+# -- fpgas.jsonc, and programmers.jsonc definition files. By default they are
+# -- read from <packages dir>/definitions. For testing only, it's used to
+# -- test changes to the apio-definitions repo without installing them.
+# -- The examples are still read from the installed definitions package.
+#
+# Example:
+#   /projects/apio-definitions-dev/repo/definitions
+#
+APIO_DEFINITIONS = "APIO_DEFINITIONS"
+
 
 # -- List of all supported env options.
 _SUPPORTED_APIO_VARS = [
@@ -57,6 +68,7 @@ _SUPPORTED_APIO_VARS = [
     APIO_PACKAGES,
     APIO_PLATFORM,
     APIO_REMOTE_CONFIG_URL,
+    APIO_DEFINITIONS,
     APIO_DEBUG,
 ]
 

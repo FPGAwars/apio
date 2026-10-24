@@ -40,6 +40,7 @@ def test_apio_info_system(apio_runner: ApioRunner):
         result = sb.invoke_apio_cmd(apio, ["info", "system"])
         sb.assert_result_ok(result)
         assert "Platform id" in result.output
+        assert "Apio definitions dir" in result.output
         # -- The these env options are set by the apio text fixture. We
         # -- relax the expression to allow additional env vars that are
         # -- injected to the test such as APIO_REMOTE_URL_CONFIG

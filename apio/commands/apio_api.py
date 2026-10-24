@@ -188,6 +188,10 @@ def _get_system_cli(
     )
     section_dict["apio-home-dir"] = str(apio_ctx.apio_home_dir)
     section_dict["apio-packages-dir"] = str(apio_ctx.apio_packages_dir)
+    assert apio_ctx.definitions is not None
+    section_dict["apio-definitions-dir"] = str(
+        apio_ctx.definitions.package_definitions_dir
+    )
     section_dict["remote-config-file-url"] = (
         apio_ctx.remote_config.remote_config_file_url
     )

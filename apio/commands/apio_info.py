@@ -147,6 +147,11 @@ def _system_cli():
     )
     table.add_row("Apio home dir", str(apio_ctx.apio_home_dir))
     table.add_row("Apio packages dir", str(apio_ctx.apio_packages_dir))
+    assert apio_ctx.definitions is not None
+    table.add_row(
+        "Apio definitions dir",
+        str(apio_ctx.definitions.package_definitions_dir),
+    )
     table.add_row(
         "Remote config file URL", apio_ctx.remote_config.remote_config_file_url
     )
