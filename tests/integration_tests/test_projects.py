@@ -333,7 +333,7 @@ def test_project_ecp5_local_dir(apio_runner: ApioRunner):
         arch="ecp5",
         remote_proj_dir=False,
         example="colorlight-5a-75b-v8/ledon",
-        testbench_file="ledon_tb.v",
+        testbench_file="main_tb.v",
         bitstream="hardware.bit",
         report_item="TRELLIS_IO",
     )
@@ -346,7 +346,7 @@ def test_project_ecp5_remote_dir(apio_runner: ApioRunner):
         arch="ecp5",
         remote_proj_dir=True,
         example="colorlight-5a-75b-v8/ledon",
-        testbench_file="ledon_tb.v",
+        testbench_file="main_tb.v",
         bitstream="hardware.bit",
         report_item="TRELLIS_IO",
     )
@@ -360,7 +360,7 @@ def test_project_ecp5_system_verilog(apio_runner: ApioRunner):
         arch="ecp5",
         remote_proj_dir=False,
         example="colorlight-5a-75b-v8/ledon-sv",
-        testbench_file="ledon_tb.sv",
+        testbench_file="main_tb.sv",
         bitstream="hardware.bit",
         report_item="TRELLIS_IO",
     )
@@ -373,7 +373,7 @@ def test_project_gowin_local_dir(apio_runner: ApioRunner):
         arch="gowin",
         remote_proj_dir=False,
         example="sipeed-tang-nano-9k/blinky",
-        testbench_file="blinky_tb.v",
+        testbench_file="main_tb.v",
         bitstream="hardware.fs",
         report_item="LUT4",
     )
@@ -386,7 +386,7 @@ def test_project_gowin_remote_dir(apio_runner: ApioRunner):
         arch="gowin",
         remote_proj_dir=True,
         example="sipeed-tang-nano-9k/blinky",
-        testbench_file="blinky_tb.v",
+        testbench_file="main_tb.v",
         bitstream="hardware.fs",
         report_item="LUT4",
     )
@@ -400,7 +400,7 @@ def test_project_gowin_system_verilog(apio_runner: ApioRunner):
         arch="gowin",
         remote_proj_dir=False,
         example="sipeed-tang-nano-9k/blinky-sv",
-        testbench_file="blinky_tb.sv",
+        testbench_file="main_tb.sv",
         bitstream="hardware.fs",
         report_item="LUT4",
     )
@@ -414,7 +414,7 @@ def test_project_xilinx_local_dir(apio_runner: ApioRunner):
         arch="xilinx",
         remote_proj_dir=False,
         example="basys3/ledon",
-        testbench_file="ledon_tb.v",
+        testbench_file="main_tb.v",
         bitstream="hardware.bit",
         report_item="PSEUDO_GND",
     )
@@ -428,7 +428,7 @@ def test_project_xilinx_remote_dir(apio_runner: ApioRunner):
         arch="xilinx",
         remote_proj_dir=True,
         example="basys3/ledon",
-        testbench_file="ledon_tb.v",
+        testbench_file="main_tb.v",
         bitstream="hardware.bit",
         report_item="PSEUDO_GND",
     )

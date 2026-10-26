@@ -58,8 +58,18 @@ def create_gtkwave_file(
     # -- Do not load the actual signals values, just the metadata.
     vcd = VCDVCD(vcd_path, signal_res=[pattern], store_tvs=False)
 
-    # -- Get a list with raw names of matching signals.
-    signals = list(vcd.references_to_ids.keys())
+    # -- Get a list of the matching signals names. GTKWave names signals
+    # -- of these VCD types without the bit range, e.g. 'main_tb.i' rather
+    # -- than 'main_tb.i[31:0]', so we strip it. Otherwise GTKWave 4 fails
+    # -- to find them and prints warnings.
+    no_range_types = {"integer", "parameter", "real", "string"}
+    range_pattern = re.compile(r"\s*\[[^\[\]]*\]$")
+    signals = []
+    for name, signal_id in vcd.references_to_ids.items():
+        if vcd.data[signal_id].var_type in no_range_types:
+            # -- E.g. 'main_tb.i[31:0]' -> 'main_tb.i'.
+            name = range_pattern.sub("", name)
+        signals.append(name)
 
     # -- Sort, case insensitive.
     signals.sort(key=str.casefold)

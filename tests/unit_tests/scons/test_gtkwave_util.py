@@ -26,11 +26,12 @@ EXPECTED_GTKW_LINES = [
     "[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI",
     "",
     "[*]",
-    "testbench.CLK",
-    "testbench.expected_led",
-    "testbench.i[31:0]",
-    "testbench.LED1",
-    "testbench.LED2",
+    "main_tb.assertion_err",
+    "main_tb.clk_num",
+    "main_tb.i",
+    "main_tb.leds[1:0]",
+    "main_tb.N",
+    "main_tb.sys_clk",
     "",
 ]
 

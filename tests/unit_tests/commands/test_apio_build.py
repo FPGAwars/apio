@@ -125,6 +125,6 @@ def test_files_order(apio_runner: ApioRunner):
 
         # -- Check that the files in the build command are sorted.
         # -- We adjust for the "/" vs "\" difference between Windows and Linux.
-        expected_order = ["ledon.v", "aa/bb.v", "aa/cc.v", "bb/aa.v"]
+        expected_order = ["main.v", "aa/bb.v", "aa/cc.v", "bb/aa.v"]
         expected_text = " ".join([str(Path(f)) for f in expected_order])
         assert expected_text in result.output

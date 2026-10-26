@@ -112,7 +112,7 @@ jobs:
                 ls -al hardware.bit
                 ls -al hardware.pnr
                 ls -al graph.svg
-                ls -al ledon_tb.vcd
+                ls -al main_tb.vcd
 
             - name: Test GOWIN project
               run: |
@@ -142,5 +142,5 @@ jobs:
                 ls -al hardware.fs
                 ls -al hardware.pnr
                 ls -al graph.svg
-                ls -al blinky_tb.vcd
+                ls -al main_tb.vcd
 

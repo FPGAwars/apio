@@ -6,7 +6,7 @@
   "packages": {
     // "definitions" package. Used on all platforms.
     "definitions": {
-      "description": "Apio definitions"
+      "description": "Apio definitions and examples"
     },
     // "oss-cad-suite" package. Used on all platforms.
     "oss-cad-suite": {

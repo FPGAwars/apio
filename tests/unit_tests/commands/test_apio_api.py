@@ -369,7 +369,7 @@ def test_apio_api_get_build_report(apio_runner: ApioRunner):
         # -- Sanity check the output
         assert '"env": "default"' in result.output
         assert '"ICESTORM_LC":' in result.output
-        assert '"CLK":' in result.output
+        assert '"sys_clk":' in result.output
         assert '"fmax_mhz":' in result.output
 
         # -- Execute "apio api get-build-report -t xyz  -o <dir>"  (file)
@@ -390,7 +390,7 @@ def test_apio_api_get_build_report(apio_runner: ApioRunner):
             data["build-report"]["resources"]["ICESTORM_LC"]["available"]
             == 7680
         )
-        assert "fmax_mhz" in data["build-report"]["clocks"]["CLK"]
+        assert "fmax_mhz" in data["build-report"]["clocks"]["sys_clk"]
 
 
 def test_apio_api_get_examples(apio_runner: ApioRunner):

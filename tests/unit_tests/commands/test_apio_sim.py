@@ -52,7 +52,7 @@ def test_sim_with_no_user_gtkw_file(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Verify it has a testbench gtkw file.
-        gtkw_path = Path("ledon_tb.gtkw")
+        gtkw_path = Path("main_tb.gtkw")
         assert gtkw_path.exists(), gtkw_path
 
         # -- Delete teh gtkw file.
@@ -68,8 +68,8 @@ def test_sim_with_no_user_gtkw_file(apio_runner: ApioRunner):
         content1 = gtkw_path.read_text(encoding="utf-8")
         timestamp1 = gtkw_path.stat().st_mtime
         assert "THIS FILE WAS GENERATED AUTOMATICALLY BY APIO" in content1
-        assert "ledon_tb.DURATION" in content1
-        assert "ledon_tb.led0" in content1
+        assert "main_tb.sys_clk" in content1
+        assert "leds[7:0]" in content1
 
         # -- Run headless sim again, it should overwrite the gtkw file.
         result = sb.invoke_apio_cmd(apio, ["sim", "--no-gtkwave"])
@@ -95,7 +95,7 @@ def test_sim_with_user_gtkw_file(apio_runner: ApioRunner):
         sb.assert_result_ok(result)
 
         # -- Verify it has a testbench gtkw file.
-        gtkw_path = Path("ledon_tb.gtkw")
+        gtkw_path = Path("main_tb.gtkw")
         assert gtkw_path.exists(), gtkw_path
 
         # -- Verify the file.

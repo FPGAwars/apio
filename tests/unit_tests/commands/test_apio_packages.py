@@ -61,7 +61,7 @@ def test_packages_install(apio_runner: ApioRunner):
         # -- Delete a file from the definitions package, we will use it as an
         # -- indicator for the reinstallation of the package.
         marker_file = (
-            sb.packages_dir / "definitions/examples/alhambra-ii/ledon/ledon.v"
+            sb.packages_dir / "definitions/examples/alhambra-ii/ledon/main.v"
         )
         assert marker_file.is_file()
         marker_file.unlink()
