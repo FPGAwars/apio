@@ -26,6 +26,39 @@
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
+    // -- OSS Cad Suite package (Yosys)
+    "oss-cad-suite": {
+      "repository": {
+        "name": "tools-oss-cad-suite",
+        "organization": "fpgawars"
+      },
+      "release": {
+        "tag": "2026-10-22",
+        "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Openxc7 toolchain (nextpnr-xilinx)
+    "openxc7": {
+      "repository": {
+        "name": "tools-openxc7",
+        "organization": "fpgawars"
+      },
+      "release": {
+        "tag": "2026-10-22",
+        "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
+    // -- Verible package
+    "verible": {
+      "repository": {
+        "name": "tools-verible",
+        "organization": "fpgawars"
+      },
+      "release": {
+        "tag": "2026-10-22",
+        "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
+      }
+    },
     // -- Drivers package
     "drivers": {
       "repository": {
@@ -46,39 +79,6 @@
       "release": {
         "tag": "2026-10-22",
         "package": "apio-graphviz-${PLATFORM}-${YYYYMMDD}.tgz"
-      }
-    },
-    // -- Openxc7 toolchain (nextpnr-xilinx)
-    "openxc7": {
-      "repository": {
-        "name": "tools-openxc7",
-        "organization": "fpgawars"
-      },
-      "release": {
-        "tag": "2026-10-22",
-        "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
-      }
-    },
-    // -- OSS Cad Suite package (Yosys)
-    "oss-cad-suite": {
-      "repository": {
-        "name": "tools-oss-cad-suite",
-        "organization": "fpgawars"
-      },
-      "release": {
-        "tag": "2026-10-22",
-        "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
-      }
-    },
-    // -- Verible package
-    "verible": {
-      "repository": {
-        "name": "tools-verible",
-        "organization": "fpgawars"
-      },
-      "release": {
-        "tag": "2026-10-22",
-        "package": "apio-verible-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     }
   }
