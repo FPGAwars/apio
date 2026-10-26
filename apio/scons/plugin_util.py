@@ -488,7 +488,6 @@ def gtkwave_target(
         # -- NOTE: Users can override these rcvars by adding the desired
         # -- rcvar options in apio.ini gtkwave-extra-options which will win
         # -- since they will appear later in the command line.
-        gtkwave_cmd.append("--rcvar=splash_disable on")
         gtkwave_cmd.append("--rcvar=do_initial_zoom_fit 1")
         if gtkwave_extra_options:
             gtkwave_cmd.extend(gtkwave_extra_options)
