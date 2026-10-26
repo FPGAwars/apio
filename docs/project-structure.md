@@ -2,12 +2,12 @@
 
 ## Directory structure
 
-An Apio project consists of a directory that contains the required project file `apio.ini` and the project files. Below is an example of a minimal ICE40 project (`alhambra-ii/blinky` example) which contains the project file `apio.ini`, a Verilog source file `blinky.v`, and the pinout constraints file `pinout.pcf`, which maps symbolic pin names to pin numbers.
+An Apio project consists of a directory that contains the required project file `apio.ini` and the project files. Below is an example of a minimal ICE40 project (`alhambra-ii/blinky` example) which contains the project file `apio.ini`, a Verilog source file `main.v`, and the pinout constraints file `pinout.pcf`, which maps symbolic pin names to pin numbers.
 
 ```
 my-project/
 ├── apio.ini
-├── blinky.v
+├── main.v
 └── pinout.pcf
 ```
 
@@ -59,7 +59,7 @@ my-project/
 │       ├── hardware.pnr
 │       └── scons.params
 ├── apio.ini
-├── blinky.v
+├── main.v
 └── pinout.pcf
 ```
 
