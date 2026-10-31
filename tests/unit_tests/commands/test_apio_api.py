@@ -393,6 +393,44 @@ def test_apio_api_get_build_report(apio_runner: ApioRunner):
         assert "fmax_mhz" in data["build-report"]["clocks"]["sys_clk"]
 
 
+def test_apio_api_get_build_report_invalid_utilization(
+    apio_runner: ApioRunner,
+):
+    """Test "apio api get-build-report" with invalid utilization values in
+    hardware.pnr. Percentages that can't be computed or are out of range
+    should be reported as null."""
+
+    with apio_runner.in_sandbox() as sb:
+
+        sb.write_default_apio_ini()
+        sb.write_json_file(
+            "_build/default/hardware.pnr",
+            {
+                "utilization": {
+                    "ICESTORM_LC": {"available": 7680, "used": 768},
+                    "ICESTORM_PLL": {"available": 0, "used": 2},
+                    "SB_IO": {"available": 10, "used": 20},
+                },
+                "fmax": {},
+            },
+        )
+
+        # -- Execute "apio api get-build-report -o <file>"
+        path = sb.proj_dir / "apio.json"
+        result = sb.invoke_apio_cmd(
+            apio, ["api", "get-build-report", "-o", str(path)]
+        )
+        sb.assert_result_ok(result)
+
+        # -- Check the percentages.
+        resources = json.loads(sb.read_file_text(path))["build-report"][
+            "resources"
+        ]
+        assert resources["ICESTORM_LC"]["percentage"] == 10.0
+        assert resources["ICESTORM_PLL"]["percentage"] is None
+        assert resources["SB_IO"]["percentage"] is None
+
+
 def test_apio_api_get_examples(apio_runner: ApioRunner):
     """Test "apio api get-examples" """
 

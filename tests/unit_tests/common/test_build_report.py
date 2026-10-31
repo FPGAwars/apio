@@ -72,6 +72,24 @@ TEST_SUMMARY_XILINX = {
 }
 
 
+# -- Simplified ICE40 hardware.pnr with invalid utilization values.
+TEST_SUMMARY_INVALID_UTILIZATION = {
+    "utilization": {
+        # -- Zero available, used > 0 (division by zero).
+        "ICESTORM_PLL": {"available": 0, "used": 2},
+        # -- Zero available, zero used (division by zero).
+        "ICESTORM_RAM": {"available": 0, "used": 0},
+        # -- Used > available (above 100%).
+        "ICESTORM_LC": {"available": 10, "used": 20},
+        # -- Negative used (below 0%).
+        "SB_IO": {"available": 10, "used": -1},
+        # -- Valid, exactly 100%.
+        "SB_GB": {"available": 8, "used": 8},
+    },
+    "fmax": {},
+}
+
+
 def _resource(name: str, available: int, used: int) -> ResourceReport:
     """Construct a ResourceReport for testing."""
     return ResourceReport(
@@ -176,6 +194,28 @@ def test_read_build_report_xilinx(apio_runner):
             ],
         )
         assert build_report.clocks[0].name != ""
+
+
+def test_read_build_report_invalid_utilization(apio_runner: ApioRunner):
+    """Tests that invalid utilization values in hardware.pnr don't crash
+    and result in a None percentage."""
+    with apio_runner.in_sandbox() as sb:
+        file_path = Path("_build/default/hardware.pnr")
+        sb.write_json_file(file_path, TEST_SUMMARY_INVALID_UTILIZATION)
+
+        build_report = read_build_report(file_path)
+
+        assert build_report == BuildReport(
+            arch=ApioArch.ice40,
+            resources=[
+                ResourceReport("ICESTORM_LC", 10, 20, None),
+                ResourceReport("ICESTORM_PLL", 0, 2, None),
+                ResourceReport("ICESTORM_RAM", 0, 0, None),
+                ResourceReport("SB_GB", 8, 8, 100.0),
+                ResourceReport("SB_IO", 10, -1, None),
+            ],
+            clocks=[],
+        )
 
 
 def test_hardware_pnr_reading_failure(apio_runner: ApioRunner):

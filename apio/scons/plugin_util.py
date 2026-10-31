@@ -749,8 +749,12 @@ def _print_pnr_report(
 
         used_str = f"{res.used}  " if res.used else ""
         available_str = f"{res.available}  "
-        percents = int(100 * res.used / res.available)
-        percents_str = f"{percents}%  " if res.used else ""
+        if not res.used:
+            percents_str = ""
+        elif res.percentage is None:
+            percents_str = "n/a  "
+        else:
+            percents_str = f"{int(res.percentage)}%  "
         style = EMPH3 if res.used > 0 else None
         table.add_row(
             res.name, used_str, available_str, percents_str, style=style
