@@ -23,7 +23,9 @@ class ResourceReport:
     name: str
     available: int
     used: int
-    percentage: float
+    # -- None if the percentage can't be computed or is outside of
+    # -- the range [0, 100], which indicates invalid nextpnr data.
+    percentage: float | None
 
 
 @dataclass(frozen=True)
@@ -102,6 +104,14 @@ def _parse_clk_net_name(clk_net: str, arch: ApioArch) -> str:
     fatal_error(f"Unexpected FPGA architecture: {arch}")
 
 
+def _compute_percentage(used: int, available: int) -> float | None:
+    """Returns the utilization percentage of a resource, or None if
+    it can't be computed or is outside of the range [0, 100]."""
+    if available <= 0 or not 0 <= used <= available:
+        return None
+    return 100 * used / available
+
+
 def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     """Read the given hardware.pnr file, parse it, and return
     a summary in the form of a BuildReport object. Fatal error on any
@@ -141,7 +151,7 @@ def read_build_report(pnr_json_file_path: Path) -> BuildReport:
     for resource_name, vals in json_dict["utilization"].items():
         available: int = vals["available"]
         used: int = vals["used"]
-        percentage: float = 100 * used / available
+        percentage = _compute_percentage(used, available)
         resources.append(
             ResourceReport(resource_name, available, used, percentage)
         )

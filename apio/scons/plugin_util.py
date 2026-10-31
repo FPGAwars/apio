@@ -488,7 +488,6 @@ def gtkwave_target(
         # -- NOTE: Users can override these rcvars by adding the desired
         # -- rcvar options in apio.ini gtkwave-extra-options which will win
         # -- since they will appear later in the command line.
-        gtkwave_cmd.append("--rcvar=splash_disable on")
         gtkwave_cmd.append("--rcvar=do_initial_zoom_fit 1")
         if gtkwave_extra_options:
             gtkwave_cmd.extend(gtkwave_extra_options)
@@ -750,8 +749,12 @@ def _print_pnr_report(
 
         used_str = f"{res.used}  " if res.used else ""
         available_str = f"{res.available}  "
-        percents = int(100 * res.used / res.available)
-        percents_str = f"{percents}%  " if res.used else ""
+        if not res.used:
+            percents_str = ""
+        elif res.percentage is None:
+            percents_str = "--  "
+        else:
+            percents_str = f"{int(res.percentage)}%  "
         style = EMPH3 if res.used > 0 else None
         table.add_row(
             res.name, used_str, available_str, percents_str, style=style

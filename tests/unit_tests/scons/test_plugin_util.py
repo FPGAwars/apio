@@ -20,6 +20,8 @@ from SCons.Action import FunctionAction
 from tests.unit_tests.scons.testing import make_test_apio_env
 from tests.conftest import ApioRunner
 from apio.common import apio_console
+from apio.common.proto.stubs.apio_common_pb2 import ApioArch
+from apio.common.build_report import BuildReport, ResourceReport
 from apio.common.proto.stubs.apio_scons_pb2 import (
     TargetParams,
     UploadParams,
@@ -35,6 +37,7 @@ from apio.scons.plugin_util import (
     make_verilator_config_builder,
     verilator_lint_action,
     iverilog_action,
+    _print_pnr_report,
 )
 
 
@@ -359,3 +362,33 @@ def test_verilator_lint_action_max(apio_runner: ApioRunner):
             f'_build{os.sep}default{os.sep}hardware.vlt "file1" "file2" '
             "$SOURCES" == normalized_cmd
         )
+
+
+def test_print_pnr_report_invalid_percentage(apio_runner: ApioRunner):
+    """Tests that the pnr report shows '--' for resources with a
+    percentage that can't be computed or is out of range."""
+
+    with apio_runner.in_sandbox():
+
+        apio_console.configure()
+
+        build_report = BuildReport(
+            arch=ApioArch.ice40,
+            resources=[
+                ResourceReport("ICESTORM_LC", 7680, 768, 10.0),
+                ResourceReport("ICESTORM_PLL", 0, 2, None),
+            ],
+            clocks=[],
+        )
+
+        with apio_runner.with_logger() as log:
+            _print_pnr_report(build_report, verbose=True)
+
+        # -- Get the table lines of the two resources.
+        lines = log.out.splitlines()
+        lc_line = next(line for line in lines if "ICESTORM_LC" in line)
+        pll_line = next(line for line in lines if "ICESTORM_PLL" in line)
+
+        assert "10%" in lc_line
+        assert "--" in pll_line
+        assert "%" not in pll_line
