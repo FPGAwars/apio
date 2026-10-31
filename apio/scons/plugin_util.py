@@ -752,7 +752,7 @@ def _print_pnr_report(
         if not res.used:
             percents_str = ""
         elif res.percentage is None:
-            percents_str = "n/a  "
+            percents_str = "--  "
         else:
             percents_str = f"{int(res.percentage)}%  "
         style = EMPH3 if res.used > 0 else None

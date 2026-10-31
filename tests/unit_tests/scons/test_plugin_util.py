@@ -365,7 +365,7 @@ def test_verilator_lint_action_max(apio_runner: ApioRunner):
 
 
 def test_print_pnr_report_invalid_percentage(apio_runner: ApioRunner):
-    """Tests that the pnr report shows 'n/a' for resources with a
+    """Tests that the pnr report shows '--' for resources with a
     percentage that can't be computed or is out of range."""
 
     with apio_runner.in_sandbox():
@@ -390,5 +390,5 @@ def test_print_pnr_report_invalid_percentage(apio_runner: ApioRunner):
         pll_line = next(line for line in lines if "ICESTORM_PLL" in line)
 
         assert "10%" in lc_line
-        assert "n/a" in pll_line
+        assert "--" in pll_line
         assert "%" not in pll_line
