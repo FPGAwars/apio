@@ -22,7 +22,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-26",
+        "tag": "2026-11-05",
         "package": "apio-definitions-${YYYYMMDD}.tgz"
       }
     },
@@ -33,7 +33,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-22",
+        "tag": "2026-11-05",
         "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
@@ -44,7 +44,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-10-22",
+        "tag": "2026-11-05",
         "package": "apio-openxc7-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
