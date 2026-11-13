@@ -33,7 +33,7 @@
         "organization": "fpgawars"
       },
       "release": {
-        "tag": "2026-11-05",
+        "tag": "2026-11-11",
         "package": "apio-oss-cad-suite-${PLATFORM}-${YYYYMMDD}.tgz"
       }
     },
