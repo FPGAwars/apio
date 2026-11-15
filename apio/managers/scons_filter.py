@@ -55,6 +55,20 @@ LINE_IGNORE_LIST = [
     r"Verifying write [(]May take time[)]",
 ]
 
+# -- GTKWave output lines that match any of these regexes are ignored.
+# -- When dragging signals, GTKWave spams stderr with an assertion message,
+# -- each one preceded by an empty line.
+# -- Per https://github.com/gtkwave/gtkwave/issues/530
+# -- TODO: Remove this workaround (this list, GtkwaveRangeDetector, and their
+# -- use in SconsFilter) once that GTKWave issue is fixed.
+GTKWAVE_IGNORE_LIST = [
+    # -- Empty lines.
+    r"^\s*$",
+    # -- The assertion message.
+    r"^\(gtkwave:\d+\): Gdk-CRITICAL \*\*: .*"
+    r"gdk_atom_intern: assertion 'atom_name != NULL' failed$",
+]
+
 
 @unique
 class PipeId(Enum):
@@ -147,6 +161,22 @@ class PnrRangeDetector(RangeDetector):
         return None
 
 
+class GtkwaveRangeDetector(RangeDetector):
+    """Implements a RangeDetector for the gtkwave command output lines.
+    Part of the workaround for https://github.com/gtkwave/gtkwave/issues/530.
+    TODO: Remove once that issue is fixed."""
+
+    @override
+    def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents | None:
+        # -- Range start: The gtkwave command that scons echoes on stdout.
+        # -- The command line itself is included in the range.
+        # -- There is no range end since gtkwave is the last command we run.
+        if pipe_id == PipeId.STDOUT and line.startswith("gtkwave "):
+            return RangeEvents.START_BEFORE
+
+        return None
+
+
 class SconsFilter:
     """Implements the filtering and printing of the stdout/err streams of the
     scons subprocess. Accepts a line one at a time, detects lines ranges of
@@ -156,6 +186,7 @@ class SconsFilter:
     def __init__(self, colors_enabled: bool):
         self.colors_enabled = colors_enabled
         self._pnr_detector = PnrRangeDetector()
+        self._gtkwave_detector = GtkwaveRangeDetector()
 
         # self._iverilog_detector = IVerilogRangeDetector()
         # self._iceprog_detector = IceProgRangeDetector()
@@ -278,6 +309,21 @@ class SconsFilter:
 
         # -- Update the range detectors.
         in_pnr_verbose_range = self._pnr_detector.update(pipe_id, line)
+        in_gtkwave_range = self._gtkwave_detector.update(pipe_id, line)
+
+        # -- If a GTKWave line matches any of the GTKWave ignore patterns,
+        # -- ignore it. Per https://github.com/gtkwave/gtkwave/issues/530
+        # -- TODO: Remove once that issue is fixed.
+        if in_gtkwave_range:
+            for regex in GTKWAVE_IGNORE_LIST:
+                if re.search(regex, line):
+                    self._ignore_line(line)
+                    return
+            # -- On Windows, a "\r\n" line ending arrives as a "\r" line
+            # -- followed by an empty "\n" line, which we just dropped. GTKWave
+            # -- has no progress bars, so we treat its "\r" as a "\n".
+            if terminator == "\r":
+                terminator = "\n"
 
         # -- If the line match any of the ignore patterns ignore it.
         for regex in LINE_IGNORE_LIST:
