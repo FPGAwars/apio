@@ -169,9 +169,10 @@ class GtkwaveRangeDetector(RangeDetector):
     @override
     def classify_line(self, pipe_id: PipeId, line: str) -> RangeEvents | None:
         # -- Range start: The gtkwave command that scons echoes on stdout.
+        # -- The command line itself is included in the range.
         # -- There is no range end since gtkwave is the last command we run.
         if pipe_id == PipeId.STDOUT and line.startswith("gtkwave "):
-            return RangeEvents.START_AFTER
+            return RangeEvents.START_BEFORE
 
         return None
 
@@ -318,6 +319,11 @@ class SconsFilter:
                 if re.search(regex, line):
                     self._ignore_line(line)
                     return
+            # -- On Windows, a "\r\n" line ending arrives as a "\r" line
+            # -- followed by an empty "\n" line, which we just dropped. GTKWave
+            # -- has no progress bars, so we treat its "\r" as a "\n".
+            if terminator == "\r":
+                terminator = "\n"
 
         # -- If the line match any of the ignore patterns ignore it.
         for regex in LINE_IGNORE_LIST:

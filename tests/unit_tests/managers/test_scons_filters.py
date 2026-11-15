@@ -55,8 +55,8 @@ def test_gtkwave_range_detector():
     assert not rd.update(PipeId.STDOUT, "hello world")
     assert not rd.update(PipeId.STDERR, "gtkwave bla bla")
 
-    # -- Start of range trigger (from next line)
-    assert not rd.update(PipeId.STDOUT, "gtkwave bla bla")
+    # -- Start of range trigger (including this line)
+    assert rd.update(PipeId.STDOUT, "gtkwave bla bla")
 
     # -- In range, to the end.
     assert rd.update(PipeId.STDOUT, "bla bla")
@@ -90,3 +90,44 @@ def test_gtkwave_spam_filter(apio_runner: ApioRunner):
             scons_filter.on_stderr_line("line2", "\n")
 
         assert log.out == "line1\n\ngtkwave a.vcd a.gtkw\nline2\n"
+
+
+def test_gtkwave_spam_filter_windows(apio_runner: ApioRunner):
+    """Same as test_gtkwave_spam_filter but with Windows "\\r\\n" line
+    endings, which arrive as a "\\r" line followed by an empty "\\n" line."""
+
+    with apio_runner.in_sandbox():
+
+        spam = (
+            "(gtkwave:68068): Gdk-CRITICAL **: 12:58:39.197: "
+            "gdk_atom_intern: assertion 'atom_name != NULL' failed"
+        )
+
+        with apio_runner.with_logger() as log:
+            scons_filter = SconsFilter(colors_enabled=False)
+
+            # -- Before gtkwave. Line endings are passed as is.
+            scons_filter.on_stdout_line("line1", "\r")
+            scons_filter.on_stdout_line("", "\n")
+
+            # -- The gtkwave command. Its "\r" becomes "\n".
+            scons_filter.on_stdout_line("gtkwave a.vcd a.gtkw", "\r")
+            scons_filter.on_stdout_line("", "\n")
+
+            # -- Gtkwave spam, preceded by an empty line. Dropped.
+            scons_filter.on_stderr_line("", "\r")
+            scons_filter.on_stderr_line("", "\n")
+            scons_filter.on_stderr_line(spam, "\r")
+            scons_filter.on_stderr_line("", "\n")
+
+            # -- Other gtkwave lines. Their "\r" becomes "\n".
+            scons_filter.on_stderr_line("line2", "\r")
+            scons_filter.on_stderr_line("", "\n")
+            scons_filter.on_stderr_line("line3", "\r")
+            scons_filter.on_stderr_line("", "\n")
+
+        # -- We check the raw output since log.out drops text before "\r".
+        assert (
+            log.buf.getvalue()
+            == "line1\r\ngtkwave a.vcd a.gtkw\nline2\nline3\n"
+        )
