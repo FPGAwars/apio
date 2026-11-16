@@ -30,6 +30,7 @@ def test_get_all():
     # -- Spot check a few vars.
     assert APIO_HOME in all_vars
     assert APIO_DEBUG in all_vars
+    assert env_options.APIO_EVENTS_FILE in all_vars
 
     # -- All vars have the apio prefix.
     for var in all_vars:

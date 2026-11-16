@@ -34,6 +34,55 @@ apio api echo
 
 ---
 
+## Real-time progress events
+
+Host applications can set `APIO_EVENTS_FILE` to receive package download and
+unpack progress alongside Apio's normal console output. This works with any
+Apio command that installs packages, including automatic installation.
+
+For example, in PowerShell:
+
+```powershell
+$env:APIO_EVENTS_FILE = 'D:\apio-events.jsonl'
+apio packages install
+```
+
+On Linux or macOS:
+
+```sh
+APIO_EVENTS_FILE=/tmp/apio-events.jsonl apio packages install
+```
+
+Apio appends UTF-8 JSON Lines to the file, making each line available
+immediately. Existing contents are preserved. Each progress event contains
+`event`, `task`, `item` (the package name), `done`, and `total`:
+
+```json
+{"event":"progress","task":"download","item":"oss-cad-suite","done":0,"total":525336576}
+{"event":"progress","task":"download","item":"oss-cad-suite","done":123456789,"total":525336576}
+{"event":"progress","task":"download","item":"oss-cad-suite","done":525336576,"total":525336576}
+{"event":"progress","task":"unpack","item":"oss-cad-suite","done":1,"total":1}
+```
+
+Download counts are bytes; unpack counts are archive entries. Apio reports
+the start and successful completion of each task, with intermediate updates
+at most four times per second. Empty tasks report a single `0`/`0` event
+on completion. Packages that need no installation produce no progress events.
+Task completion does not mean the entire command succeeded; also check the
+process exit status. Consumers should ignore unknown event types and fields.
+
+The destination may also be an existing POSIX FIFO or Windows named pipe
+(for example, `\\.\pipe\apio-events`). The host must create the pipe and read
+it concurrently: opening or writing a pipe can block until its reader is
+ready. Apio keeps the stream open between tasks and closes it when the command
+exits. Opening or writing failures abort the command with an error.
+
+Use a separate destination for each Apio process. For regular files, create
+the parent directory first and choose a path outside managed package
+directories. Unset `APIO_EVENTS_FILE` to disable the stream.
+
+---
+
 ## apio api get-system
 
 The command `apio api get-system` exports information about apio and

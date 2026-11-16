@@ -39,6 +39,9 @@ APIO_PLATFORM = "APIO_PLATFORM"
 # -- Do not access it directly, use debug_util.is_debug(n) instead.
 APIO_DEBUG = "APIO_DEBUG"
 
+# -- Optional JSON Lines destination for package progress events.
+APIO_EVENTS_FILE = "APIO_EVENTS_FILE"
+
 # -- An env variable that if defined, contains an override url of the remote
 # -- config file defined in apio/resources/config.jsonc. During automated
 # -- tests, it is overridden to point to the local copy of the remote config
@@ -70,6 +73,7 @@ _SUPPORTED_APIO_VARS = [
     APIO_REMOTE_CONFIG_URL,
     APIO_DEFINITIONS,
     APIO_DEBUG,
+    APIO_EVENTS_FILE,
 ]
 
 

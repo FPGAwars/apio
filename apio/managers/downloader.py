@@ -18,6 +18,7 @@ from pathlib import Path
 import requests
 from rich.progress import track
 from apio.common.apio_console import console, fatal_error
+from apio.utils.progress_events import ProgressEvents
 
 # -- Timeout for getting a response from the server when downloading
 # -- a file (in seconds). We had github tests failing with timeout=10
@@ -72,17 +73,23 @@ class FileDownloader:
         assert self._request is not None
         return int(self._request.headers["content-length"])
 
-    def download(self):
+    def download(self, package_name: str | None = None):
         """Download of the file while displaying a progress bar."""
 
+        assert self._request is not None
         # -- Download iterator
         itercontent = self._request.iter_content(chunk_size=self.CHUNK_SIZE)
+        total = self.get_size()
+        progress = ProgressEvents(
+            "download", package_name or self.fname, total
+        )
+        done = 0
 
         # -- Open destination file, for writing bytes
         with open(self.destination, "wb") as file:
 
             # -- Get the file length in Kbytes
-            num_chunks = int(ceil(self.get_size() / float(self.CHUNK_SIZE)))
+            num_chunks = int(ceil(total / float(self.CHUNK_SIZE)))
 
             # -- Download and write the chunks, while displaying the progress.
             for _ in track(
@@ -91,14 +98,21 @@ class FileDownloader:
                 console=console(),
             ):
 
-                file.write(next(itercontent))
+                chunk = next(itercontent)
+                file.write(chunk)
+                done += len(chunk)
+                if done < total:
+                    progress.update(done)
 
             # -- Check that the iterator reached its end. When the end is
             # -- reached, next() returns the default value None.
             assert next(itercontent, None) is None
+            if done != total:
+                raise OSError("Downloaded size does not match Content-Length")
 
         # -- Download done!
         self._request.close()
+        progress.update(done)
 
     def __del__(self):
         """Close any pending request"""

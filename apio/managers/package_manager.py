@@ -25,6 +25,7 @@ from apio.common.apio_styles import SUCCESS, EMPH3
 from apio.common.debug_util import is_debug
 from apio.managers.downloader import FileDownloader
 from apio.utils import util
+from apio.utils.progress_events import ProgressEvents
 from apio.common.apio_platforms import ApioPlatform
 from apio.managers.remote_config import RemoteConfig
 from apio.common.proto.stubs.apio_config_pb2 import ApioPackageSpec
@@ -160,6 +161,7 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
                     cause=e,
                 )
 
+        progress = ProgressEvents("unpack", dest_dir.name, len(items))
         for i in track(
             range(len(items)),
             description="Unpacking  ",
@@ -176,6 +178,10 @@ def unpack_tgz(archive_file_path: Path, dest_dir: Path) -> None:
                     f"Unsafe item '{item.name}' in archive '{archive_name}'.",
                     cause=e,
                 )
+            if i + 1 < len(items):
+                progress.update(i + 1)
+
+    progress.update(len(items))
 
 
 class PackageManager:
@@ -301,7 +307,7 @@ class PackageManager:
             # -- Get the destination path
             filepath = downloader.destination
 
-            downloader.download()
+            downloader.download(package_name)
 
         # -- If the user press Ctrl-C (Abort)
         except KeyboardInterrupt:

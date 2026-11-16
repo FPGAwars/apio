@@ -11,13 +11,17 @@ Tests of managers/package_manager.py
 """
 
 import io
+import json
 import tarfile
+from unittest.mock import Mock
+import click
 import pytest
 from tests.conftest import ApioRunner
 from apio.managers.package_manager import unpack_tgz
+from apio.utils import progress_events
 
 
-def test_unpack_tgz(apio_runner: ApioRunner):
+def test_unpack_tgz(apio_runner: ApioRunner, monkeypatch: pytest.MonkeyPatch):
     """Tests unpack_tgz()."""
 
     with apio_runner.in_sandbox() as sb:
@@ -36,7 +40,20 @@ def test_unpack_tgz(apio_runner: ApioRunner):
 
         # -- Case 1: Unpack to a new dir. Should extract all the files.
         dest_dir = sb.proj_dir / "dest1"
-        unpack_tgz(archive, dest_dir)
+        events_path = sb.proj_dir / "events.jsonl"
+        monkeypatch.setenv("APIO_EVENTS_FILE", str(events_path))
+        monkeypatch.setattr(
+            progress_events, "monotonic", Mock(side_effect=[0, 1, 2])
+        )
+        with click.Context(click.Command("test")):
+            unpack_tgz(archive, dest_dir)
+        events = [
+            json.loads(line) for line in events_path.read_text().splitlines()
+        ]
+        assert [event["done"] for event in events] == [0, 1, 2]
+        assert all(event["total"] == 2 for event in events)
+        assert events[-1]["task"] == "unpack"
+        assert events[-1]["item"] == "dest1"
         readme_text = (dest_dir / "readme.txt").read_text(encoding="utf-8")
         assert readme_text == "readme"
         tool_text = (dest_dir / "bin" / "tool").read_text(encoding="utf-8")
@@ -63,7 +80,9 @@ def test_unpack_tgz(apio_runner: ApioRunner):
         assert not (sb.proj_dir / "dest3").exists()
 
 
-def test_unpack_tgz_unsafe_item(apio_runner: ApioRunner):
+def test_unpack_tgz_unsafe_item(
+    apio_runner: ApioRunner, monkeypatch: pytest.MonkeyPatch
+):
     """Tests that unpack_tgz() rejects an item outside of the dest dir."""
 
     with apio_runner.in_sandbox() as sb:
@@ -74,9 +93,40 @@ def test_unpack_tgz_unsafe_item(apio_runner: ApioRunner):
             tar.addfile(tarfile.TarInfo("../escape.txt"), io.BytesIO())
 
         # -- Unpack. Should fail and not write the file.
+        events_path = sb.proj_dir / "events.jsonl"
+        monkeypatch.setenv("APIO_EVENTS_FILE", str(events_path))
         with apio_runner.with_logger() as log:
-            with pytest.raises(SystemExit) as e:
+            with (
+                pytest.raises(SystemExit) as e,
+                click.Context(click.Command("test")),
+            ):
                 unpack_tgz(archive, sb.proj_dir / "dest")
         assert e.value.code == 1
         assert "Unsafe item '../escape.txt'" in log.out
         assert not (sb.proj_dir / "escape.txt").exists()
+        assert not events_path.exists()
+
+
+def test_unpack_tgz_empty(
+    apio_runner: ApioRunner, monkeypatch: pytest.MonkeyPatch
+):
+    """An empty archive reports successful completion without an initial event."""
+    with apio_runner.in_sandbox() as sb:
+        archive = sb.proj_dir / "empty.tgz"
+        with tarfile.open(archive, "w:gz"):
+            pass
+        events_path = sb.proj_dir / "events.jsonl"
+        monkeypatch.setenv("APIO_EVENTS_FILE", str(events_path))
+        with click.Context(click.Command("test")):
+            unpack_tgz(archive, sb.proj_dir / "empty")
+        assert [
+            json.loads(line) for line in events_path.read_text().splitlines()
+        ] == [
+            {
+                "event": "progress",
+                "task": "unpack",
+                "item": "empty",
+                "done": 0,
+                "total": 0,
+            }
+        ]
