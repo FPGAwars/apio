@@ -35,6 +35,7 @@ apio packages install            # Install packages
 apio pack upd                    # Same, with shortcuts
 apio packages install --force    # Force reinstallation from scratch
 apio packages install --verbose  # Provide additional info
+apio packages install --cached-ok  # Allow cached remote config
 ```
 
 <h3>Options</h3>
@@ -42,10 +43,18 @@ apio packages install --verbose  # Provide additional info
 ```
 -f, --force    Force reinstallation.
 -v, --verbose  Show detailed output.
+--cached-ok    Allow cached remote config when offline.
 -h, --help     Show this message and exit.
 ```
 
 <h3>Notes</h3>
+
+- With `--cached-ok`, a recent cached remote config is reused. If the cache
+  needs refreshing and the refresh fails, Apio warns and uses the cached
+  config. This allows an offline invocation to succeed when all packages
+  already match that config. Without a usable cache, or when packages need
+  downloading (including with `--force`), the command still fails offline.
+  Without `--cached-ok`, a fresh remote config is always required.
 
 - Adding the `--force` option forces the reinstallation of existing
   packages; otherwise, packages that are already installed correctly
