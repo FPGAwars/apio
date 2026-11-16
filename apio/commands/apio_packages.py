@@ -145,6 +145,11 @@ Examples:[code]
   apio packages install --force    # Force reinstallation from scratch
   apio packages install --verbose  # Provide additional info[/code]
 
+Adding '--cached-ok' allows a recent cached remote config to be used. If \
+the cache needs refreshing and the refresh fails, the cached config is used \
+instead. Without a usable cache, or if packages need downloading, an \
+internet connection is still required.
+
 Adding the '--force' option forces the reinstallation of existing packages; \
 otherwise, packages that are already installed correctly remain unchanged.
 
@@ -163,22 +168,32 @@ added to the examples package.
 )
 @options.force_option_gen(short_help="Force reinstallation.")
 @options.verbose_option
+@click.option(
+    "--cached-ok",
+    is_flag=True,
+    help="Allow cached remote config when offline.",
+    cls=ApioOption,
+)
 def _install_cli(
     *,
     # Options
     force: bool,
     verbose: bool,
+    cached_ok: bool,
 ):
     """Implements the 'apio packages install' command."""
 
     apio_ctx = ApioContext(
         project_policy=ProjectPolicy.NO_PROJECT,
-        remote_config_policy=RemoteConfigPolicy.GET_FRESH,
+        remote_config_policy=(
+            RemoteConfigPolicy.CACHED_OK
+            if cached_ok
+            else RemoteConfigPolicy.GET_FRESH
+        ),
         packages_policy=PackagesPolicy.IGNORE_PACKAGES,
     )
 
-    # -- First thing, fix broken packages, if any. This forces fetching
-    # -- of the latest remote config file.
+    # -- First thing, fix broken packages, if any.
     apio_ctx.package_manager.scan_and_fix_inconsistencies()
 
     # -- Install the packages, one by one.
