@@ -60,7 +60,7 @@ TEST_SUMMARY_GOWIN = {
 TEST_SUMMARY_XILINX = {
     "utilization": {
         "BUFGCTRL": {"available": 32, "used": 1},
-        "PSEUDO_GND": {"available": 1, "used": 1},
+        "PAD": {"available": 1, "used": 1},
         "SLICE_LUTX": {"available": 65200, "used": 48},
     },
     "fmax": {
@@ -186,7 +186,7 @@ def test_read_build_report_xilinx(apio_runner):
             arch=ApioArch.xilinx,
             resources=[
                 _resource("BUFGCTRL", 32, 1),
-                _resource("PSEUDO_GND", 1, 1),
+                _resource("PAD", 1, 1),
                 _resource("SLICE_LUTX", 65200, 48),
             ],
             clocks=[
