@@ -416,7 +416,7 @@ def test_project_xilinx_local_dir(apio_runner: ApioRunner):
         example="basys3/ledon",
         testbench_file="main_tb.v",
         bitstream="hardware.bit",
-        report_item="PSEUDO_GND",
+        report_item="PAD",
     )
 
 
@@ -430,5 +430,5 @@ def test_project_xilinx_remote_dir(apio_runner: ApioRunner):
         example="basys3/ledon",
         testbench_file="main_tb.v",
         bitstream="hardware.bit",
-        report_item="PSEUDO_GND",
+        report_item="PAD",
     )
