@@ -177,8 +177,9 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     # Example
     #   Test:      '$readmemh("my_data.hex", State_buff);'
     #   Capture:   'my_data.hex'
+    # White space (including newlines) is allowed before and after '('.
     readmem_reference_re = re.compile(
-        r"\$readmem[hb]\([\'\"]([^\'\"]+)[\'\"]", re.M
+        r"\$readmem[hb]\s*\(\s*[\'\"]([^\'\"]+)[\'\"]", re.M
     )
 
     # -- List of required and optional files that may require a rebuild if
