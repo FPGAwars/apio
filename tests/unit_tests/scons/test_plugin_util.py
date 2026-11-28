@@ -139,6 +139,9 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 
         // $readmemh() function reference.
         $readmemh("subdir2/my_data.hex", State_buff);
+
+        // $readmemb() function reference.
+        $readmemb("subdir2/my_data.bin", State_buff);
         """
 
     with apio_runner.in_sandbox() as sb:
@@ -169,6 +172,7 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 
         file_dependencies = [
             "apio_testing.vh",
+            join("subdir2", "my_data.bin"),
             join("subdir2", "my_data.hex"),
             join("subdir1", "v771499.list"),
         ]
