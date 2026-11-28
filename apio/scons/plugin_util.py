@@ -173,12 +173,13 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
     #   Capture:  'apio_testing.vh'
     verilog_include_re = re.compile(r'`\s*include\s+["]([^"]+)["]', re.M)
 
-    # A regex for inclusion via $readmemh()
+    # A regex for inclusion via $readmemh() or $readmemb()
     # Example
     #   Test:      '$readmemh("my_data.hex", State_buff);'
     #   Capture:   'my_data.hex'
-    readmemh_reference_re = re.compile(
-        r"\$readmemh\([\'\"]([^\'\"]+)[\'\"]", re.M
+    # White space (including newlines) is allowed before and after '('.
+    readmem_reference_re = re.compile(
+        r"\$readmem[hb]\s*\(\s*[\'\"]([^\'\"]+)[\'\"]", re.M
     )
 
     # -- List of required and optional files that may require a rebuild if
@@ -223,8 +224,8 @@ def verilog_src_scanner(apio_env: ApioEnv) -> Scanner.Base:
         # Get verilog includes references.
         candidates_raw_set.update(verilog_include_re.findall(file_content))
 
-        # Get $readmemh() function references.
-        candidates_raw_set.update(readmemh_reference_re.findall(file_content))
+        # Get $readmemh() and $readmemb() function references.
+        candidates_raw_set.update(readmem_reference_re.findall(file_content))
 
         # Get IceStudio references.
         candidates_raw_set.update(icestudio_list_re.findall(file_content))

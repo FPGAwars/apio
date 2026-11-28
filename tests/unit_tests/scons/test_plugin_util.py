@@ -139,6 +139,15 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 
         // $readmemh() function reference.
         $readmemh("subdir2/my_data.hex", State_buff);
+
+        // $readmemb() function reference.
+        $readmemb("subdir2/my_data.bin", State_buff);
+
+        // White space variants.
+        $readmemh ("subdir2/spaced.hex", m);
+        $readmemb(  "subdir2/spaced.bin" , m);
+        $readmemh(
+            "subdir2/newline.hex", m);
         """
 
     with apio_runner.in_sandbox() as sb:
@@ -169,7 +178,11 @@ def test_verilog_src_scanner(apio_runner: ApioRunner):
 
         file_dependencies = [
             "apio_testing.vh",
+            join("subdir2", "my_data.bin"),
             join("subdir2", "my_data.hex"),
+            join("subdir2", "newline.hex"),
+            join("subdir2", "spaced.bin"),
+            join("subdir2", "spaced.hex"),
             join("subdir1", "v771499.list"),
         ]
 
